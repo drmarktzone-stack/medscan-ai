@@ -1,0 +1,41 @@
+{
+  "name": "Analysis",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "ecg",
+        "skin"
+      ],
+      "description": "Type of analysis"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL of the uploaded image"
+    },
+    "result": {
+      "type": "string",
+      "description": "AI analysis result text"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "mild",
+        "moderate",
+        "severe",
+        "urgent"
+      ],
+      "description": "Severity level of findings"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Short summary of the analysis"
+    }
+  },
+  "required": [
+    "type",
+    "image_url"
+  ]
+}
