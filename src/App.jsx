@@ -16,6 +16,7 @@ import Home from '@/pages/Home';
 import ECGAnalysis from '@/pages/ECGAnalysis';
 import SkinAnalysis from '@/pages/SkinAnalysis';
 import History from '@/pages/History';
+import KnowledgeBase from '@/pages/KnowledgeBase';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -48,6 +49,7 @@ const AuthenticatedApp = () => {
         <Route path="/ecg" element={<ECGAnalysis />} />
         <Route path="/skin" element={<SkinAnalysis />} />
         <Route path="/history" element={<History />} />
+        <Route path="/knowledge-base" element={<KnowledgeBase />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

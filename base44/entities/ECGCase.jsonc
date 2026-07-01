@@ -1,0 +1,44 @@
+{
+  "name": "ECGCase",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Short name of the ECG pattern"
+    },
+    "diagnosis": {
+      "type": "string",
+      "description": "Formal diagnosis"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "rhythm",
+        "conduction",
+        "ischemic",
+        "chamber_abnormality",
+        "electrolyte",
+        "syndrome",
+        "drug_effect",
+        "other"
+      ],
+      "default": "other"
+    },
+    "key_features": {
+      "type": "string",
+      "description": "Hallmark ECG features to look for"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed clinical description"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Reference ECG image URL (optional)"
+    }
+  },
+  "required": [
+    "title",
+    "diagnosis"
+  ]
+}

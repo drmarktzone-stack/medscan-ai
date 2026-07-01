@@ -1,0 +1,45 @@
+{
+  "name": "SkinCase",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Short name of the skin condition"
+    },
+    "diagnosis": {
+      "type": "string",
+      "description": "Formal diagnosis"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "benign",
+        "malignant",
+        "inflammatory",
+        "infectious",
+        "autoimmune",
+        "pigmentation",
+        "vascular",
+        "precancerous",
+        "other"
+      ],
+      "default": "other"
+    },
+    "key_features": {
+      "type": "string",
+      "description": "Hallmark visual features to look for"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed clinical description"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Reference skin image URL (optional)"
+    }
+  },
+  "required": [
+    "title",
+    "diagnosis"
+  ]
+}

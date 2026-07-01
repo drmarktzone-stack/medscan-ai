@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Stethoscope, Loader2 } from "lucide-react";
+import { ArrowRight, Stethoscope, Loader2, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
+import { buildKnowledgeBaseText } from "@/lib/knowledgeBase";
 import ImageUploader from "@/components/ImageUploader";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
@@ -12,6 +13,11 @@ export default function SkinAnalysis() {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [kbCount, setKbCount] = useState(0);
+
+  useEffect(() => {
+    base44.entities.SkinCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
+  }, []);
 
   const handleFileSelect = (f) => {
     setFile(f);
@@ -30,19 +36,40 @@ export default function SkinAnalysis() {
     setLoading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const cases = await base44.entities.SkinCase.list("-created_date", 100);
+      const knowledgeBase = buildKnowledgeBaseText(cases);
+
+      const referenceImages = cases.filter((c) => c.image_url).slice(0, 5).map((c) => c.image_url);
+
       const analysis = await base44.integrations.Core.InvokeLLM({
-        prompt: `אתה דרמטולוג מומחה. נתח את תמונת העור הבאה ותן הערכה מפורטת בעברית.
+        prompt: `אתה דרמטולוג מומחה עם ניסיון רב שנים באבחון מחלות עור. נתח את תמונת העור הבאה בצורה מדויקת, יסודית וביקורתית.
 
-כלול בניתוח:
-1. **תיאור הנגע** — מיקום, גודל, צבע, מרקם, גבולות
-2. **אבחנה מבדלת** — רשום 2-3 אפשרויות אבחנתיות סבירות
-3. **סימנים מדאיגים** — האם יש סימני אזהרה (אסימטריה, גבולות לא סדירים, צבע לא אחיד, קוטר גדול)
-4. **רמת דחיפות** — האם יש צורך בפנייה דחופה או שגרתית
-5. **המלצות** — צעדים מומלצים (פנייה לרופא עור, מעקב, בדיקות נוספות)
-6. **טיפים כלליים** — המלצות לטיפול ומניעה
+## מאגר ידע — מחלות עור עם אבחנות ידועות:
+${knowledgeBase}
 
-ציין את רמת החומרה: normal, mild, moderate, severe, או urgent.`,
-        file_urls: [file_url],
+## הוראות ניתוח:
+1. בחן את הנגע בצורה שיטתית: מורפולוגיה (מקולרי/פפולרי/נודולרי/וסיקולרי), צבע, גודל, גבולות, פיזור, סימטריה.
+2. השווה את הממצאים מול כל מחלה במאגר הידע — חיובי ושלילי.
+3. השתמש בכלל ABCDE להערכת נגעים פיגמנטיים: Asymmetry, Border, Color, Diameter, Evolution.
+4. אל תניח "תקין" או "שפיר" כברירת מחדל — שקול כל אבחנה מבדלת ברצינות, במיוחד מלנומה וקרצינומות.
+5. אם יש סימני דגל אדום (גבולות לא סדירים, צבע לא אחיד, כיב, דימום, גדילה מהירה), הדגש אותם בבירור.
+6. זהה את המחלה התואמת ביותר או אבחנות מבדלות מתוך המאגר.
+
+${referenceImages.length > 0 ? `## תמונות ייחוס ממאגר הידע:
+התמונה הראשונה היא הנגע לניתוח. שאר התמונות הן דוגמאות ממאגר הידע להשוואה.` : ""}
+
+## פלט נדרש:
+- summary: סיכום תמציתי של הממצא העיקרי (משפט אחד)
+- severity: רמת חומרה — normal / mild / moderate / severe / urgent
+- analysis: ניתוח מפורט ב-Markdown הכולל:
+  * **תיאור מורפולוגי מפורט** — סוג נגע, צבע, גודל משוער, גבולות, פיזור
+  * **הערכת ABCDE** (לנגעים פיגמנטיים)
+  * **השוואה למאגר הידע** — אילו מחלות נשללו ואילו תואמות
+  * **אבחנה ראשית** ואבחנות מבדלות (מהסביר ביותר לפחות סביר)
+  * **סימני דגל אדום** אם קיימים
+  * **רמת דחיפות** — פנייה דחופה/שגרתית/מעקב
+  * **המלצות** — בירור נוסף, ביופסיה, הפניה למומחה, טיפול ראשוני`,
+        file_urls: [file_url, ...referenceImages],
         response_json_schema: {
           type: "object",
           properties: {
@@ -55,7 +82,7 @@ export default function SkinAnalysis() {
         model: "claude_sonnet_4_6",
       });
 
-      const saved = await base44.entities.Analysis.create({
+      await base44.entities.Analysis.create({
         type: "skin",
         image_url: file_url,
         result: analysis.analysis,
@@ -73,7 +100,6 @@ export default function SkinAnalysis() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-slate-50">
-      {/* Top bar */}
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
           <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -87,6 +113,13 @@ export default function SkinAnalysis() {
       </div>
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
+        {kbCount > 0 && (
+          <Link to="/knowledge-base" className="flex items-center gap-2 text-xs text-teal-600 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2">
+            <BookOpen className="w-4 h-4" />
+            מאגר הידע כולל {kbCount} מחלות עור להשוואה
+          </Link>
+        )}
+
         <ImageUploader
           onFileSelect={handleFileSelect}
           preview={preview}
@@ -103,7 +136,7 @@ export default function SkinAnalysis() {
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                מנתח את התמונה...
+                מנתח מול מאגר הידע...
               </span>
             ) : (
               "נתח תמונה"
