@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import CaseForm from "@/components/knowledge/CaseForm";
+import SearchFilter from "@/components/knowledge/SearchFilter";
 
 const categoryLabels = {
   rhythm: "הפרעות קצב",
@@ -25,12 +26,53 @@ const categoryLabels = {
   vascular: "כלי דם",
 };
 
+const ecgCategories = [
+  { value: "rhythm", label: "הפרעות קצב" },
+  { value: "conduction", label: "הפרעות הולכה" },
+  { value: "ischemic", label: "איסכמיה / אוטם" },
+  { value: "chamber_abnormality", label: "הגדלת חדרים / עליות" },
+  { value: "electrolyte", label: "אלקטרוליטים" },
+  { value: "syndrome", label: "תסמונות" },
+  { value: "drug_effect", label: "תרופות" },
+  { value: "other", label: "אחר" },
+];
+
+const skinCategories = [
+  { value: "benign", label: "שפיר" },
+  { value: "malignant", label: "ממאיר" },
+  { value: "precancerous", label: "טרום-ממאיר" },
+  { value: "inflammatory", label: "דלקתי" },
+  { value: "infectious", label: "זיהומי" },
+  { value: "autoimmune", label: "אוטואימוני" },
+  { value: "pigmentation", label: "פיגמנטציה" },
+  { value: "vascular", label: "כלי דם" },
+  { value: "other", label: "אחר" },
+];
+
+function filterCases(cases, query, category) {
+  let filtered = cases;
+  if (category) {
+    filtered = filtered.filter((c) => c.category === category);
+  }
+  if (query) {
+    const q = query.trim().toLowerCase();
+    filtered = filtered.filter((c) =>
+      [c.title, c.diagnosis, c.key_features, c.description]
+        .filter(Boolean)
+        .some((field) => field.toLowerCase().includes(q))
+    );
+  }
+  return filtered;
+}
+
 export default function KnowledgeBase() {
   const [tab, setTab] = useState("ecg");
   const [ecgCases, setEcgCases] = useState([]);
   const [skinCases, setSkinCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("");
 
   const loadData = async () => {
     setLoading(true);
@@ -49,6 +91,16 @@ export default function KnowledgeBase() {
   };
 
   useEffect(() => { loadData(); }, []);
+
+  const handleTabChange = (newTab) => {
+    setTab(newTab);
+    setQuery("");
+    setCategory("");
+  };
+
+  const filteredEcgCases = filterCases(ecgCases, query, category);
+  const filteredSkinCases = filterCases(skinCases, query, category);
+  const activeCategories = tab === "ecg" ? ecgCategories : skinCategories;
 
   const handleDelete = async (type, id) => {
     const entityName = type === "ecg" ? "ECGCase" : "SkinCase";
@@ -112,7 +164,7 @@ export default function KnowledgeBase() {
       </div>
 
       <div className="max-w-lg mx-auto px-5 py-6">
-        <Tabs value={tab} onValueChange={setTab}>
+        <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList className="grid grid-cols-2 w-full rounded-xl">
             <TabsTrigger value="ecg" className="rounded-xl">
               <Activity className="w-4 h-4 ml-1.5" />
@@ -124,6 +176,18 @@ export default function KnowledgeBase() {
             </TabsTrigger>
           </TabsList>
 
+          {!loading && (ecgCases.length > 0 || skinCases.length > 0) && (
+            <div className="mt-4">
+              <SearchFilter
+                query={query}
+                onQueryChange={setQuery}
+                category={category}
+                onCategoryChange={setCategory}
+                categories={activeCategories}
+              />
+            </div>
+          )}
+
           <TabsContent value="ecg" className="mt-4 space-y-3">
             {loading ? (
               <div className="flex justify-center py-20">
@@ -131,8 +195,13 @@ export default function KnowledgeBase() {
               </div>
             ) : ecgCases.length === 0 ? (
               <EmptyState />
+            ) : filteredEcgCases.length === 0 ? (
+              <NoResults />
             ) : (
-              ecgCases.map((c) => renderCase(c, "ecg"))
+              <>
+                <p className="text-xs text-muted-foreground">מציג {filteredEcgCases.length} מתוך {ecgCases.length} מקרים</p>
+                {filteredEcgCases.map((c) => renderCase(c, "ecg"))}
+              </>
             )}
           </TabsContent>
 
@@ -143,8 +212,13 @@ export default function KnowledgeBase() {
               </div>
             ) : skinCases.length === 0 ? (
               <EmptyState />
+            ) : filteredSkinCases.length === 0 ? (
+              <NoResults />
             ) : (
-              skinCases.map((c) => renderCase(c, "skin"))
+              <>
+                <p className="text-xs text-muted-foreground">מציג {filteredSkinCases.length} מתוך {skinCases.length} מקרים</p>
+                {filteredSkinCases.map((c) => renderCase(c, "skin"))}
+              </>
             )}
           </TabsContent>
         </Tabs>
@@ -165,6 +239,15 @@ function EmptyState() {
     <div className="text-center py-16">
       <p className="text-sm text-muted-foreground">אין מקרים במאגר עדיין</p>
       <p className="text-xs text-muted-foreground/60 mt-1">הוסף מקרה ראשון כדי לשפר את דיוק הניתוח</p>
+    </div>
+  );
+}
+
+function NoResults() {
+  return (
+    <div className="text-center py-16">
+      <p className="text-sm text-muted-foreground">לא נמצאו תוצאות תואמות</p>
+      <p className="text-xs text-muted-foreground/60 mt-1">נסה לשנות את החיפוש או הסינון</p>
     </div>
   );
 }
