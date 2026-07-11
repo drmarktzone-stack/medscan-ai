@@ -2,6 +2,7 @@ import React from "react";
 import SeverityBadge from "@/components/SeverityBadge";
 import ReactMarkdown from "react-markdown";
 import { CheckCircle2 } from "lucide-react";
+import AnnotatedImage from "@/components/AnnotatedImage";
 
 function confidenceStyle(conf) {
   if (conf >= 70) return "text-red-600 bg-red-50 border-red-200";
@@ -9,7 +10,7 @@ function confidenceStyle(conf) {
   return "text-slate-500 bg-slate-50 border-slate-200";
 }
 
-export default function AnalysisResult({ result, severity, summary, matchedCases }) {
+export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings }) {
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -21,6 +22,10 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
         <div className="bg-primary/5 border border-primary/15 rounded-xl p-4">
           <p className="text-sm font-semibold text-primary">{summary}</p>
         </div>
+      )}
+
+      {imageUrl && findings && findings.length > 0 && (
+        <AnnotatedImage imageUrl={imageUrl} findings={findings} />
       )}
 
       {matchedCases && matchedCases.length > 0 && (

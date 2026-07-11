@@ -149,9 +149,20 @@ ${diagnosisInstructions}
 ## הערכה מורחבת מהאינטרנט
 חפש באינטרנט מאגרי תמונות רפואיים, ספרות קלינית עדכנית וממצאים פתולוגיים ותקינים כדי להשוות את התמונה. הסתמך על מקורות מהימנים — ספרות רפואית, מאגרי תמונות קליניות, וקריטריוני אבחון מקצועיים.
 
+## סימון אזורי ממצא על התמונה
+זהה את האזורים הספציפיים בתמונה 1 (התמונה לניתוח) בהם יש ממצא חריג או משמעותי קלינית.
+עבור כל אזור, החזר תיבת תחום (bounding box) בקואורדינטות נורמליזציה — אחוזים מממדי התמונה (0-100):
+- x: מיקום הפינה השמאלית-עליונה בציר האופקי (0-100)
+- y: מיקום הפינה השמאלית-עליונה בציר האנכי (0-100)
+- width: רוחב התיבה באחוזים (0-100)
+- height: גובה התיבה באחוזים (0-100)
+- label: תיאור קצר של הממצא באזור (עד 4 מילים)
+הקואורדינטות יחסיות לתמונה 1 בלבד. אם אין ממצא חריג ברור, החזר מערך ריק.
+
 ## פלט נדרש
 - summary: סיכום תמציתי של הממצא העיקרי (משפט אחד)
 - severity: רמת חומרה — normal / mild / moderate / severe / urgent
+- findings: מערך של אזורי ממצא (תיבות תחום) על גבי התמונה
 - analysis: ניתוח מפורט ב-Markdown הכולל:
   * **תיאור הממצאים** — המאפיינים העיקריים שזוהו בתמונה
   * **השוואה למאגר הידע** — טבלת המקרים התואמים עם דרגת ביטחון ונימוק
@@ -166,12 +177,39 @@ ${diagnosisInstructions}
         summary: { type: "string", description: "סיכום קצר של הממצאים" },
         severity: { type: "string", enum: ["normal", "mild", "moderate", "severe", "urgent"] },
         analysis: { type: "string", description: "ניתוח מפורט בפורמט Markdown" },
+        findings: {
+          type: "array",
+          description: "אזורי ממצא חריגים על גבי התמונה (תיבות תחום בקואורדינטות נורמליזציה 0-100)",
+          items: {
+            type: "object",
+            properties: {
+              label: { type: "string", description: "תיאור קצר של הממצא באזור" },
+              x: { type: "number", description: "פינה שמאלית-עליונה X (0-100)" },
+              y: { type: "number", description: "פינה שמאלית-עליונה Y (0-100)" },
+              width: { type: "number", description: "רוחב (0-100)" },
+              height: { type: "number", description: "גובה (0-100)" },
+            },
+            required: ["label", "x", "y", "width", "height"],
+          },
+        },
       },
-      required: ["summary", "severity", "analysis"],
+      required: ["summary", "severity", "analysis", "findings"],
     },
     add_context_from_internet: true,
     model: "gemini_3_1_pro",
   });
+
+  // ---------- Validate & clamp findings (normalized 0-100) ----------
+  const rawFindings = Array.isArray(diagnosis.findings) ? diagnosis.findings : [];
+  const findings = rawFindings
+    .map((f) => {
+      const x = Math.max(0, Math.min(100, Number(f.x) || 0));
+      const y = Math.max(0, Math.min(100, Number(f.y) || 0));
+      const width = Math.max(0, Math.min(100 - x, Number(f.width) || 0));
+      const height = Math.max(0, Math.min(100 - y, Number(f.height) || 0));
+      return { label: String(f.label || "ממצא"), x, y, width, height };
+    })
+    .filter((f) => f.width > 0 && f.height > 0);
 
   // ---------- Persist the analysis ----------
   await base44.entities.Analysis.create({
@@ -187,5 +225,7 @@ ${diagnosisInstructions}
     severity: diagnosis.severity,
     analysis: diagnosis.analysis,
     matchedCases: matches.slice(0, 8),
+    imageUrl: file_url,
+    findings,
   };
 }

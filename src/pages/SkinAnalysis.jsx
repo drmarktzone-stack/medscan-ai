@@ -129,6 +129,8 @@ export default function SkinAnalysis() {
               severity={result.severity}
               summary={result.summary}
               matchedCases={result.matchedCases}
+              imageUrl={result.imageUrl}
+              findings={result.findings}
             />
           </div>
         )}
