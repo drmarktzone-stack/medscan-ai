@@ -1,0 +1,49 @@
+{
+  "name": "RadiologyCase",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Short name of the radiological finding"
+    },
+    "diagnosis": {
+      "type": "string",
+      "description": "Formal diagnosis"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "chest",
+        "abdominal",
+        "musculoskeletal",
+        "neurological",
+        "cardiac",
+        "vascular",
+        "genitourinary",
+        "other"
+      ],
+      "default": "other"
+    },
+    "key_features": {
+      "type": "string",
+      "description": "Hallmark radiological features to look for"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed clinical description"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Reference radiology image URL (optional)"
+    },
+    "urgent": {
+      "type": "boolean",
+      "description": "Whether this case requires urgent medical intervention or thorough examination",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "diagnosis"
+  ]
+}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Activity, Stethoscope, Clock } from "lucide-react";
+import { ArrowRight, Activity, Stethoscope, Clock, ScanLine } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import SeverityBadge from "@/components/SeverityBadge";
 import moment from "moment";
@@ -43,15 +43,17 @@ export default function History() {
           analyses.map((a) => (
             <div key={a.id} className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
               <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${a.type === "ecg" ? "bg-blue-50" : "bg-teal-50"}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${a.type === "ecg" ? "bg-blue-50" : a.type === "skin" ? "bg-teal-50" : "bg-indigo-50"}`}>
                   {a.type === "ecg"
                     ? <Activity className="w-5 h-5 text-blue-500" />
-                    : <Stethoscope className="w-5 h-5 text-teal-500" />
+                    : a.type === "skin"
+                    ? <Stethoscope className="w-5 h-5 text-teal-500" />
+                    : <ScanLine className="w-5 h-5 text-indigo-500" />
                   }
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <span className="text-sm font-semibold">{a.type === "ecg" ? "ECG" : "עור"}</span>
+                    <span className="text-sm font-semibold">{a.type === "ecg" ? "ECG" : a.type === "skin" ? "עור" : "רדיולוגיה"}</span>
                     {a.severity && <SeverityBadge severity={a.severity} />}
                   </div>
                   {a.summary && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{a.summary}</p>}

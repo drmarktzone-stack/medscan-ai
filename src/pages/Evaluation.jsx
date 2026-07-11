@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag } from "lucide-react";
+import { ArrowRight, Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag, ScanLine } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { base44 } from "@/api/base44Client";
 import { runEvaluation } from "@/lib/evaluation";
@@ -81,12 +81,15 @@ export default function Evaluation() {
 
       <div className="max-w-lg mx-auto px-5 py-6">
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="grid grid-cols-2 w-full rounded-xl">
+          <TabsList className="grid grid-cols-3 w-full rounded-xl">
             <TabsTrigger value="ecg" className="rounded-xl">
               <Activity className="w-4 h-4 ml-1.5" /> ECG
             </TabsTrigger>
             <TabsTrigger value="skin" className="rounded-xl">
               <Stethoscope className="w-4 h-4 ml-1.5" /> עור
+            </TabsTrigger>
+            <TabsTrigger value="radiology" className="rounded-xl">
+              <ScanLine className="w-4 h-4 ml-1.5" /> רדיולוגיה
             </TabsTrigger>
           </TabsList>
 

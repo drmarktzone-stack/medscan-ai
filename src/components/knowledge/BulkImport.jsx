@@ -13,7 +13,7 @@ export default function BulkImport({ type, target, onSaved }) {
 
   const entityName = target === "gold"
     ? "GoldStandardCase"
-    : type === "ecg" ? "ECGCase" : "SkinCase";
+    : { ecg: "ECGCase", skin: "SkinCase", radiology: "RadiologyCase" }[type];
 
   const handleCSV = async (e) => {
     const file = e.target.files[0];

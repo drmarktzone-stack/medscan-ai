@@ -24,8 +24,8 @@ function fuzzyDiagnosisMatch(ai, correct) {
 }
 
 export async function runEvaluation({ type, onProgress, onUpdate }) {
-  const entityName = type === "ecg" ? "ECGCase" : "SkinCase";
-  const domainRole = type === "ecg" ? "קרדיולוג מומחה" : "דרמטולוג מומחה";
+  const entityName = { ecg: "ECGCase", skin: "SkinCase", radiology: "RadiologyCase" }[type];
+  const domainRole = { ecg: "קרדיולוג מומחה", skin: "דרמטולוג מומחה", radiology: "רדיולוג מומחה" }[type];
 
   const kbCases = await base44.entities[entityName].list("-created_date", 100);
   if (!kbCases || kbCases.length === 0) {
@@ -122,13 +122,21 @@ ${casesForMatching}
 }
 
 export async function generateCasesWithAI({ type, target, topic, count = 10 }) {
-  const isECG = type === "ecg";
-  const categories = isECG
-    ? "rhythm, conduction, ischemic, chamber_abnormality, electrolyte, syndrome, drug_effect, other"
-    : "benign, malignant, inflammatory, infectious, autoimmune, pigmentation, vascular, precancerous, other";
+  const categoriesByType = {
+    ecg: "rhythm, conduction, ischemic, chamber_abnormality, electrolyte, syndrome, drug_effect, other",
+    skin: "benign, malignant, inflammatory, infectious, autoimmune, pigmentation, vascular, precancerous, other",
+    radiology: "chest, abdominal, musculoskeletal, neurological, cardiac, vascular, genitourinary, other",
+  };
+  const domainByType = {
+    ecg: "קרדיולוגיה ופענוח ECG",
+    skin: "דרמטולוגיה",
+    radiology: "רדיולוגיה והדמיה רפואית",
+  };
+  const categories = categoriesByType[type];
+  const domain = domainByType[type];
 
   const result = await base44.integrations.Core.InvokeLLM({
-    prompt: `אתה מומחה רפואי בתחום ${isECG ? "קרדיולוגיה ופענוח ECG" : "דרמטולוגיה"}.
+    prompt: `אתה מומחה רפואי בתחום ${domain}.
 צור ${count} מקרים קליניים מגוונים ומדויקים${topic ? ` בנושא: ${topic}` : ""}.
 
 ## דרישות

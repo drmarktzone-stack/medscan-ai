@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Plus, Trash2, Activity, Stethoscope, Loader2, ImageOff, Flag } from "lucide-react";
+import { ArrowRight, Plus, Trash2, Activity, Stethoscope, Loader2, ImageOff, Flag, ScanLine } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
@@ -25,6 +25,12 @@ const categoryLabels = {
   autoimmune: "אוטואימוני",
   pigmentation: "פיגמנטציה",
   vascular: "כלי דם",
+  chest: "חזה",
+  abdominal: "בטן",
+  musculoskeletal: "שלד ושרירים",
+  neurological: "נוירולוגי",
+  cardiac: "לב",
+  genitourinary: "אורוגניטלי",
 };
 
 const ecgCategories = [
@@ -47,6 +53,17 @@ const skinCategories = [
   { value: "autoimmune", label: "אוטואימוני" },
   { value: "pigmentation", label: "פיגמנטציה" },
   { value: "vascular", label: "כלי דם" },
+  { value: "other", label: "אחר" },
+];
+
+const radiologyCategories = [
+  { value: "chest", label: "חזה" },
+  { value: "abdominal", label: "בטן" },
+  { value: "musculoskeletal", label: "שלד ושרירים" },
+  { value: "neurological", label: "נוירולוגי" },
+  { value: "cardiac", label: "לב" },
+  { value: "vascular", label: "כלי דם" },
+  { value: "genitourinary", label: "אורוגניטלי" },
   { value: "other", label: "אחר" },
 ];
 
@@ -73,6 +90,7 @@ export default function KnowledgeBase() {
   const [tab, setTab] = useState("ecg");
   const [ecgCases, setEcgCases] = useState([]);
   const [skinCases, setSkinCases] = useState([]);
+  const [radiologyCases, setRadiologyCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -83,12 +101,14 @@ export default function KnowledgeBase() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [ecg, skin] = await Promise.all([
+      const [ecg, skin, radiology] = await Promise.all([
         base44.entities.ECGCase.list("-created_date", 100),
         base44.entities.SkinCase.list("-created_date", 100),
+        base44.entities.RadiologyCase.list("-created_date", 100),
       ]);
       setEcgCases(ecg);
       setSkinCases(skin);
+      setRadiologyCases(radiology);
     } catch (err) {
       console.error(err);
     } finally {
@@ -107,19 +127,21 @@ export default function KnowledgeBase() {
 
   const urgentEcgCount = ecgCases.filter((c) => c.urgent).length;
   const urgentSkinCount = skinCases.filter((c) => c.urgent).length;
+  const urgentRadiologyCount = radiologyCases.filter((c) => c.urgent).length;
   const filteredEcgCases = filterCases(ecgCases, query, category, urgentOnly);
   const filteredSkinCases = filterCases(skinCases, query, category, urgentOnly);
-  const activeCategories = tab === "ecg" ? ecgCategories : skinCategories;
-  const activeUrgentCount = tab === "ecg" ? urgentEcgCount : urgentSkinCount;
+  const filteredRadiologyCases = filterCases(radiologyCases, query, category, urgentOnly);
+  const activeCategories = tab === "ecg" ? ecgCategories : tab === "skin" ? skinCategories : radiologyCategories;
+  const activeUrgentCount = tab === "ecg" ? urgentEcgCount : tab === "skin" ? urgentSkinCount : urgentRadiologyCount;
 
   const handleToggleUrgent = async (type, c) => {
-    const entityName = type === "ecg" ? "ECGCase" : "SkinCase";
+    const entityName = { ecg: "ECGCase", skin: "SkinCase", radiology: "RadiologyCase" }[type];
     await base44.entities[entityName].update(c.id, { urgent: !c.urgent });
     loadData();
   };
 
   const handleDelete = async (type, id) => {
-    const entityName = type === "ecg" ? "ECGCase" : "SkinCase";
+    const entityName = { ecg: "ECGCase", skin: "SkinCase", radiology: "RadiologyCase" }[type];
     await base44.entities[entityName].delete(id);
     loadData();
   };
@@ -208,7 +230,7 @@ export default function KnowledgeBase() {
 
       <div className="max-w-lg mx-auto px-5 py-6">
         <Tabs value={tab} onValueChange={handleTabChange}>
-          <TabsList className="grid grid-cols-2 w-full rounded-xl">
+          <TabsList className="grid grid-cols-3 w-full rounded-xl">
             <TabsTrigger value="ecg" className="rounded-xl">
               <Activity className="w-4 h-4 ml-1.5" />
               ECG ({ecgCases.length})
@@ -216,6 +238,10 @@ export default function KnowledgeBase() {
             <TabsTrigger value="skin" className="rounded-xl">
               <Stethoscope className="w-4 h-4 ml-1.5" />
               עור ({skinCases.length})
+            </TabsTrigger>
+            <TabsTrigger value="radiology" className="rounded-xl">
+              <ScanLine className="w-4 h-4 ml-1.5" />
+              רדיולוגיה ({radiologyCases.length})
             </TabsTrigger>
           </TabsList>
 
@@ -225,7 +251,7 @@ export default function KnowledgeBase() {
             </div>
           )}
 
-          {!loading && (ecgCases.length > 0 || skinCases.length > 0) && (
+          {!loading && (ecgCases.length > 0 || skinCases.length > 0 || radiologyCases.length > 0) && (
             <div className="mt-4">
               <SearchFilter
                 query={query}
@@ -270,6 +296,23 @@ export default function KnowledgeBase() {
               <>
                 <p className="text-xs text-muted-foreground">מציג {filteredSkinCases.length} מתוך {skinCases.length} מקרים</p>
                 {filteredSkinCases.map((c) => renderCase(c, "skin"))}
+              </>
+            )}
+          </TabsContent>
+
+          <TabsContent value="radiology" className="mt-4 space-y-3">
+            {loading ? (
+              <div className="flex justify-center py-20">
+                <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
+              </div>
+            ) : radiologyCases.length === 0 ? (
+              <EmptyState />
+            ) : filteredRadiologyCases.length === 0 ? (
+              <NoResults />
+            ) : (
+              <>
+                <p className="text-xs text-muted-foreground">מציג {filteredRadiologyCases.length} מתוך {radiologyCases.length} מקרים</p>
+                {filteredRadiologyCases.map((c) => renderCase(c, "radiology"))}
               </>
             )}
           </TabsContent>

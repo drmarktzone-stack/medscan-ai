@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Clock, LogOut, BookOpen, Target } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Clock, LogOut, BookOpen, Target, ScanLine } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 
@@ -20,6 +20,14 @@ const tools = [
     path: "/skin",
     gradient: "from-teal-500 to-emerald-400",
     bg: "bg-teal-50",
+  },
+  {
+    title: "אבחון רדיולוגי",
+    description: "העלה צילום רנטגן, CT, MRI או אולטראסאונד וקבל ניתוח רדיולוגי מפורט",
+    icon: ScanLine,
+    path: "/radiology",
+    gradient: "from-indigo-500 to-violet-400",
+    bg: "bg-indigo-50",
   },
 ];
 
@@ -62,7 +70,7 @@ export default function Home() {
           MedScan AI
         </h1>
         <p className="text-muted-foreground mt-3 max-w-md mx-auto text-sm leading-relaxed">
-          ניתוח רפואי חכם מבוסס בינה מלאכותית — העלה תמונת ECG או נגע עור וקבל הערכה מיידית
+          ניתוח רפואי חכם מבוסס בינה מלאכותית — העלה צילום רפואי (ECG, עור, רדיולוגיה) וקבל הערכה מיידית
         </p>
       </header>
 
@@ -77,7 +85,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
               <div className="flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-xl ${tool.bg} flex items-center justify-center shrink-0`}>
-                  <tool.icon className={`w-6 h-6 bg-gradient-to-br ${tool.gradient} bg-clip-text`} style={{ color: tool.gradient.includes('blue') ? '#3b82f6' : '#14b8a6' }} />
+                  <tool.icon className={`w-6 h-6 bg-gradient-to-br ${tool.gradient} bg-clip-text`} style={{ color: tool.gradient.includes('blue') ? '#3b82f6' : tool.gradient.includes('teal') ? '#14b8a6' : '#6366f1' }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">

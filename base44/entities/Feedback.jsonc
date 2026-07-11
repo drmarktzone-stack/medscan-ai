@@ -10,7 +10,8 @@
       "type": "string",
       "enum": [
         "ecg",
-        "skin"
+        "skin",
+        "radiology"
       ],
       "description": "Type of analysis"
     },

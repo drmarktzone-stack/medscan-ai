@@ -5,6 +5,7 @@ import ImageUploader from "@/components/ImageUploader";
 
 const ecgCategories = ["rhythm","conduction","ischemic","chamber_abnormality","electrolyte","syndrome","drug_effect","other"];
 const skinCategories = ["benign","malignant","precancerous","inflammatory","infectious","autoimmune","pigmentation","vascular","other"];
+const radiologyCategories = ["chest","abdominal","musculoskeletal","neurological","cardiac","vascular","genitourinary","other"];
 
 export default function GoldStandardForm({ type, onSaved }) {
   const [title, setTitle] = useState("");
@@ -15,7 +16,7 @@ export default function GoldStandardForm({ type, onSaved }) {
   const [files, setFiles] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  const categories = type === "ecg" ? ecgCategories : skinCategories;
+  const categories = type === "ecg" ? ecgCategories : type === "skin" ? skinCategories : radiologyCategories;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

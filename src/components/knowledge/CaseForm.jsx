@@ -32,8 +32,19 @@ const skinCategories = [
   { value: "other", label: "אחר" },
 ];
 
+const radiologyCategories = [
+  { value: "chest", label: "חזה" },
+  { value: "abdominal", label: "בטן" },
+  { value: "musculoskeletal", label: "שלד ושרירים" },
+  { value: "neurological", label: "נוירולוגי" },
+  { value: "cardiac", label: "לב" },
+  { value: "vascular", label: "כלי דם" },
+  { value: "genitourinary", label: "אורוגניטלי" },
+  { value: "other", label: "אחר" },
+];
+
 export default function CaseForm({ type, open, onOpenChange, onSaved }) {
-  const categories = type === "ecg" ? ecgCategories : skinCategories;
+  const categories = type === "ecg" ? ecgCategories : type === "skin" ? skinCategories : radiologyCategories;
   const [form, setForm] = useState({ title: "", diagnosis: "", category: "", key_features: "", description: "" });
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -55,7 +66,7 @@ export default function CaseForm({ type, open, onOpenChange, onSaved }) {
         image_url = res.file_url;
       }
 
-      const entityName = type === "ecg" ? "ECGCase" : "SkinCase";
+      const entityName = type === "ecg" ? "ECGCase" : type === "skin" ? "SkinCase" : "RadiologyCase";
       await base44.entities[entityName].create({
         ...form,
         category: form.category || "other",
@@ -77,7 +88,7 @@ export default function CaseForm({ type, open, onOpenChange, onSaved }) {
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" dir="rtl">
         <DialogHeader>
           <DialogTitle>
-            {type === "ecg" ? "הוסף דפוס ECG למאגר" : "הוסף מחלת עור למאגר"}
+            {type === "ecg" ? "הוסף דפוס ECG למאגר" : type === "skin" ? "הוסף מחלת עור למאגר" : "הוסף ממצא רדיולוגי למאגר"}
           </DialogTitle>
         </DialogHeader>
 
@@ -87,7 +98,7 @@ export default function CaseForm({ type, open, onOpenChange, onSaved }) {
             <Input
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder={type === "ecg" ? "לדוגמה: Atrial Fibrillation" : "לדוגמה: Melanoma"}
+              placeholder={type === "ecg" ? "לדוגמה: Atrial Fibrillation" : type === "skin" ? "לדוגמה: Melanoma" : "לדוגמה: Pneumothorax"}
               className="rounded-xl"
             />
           </div>
@@ -119,7 +130,7 @@ export default function CaseForm({ type, open, onOpenChange, onSaved }) {
             <Textarea
               value={form.key_features}
               onChange={(e) => setForm({ ...form, key_features: e.target.value })}
-              placeholder={type === "ecg" ? "המאפיינים העיקריים בתרשים ה-ECG..." : "המאפיינים הוויזואליים העיקריים..."}
+              placeholder={type === "ecg" ? "המאפיינים העיקריים בתרשים ה-ECG..." : type === "skin" ? "המאפיינים הוויזואליים העיקריים..." : "המאפיינים הרדיולוגיים העיקריים..."}
               className="rounded-xl min-h-[70px]"
             />
           </div>
