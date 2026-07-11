@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Stethoscope, Loader2, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { buildKnowledgeBaseText } from "@/lib/knowledgeBase";
+import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
@@ -12,7 +12,9 @@ export default function SkinAnalysis() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [stage, setStage] = useState("");
   const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
 
   useEffect(() => {
@@ -23,80 +25,50 @@ export default function SkinAnalysis() {
     setFile(f);
     setPreview(URL.createObjectURL(f));
     setResult(null);
+    setError(null);
   };
 
   const handleClear = () => {
     setFile(null);
     setPreview(null);
     setResult(null);
+    setError(null);
   };
 
   const handleAnalyze = async () => {
     if (!file) return;
     setLoading(true);
+    setError(null);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const cases = await base44.entities.SkinCase.list("-created_date", 100);
-      const knowledgeBase = buildKnowledgeBaseText(cases);
-
-      const referenceImages = cases.filter((c) => c.image_url).slice(0, 5).map((c) => c.image_url);
-
-      const analysis = await base44.integrations.Core.InvokeLLM({
-        prompt: `אתה דרמטולוג מומחה עם ניסיון רב שנים באבחון מחלות עור. נתח את תמונת העור הבאה בצורה מדויקת, יסודית וביקורתית.
-
-## מאגר ידע — מחלות עור עם אבחנות ידועות:
-${knowledgeBase}
-
-## הוראות ניתוח:
-1. בחן את הנגע בצורה שיטתית: מורפולוגיה (מקולרי/פפולרי/נודולרי/וסיקולרי), צבע, גודל, גבולות, פיזור, סימטריה.
-2. השווה את הממצאים מול כל מחלה במאגר הידע — חיובי ושלילי.
+      const res = await runDiagnosisPipeline({
+        file,
+        entityName: "SkinCase",
+        analysisType: "skin",
+        domainRole: "דרמטולוג מומחה",
+        matchingInstructions: `1. בחן את הנגע בצורה שיטתית: מורפולוגיה (מקולרי/פפולרי/נודולרי/וסיקולרי), צבע, גודל, גבולות, פיזור, סימטריה.
+2. השווה את הממצאים מול המאפיינים המרכזיים של כל מחלה במאגר — גם חיובי וגם שלילי.
 3. השתמש בכלל ABCDE להערכת נגעים פיגמנטיים: Asymmetry, Border, Color, Diameter, Evolution.
-4. אל תניח "תקין" או "שפיר" כברירת מחדל — שקול כל אבחנה מבדלת ברצינות, במיוחד מלנומה וקרצינומות.
-5. אם יש סימני דגל אדום (גבולות לא סדירים, צבע לא אחיד, כיב, דימום, גדילה מהירה), הדגש אותם בבירור.
-6. זהה את המחלה התואמת ביותר או אבחנות מבדלות מתוך המאגר.
-
-${referenceImages.length > 0 ? `## תמונות ייחוס ממאגר הידע:
-התמונה הראשונה היא הנגע לניתוח. שאר התמונות הן דוגמאות ממאגר הידע להשוואה.` : ""}
-
-## פלט נדרש:
-- summary: סיכום תמציתי של הממצא העיקרי (משפט אחד)
-- severity: רמת חומרה — normal / mild / moderate / severe / urgent
-- analysis: ניתוח מפורט ב-Markdown הכולל:
-  * **תיאור מורפולוגי מפורט** — סוג נגע, צבע, גודל משוער, גבולות, פיזור
-  * **הערכת ABCDE** (לנגעים פיגמנטיים)
-  * **השוואה למאגר הידע** — אילו מחלות נשללו ואילו תואמות
-  * **אבחנה ראשית** ואבחנות מבדלות (מהסביר ביותר לפחות סביר)
-  * **סימני דגל אדום** אם קיימים
-  * **רמת דחיפות** — פנייה דחופה/שגרתית/מעקב
-  * **המלצות** — בירור נוסף, ביופסיה, הפניה למומחה, טיפול ראשוני`,
-        file_urls: [file_url, ...referenceImages],
-        response_json_schema: {
-          type: "object",
-          properties: {
-            summary: { type: "string", description: "סיכום קצר של הממצאים" },
-            severity: { type: "string", enum: ["normal", "mild", "moderate", "severe", "urgent"] },
-            analysis: { type: "string", description: "ניתוח מפורט בפורמט Markdown" },
-          },
-          required: ["summary", "severity", "analysis"],
-        },
-        model: "claude_sonnet_4_6",
+4. שים לב לסימני דגל אדום: גבולות לא סדירים, צבע לא אחיד, כיב, דימום, גדילה מהירה.
+5. אל תניח "שפיר" כברירת מחדל — שקול כל מקרה ברצינות, במיוחד מלנומה וקרצינומות.`,
+        diagnosisInstructions: `1. התבסס על תוצאות שלב ההתאמה — המחלות התואמות ביותר מופיעות למעלה עם דרגת הביטחון שלהן.
+2. נתח מורפולוגיה מפורטת: סוג נגע, צבע, גודל משוער, גבולות, פיזור, סימטריה.
+3. בצע הערכת ABCDE לנגעים פיגמנטיים.
+4. הסבר מדוע האבחנה הראשית תואמת את המקרה מהמאגר, ומדוע אבחנות אחרות נשללו.
+5. השתמש בתמונות הייחוס להשוואה ויזואלית מול המקרים התואמים.
+6. ציין רמת דחיפות והמלצות — ביופסיה, הפניה למומחה, טיפול ראשוני.`,
+        onStage: setStage,
       });
-
-      await base44.entities.Analysis.create({
-        type: "skin",
-        image_url: file_url,
-        result: analysis.analysis,
-        severity: analysis.severity,
-        summary: analysis.summary,
-      });
-
-      setResult(analysis);
+      setResult(res);
     } catch (err) {
       console.error(err);
+      setError(err.message || "אירעה שגיאה במהלך הניתוח. נסה שנית.");
     } finally {
       setLoading(false);
+      setStage("");
     }
   };
+
+  const stageLabel = stage === "matching" ? "מתאים מול מאגר הידע..." : "מנתח ומכין דוח...";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-slate-50">
@@ -136,12 +108,18 @@ ${referenceImages.length > 0 ? `## תמונות ייחוס ממאגר הידע:
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                מנתח מול מאגר הידע...
+                {stageLabel}
               </span>
             ) : (
               "נתח תמונה"
             )}
           </Button>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+            {error}
+          </div>
         )}
 
         {result && (
@@ -150,6 +128,7 @@ ${referenceImages.length > 0 ? `## תמונות ייחוס ממאגר הידע:
               result={result.analysis}
               severity={result.severity}
               summary={result.summary}
+              matchedCases={result.matchedCases}
             />
           </div>
         )}

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Activity, Loader2, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { buildKnowledgeBaseText } from "@/lib/knowledgeBase";
+import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
@@ -12,7 +12,9 @@ export default function ECGAnalysis() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [stage, setStage] = useState("");
   const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
 
   useEffect(() => {
@@ -23,79 +25,48 @@ export default function ECGAnalysis() {
     setFile(f);
     setPreview(URL.createObjectURL(f));
     setResult(null);
+    setError(null);
   };
 
   const handleClear = () => {
     setFile(null);
     setPreview(null);
     setResult(null);
+    setError(null);
   };
 
   const handleAnalyze = async () => {
     if (!file) return;
     setLoading(true);
+    setError(null);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const cases = await base44.entities.ECGCase.list("-created_date", 100);
-      const knowledgeBase = buildKnowledgeBaseText(cases);
-
-      const referenceImages = cases.filter((c) => c.image_url).slice(0, 5).map((c) => c.image_url);
-
-      const analysis = await base44.integrations.Core.InvokeLLM({
-        prompt: `אתה קרדיולוג מומחה עם ניסיון רב שנים בפענוח ECG. נתח את תרשים ה-ECG הבא בצורה מדויקת, יסודית וביקורתית.
-
-## מאגר ידע — דפוסי ECG עם אבחנות ידועות:
-${knowledgeBase}
-
-## הוראות ניתוח:
-1. בחן את התרשים בצורה שיטתית: קצב, רגולריות, גלי P, מרווח PR, קומפלקס QRS, מקטע ST, גלי T, מקטע QT, ציר חשמלי.
-2. השווה את הממצאים מול כל דפוס במאגר הידע — חיובי ושלילי.
-3. אל תניח "תקין" כברירת מחדל — שקול כל אבחנה מבדלת ברצינות, במיוחד מצבים מסכני חיים (STEMI, VT, VF, חסמים מלאים).
-4. אם יש ספק, ציין זאת במפורש והמלץ על בדיקות נוספות.
-5. זהה את הדפוס התואם ביותר או שילוב של דפוסים מתוך המאגר.
-
-${referenceImages.length > 0 ? `## תמונות ייחוס ממאגר הידע:
-התמונה הראשונה היא ה-ECG לניתוח. שאר התמונות הן דוגמאות ממאגר הידע להשוואה.` : ""}
-
-## פלט נדרש:
-- summary: סיכום תמציתי של הממצא העיקרי (משפט אחד)
-- severity: רמת חומרה — normal / mild / moderate / severe / urgent
-- analysis: ניתוח מפורט ב-Markdown הכולל:
-  * **קצב ורגולריות** — מספר, רגולרי/לא רגולרי
-  * **ניתוח גלים ומרווחים** — גל P, מרווח PR, QRS, מקטע ST, גל T, QT
-  * **ציר חשמלי**
-  * **השוואה למאגר הידע** — אילו דפוסים נשללו ואילו תואמים
-  * **אבחנה ראשית** ואבחנות מבדלות (מהסביר ביותר לפחות סביר)
-  * **ממצאים פתולוגיים** משמעותיים
-  * **המלצות קליניות** — המשך טיפול/בירור`,
-        file_urls: [file_url, ...referenceImages],
-        response_json_schema: {
-          type: "object",
-          properties: {
-            summary: { type: "string", description: "סיכום קצר של הממצאים" },
-            severity: { type: "string", enum: ["normal", "mild", "moderate", "severe", "urgent"] },
-            analysis: { type: "string", description: "ניתוח מפורט בפורמט Markdown" },
-          },
-          required: ["summary", "severity", "analysis"],
-        },
-        model: "claude_sonnet_4_6",
+      const res = await runDiagnosisPipeline({
+        file,
+        entityName: "ECGCase",
+        analysisType: "ecg",
+        domainRole: "קרדיולוג מומחה",
+        matchingInstructions: `1. בחן את התרשים בצורה שיטתית: קצב, רגולריות, גלי P, מרווח PR, קומפלקס QRS, מקטע ST, גלי T, מקטע QT, ציר חשמלי.
+2. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
+3. שים לב במיוחד למצבים מסכני חיים: STEMI, VT, VF, חסמים מלאים, היפרקלמיה.
+4. אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות.`,
+        diagnosisInstructions: `1. התבסס על תוצאות שלב ההתאמה — המקרים התואמים ביותר מופיעים למעלה עם דרגת הביטחון שלהם.
+2. נתח ביסודיות: קצב, רגולריות, גלי P, מרווח PR, QRS, מקטע ST, גל T, QT, ציר חשמלי.
+3. הסבר מדוע האבחנה הראשית תואמת את המקרה מהמאגר, ומדוע אבחנות אחרות נשללו.
+4. השתמש בתמונות הייחוס להשוואה ויזואלית מול המקרים התואמים.
+5. אם יש ספק, ציין זאת במפורש והמלץ על בדיקות נוספות.`,
+        onStage: setStage,
       });
-
-      await base44.entities.Analysis.create({
-        type: "ecg",
-        image_url: file_url,
-        result: analysis.analysis,
-        severity: analysis.severity,
-        summary: analysis.summary,
-      });
-
-      setResult(analysis);
+      setResult(res);
     } catch (err) {
       console.error(err);
+      setError(err.message || "אירעה שגיאה במהלך הניתוח. נסה שנית.");
     } finally {
       setLoading(false);
+      setStage("");
     }
   };
+
+  const stageLabel = stage === "matching" ? "מתאים מול מאגר הידע..." : "מנתח ומכין דוח...";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50/50 via-white to-slate-50">
@@ -135,12 +106,18 @@ ${referenceImages.length > 0 ? `## תמונות ייחוס ממאגר הידע:
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                מנתח מול מאגר הידע...
+                {stageLabel}
               </span>
             ) : (
               "נתח ECG"
             )}
           </Button>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+            {error}
+          </div>
         )}
 
         {result && (
@@ -149,6 +126,7 @@ ${referenceImages.length > 0 ? `## תמונות ייחוס ממאגר הידע:
               result={result.analysis}
               severity={result.severity}
               summary={result.summary}
+              matchedCases={result.matchedCases}
             />
           </div>
         )}
