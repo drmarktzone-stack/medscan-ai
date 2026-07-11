@@ -36,6 +36,11 @@
     "image_url": {
       "type": "string",
       "description": "Reference skin image URL (optional)"
+    },
+    "urgent": {
+      "type": "boolean",
+      "description": "Whether this case requires urgent medical intervention or thorough examination",
+      "default": false
     }
   },
   "required": [

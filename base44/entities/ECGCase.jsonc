@@ -35,6 +35,11 @@
     "image_url": {
       "type": "string",
       "description": "Reference ECG image URL (optional)"
+    },
+    "urgent": {
+      "type": "boolean",
+      "description": "Whether this case requires urgent medical intervention or thorough examination",
+      "default": false
     }
   },
   "required": [

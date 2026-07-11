@@ -1,8 +1,17 @@
 import React from "react";
-import { Search, X, Filter } from "lucide-react";
+import { Search, X, Filter, AlertCircle } from "lucide-react";
 
-export default function SearchFilter({ query, onQueryChange, category, onCategoryChange, categories }) {
-  const hasActiveFilters = query || category;
+export default function SearchFilter({
+  query,
+  onQueryChange,
+  category,
+  onCategoryChange,
+  categories,
+  urgentOnly,
+  onUrgentOnlyChange,
+  urgentCount,
+}) {
+  const hasActiveFilters = query || category || urgentOnly;
 
   return (
     <div className="space-y-3">
@@ -24,6 +33,21 @@ export default function SearchFilter({ query, onQueryChange, category, onCategor
           </button>
         )}
       </div>
+
+      {onUrgentOnlyChange && (
+        <button
+          onClick={() => onUrgentOnlyChange(!urgentOnly)}
+          className={`flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all w-full ${
+            urgentOnly
+              ? "bg-red-500 text-white shadow-sm"
+              : "bg-white border border-red-200 text-red-600 hover:bg-red-50"
+          }`}
+        >
+          <AlertCircle className="w-4 h-4" />
+          דחופים בלבד
+          {urgentCount > 0 && <span className="opacity-80">({urgentCount})</span>}
+        </button>
+      )}
 
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
@@ -54,7 +78,11 @@ export default function SearchFilter({ query, onQueryChange, category, onCategor
         ))}
         {hasActiveFilters && (
           <button
-            onClick={() => { onQueryChange(""); onCategoryChange(""); }}
+            onClick={() => {
+              onQueryChange("");
+              onCategoryChange("");
+              onUrgentOnlyChange?.(false);
+            }}
             className="text-xs text-red-500 hover:text-red-600 shrink-0 mr-1"
           >
             נקה

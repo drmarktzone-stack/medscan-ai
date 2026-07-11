@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Plus, Trash2, Activity, Stethoscope, Loader2, ImageOff } from "lucide-react";
+import { ArrowRight, Plus, Trash2, Activity, Stethoscope, Loader2, ImageOff, Flag } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
@@ -49,8 +49,11 @@ const skinCategories = [
   { value: "other", label: "אחר" },
 ];
 
-function filterCases(cases, query, category) {
+function filterCases(cases, query, category, urgentOnly) {
   let filtered = cases;
+  if (urgentOnly) {
+    filtered = filtered.filter((c) => c.urgent);
+  }
   if (category) {
     filtered = filtered.filter((c) => c.category === category);
   }
@@ -73,6 +76,7 @@ export default function KnowledgeBase() {
   const [formOpen, setFormOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
+  const [urgentOnly, setUrgentOnly] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -96,11 +100,21 @@ export default function KnowledgeBase() {
     setTab(newTab);
     setQuery("");
     setCategory("");
+    setUrgentOnly(false);
   };
 
-  const filteredEcgCases = filterCases(ecgCases, query, category);
-  const filteredSkinCases = filterCases(skinCases, query, category);
+  const urgentEcgCount = ecgCases.filter((c) => c.urgent).length;
+  const urgentSkinCount = skinCases.filter((c) => c.urgent).length;
+  const filteredEcgCases = filterCases(ecgCases, query, category, urgentOnly);
+  const filteredSkinCases = filterCases(skinCases, query, category, urgentOnly);
   const activeCategories = tab === "ecg" ? ecgCategories : skinCategories;
+  const activeUrgentCount = tab === "ecg" ? urgentEcgCount : urgentSkinCount;
+
+  const handleToggleUrgent = async (type, c) => {
+    const entityName = type === "ecg" ? "ECGCase" : "SkinCase";
+    await base44.entities[entityName].update(c.id, { urgent: !c.urgent });
+    loadData();
+  };
 
   const handleDelete = async (type, id) => {
     const entityName = type === "ecg" ? "ECGCase" : "SkinCase";
@@ -109,7 +123,7 @@ export default function KnowledgeBase() {
   };
 
   const renderCase = (c, type) => (
-    <div key={c.id} className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
+    <div key={c.id} className={`bg-white rounded-xl border p-4 shadow-sm ${c.urgent ? "border-red-200 ring-1 ring-red-100" : "border-slate-100"}`}>
       <div className="flex items-start gap-3">
         <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">
           {c.image_url ? (
@@ -121,19 +135,35 @@ export default function KnowledgeBase() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-bold text-foreground truncate">{c.title}</h3>
-            <button
-              onClick={() => handleDelete(type, c.id)}
-              className="text-muted-foreground hover:text-red-500 transition-colors shrink-0"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={() => handleToggleUrgent(type, c)}
+                title={c.urgent ? "הסר סימון דחוף" : "סמן כדחוף"}
+                className={`transition-colors ${c.urgent ? "text-red-500" : "text-muted-foreground/40 hover:text-red-400"}`}
+              >
+                <Flag className={`w-4 h-4 ${c.urgent ? "fill-current" : ""}`} />
+              </button>
+              <button
+                onClick={() => handleDelete(type, c.id)}
+                className="text-muted-foreground hover:text-red-500 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           <p className="text-xs text-primary font-medium mt-0.5">{c.diagnosis}</p>
-          {c.category && (
-            <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-muted-foreground">
-              {categoryLabels[c.category] || c.category}
-            </span>
-          )}
+          <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+            {c.urgent && (
+              <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                דחוף
+              </span>
+            )}
+            {c.category && (
+              <span className="inline-block text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-muted-foreground">
+                {categoryLabels[c.category] || c.category}
+              </span>
+            )}
+          </div>
           {c.key_features && (
             <p className="text-xs text-muted-foreground mt-2 leading-relaxed line-clamp-3">{c.key_features}</p>
           )}
@@ -184,6 +214,9 @@ export default function KnowledgeBase() {
                 category={category}
                 onCategoryChange={setCategory}
                 categories={activeCategories}
+                urgentOnly={urgentOnly}
+                onUrgentOnlyChange={setUrgentOnly}
+                urgentCount={activeUrgentCount}
               />
             </div>
           )}
