@@ -198,7 +198,7 @@ export default function KnowledgeBase() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100">
+      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">

@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Clock, LogOut, BookOpen, Target, ScanLine } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
+import AccountSettings from "@/components/AccountSettings";
 
 const tools = [
   {
@@ -32,30 +32,17 @@ const tools = [
 ];
 
 export default function Home() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-blue-50/30">
       {/* Top actions */}
-      <div className="flex items-center justify-between px-5 pt-5">
-        <div className="flex items-center gap-4">
-          <Link to="/knowledge-base" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors">
-            <BookOpen className="w-4 h-4" />
-            מאגר הידע
-          </Link>
-          <Link to="/history" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors">
-            <Clock className="w-4 h-4" />
-            היסטוריה
-          </Link>
-          <Link to="/evaluation" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors">
-            <Target className="w-4 h-4" />
-            הערכת דיוק
-          </Link>
-        </div>
+      <div className="flex items-center justify-end px-5 pt-[calc(env(safe-area-inset-top)+1.25rem)]">
         <button
-          onClick={() => base44.auth.logout("/")}
+          onClick={() => setSettingsOpen(true)}
           className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
         >
-          <LogOut className="w-4 h-4" />
-          התנתק
+          <Settings className="w-4 h-4" />
+          הגדרות חשבון
         </button>
       </div>
 
@@ -82,7 +69,7 @@ export default function Home() {
             to={tool.path}
             className="block group"
           >
-            <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+            <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 select-none">
               <div className="flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-xl ${tool.bg} flex items-center justify-center shrink-0`}>
                   <tool.icon className={`w-6 h-6 bg-gradient-to-br ${tool.gradient} bg-clip-text`} style={{ color: tool.gradient.includes('blue') ? '#3b82f6' : tool.gradient.includes('teal') ? '#14b8a6' : '#6366f1' }} />
@@ -112,7 +99,7 @@ export default function Home() {
             { icon: Activity, label: "ניתוח מיידי" },
             { icon: Heart, label: "AI מתקדם" },
           ].map((feat) => (
-            <div key={feat.label} className="text-center p-3 rounded-xl bg-white/60 border border-slate-100">
+            <div key={feat.label} className="text-center p-3 rounded-xl bg-white/60 border border-slate-100 select-none">
               <feat.icon className="w-5 h-5 mx-auto text-primary/60 mb-1.5" />
               <p className="text-[11px] font-medium text-muted-foreground">{feat.label}</p>
             </div>
@@ -123,6 +110,8 @@ export default function Home() {
           <DisclaimerBanner />
         </div>
       </main>
+
+      <AccountSettings open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }

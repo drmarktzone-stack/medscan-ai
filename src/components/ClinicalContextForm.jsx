@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, User } from "lucide-react";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 
 export default function ClinicalContextForm({ onChange }) {
   const [expanded, setExpanded] = useState(false);
@@ -59,15 +60,16 @@ export default function ClinicalContextForm({ onChange }) {
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">מין</label>
-              <select
-                value={fields.sex}
-                onChange={(e) => update("sex", e.target.value)}
-                className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 bg-white"
-              >
-                <option value="">לא צוין</option>
-                <option value="זכר">זכר</option>
-                <option value="נקבה">נקבה</option>
-              </select>
+              <Select value={fields.sex || "unspecified"} onValueChange={(v) => update("sex", v === "unspecified" ? "" : v)}>
+                <SelectTrigger className="w-full h-9 rounded-lg border-slate-200 text-sm bg-white">
+                  <SelectValue placeholder="לא צוין" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unspecified">לא צוין</SelectItem>
+                  <SelectItem value="זכר">זכר</SelectItem>
+                  <SelectItem value="נקבה">נקבה</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div>

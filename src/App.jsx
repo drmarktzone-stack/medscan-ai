@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
+import AppLayout from "@/components/AppLayout";
 
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -47,13 +48,15 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/ecg" element={<ECGAnalysis />} />
-        <Route path="/skin" element={<SkinAnalysis />} />
-        <Route path="/radiology" element={<RadiologyAnalysis />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/knowledge-base" element={<KnowledgeBase />} />
-        <Route path="/evaluation" element={<Evaluation />} />
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/ecg" element={<ECGAnalysis />} />
+          <Route path="/skin" element={<SkinAnalysis />} />
+          <Route path="/radiology" element={<RadiologyAnalysis />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/knowledge-base" element={<KnowledgeBase />} />
+          <Route path="/evaluation" element={<Evaluation />} />
+        </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

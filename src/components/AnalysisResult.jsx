@@ -99,7 +99,7 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
       )}
 
       <div
-        className="prose prose-sm max-w-none text-foreground/85 leading-relaxed"
+        className="prose prose-sm max-w-none text-foreground/85 leading-relaxed select-text"
         dir="rtl"
       >
         <ReactMarkdown>{result}</ReactMarkdown>
