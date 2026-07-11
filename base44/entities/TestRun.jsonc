@@ -1,0 +1,46 @@
+{
+  "name": "TestRun",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "ecg",
+        "skin"
+      ],
+      "description": "Analysis type evaluated"
+    },
+    "total_cases": {
+      "type": "number",
+      "description": "Number of gold standard cases tested"
+    },
+    "correct": {
+      "type": "number",
+      "description": "Number of correctly diagnosed cases"
+    },
+    "accuracy": {
+      "type": "number",
+      "description": "Accuracy percentage (0-100)"
+    },
+    "sensitivity": {
+      "type": "number",
+      "description": "Sensitivity percentage (0-100) \u2014 urgent case detection rate"
+    },
+    "specificity": {
+      "type": "number",
+      "description": "Specificity percentage (0-100) \u2014 non-urgent correct rejection rate"
+    },
+    "results": {
+      "type": "string",
+      "description": "JSON string of detailed per-case results"
+    }
+  },
+  "required": [
+    "type",
+    "total_cases",
+    "correct",
+    "accuracy",
+    "sensitivity",
+    "specificity"
+  ]
+}

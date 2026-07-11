@@ -1,0 +1,44 @@
+{
+  "name": "GoldStandardCase",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "ecg",
+        "skin"
+      ],
+      "description": "Analysis type"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short case name"
+    },
+    "correct_diagnosis": {
+      "type": "string",
+      "description": "The known correct diagnosis (ground truth)"
+    },
+    "category": {
+      "type": "string",
+      "description": "Clinical category"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Test image URL (required for image-based evaluation)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Clinical description of the case"
+    },
+    "urgent": {
+      "type": "boolean",
+      "description": "Whether this is an urgent/critical case",
+      "default": false
+    }
+  },
+  "required": [
+    "type",
+    "title",
+    "correct_diagnosis"
+  ]
+}

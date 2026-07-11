@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Clock, LogOut, BookOpen } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Clock, LogOut, BookOpen, Target } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 
@@ -36,6 +36,10 @@ export default function Home() {
           <Link to="/history" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors">
             <Clock className="w-4 h-4" />
             היסטוריה
+          </Link>
+          <Link to="/evaluation" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors">
+            <Target className="w-4 h-4" />
+            הערכת דיוק
           </Link>
         </div>
         <button

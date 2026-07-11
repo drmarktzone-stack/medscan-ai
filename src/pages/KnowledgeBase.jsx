@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import CaseForm from "@/components/knowledge/CaseForm";
 import SearchFilter from "@/components/knowledge/SearchFilter";
+import BulkImport from "@/components/knowledge/BulkImport";
 
 const categoryLabels = {
   rhythm: "הפרעות קצב",
@@ -77,6 +78,7 @@ export default function KnowledgeBase() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [urgentOnly, setUrgentOnly] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -182,14 +184,25 @@ export default function KnowledgeBase() {
             </Link>
             <h1 className="font-bold text-base">מאגר הידע הרפואי</h1>
           </div>
-          <Button
-            onClick={() => setFormOpen(true)}
-            size="sm"
-            className="rounded-lg text-xs"
-          >
-            <Plus className="w-4 h-4 ml-1" />
-            הוסף מקרה
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setBulkOpen(!bulkOpen)}
+              size="sm"
+              variant="outline"
+              className="rounded-lg text-xs"
+            >
+              <Plus className="w-4 h-4 ml-1" />
+              ייבוא / יצירה
+            </Button>
+            <Button
+              onClick={() => setFormOpen(true)}
+              size="sm"
+              className="rounded-lg text-xs"
+            >
+              <Plus className="w-4 h-4 ml-1" />
+              הוסף מקרה
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -205,6 +218,12 @@ export default function KnowledgeBase() {
               עור ({skinCases.length})
             </TabsTrigger>
           </TabsList>
+
+          {bulkOpen && (
+            <div className="mt-4">
+              <BulkImport type={tab} target="kb" onSaved={() => { loadData(); setBulkOpen(false); }} />
+            </div>
+          )}
 
           {!loading && (ecgCases.length > 0 || skinCases.length > 0) && (
             <div className="mt-4">
