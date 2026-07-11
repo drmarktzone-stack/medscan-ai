@@ -10,8 +10,7 @@ import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 
 export default function ECGAnalysis() {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState("");
   const [result, setResult] = useState(null);
@@ -23,27 +22,19 @@ export default function ECGAnalysis() {
     base44.entities.ECGCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
   }, []);
 
-  const handleFileSelect = (f) => {
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
-    setResult(null);
-    setError(null);
-  };
-
-  const handleClear = () => {
-    setFile(null);
-    setPreview(null);
+  const handleFilesChange = (newFiles) => {
+    setFiles(newFiles);
     setResult(null);
     setError(null);
   };
 
   const handleAnalyze = async () => {
-    if (!file) return;
+    if (files.length === 0) return;
     setLoading(true);
     setError(null);
     try {
       const res = await runDiagnosisPipeline({
-        file,
+        files,
         entityName: "ECGCase",
         analysisType: "ecg",
         domainRole: "קרדיולוג מומחה",
@@ -94,13 +85,13 @@ export default function ECGAnalysis() {
         )}
 
         <ImageUploader
-          onFileSelect={handleFileSelect}
-          preview={preview}
-          onClear={handleClear}
+          files={files}
+          onFilesChange={handleFilesChange}
           label="העלה תמונת ECG"
+          hint="ניתן להעלות מספר תמונות (לדוגמה: לידים שונים) לשיפור הדיוק"
         />
 
-        {file && !result && (
+        {files.length > 0 && !result && (
           <>
             <ClinicalContextForm onChange={setClinicalContext} />
             <Button
@@ -136,6 +127,9 @@ export default function ECGAnalysis() {
               imageUrl={result.imageUrl}
               findings={result.findings}
               uncertainty={result.uncertainty}
+              guideline={result.guideline}
+              analysisId={result.analysisId}
+              analysisType="ecg"
             />
           </div>
         )}

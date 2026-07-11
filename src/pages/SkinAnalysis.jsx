@@ -10,8 +10,7 @@ import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 
 export default function SkinAnalysis() {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState("");
   const [result, setResult] = useState(null);
@@ -23,27 +22,19 @@ export default function SkinAnalysis() {
     base44.entities.SkinCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
   }, []);
 
-  const handleFileSelect = (f) => {
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
-    setResult(null);
-    setError(null);
-  };
-
-  const handleClear = () => {
-    setFile(null);
-    setPreview(null);
+  const handleFilesChange = (newFiles) => {
+    setFiles(newFiles);
     setResult(null);
     setError(null);
   };
 
   const handleAnalyze = async () => {
-    if (!file) return;
+    if (files.length === 0) return;
     setLoading(true);
     setError(null);
     try {
       const res = await runDiagnosisPipeline({
-        file,
+        files,
         entityName: "SkinCase",
         analysisType: "skin",
         domainRole: "דרמטולוג מומחה",
@@ -96,13 +87,13 @@ export default function SkinAnalysis() {
         )}
 
         <ImageUploader
-          onFileSelect={handleFileSelect}
-          preview={preview}
-          onClear={handleClear}
+          files={files}
+          onFilesChange={handleFilesChange}
           label="העלה תמונה של הנגע"
+          hint="מקרוב, רחוק, דרמטוסקופיה — מספר זוויות משפרות דיוק"
         />
 
-        {file && !result && (
+        {files.length > 0 && !result && (
           <>
             <ClinicalContextForm onChange={setClinicalContext} />
             <Button
@@ -138,6 +129,9 @@ export default function SkinAnalysis() {
               imageUrl={result.imageUrl}
               findings={result.findings}
               uncertainty={result.uncertainty}
+              guideline={result.guideline}
+              analysisId={result.analysisId}
+              analysisType="skin"
             />
           </div>
         )}

@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { CheckCircle2, Download, Loader2 } from "lucide-react";
 import AnnotatedImage from "@/components/AnnotatedImage";
 import UncertaintyWarning from "@/components/UncertaintyWarning";
+import FeedbackButtons from "@/components/FeedbackButtons";
 import { exportReportToPDF } from "@/lib/pdfExport";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +14,7 @@ function confidenceStyle(conf) {
   return "text-slate-500 bg-slate-50 border-slate-200";
 }
 
-export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty }) {
+export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty, guideline, analysisId, analysisType }) {
   const reportRef = useRef(null);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState(null);
@@ -90,6 +91,13 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
         </div>
       )}
 
+      {guideline && (
+        <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
+          <h4 className="text-sm font-bold text-teal-800 mb-1">הנחיה קלינית</h4>
+          <p className="text-xs text-teal-700 leading-relaxed">{guideline}</p>
+        </div>
+      )}
+
       <div
         className="prose prose-sm max-w-none text-foreground/85 leading-relaxed"
         dir="rtl"
@@ -115,6 +123,10 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
       </Button>
       {exportError && (
         <p className="text-xs text-red-500 text-center">{exportError}</p>
+      )}
+
+      {analysisId && (
+        <FeedbackButtons analysisId={analysisId} analysisType={analysisType} />
       )}
     </div>
   );
