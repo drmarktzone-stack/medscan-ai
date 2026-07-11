@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
+import ClinicalContextForm from "@/components/ClinicalContextForm";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 
@@ -16,6 +17,7 @@ export default function ECGAnalysis() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
+  const [clinicalContext, setClinicalContext] = useState("");
 
   useEffect(() => {
     base44.entities.ECGCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
@@ -45,6 +47,7 @@ export default function ECGAnalysis() {
         entityName: "ECGCase",
         analysisType: "ecg",
         domainRole: "קרדיולוג מומחה",
+        clinicalContext,
         matchingInstructions: `1. בחן את התרשים בצורה שיטתית: קצב, רגולריות, גלי P, מרווח PR, קומפלקס QRS, מקטע ST, גלי T, מקטע QT, ציר חשמלי.
 2. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
 3. שים לב במיוחד למצבים מסכני חיים: STEMI, VT, VF, חסמים מלאים, היפרקלמיה.
@@ -98,11 +101,13 @@ export default function ECGAnalysis() {
         />
 
         {file && !result && (
-          <Button
-            onClick={handleAnalyze}
-            disabled={loading}
-            className="w-full h-12 rounded-xl text-sm font-semibold shadow-md shadow-primary/20"
-          >
+          <>
+            <ClinicalContextForm onChange={setClinicalContext} />
+            <Button
+              onClick={handleAnalyze}
+              disabled={loading}
+              className="w-full h-12 rounded-xl text-sm font-semibold shadow-md shadow-primary/20"
+            >
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -111,7 +116,8 @@ export default function ECGAnalysis() {
             ) : (
               "נתח ECG"
             )}
-          </Button>
+            </Button>
+          </>
         )}
 
         {error && (
@@ -129,6 +135,7 @@ export default function ECGAnalysis() {
               matchedCases={result.matchedCases}
               imageUrl={result.imageUrl}
               findings={result.findings}
+              uncertainty={result.uncertainty}
             />
           </div>
         )}

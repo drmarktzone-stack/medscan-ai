@@ -30,6 +30,7 @@ export async function runDiagnosisPipeline({
   domainRole,
   matchingInstructions,
   diagnosisInstructions,
+  clinicalContext,
   onStage,
 }) {
   // 1. Upload the image
@@ -52,7 +53,7 @@ export async function runDiagnosisPipeline({
 
 ## התמונה לניתוח
 התמונה המצורפת היא התמונה לניתוח.
-
+${clinicalContext ? `\n## הקשר קליני של המטופל\n${clinicalContext}\n` : ""}
 ## מאגר הידע — כל המקרים (יש להעריך כל מקרה)
 ${casesForMatching}
 
@@ -64,6 +65,7 @@ ${matchingInstructions}
 - אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות, במיוחד מצבים מסכני חיים.
 - דרג את התוצאות מהתואם ביותר לפחות תואם.
 - חפש באינטרנט מאגרי תמונות רפואיים וספרות קלינית כדי להשלים את ההשוואה מול כל מקרה — השתמש בממצאים פתולוגיים ותקינים עדכניים ממקורות מהימנים.
+- אם סופק הקשר קליני של המטופל, שקול אותו בעת ההתאמה — גיל, מין, תסמינים ורקע רפואי עשויים לשנות משמעותית את סבירות האבחנה.
 
 ## פלט נדרש (JSON)
 מערך matches מסודר מהתואם ביותר לפחות תואם. כל פריט כולל:
@@ -101,6 +103,24 @@ ${matchingInstructions}
     .filter((m) => m.case_id)
     .sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
 
+  // ---------- Compute diagnostic uncertainty ----------
+  const topConfidence = matches[0]?.confidence || 0;
+  const secondConfidence = matches[1]?.confidence || 0;
+  const confidenceGap = topConfidence - secondConfidence;
+
+  let uncertainty = null;
+  if (matches.length === 0 || topConfidence < 40) {
+    uncertainty = {
+      level: "high",
+      reason: "רמת הביטחון של ההתאמה הטובה ביותר נמוכה. האבחנה אינה וודאית — מומלץ להתייעץ עם רופא מומחה לבדיקה נוספת.",
+    };
+  } else if (topConfidence < 65 && matches.length > 1 && confidenceGap <= 15) {
+    uncertainty = {
+      level: "medium",
+      reason: "מספר אבחנות מתחרות עם דרגות ביטחון דומות. רצוי בדיקה נוספת לאישוש האבחנה הסופית.",
+    };
+  }
+
   // ---------- Resolve top matched cases (full detail + reference images) ----------
   const topMatchIds = matches.slice(0, 5).map((m) => m.case_id);
   const topCases = topMatchIds
@@ -134,7 +154,7 @@ ${matchingInstructions}
 
 ## התמונה לניתוח
 תמונה 1 (התמונה הראשונה בקובץ המצורף) היא התמונה לניתוח.
-
+${clinicalContext ? `\n## הקשר קליני של המטופל\n${clinicalContext}\n` : ""}
 ## תוצאות שלב ההתאמה — המקרים התואמים ביותר
 ${matchesSummary}
 
@@ -227,5 +247,6 @@ ${diagnosisInstructions}
     matchedCases: matches.slice(0, 8),
     imageUrl: file_url,
     findings,
+    uncertainty,
   };
 }

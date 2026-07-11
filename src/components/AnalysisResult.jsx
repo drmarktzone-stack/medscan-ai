@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import SeverityBadge from "@/components/SeverityBadge";
 import ReactMarkdown from "react-markdown";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Download, Loader2 } from "lucide-react";
 import AnnotatedImage from "@/components/AnnotatedImage";
+import UncertaintyWarning from "@/components/UncertaintyWarning";
+import { exportReportToPDF } from "@/lib/pdfExport";
+import { Button } from "@/components/ui/button";
 
 function confidenceStyle(conf) {
   if (conf >= 70) return "text-red-600 bg-red-50 border-red-200";
@@ -10,13 +13,36 @@ function confidenceStyle(conf) {
   return "text-slate-500 bg-slate-50 border-slate-200";
 }
 
-export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings }) {
+export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty }) {
+  const reportRef = useRef(null);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState(null);
+
+  const handleExport = async () => {
+    if (!reportRef.current) return;
+    setExporting(true);
+    setExportError(null);
+    try {
+      await exportReportToPDF(reportRef.current);
+    } catch (err) {
+      console.error(err);
+      setExportError("ייצוא ה-PDF נכשל. נסה שנית.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
+      <div ref={reportRef} className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h3 className="text-lg font-bold text-foreground">תוצאות הניתוח</h3>
         <SeverityBadge severity={severity} />
       </div>
+
+      {uncertainty && uncertainty.level !== "low" && (
+        <UncertaintyWarning level={uncertainty.level} reason={uncertainty.reason} />
+      )}
 
       {summary && (
         <div className="bg-primary/5 border border-primary/15 rounded-xl p-4">
@@ -70,6 +96,26 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
       >
         <ReactMarkdown>{result}</ReactMarkdown>
       </div>
+
+      <div className="border-t border-slate-100 pt-3">
+        <p className="text-[10px] text-muted-foreground/60 text-center leading-relaxed">
+          דוח זה נוצר על ידי מערכת MedScan AI ומספק הערכה ראשונית בלבד. אינו מהווה תחליף לייעוץ רפואי מקצועי.
+        </p>
+      </div>
+      </div>
+
+      <Button
+        onClick={handleExport}
+        disabled={exporting}
+        variant="outline"
+        className="w-full h-11 rounded-xl text-sm font-semibold"
+      >
+        {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+        {exporting ? "מכין דוח..." : "ייצא דוח PDF"}
+      </Button>
+      {exportError && (
+        <p className="text-xs text-red-500 text-center">{exportError}</p>
+      )}
     </div>
   );
 }

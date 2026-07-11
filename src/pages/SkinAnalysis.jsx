@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
+import ClinicalContextForm from "@/components/ClinicalContextForm";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 
@@ -16,6 +17,7 @@ export default function SkinAnalysis() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
+  const [clinicalContext, setClinicalContext] = useState("");
 
   useEffect(() => {
     base44.entities.SkinCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
@@ -45,6 +47,7 @@ export default function SkinAnalysis() {
         entityName: "SkinCase",
         analysisType: "skin",
         domainRole: "דרמטולוג מומחה",
+        clinicalContext,
         matchingInstructions: `1. בחן את הנגע בצורה שיטתית: מורפולוגיה (מקולרי/פפולרי/נודולרי/וסיקולרי), צבע, גודל, גבולות, פיזור, סימטריה.
 2. השווה את הממצאים מול המאפיינים המרכזיים של כל מחלה במאגר — גם חיובי וגם שלילי.
 3. השתמש בכלל ABCDE להערכת נגעים פיגמנטיים: Asymmetry, Border, Color, Diameter, Evolution.
@@ -100,11 +103,13 @@ export default function SkinAnalysis() {
         />
 
         {file && !result && (
-          <Button
-            onClick={handleAnalyze}
-            disabled={loading}
-            className="w-full h-12 rounded-xl text-sm font-semibold bg-teal-600 hover:bg-teal-700 shadow-md shadow-teal-500/20"
-          >
+          <>
+            <ClinicalContextForm onChange={setClinicalContext} />
+            <Button
+              onClick={handleAnalyze}
+              disabled={loading}
+              className="w-full h-12 rounded-xl text-sm font-semibold bg-teal-600 hover:bg-teal-700 shadow-md shadow-teal-500/20"
+            >
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -113,7 +118,8 @@ export default function SkinAnalysis() {
             ) : (
               "נתח תמונה"
             )}
-          </Button>
+            </Button>
+          </>
         )}
 
         {error && (
@@ -131,6 +137,7 @@ export default function SkinAnalysis() {
               matchedCases={result.matchedCases}
               imageUrl={result.imageUrl}
               findings={result.findings}
+              uncertainty={result.uncertainty}
             />
           </div>
         )}
