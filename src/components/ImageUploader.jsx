@@ -1,8 +1,9 @@
 import React, { useRef, useState, useMemo, useEffect } from "react";
-import { Upload, X, Plus } from "lucide-react";
+import { Upload, X, Plus, Camera } from "lucide-react";
 
 export default function ImageUploader({ files, onFilesChange, label, hint }) {
   const inputRef = useRef(null);
+  const cameraRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
 
   const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
@@ -56,12 +57,11 @@ export default function ImageUploader({ files, onFilesChange, label, hint }) {
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        onClick={() => inputRef.current?.click()}
-        className={`cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all duration-300 ${
-          dragOver ? "border-primary bg-primary/5 scale-[1.01]" : "border-slate-200 hover:border-primary/40 hover:bg-slate-50"
+        className={`rounded-xl border-2 border-dashed p-6 text-center transition-all duration-300 ${
+          dragOver ? "border-primary bg-primary/5 scale-[1.01]" : "border-slate-200"
         }`}
       >
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2 mb-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
             {previews.length > 0 ? <Plus className="w-5 h-5 text-primary" /> : <Upload className="w-6 h-6 text-primary" />}
           </div>
@@ -72,8 +72,27 @@ export default function ImageUploader({ files, onFilesChange, label, hint }) {
             <p className="text-xs text-muted-foreground mt-0.5">{hint || "גרור לכאן או לחץ לבחירה"}</p>
           </div>
         </div>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="flex items-center justify-center gap-2 h-11 rounded-lg bg-primary text-primary-foreground text-sm font-semibold shadow-sm hover:bg-primary/90 transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            העלאת תמונה
+          </button>
+          <button
+            type="button"
+            onClick={() => cameraRef.current?.click()}
+            className="flex items-center justify-center gap-2 h-11 rounded-lg bg-white border border-slate-200 text-foreground text-sm font-semibold shadow-sm hover:bg-slate-50 transition-colors"
+          >
+            <Camera className="w-4 h-4 text-primary" />
+            צילום במצלמה
+          </button>
+        </div>
       </div>
       <input ref={inputRef} type="file" accept="image/*" multiple onChange={handleChange} className="hidden" />
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleChange} className="hidden" />
     </div>
   );
 }
