@@ -66,7 +66,7 @@ export default function ECGAnalysis() {
     }
   };
 
-  const stageLabel = stage === "matching" ? "מתאים מול מאגר הידע..." : "מנתח ומכין דוח...";
+  const stageLabel = stage === "matching" ? "מתאים מול מאגר הידע ומאגרי אינטרנט רפואיים..." : "מנתח ומכין דוח מפורט...";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50/50 via-white to-slate-50">

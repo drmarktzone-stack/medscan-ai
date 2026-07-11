@@ -63,6 +63,7 @@ ${matchingInstructions}
 - לכל מקרה השב ציון ביטחון בין 0 ל-100 והסבר קצר לניקוד.
 - אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות, במיוחד מצבים מסכני חיים.
 - דרג את התוצאות מהתואם ביותר לפחות תואם.
+- חפש באינטרנט מאגרי תמונות רפואיים וספרות קלינית כדי להשלים את ההשוואה מול כל מקרה — השתמש בממצאים פתולוגיים ותקינים עדכניים ממקורות מהימנים.
 
 ## פלט נדרש (JSON)
 מערך matches מסודר מהתואם ביותר לפחות תואם. כל פריט כולל:
@@ -92,7 +93,8 @@ ${matchingInstructions}
       },
       required: ["matches"],
     },
-    model: "claude_sonnet_4_6",
+    add_context_from_internet: true,
+    model: "gemini_3_1_pro",
   });
 
   const matches = (matchingResult.matches || [])
@@ -144,6 +146,9 @@ ${imageLegend}
 ## הוראות ניתוח
 ${diagnosisInstructions}
 
+## הערכה מורחבת מהאינטרנט
+חפש באינטרנט מאגרי תמונות רפואיים, ספרות קלינית עדכנית וממצאים פתולוגיים ותקינים כדי להשוות את התמונה. הסתמך על מקורות מהימנים — ספרות רפואית, מאגרי תמונות קליניות, וקריטריוני אבחון מקצועיים.
+
 ## פלט נדרש
 - summary: סיכום תמציתי של הממצא העיקרי (משפט אחד)
 - severity: רמת חומרה — normal / mild / moderate / severe / urgent
@@ -164,7 +169,8 @@ ${diagnosisInstructions}
       },
       required: ["summary", "severity", "analysis"],
     },
-    model: "claude_sonnet_4_6",
+    add_context_from_internet: true,
+    model: "gemini_3_1_pro",
   });
 
   // ---------- Persist the analysis ----------
