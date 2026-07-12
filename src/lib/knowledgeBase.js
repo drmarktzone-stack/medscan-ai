@@ -8,6 +8,7 @@ export function buildKnowledgeBaseText(cases) {
     entry += `- **אבחנה:** ${c.diagnosis}\n`;
     if (c.category) entry += `- **קטגוריה:** ${c.category}\n`;
     if (c.key_features) entry += `- **מאפיינים מרכזיים:** ${c.key_features}\n`;
+    if (c.diagnostic_criteria) entry += `- **קריטריוני אבחון:** ${c.diagnostic_criteria}\n`;
     if (c.description) entry += `- **תיאור קליני מפורט:** ${c.description}\n`;
     return entry;
   }).join("\n---\n");
@@ -44,6 +45,7 @@ export function buildMatchedCasesText(cases) {
     entry += `- **אבחנה:** ${c.diagnosis}\n`;
     if (c.category) entry += `- **קטגוריה:** ${c.category}\n`;
     if (c.key_features) entry += `- **מאפיינים מרכזיים:** ${c.key_features}\n`;
+    if (c.diagnostic_criteria) entry += `- **קריטריוני אבחון:** ${c.diagnostic_criteria}\n`;
     if (c.description) entry += `- **תיאור קליני מפורט:** ${c.description}\n`;
     return entry;
   }).join("\n---\n");

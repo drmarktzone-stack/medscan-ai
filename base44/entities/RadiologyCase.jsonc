@@ -28,6 +28,10 @@
       "type": "string",
       "description": "Hallmark radiological features to look for"
     },
+    "diagnostic_criteria": {
+      "type": "string",
+      "description": "Formal diagnostic criteria checklist \u2014 the specific measurable radiological criteria required to confirm this diagnosis (e.g. density, size, margins, location, mass effect, associated signs). Used by the criteria-verification stage."
+    },
     "description": {
       "type": "string",
       "description": "Detailed clinical description"

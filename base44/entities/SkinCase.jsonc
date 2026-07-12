@@ -29,6 +29,10 @@
       "type": "string",
       "description": "Hallmark visual features to look for"
     },
+    "diagnostic_criteria": {
+      "type": "string",
+      "description": "Formal diagnostic criteria checklist \u2014 the specific measurable clinical/dermoscopic criteria required to confirm this diagnosis (e.g. ABCDE criteria, morphology, distribution, dermoscopic structures). Used by the criteria-verification stage."
+    },
     "description": {
       "type": "string",
       "description": "Detailed clinical description"

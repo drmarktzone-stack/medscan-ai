@@ -66,7 +66,13 @@ export default function SkinAnalysis() {
     }
   };
 
-  const stageLabel = stage === "matching" ? t("analysis.stage_matching") : t("analysis.stage_diagnosing");
+  const stageLabels = {
+    extracting: t("analysis.stage_extracting"),
+    matching: t("analysis.stage_matching"),
+    verifying: t("analysis.stage_verifying"),
+    diagnosing: t("analysis.stage_diagnosing"),
+  };
+  const stageLabel = stageLabels[stage] || t("analysis.stage_diagnosing");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-slate-50">

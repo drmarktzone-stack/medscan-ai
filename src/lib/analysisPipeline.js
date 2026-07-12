@@ -1,5 +1,6 @@
 import { base44 } from "@/api/base44Client";
 import { buildCasesForMatching, buildMatchedCasesText } from "./knowledgeBase";
+import { getMeasurementProtocol, EXTRACTION_SCHEMA } from "./diagnosticProtocols";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -40,7 +41,9 @@ export async function runDiagnosisPipeline({
   const outputLang = langNames[language] || "Hebrew";
   const langDirective = `\n## Output Language\nALL text in your response (titles, reasoning, summary, analysis, guideline, finding labels) MUST be written in ${outputLang}. This is critical — the user selected ${outputLang} as their language.`;
 
-  // 1. Upload images + fetch knowledge-base cases in parallel (independent I/O)
+  const protocol = getMeasurementProtocol(analysisType);
+
+  // 0. Upload images + fetch knowledge-base cases in parallel (independent I/O)
   const [uploadResults, allCases] = await Promise.all([
     Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f }))),
     base44.entities[entityName].list("-created_date", 1000),
@@ -52,42 +55,40 @@ export async function runDiagnosisPipeline({
     throw new Error(emptyKbErrors[language] || emptyKbErrors.he);
   }
 
-  // ---------- Stage 1: Structured matching against every case ----------
-  onStage?.("matching");
-
   const casesForMatching = buildCasesForMatching(allCases);
 
-  const matchingResult = await base44.integrations.Core.InvokeLLM({
-    prompt: `אתה ${domainRole}. משימתך הראשונה היא התאמה מדויקת וביקורתית של התמונה שהועלתה מול כל אחד מהמקרים במאגר הידע.
+  // ---------- Stage 1: Scan, Measure & Match ----------
+  onStage?.("extracting");
+
+  const extractMatchResult = await base44.integrations.Core.InvokeLLM({
+    prompt: `אתה ${domainRole} עם ניסיון רב שנים. משימה זו מחולקת לשני חלקים: ראשית סריקה ומדידה שיטתית של התמונה, ולאחר מכן התאמה מול כל מקרי מאגר הידע.
 
 ## התמונות לניתוח
-תמונה 1 היא התמונה הראשית לניתוח. שאר התמונות (אם קיימות) הן זוויות/לידים נוספים — השתמש בהן להשלמת התמונה הקלינית.
+תמונה 1 היא התמונה הראשית לניתוח. שאר התמונות (אם קיימות) הן זוויות/לידים נוספים.
 ${clinicalContext ? `\n## הקשר קליני של המטופל\n${clinicalContext}\n` : ""}
+${protocol.measurement}
+
+## חלק א׳ — סריקה ומדידה
+בצע את הפרוטוקול המלא. חלץ כל מדד כערך כמותי ככל הניתן. אל תדלג על מדדים — אם אינו בר-הערכה מהתמונה, ציין זאת. המדידות ישמשו ראיה לשלב האימות והאבחון.
+
 ## מאגר הידע — כל המקרים (יש להעריך כל מקרה)
 ${casesForMatching}
 
-## הוראות התאמה
+## חלק ב׳ — התאמה
 ${matchingInstructions}
 
-- הערך את מידת ההתאמה של התמונה מול כל מקרה באופן יסודי.
-- לכל מקרה השב ציון ביטחון בין 0 ל-100 והסבר קצר לניקוד.
+- התאם את המדידות שחלצת מול המאפיינים של כל מקרה במאגר.
+- לכל מקרה החזר ציון ביטחון 0-100 והסבר קצר המבוסס על המדידות.
+- דרג מהתואם ביותר לפחות. החזר רק את 12 ההתאמות הטובות ביותר.
 - אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות, במיוחד מצבים מסכני חיים.
-- דרג את התוצאות מהתואם ביותר לפחות תואם.
-- חפש באינטרנט מאגרי תמונות רפואיים וספרות קלינית כדי להשלים את ההשוואה מול כל מקרה — השתמש בממצאים פתולוגיים ותקינים עדכניים ממקורות מהימנים.
-- אם סופק הקשר קליני של המטופל, שקול אותו בעת ההתאמה — גיל, מין, תסמינים ורקע רפואי עשויים לשנות משמעותית את סבירות האבחנה.
-
-## פלט נדרש (JSON)
-מערך matches המכיל אך ורק את 12 ההתאמות הטובות ביותר בלבד (אל תכלול התאמות חלשות — צמצם לטופ 12). מסודר מהתואם ביותר לפחות תואם. כל פריט כולל:
-- case_id: מזהה המקרה (כפי שמופיע ברשימה)
-- title: כותרת המקרה
-- diagnosis: האבחנה
-- confidence: מספר שלם 0-100
-- reasoning: הסבר קצר לניקוד (עד 2 משפטים)
+- חפש באינטרנט מאגרי תמונות רפואיים וספרות קלינית להשלמת ההשוואה.
 ${langDirective}`,
     file_urls: fileUrls,
     response_json_schema: {
       type: "object",
       properties: {
+        measurements: EXTRACTION_SCHEMA.properties.measurements,
+        red_flags: EXTRACTION_SCHEMA.properties.red_flags,
         matches: {
           type: "array",
           items: {
@@ -103,13 +104,18 @@ ${langDirective}`,
           },
         },
       },
-      required: ["matches"],
+      required: ["measurements", "matches"],
     },
     add_context_from_internet: true,
     model: "gemini_3_flash",
   });
 
-  const matches = (matchingResult.matches || [])
+  const measurements = Array.isArray(extractMatchResult.measurements)
+    ? extractMatchResult.measurements.filter((m) => m.parameter)
+    : [];
+  const redFlags = extractMatchResult.red_flags || "";
+
+  const matches = (extractMatchResult.matches || [])
     .filter((m) => m.case_id)
     .sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
 
@@ -147,60 +153,90 @@ ${langDirective}`,
     imageLegend = `## תמונות להשוואה ויזואלית\nתמונה 1: התמונה לניתוח.\n${legendItems.join("\n")}`;
   }
 
-  // ---------- Stage 2: Detailed diagnosis grounded in the top matches ----------
-  onStage?.("diagnosing");
+  const measurementsText = measurements.length > 0
+    ? measurements.map((m) => `- **${m.parameter}**: ${m.value}${m.notes ? ` — ${m.notes}` : ""}`).join("\n")
+    : "לא חולצו מדידות.";
+
+  // ---------- Stage 2: Criteria Verification + Diagnosis ----------
+  onStage?.("verifying");
 
   const matchesSummary = matches.slice(0, 5).map((m, i) =>
-    `${i + 1}. ${m.title} — ${m.diagnosis || ""} (ביטחון: ${m.confidence}%): ${m.reasoning}`
+    `${i + 1}. ${m.title} — ${m.diagnosis || ""} (ביטחון התאמה: ${m.confidence}%): ${m.reasoning}`
   ).join("\n");
 
   const diagnosis = await base44.integrations.Core.InvokeLLM({
-    prompt: `אתה ${domainRole} עם ניסיון רב שנים. בצע ניתוח קליני מפורט של התמונה, המבוסס על המקרים התואמים שזוהו בשלב ההתאמה מול מאגר הידע.
+    prompt: `אתה ${domainRole} עם ניסיון רב שנים. בצע אימות קריטריוני אבחון ולאחריו ניתוח קליני מפורט, המבוסס על המדידות שחולצו והמקרים התואמים מול מאגר הידע.
 
 ## התמונות לניתוח
-תמונה 1 (התמונה הראשונה) היא התמונה הראשית לניתוח. שאר התמונות הן זוויות/לידים נוספים — השתמש בהן להשלמת ההערכה. סמן ממצאים בתמונה 1 בלבד.
+תמונה 1 (התמונה הראשונה) היא התמונה הראשית. שאר התמונות הן זוויות/לידים נוספים. סמן ממצאים בתמונה 1 בלבד.
 ${clinicalContext ? `\n## הקשר קליני של המטופל\n${clinicalContext}\n` : ""}
+## מדידות שחולצו מהתמונה (שלב הסריקה והמדידה)
+${measurementsText}
+${redFlags ? `\n## דגלים אדומים שזוהו\n${redFlags}\n` : ""}
 ## תוצאות שלב ההתאמה — המקרים התואמים ביותר
 ${matchesSummary}
 
-## פרטי המקרים התואמים מתוך מאגר הידע
+## פרטי המקרים התואמים מתוך מאגר הידע (כולל קריטריוני אבחון)
 ${matchedCasesText}
 
 ${imageLegend}
 
+${protocol.criteria}
+
+## הערכה מורחבת מהאינטרנט
+חפש באינטרנט מאגרי תמונות רפואיים, ספרות קלינית עדכנית וקריטריוני אבחון מקצועיים. הסתמך על מקורות מהימנים.
+
 ## הוראות ניתוח
 ${diagnosisInstructions}
 
-## הערכה מורחבת מהאינטרנט
-חפש באינטרנט מאגרי תמונות רפואיים, ספרות קלינית עדכנית וממצאים פתולוגיים ותקינים כדי להשוות את התמונה. הסתמך על מקורות מהימנים — ספרות רפואית, מאגרי תמונות קליניות, וקריטריוני אבחון מקצועיים.
-
 ## סימון אזורי ממצא על התמונה
-זהה את האזורים הספציפיים בתמונה 1 (התמונה לניתוח) בהם יש ממצא חריג או משמעותי קלינית.
-עבור כל אזור, החזר תיבת תחום (bounding box) בקואורדינטות נורמליזציה — אחוזים מממדי התמונה (0-100):
-- x: מיקום הפינה השמאלית-עליונה בציר האופקי (0-100)
-- y: מיקום הפינה השמאלית-עליונה בציר האנכי (0-100)
-- width: רוחב התיבה באחוזים (0-100)
-- height: גובה התיבה באחוזים (0-100)
-- label: תיאור קצר של הממצא באזור (עד 4 מילים)
-הקואורדינטות יחסיות לתמונה 1 בלבד. אם אין ממצא חריג ברור, החזר מערך ריק.
+זהה אזורים בתמונה 1 בהם יש ממצא חריג או משמעותי. לכל אזור החזר תיבת תחום (bounding box) בקואורדינטות נורמליזציה — אחוזים (0-100): x, y, width, height, label. אם אין ממצא חריג ברור, החזר מערך ריק.
 
 ## פלט נדרש
-- summary: סיכום תמציתי של הממצא העיקרי (משפט אחד)
-- severity: רמת חומרה — normal / mild / moderate / severe / urgent
-- findings: מערך של אזורי ממצא (תיבות תחום) על גבי התמונה
-- guideline: המלצת טיפול/הפניה מקצועית תמציתית וספציפית (לדוגמה: "STEMI → הפניה דחופה לצנתור ראשוני", "חשד למלנומה → ביופסיה דחופה אצל כירורג עור")
-- analysis: ניתוח מפורט ב-Markdown הכולל:
-  * **תיאור הממצאים** — המאפיינים העיקריים שזוהו בתמונה
+- **criteria_analysis**: עבור כל אחד מ-5 המקרים התואמים המובילים — מערך קריטריונים עם סטטוס (met / not_met / indeterminate) וראיה, ציון criteria_confidence (0-100), והמלצה (מאושר / סביר / אפשרי / נשלל).
+- **summary**: סיכום תמציתי של הממצא העיקרי (משפט אחד).
+- **severity**: רמת חומרה — normal / mild / moderate / severe / urgent.
+- **guideline**: המלצת טיפול/הפניה מקצועית תמציתית וספציפית.
+- **analysis**: ניתוח מפורט ב-Markdown הכולל:
+  * **מדידות שחולצו** — טבלת המדידות הכמותיות
+  * **אימות קריטריונים** — עמידה בקריטריונים של האבחנה המובילה
+  * **תיאור הממצאים** — המאפיינים העיקריים
   * **השוואה למאגר הידע** — טבלת המקרים התואמים עם דרגת ביטחון ונימוק
-  * **אבחנה ראשית** ואבחנות מבדלות (מהסביר ביותר לפחות סביר)
-  * **ממצאים פתולוגיים** משמעותיים
+  * **אבחנה ראשית** ואבחנות מבדלות
   * **סימני דגל אדום** אם קיימים
   * **המלצות קליניות** — המשך טיפול / בירור / הפניה
+- **findings**: מערך אזורי ממצא (תיבות תחום).
 ${langDirective}`,
     file_urls: [...fileUrls, ...referenceImages],
     response_json_schema: {
       type: "object",
       properties: {
+        criteria_analysis: {
+          type: "array",
+          description: "אימות קריטריוני אבחון עבור המקרים התואמים המובילים",
+          items: {
+            type: "object",
+            properties: {
+              title: { type: "string" },
+              diagnosis: { type: "string" },
+              criteria: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    criterion: { type: "string" },
+                    status: { type: "string", enum: ["met", "not_met", "indeterminate"] },
+                    evidence: { type: "string" },
+                  },
+                  required: ["criterion", "status"],
+                },
+              },
+              criteria_confidence: { type: "number" },
+              recommendation: { type: "string" },
+            },
+            required: ["title", "criteria", "criteria_confidence"],
+          },
+        },
         summary: { type: "string", description: "סיכום קצר של הממצאים" },
         severity: { type: "string", enum: ["normal", "mild", "moderate", "severe", "urgent"] },
         analysis: { type: "string", description: "ניתוח מפורט בפורמט Markdown" },
@@ -240,6 +276,21 @@ ${langDirective}`,
     })
     .filter((f) => f.width > 0 && f.height > 0);
 
+  // ---------- Merge criteria-based confidence into matched cases ----------
+  const criteriaMap = {};
+  (diagnosis.criteria_analysis || []).forEach((ca) => {
+    if (ca.title) criteriaMap[ca.title] = ca;
+  });
+  const enrichedMatches = matches.slice(0, 8).map((m) => {
+    const ca = criteriaMap[m.title];
+    if (ca) {
+      const conf = typeof ca.criteria_confidence === "number" ? ca.criteria_confidence : m.confidence;
+      const rec = ca.recommendation ? ` — ${ca.recommendation}` : "";
+      return { ...m, confidence: conf, reasoning: `${m.reasoning}${rec}` };
+    }
+    return m;
+  });
+
   // ---------- Persist the analysis ----------
   const analysisRecord = await base44.entities.Analysis.create({
     type: analysisType,
@@ -253,11 +304,12 @@ ${langDirective}`,
     summary: diagnosis.summary,
     severity: diagnosis.severity,
     analysis: diagnosis.analysis,
-    matchedCases: matches.slice(0, 8),
+    matchedCases: enrichedMatches,
     imageUrl: file_url,
     findings,
     uncertainty,
     guideline: diagnosis.guideline,
+    measurements,
     analysisId: analysisRecord.id,
   };
 }

@@ -28,6 +28,10 @@
       "type": "string",
       "description": "Hallmark ECG features to look for"
     },
+    "diagnostic_criteria": {
+      "type": "string",
+      "description": "Formal diagnostic criteria checklist \u2014 the specific measurable ECG criteria required to confirm this diagnosis (e.g. intervals, morphology, lead distribution). Used by the criteria-verification stage."
+    },
     "description": {
       "type": "string",
       "description": "Detailed clinical description"
