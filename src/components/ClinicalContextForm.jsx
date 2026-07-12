@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, User } from "lucide-react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { useI18n } from "@/lib/i18n";
 
 export default function ClinicalContextForm({ onChange }) {
+  const { t } = useI18n();
   const [expanded, setExpanded] = useState(false);
   const [fields, setFields] = useState({
     age: "",
@@ -15,14 +17,14 @@ export default function ClinicalContextForm({ onChange }) {
 
   useEffect(() => {
     const parts = [];
-    if (fields.age) parts.push(`גיל: ${fields.age}`);
-    if (fields.sex) parts.push(`מין: ${fields.sex}`);
-    if (fields.symptoms) parts.push(`תסמינים: ${fields.symptoms}`);
-    if (fields.duration) parts.push(`משך התסמינים: ${fields.duration}`);
-    if (fields.history) parts.push(`רקע רפואי: ${fields.history}`);
-    if (fields.medications) parts.push(`תרופות פעילות: ${fields.medications}`);
+    if (fields.age) parts.push(`${t("ctx.out_age")}: ${fields.age}`);
+    if (fields.sex) parts.push(`${t("ctx.out_sex")}: ${fields.sex}`);
+    if (fields.symptoms) parts.push(`${t("ctx.out_symptoms")}: ${fields.symptoms}`);
+    if (fields.duration) parts.push(`${t("ctx.out_duration")}: ${fields.duration}`);
+    if (fields.history) parts.push(`${t("ctx.out_history")}: ${fields.history}`);
+    if (fields.medications) parts.push(`${t("ctx.out_medications")}: ${fields.medications}`);
     onChange(parts.join("\n"));
-  }, [fields, onChange]);
+  }, [fields, onChange, t]);
 
   const update = (key, value) => setFields((prev) => ({ ...prev, [key]: value }));
   const filledCount = Object.values(fields).filter(Boolean).length;
@@ -35,10 +37,10 @@ export default function ClinicalContextForm({ onChange }) {
       >
         <div className="flex items-center gap-2">
           <User className="w-4 h-4 text-primary" />
-          <span className="text-sm font-semibold">הקשר קליני</span>
+          <span className="text-sm font-semibold">{t("ctx.title")}</span>
           {filledCount > 0 && (
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-              {filledCount} שדות
+              {t("ctx.fields_count", { n: filledCount })}
             </span>
           )}
         </div>
@@ -49,72 +51,70 @@ export default function ClinicalContextForm({ onChange }) {
         <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">גיל</label>
+              <label className="text-xs text-muted-foreground mb-1 block">{t("ctx.age")}</label>
               <input
                 type="number"
                 value={fields.age}
                 onChange={(e) => update("age", e.target.value)}
-                placeholder="לדוגמה 45"
+                placeholder={t("ctx.age_ph")}
                 className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">מין</label>
+              <label className="text-xs text-muted-foreground mb-1 block">{t("ctx.sex")}</label>
               <Select value={fields.sex || "unspecified"} onValueChange={(v) => update("sex", v === "unspecified" ? "" : v)}>
                 <SelectTrigger className="w-full h-9 rounded-lg border-slate-200 text-sm bg-white">
-                  <SelectValue placeholder="לא צוין" />
+                  <SelectValue placeholder={t("ctx.sex_unspecified")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="unspecified">לא צוין</SelectItem>
-                  <SelectItem value="זכר">זכר</SelectItem>
-                  <SelectItem value="נקבה">נקבה</SelectItem>
+                  <SelectItem value="unspecified">{t("ctx.sex_unspecified")}</SelectItem>
+                  <SelectItem value={t("ctx.sex_male")}>{t("ctx.sex_male")}</SelectItem>
+                  <SelectItem value={t("ctx.sex_female")}>{t("ctx.sex_female")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">תסמינים עיקריים</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("ctx.symptoms")}</label>
             <input
               type="text"
               value={fields.symptoms}
               onChange={(e) => update("symptoms", e.target.value)}
-              placeholder="לדוגמה: כאב בחזה, קוצר נשימה"
+              placeholder={t("ctx.symptoms_ph")}
               className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">משך התסמינים</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("ctx.duration")}</label>
             <input
               type="text"
               value={fields.duration}
               onChange={(e) => update("duration", e.target.value)}
-              placeholder="לדוגמה: 3 ימים, שעתיים"
+              placeholder={t("ctx.duration_ph")}
               className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">רקע רפואי / מחלות כרוניות</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("ctx.history")}</label>
             <textarea
               value={fields.history}
               onChange={(e) => update("history", e.target.value)}
-              placeholder="לדוגמה: סוכרת, יתר לחץ דם"
+              placeholder={t("ctx.history_ph")}
               rows={2}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">תרופות פעילות</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("ctx.medications")}</label>
             <input
               type="text"
               value={fields.medications}
               onChange={(e) => update("medications", e.target.value)}
-              placeholder="לדוגמה: אספירין, מטופרולול"
+              placeholder={t("ctx.medications_ph")}
               className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
-          <p className="text-[10px] text-muted-foreground/60">
-            הוספת הקשר קליני משפרת משמעותית את דיוק האבחנה. כל השדות אופציונליים.
-          </p>
+          <p className="text-[10px] text-muted-foreground/60">{t("ctx.hint")}</p>
         </div>
       )}
     </div>

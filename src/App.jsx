@@ -8,6 +8,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import AppLayout from "@/components/AppLayout";
+import { I18nProvider } from '@/lib/i18n';
 
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -66,13 +67,15 @@ const AuthenticatedApp = () => {
 function App() {
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
+      <I18nProvider>
+        <QueryClientProvider client={queryClientInstance}>
         <Router>
           <ScrollToTop />
           <AuthenticatedApp />
         </Router>
         <Toaster />
-      </QueryClientProvider>
+        </QueryClientProvider>
+      </I18nProvider>
     </AuthProvider>
   )
 }

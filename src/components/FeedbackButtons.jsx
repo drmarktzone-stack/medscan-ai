@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { ThumbsUp, ThumbsDown, Check, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useI18n } from "@/lib/i18n";
 
 export default function FeedbackButtons({ analysisId, analysisType }) {
+  const { t } = useI18n();
   const [submitted, setSubmitted] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [correctedDiagnosis, setCorrectedDiagnosis] = useState("");
@@ -12,11 +14,7 @@ export default function FeedbackButtons({ analysisId, analysisType }) {
   const handleCorrect = async () => {
     setSaving(true);
     try {
-      await base44.entities.Feedback.create({
-        analysis_id: analysisId,
-        analysis_type: analysisType,
-        is_correct: true,
-      });
+      await base44.entities.Feedback.create({ analysis_id: analysisId, analysis_type: analysisType, is_correct: true });
       setSubmitted(true);
     } finally {
       setSaving(false);
@@ -44,7 +42,7 @@ export default function FeedbackButtons({ analysisId, analysisType }) {
     return (
       <div className="flex items-center justify-center gap-2 bg-green-50 border border-green-200 rounded-xl py-3 text-sm text-green-700 font-semibold">
         <Check className="w-4 h-4" />
-        תודה על המשוב — הנתונים יסייעו בשיפור המערכת
+        {t("feedback.thanks")}
       </div>
     );
   }
@@ -52,18 +50,18 @@ export default function FeedbackButtons({ analysisId, analysisType }) {
   if (showForm) {
     return (
       <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
-        <p className="text-sm font-semibold text-foreground">מהי האבחנה הנכונה?</p>
+        <p className="text-sm font-semibold text-foreground">{t("feedback.correct_question")}</p>
         <input
           type="text"
           value={correctedDiagnosis}
           onChange={(e) => setCorrectedDiagnosis(e.target.value)}
-          placeholder="הזן את האבחנה הנכונה"
+          placeholder={t("feedback.correct_ph")}
           className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="הערות נוספות (אופציונלי)"
+          placeholder={t("feedback.notes_ph")}
           rows={2}
           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
         />
@@ -73,13 +71,10 @@ export default function FeedbackButtons({ analysisId, analysisType }) {
             disabled={saving || !correctedDiagnosis.trim()}
             className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-50 flex items-center justify-center"
           >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "שלח משוב"}
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : t("feedback.submit")}
           </button>
-          <button
-            onClick={() => setShowForm(false)}
-            className="h-9 px-4 rounded-lg border border-slate-200 text-sm text-muted-foreground"
-          >
-            ביטול
+          <button onClick={() => setShowForm(false)} className="h-9 px-4 rounded-lg border border-slate-200 text-sm text-muted-foreground">
+            {t("feedback.cancel")}
           </button>
         </div>
       </div>
@@ -88,7 +83,7 @@ export default function FeedbackButtons({ analysisId, analysisType }) {
 
   return (
     <div className="border-t border-slate-100 pt-4">
-      <p className="text-xs text-center text-muted-foreground mb-2">האם האבחנה מדויקת? המשוב שלך מסייע בשיפור המערכת</p>
+      <p className="text-xs text-center text-muted-foreground mb-2">{t("feedback.question")}</p>
       <div className="flex gap-2">
         <button
           onClick={handleCorrect}
@@ -96,14 +91,14 @@ export default function FeedbackButtons({ analysisId, analysisType }) {
           className="flex-1 flex items-center justify-center gap-1.5 h-10 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm font-semibold hover:bg-green-100 transition-colors disabled:opacity-50"
         >
           <ThumbsUp className="w-4 h-4" />
-          נכונה
+          {t("feedback.correct")}
         </button>
         <button
           onClick={() => setShowForm(true)}
           className="flex-1 flex items-center justify-center gap-1.5 h-10 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-semibold hover:bg-red-100 transition-colors"
         >
           <ThumbsDown className="w-4 h-4" />
-          שגויה
+          {t("feedback.incorrect")}
         </button>
       </div>
     </div>

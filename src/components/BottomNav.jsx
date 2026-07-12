@@ -1,15 +1,17 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { LayoutGrid, Clock, BookOpen, Target } from "lucide-react";
-
-const tabs = [
-  { to: "/", label: "כלים", icon: LayoutGrid, end: true },
-  { to: "/history", label: "היסטוריה", icon: Clock, end: false },
-  { to: "/knowledge-base", label: "מאגר", icon: BookOpen, end: false },
-  { to: "/evaluation", label: "הערכה", icon: Target, end: false },
-];
+import { useI18n } from "@/lib/i18n";
 
 export default function BottomNav() {
+  const { t } = useI18n();
+  const tabs = [
+    { to: "/", label: t("nav.tools"), icon: LayoutGrid, end: true },
+    { to: "/history", label: t("nav.history"), icon: Clock, end: false },
+    { to: "/knowledge-base", label: t("nav.kb"), icon: BookOpen, end: false },
+    { to: "/evaluation", label: t("nav.evaluation"), icon: Target, end: false },
+  ];
+
   return (
     <nav className="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-lg border-t border-slate-200 safe-bottom select-none">
       <div className="max-w-lg mx-auto grid grid-cols-4">

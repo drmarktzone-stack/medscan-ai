@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag, ScanLine } from "lucide-react";
+import { Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag, ScanLine } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { base44 } from "@/api/base44Client";
 import { runEvaluation } from "@/lib/evaluation";
 import GoldStandardForm from "@/components/evaluation/GoldStandardForm";
 import MetricsChart from "@/components/evaluation/MetricsChart";
 import BulkImport from "@/components/knowledge/BulkImport";
+import BackButton from "@/components/BackButton";
+import { useI18n } from "@/lib/i18n";
 
 export default function Evaluation() {
+  const { t } = useI18n();
   const [tab, setTab] = useState("ecg");
   const [goldCases, setGoldCases] = useState([]);
   const [runs, setRuns] = useState([]);
@@ -52,7 +54,7 @@ export default function Evaluation() {
       setLastResult(result);
       loadData();
     } catch (err) {
-      setError(err.message || "שגיאה בהרצת ההערכה.");
+      setError(err.message || t("eval.error"));
     } finally {
       setRunning(false);
     }
@@ -69,12 +71,10 @@ export default function Evaluation() {
     <div className="min-h-screen bg-gradient-to-b from-purple-50/30 via-white to-slate-50">
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          <BackButton />
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-purple-500" />
-            <h1 className="font-bold text-base">הערכת דיוק</h1>
+            <h1 className="font-bold text-base">{t("eval.title")}</h1>
           </div>
         </div>
       </div>
@@ -82,31 +82,22 @@ export default function Evaluation() {
       <div className="max-w-lg mx-auto px-5 py-6">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="grid grid-cols-3 w-full rounded-xl">
-            <TabsTrigger value="ecg" className="rounded-xl">
-              <Activity className="w-4 h-4 ml-1.5" /> ECG
-            </TabsTrigger>
-            <TabsTrigger value="skin" className="rounded-xl">
-              <Stethoscope className="w-4 h-4 ml-1.5" /> עור
-            </TabsTrigger>
-            <TabsTrigger value="radiology" className="rounded-xl">
-              <ScanLine className="w-4 h-4 ml-1.5" /> רדיולוגיה
-            </TabsTrigger>
+            <TabsTrigger value="ecg" className="rounded-xl"><Activity className="w-4 h-4 ml-1.5" /> {t("eval.tab_ecg")}</TabsTrigger>
+            <TabsTrigger value="skin" className="rounded-xl"><Stethoscope className="w-4 h-4 ml-1.5" /> {t("eval.tab_skin")}</TabsTrigger>
+            <TabsTrigger value="radiology" className="rounded-xl"><ScanLine className="w-4 h-4 ml-1.5" /> {t("eval.tab_radiology")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value={tab} className="mt-4 space-y-4">
-            {/* Run evaluation */}
             <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold">הרצת הערכה</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {testableCount} מקרים ברי-בדיקה (עם תמונות) מתוך {goldCases.length}
-                  </p>
+                  <h3 className="text-sm font-bold">{t("eval.run")}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{t("eval.testable", { n: testableCount, m: goldCases.length })}</p>
                 </div>
                 <button onClick={handleRun} disabled={running || testableCount === 0}
                   className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-purple-600 text-white text-sm font-semibold disabled:opacity-50">
                   {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                  {running ? "מריץ..." : "הרץ"}
+                  {running ? t("eval.running") : t("eval.run_btn")}
                 </button>
               </div>
 
@@ -115,40 +106,34 @@ export default function Evaluation() {
                   <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div className="h-full bg-purple-500 transition-all" style={{ width: `${progress.total ? (progress.done / progress.total) * 100 : 0}%` }} />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1.5 text-center">
-                    מנתח {progress.done} מתוך {progress.total}...
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1.5 text-center">{t("eval.analyzing", { n: progress.done, m: progress.total })}</p>
                 </div>
               )}
 
               {error && <p className="text-xs text-red-500 text-center">{error}</p>}
             </div>
 
-            {/* Last result */}
             {lastResult && (
               <div className="bg-white rounded-xl border border-purple-200 p-4">
-                <h4 className="text-sm font-bold mb-3">תוצאות ההערכה האחרונה</h4>
+                <h4 className="text-sm font-bold mb-3">{t("eval.last_result")}</h4>
                 <div className="grid grid-cols-3 gap-2">
-                  <MetricCard label="דיוק" value={lastResult.accuracy} color="text-blue-600" />
-                  <MetricCard label="רגישות" value={lastResult.sensitivity} color="text-red-600" />
-                  <MetricCard label="סגוליות" value={lastResult.specificity} color="text-teal-600" />
+                  <MetricCard label={t("eval.accuracy")} value={lastResult.accuracy} color="text-blue-600" />
+                  <MetricCard label={t("eval.sensitivity")} value={lastResult.sensitivity} color="text-red-600" />
+                  <MetricCard label={t("eval.specificity")} value={lastResult.specificity} color="text-teal-600" />
                 </div>
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  {lastResult.correct} מתוך {lastResult.total} אבחנות נכונות
-                </p>
+                <p className="text-xs text-muted-foreground mt-2 text-center">{t("eval.correct_count", { n: lastResult.correct, m: lastResult.total })}</p>
               </div>
             )}
 
-            {/* Live results */}
             {liveResults.length > 0 && (
               <div className="bg-white rounded-xl border border-slate-200 p-4">
-                <h4 className="text-sm font-bold mb-2">תוצאות חיות</h4>
+                <h4 className="text-sm font-bold mb-2">{t("eval.live")}</h4>
                 <div className="space-y-1.5 max-h-60 overflow-y-auto">
                   {liveResults.map((r, i) => (
                     <div key={i} className={`text-xs rounded-lg p-2 flex items-center justify-between ${r.is_correct ? "bg-green-50" : "bg-red-50"}`}>
                       <span className="font-semibold truncate">{r.title}</span>
                       <span className={`shrink-0 mr-2 ${r.is_correct ? "text-green-600" : "text-red-600"}`}>
-                        {r.is_correct ? "✓ נכון" : "✗ שגוי"} ({r.confidence}%)
+                        {r.is_correct ? t("eval.correct") : t("eval.incorrect")} ({r.confidence}%)
                       </span>
                     </div>
                   ))}
@@ -156,10 +141,9 @@ export default function Evaluation() {
               </div>
             )}
 
-            {/* Metrics over time */}
             <div>
               <h4 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-purple-500" /> מגמות לאורך זמן
+                <TrendingUp className="w-4 h-4 text-purple-500" /> {t("eval.trends")}
               </h4>
               {loading ? (
                 <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 text-muted-foreground animate-spin" /></div>
@@ -168,13 +152,12 @@ export default function Evaluation() {
               )}
             </div>
 
-            {/* Gold standard cases */}
             <div>
-              <h4 className="text-sm font-bold text-foreground mb-2">סט זהב — מקרים ({goldCases.length})</h4>
+              <h4 className="text-sm font-bold text-foreground mb-2">{t("eval.gold_set", { n: goldCases.length })}</h4>
               {loading ? (
                 <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 text-muted-foreground animate-spin" /></div>
               ) : goldCases.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-8">אין מקרים בסט הזהב עדיין</p>
+                <p className="text-xs text-muted-foreground text-center py-8">{t("eval.gold_empty")}</p>
               ) : (
                 <div className="space-y-2">
                   {goldCases.map((c) => (
@@ -186,7 +169,7 @@ export default function Evaluation() {
                         <div className="flex items-center gap-1.5">
                           <p className="text-xs font-bold truncate">{c.title}</p>
                           {c.urgent && <Flag className="w-3 h-3 text-red-500 fill-current shrink-0" />}
-                          {!c.image_url && <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">ללא תמונה</span>}
+                          {!c.image_url && <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">{t("eval.no_image")}</span>}
                         </div>
                         <p className="text-[11px] text-primary font-medium">{c.correct_diagnosis}</p>
                       </div>
@@ -199,15 +182,13 @@ export default function Evaluation() {
               )}
             </div>
 
-            {/* Add gold standard case */}
             <div>
-              <h4 className="text-sm font-bold text-foreground mb-2">הוסף מקרה לסט הזהב</h4>
+              <h4 className="text-sm font-bold text-foreground mb-2">{t("eval.add_gold")}</h4>
               <GoldStandardForm type={tab} onSaved={loadData} />
             </div>
 
-            {/* Bulk import */}
             <div>
-              <h4 className="text-sm font-bold text-foreground mb-2">העשרה המונית של סט הזהב</h4>
+              <h4 className="text-sm font-bold text-foreground mb-2">{t("eval.bulk_gold")}</h4>
               <BulkImport type={tab} target="gold" onSaved={loadData} />
             </div>
           </TabsContent>

@@ -1,28 +1,31 @@
 import { base44 } from "@/api/base44Client";
 import { buildCasesForMatching, buildMatchedCasesText } from "./knowledgeBase";
 
-/**
- * Two-stage RAG diagnosis pipeline.
- *
- * Stage 1 — Matching: the uploaded image is compared against EVERY case in the
- *   knowledge base. The model returns a ranked list with a confidence score
- *   (0-100) and reasoning for each case. This is the structured matching step.
- *
- * Stage 2 — Diagnosis: a detailed analysis is generated, grounded ONLY in the
- *   top matched cases (full detail + their reference images, clearly labeled),
- *   so the final diagnosis is driven by the specific best matches rather than
- *   a generic interpretation.
- *
- * @param {object} params
- * @param {File}   params.file                 - uploaded image file
- * @param {string} params.entityName           - "ECGCase" | "SkinCase"
- * @param {string} params.analysisType         - "ecg" | "skin"
- * @param {string} params.domainRole           - Hebrew role label, e.g. "קרדיולוג מומחה"
- * @param {string} params.matchingInstructions - domain-specific visual analysis steps for matching
- * @param {string} params.diagnosisInstructions- domain-specific outline for the detailed report
- * @param {(stage: string) => void} [params.onStage] - progress callback ("matching" | "diagnosing")
- * @returns {Promise<{summary, severity, analysis, matchedCases}>}
- */
+const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
+
+const emptyKbErrors = {
+  he: "מאגר הידע ריק. יש להוסיף מקרים למאגר לפני ביצוע אבחון.",
+  en: "The knowledge base is empty. Please add cases before running a diagnosis.",
+  ar: "قاعدة المعرفة فارغة. يرجى إضافة حالات قبل إجراء التشخيص.",
+};
+
+const uncertaintyReasons = {
+  he: {
+    high: "רמת הביטחון של ההתאמה הטובה ביותר נמוכה. האבחנה אינה וודאית — מומלץ להתייעץ עם רופא מומחה לבדיקה נוספת.",
+    medium: "מספר אבחנות מתחרות עם דרגות ביטחון דומות. רצוי בדיקה נוספת לאישוש האבחנה הסופית.",
+  },
+  en: {
+    high: "The confidence level of the best match is low. The diagnosis is uncertain — consult a specialist for further evaluation.",
+    medium: "Multiple competing diagnoses with similar confidence levels. Further testing is recommended to confirm the final diagnosis.",
+  },
+  ar: {
+    high: "مستوى الثقة لأفضل تطابق منخفض. التشخيص غير مؤكد — يُنصح باستشارة طبيب مختص لمزيد من الفحص.",
+    medium: "هناك عدة تشخيصات منافسة بمستويات ثقة متقاربة. يُنصح بإجراء فحوصات إضافية لتأكيد التشخيص النهائي.",
+  },
+};
+
+const defaultFindingLabels = { he: "ממצא", en: "Finding", ar: "نتيجة" };
+
 export async function runDiagnosisPipeline({
   files,
   entityName,
@@ -32,7 +35,11 @@ export async function runDiagnosisPipeline({
   diagnosisInstructions,
   clinicalContext,
   onStage,
+  language = "he",
 }) {
+  const outputLang = langNames[language] || "Hebrew";
+  const langDirective = `\n## Output Language\nALL text in your response (titles, reasoning, summary, analysis, guideline, finding labels) MUST be written in ${outputLang}. This is critical — the user selected ${outputLang} as their language.`;
+
   // 1. Upload all images (first is the primary analysis image)
   const uploadResults = await Promise.all(
     files.map((f) => base44.integrations.Core.UploadFile({ file: f }))
@@ -44,7 +51,7 @@ export async function runDiagnosisPipeline({
   const allCases = await base44.entities[entityName].list("-created_date", 100);
 
   if (!allCases || allCases.length === 0) {
-    throw new Error("מאגר הידע ריק. יש להוסיף מקרים למאגר לפני ביצוע אבחון.");
+    throw new Error(emptyKbErrors[language] || emptyKbErrors.he);
   }
 
   // ---------- Stage 1: Structured matching against every case ----------
@@ -77,7 +84,8 @@ ${matchingInstructions}
 - title: כותרת המקרה
 - diagnosis: האבחנה
 - confidence: מספר שלם 0-100
-- reasoning: הסבר קצר לניקוד`,
+- reasoning: הסבר קצר לניקוד
+${langDirective}`,
     file_urls: fileUrls,
     response_json_schema: {
       type: "object",
@@ -111,18 +119,13 @@ ${matchingInstructions}
   const topConfidence = matches[0]?.confidence || 0;
   const secondConfidence = matches[1]?.confidence || 0;
   const confidenceGap = topConfidence - secondConfidence;
+  const reasons = uncertaintyReasons[language] || uncertaintyReasons.he;
 
   let uncertainty = null;
   if (matches.length === 0 || topConfidence < 40) {
-    uncertainty = {
-      level: "high",
-      reason: "רמת הביטחון של ההתאמה הטובה ביותר נמוכה. האבחנה אינה וודאית — מומלץ להתייעץ עם רופא מומחה לבדיקה נוספת.",
-    };
+    uncertainty = { level: "high", reason: reasons.high };
   } else if (topConfidence < 65 && matches.length > 1 && confidenceGap <= 15) {
-    uncertainty = {
-      level: "medium",
-      reason: "מספר אבחנות מתחרות עם דרגות ביטחון דומות. רצוי בדיקה נוספת לאישוש האבחנה הסופית.",
-    };
+    uncertainty = { level: "medium", reason: reasons.medium };
   }
 
   // ---------- Resolve top matched cases (full detail + reference images) ----------
@@ -137,7 +140,6 @@ ${matchingInstructions}
 
   const matchedCasesText = buildMatchedCasesText(topCases);
 
-  // Build a legend so the model knows which reference image belongs to which case
   let imageLegend = "";
   if (referenceImages.length > 0) {
     const legendItems = topCases
@@ -194,7 +196,8 @@ ${diagnosisInstructions}
   * **אבחנה ראשית** ואבחנות מבדלות (מהסביר ביותר לפחות סביר)
   * **ממצאים פתולוגיים** משמעותיים
   * **סימני דגל אדום** אם קיימים
-  * **המלצות קליניות** — המשך טיפול / בירור / הפניה`,
+  * **המלצות קליניות** — המשך טיפול / בירור / הפניה
+${langDirective}`,
     file_urls: [...fileUrls, ...referenceImages],
     response_json_schema: {
       type: "object",
@@ -226,6 +229,7 @@ ${diagnosisInstructions}
   });
 
   // ---------- Validate & clamp findings (normalized 0-100) ----------
+  const defaultLabel = defaultFindingLabels[language] || defaultFindingLabels.he;
   const rawFindings = Array.isArray(diagnosis.findings) ? diagnosis.findings : [];
   const findings = rawFindings
     .map((f) => {
@@ -233,7 +237,7 @@ ${diagnosisInstructions}
       const y = Math.max(0, Math.min(100, Number(f.y) || 0));
       const width = Math.max(0, Math.min(100 - x, Number(f.width) || 0));
       const height = Math.max(0, Math.min(100 - y, Number(f.height) || 0));
-      return { label: String(f.label || "ממצא"), x, y, width, height };
+      return { label: String(f.label || defaultLabel), x, y, width, height };
     })
     .filter((f) => f.width > 0 && f.height > 0);
 

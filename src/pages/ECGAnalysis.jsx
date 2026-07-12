@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Activity, Loader2, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Activity, Loader2, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
@@ -8,8 +8,11 @@ import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
+import BackButton from "@/components/BackButton";
+import { useI18n } from "@/lib/i18n";
 
 export default function ECGAnalysis() {
+  const { t, lang } = useI18n();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState("");
@@ -39,6 +42,7 @@ export default function ECGAnalysis() {
         analysisType: "ecg",
         domainRole: "קרדיולוג מומחה",
         clinicalContext,
+        language: lang,
         matchingInstructions: `1. בחן את התרשים בצורה שיטתית: קצב, רגולריות, גלי P, מרווח PR, קומפלקס QRS, מקטע ST, גלי T, מקטע QT, ציר חשמלי.
 2. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
 3. שים לב במיוחד למצבים מסכני חיים: STEMI, VT, VF, חסמים מלאים, היפרקלמיה.
@@ -53,25 +57,23 @@ export default function ECGAnalysis() {
       setResult(res);
     } catch (err) {
       console.error(err);
-      setError(err.message || "אירעה שגיאה במהלך הניתוח. נסה שנית.");
+      setError(err.message || t("analysis.error_fallback"));
     } finally {
       setLoading(false);
       setStage("");
     }
   };
 
-  const stageLabel = stage === "matching" ? "מתאים מול מאגר הידע ומאגרי אינטרנט רפואיים..." : "מנתח ומכין דוח מפורט...";
+  const stageLabel = stage === "matching" ? t("analysis.stage_matching") : t("analysis.stage_diagnosing");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50/50 via-white to-slate-50">
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          <BackButton />
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-blue-500" />
-            <h1 className="font-bold text-base">פענוח ECG</h1>
+            <h1 className="font-bold text-base">{t("analysis.ecg_title")}</h1>
           </div>
         </div>
       </div>
@@ -80,15 +82,15 @@ export default function ECGAnalysis() {
         {kbCount > 0 && (
           <Link to="/knowledge-base" className="flex items-center gap-2 text-xs text-primary bg-primary/5 border border-primary/15 rounded-lg px-3 py-2">
             <BookOpen className="w-4 h-4" />
-            מאגר הידע כולל {kbCount} דפוסי ECG להשוואה
+            {t("analysis.ecg_kb_link", { n: kbCount })}
           </Link>
         )}
 
         <ImageUploader
           files={files}
           onFilesChange={handleFilesChange}
-          label="העלה תמונת ECG"
-          hint="ניתן להעלות מספר תמונות (לדוגמה: לידים שונים) לשיפור הדיוק"
+          label={t("analysis.ecg_upload_label")}
+          hint={t("analysis.ecg_upload_hint")}
         />
 
         {files.length > 0 && !result && (
@@ -99,14 +101,14 @@ export default function ECGAnalysis() {
               disabled={loading}
               className="w-full h-12 rounded-xl text-sm font-semibold shadow-md shadow-primary/20"
             >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {stageLabel}
-              </span>
-            ) : (
-              "נתח ECG"
-            )}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {stageLabel}
+                </span>
+              ) : (
+                t("analysis.ecg_button")
+              )}
             </Button>
           </>
         )}

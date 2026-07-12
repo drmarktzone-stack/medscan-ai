@@ -1,7 +1,9 @@
 import React, { useRef, useState, useMemo, useEffect } from "react";
 import { Upload, X, Plus, Camera } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 export default function ImageUploader({ files, onFilesChange, label, hint }) {
+  const { t } = useI18n();
   const inputRef = useRef(null);
   const cameraRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
@@ -38,9 +40,9 @@ export default function ImageUploader({ files, onFilesChange, label, hint }) {
         <div className="grid grid-cols-3 gap-2">
           {previews.map((url, idx) => (
             <div key={idx} className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-50 aspect-square">
-              <img src={url} alt={`תמונה ${idx + 1}`} className="w-full h-full object-cover" />
+              <img src={url} alt={t("uploader.image_alt", { n: idx + 1 })} className="w-full h-full object-cover" />
               {idx === 0 && (
-                <span className="absolute top-1 right-1 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded">ראשית</span>
+                <span className="absolute top-1 right-1 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded">{t("uploader.primary")}</span>
               )}
               <button
                 onClick={() => removeFile(idx)}
@@ -67,9 +69,9 @@ export default function ImageUploader({ files, onFilesChange, label, hint }) {
           </div>
           <div>
             <p className="text-sm font-semibold text-foreground">
-              {previews.length > 0 ? "הוסף תמונות נוספות" : label || "העלה תמונה"}
+              {previews.length > 0 ? t("uploader.add_more") : label || t("uploader.upload_default")}
             </p>
-            <p className="text-xs text-muted-foreground mt-0.5">{hint || "גרור לכאן או לחץ לבחירה"}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{hint || t("uploader.hint_default")}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
@@ -79,7 +81,7 @@ export default function ImageUploader({ files, onFilesChange, label, hint }) {
             className="flex items-center justify-center gap-2 h-11 rounded-lg bg-primary text-primary-foreground text-sm font-semibold shadow-sm hover:bg-primary/90 transition-colors"
           >
             <Upload className="w-4 h-4" />
-            העלאת תמונה
+            {t("uploader.upload_btn")}
           </button>
           <button
             type="button"
@@ -87,7 +89,7 @@ export default function ImageUploader({ files, onFilesChange, label, hint }) {
             className="flex items-center justify-center gap-2 h-11 rounded-lg bg-white border border-slate-200 text-foreground text-sm font-semibold shadow-sm hover:bg-slate-50 transition-colors"
           >
             <Camera className="w-4 h-4 text-primary" />
-            צילום במצלמה
+            {t("uploader.camera_btn")}
           </button>
         </div>
       </div>

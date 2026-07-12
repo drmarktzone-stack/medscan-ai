@@ -3,46 +3,54 @@ import { Link } from "react-router-dom";
 import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n";
 
 const tools = [
   {
-    title: "פענוח ECG",
-    description: "העלה תמונת אק\"ג וקבל ניתוח מפורט של הקצב, המרווחים והממצאים",
+    titleKey: "home.ecg_title",
+    descKey: "home.ecg_desc",
     icon: Activity,
     path: "/ecg",
     gradient: "from-blue-500 to-cyan-400",
     bg: "bg-blue-50",
+    color: "#3b82f6",
   },
   {
-    title: "אבחון עור",
-    description: "העלה תמונה של נגע או פריחה בעור וקבל הערכה ראשונית והמלצות",
+    titleKey: "home.skin_title",
+    descKey: "home.skin_desc",
     icon: Stethoscope,
     path: "/skin",
     gradient: "from-teal-500 to-emerald-400",
     bg: "bg-teal-50",
+    color: "#14b8a6",
   },
   {
-    title: "אבחון רדיולוגי",
-    description: "העלה צילום רנטגן, CT, MRI או אולטראסאונד וקבל ניתוח רדיולוגי מפורט",
+    titleKey: "home.radiology_title",
+    descKey: "home.radiology_desc",
     icon: ScanLine,
     path: "/radiology",
     gradient: "from-indigo-500 to-violet-400",
     bg: "bg-indigo-50",
+    color: "#6366f1",
   },
 ];
 
 export default function Home() {
+  const { t } = useI18n();
   const [settingsOpen, setSettingsOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-blue-50/30">
       {/* Top actions */}
-      <div className="flex items-center justify-end px-5 pt-[calc(env(safe-area-inset-top)+1.25rem)]">
+      <div className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top)+1.25rem)]">
+        <LanguageSwitcher />
         <button
           onClick={() => setSettingsOpen(true)}
           className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
         >
           <Settings className="w-4 h-4" />
-          הגדרות חשבון
+          {t("home.settings")}
         </button>
       </div>
 
@@ -50,7 +58,7 @@ export default function Home() {
       <header className="pt-6 pb-8 px-6 text-center">
         <img
           src="https://media.base44.com/images/public/6a44d05c8195d3fd459fae15/73f2e9a38_generated_image.png"
-          alt="MedScan AI — ניתוח רפואי חכם"
+          alt={t("home.hero_alt")}
           className="w-full max-w-md mx-auto rounded-2xl mb-6 shadow-lg shadow-blue-500/10"
         />
         <div className="flex justify-center mb-5">
@@ -62,29 +70,25 @@ export default function Home() {
           MedScan AI
         </h1>
         <p className="text-muted-foreground mt-3 max-w-md mx-auto text-sm leading-relaxed">
-          ניתוח רפואי חכם מבוסס בינה מלאכותית — העלה צילום רפואי (ECG, עור, רדיולוגיה) וקבל הערכה מיידית
+          {t("home.subtitle")}
         </p>
       </header>
 
       {/* Tools */}
       <main className="max-w-lg mx-auto px-5 pb-10 space-y-4">
         {tools.map((tool) => (
-          <Link
-            key={tool.path}
-            to={tool.path}
-            className="block group"
-          >
+          <Link key={tool.path} to={tool.path} className="block group">
             <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 select-none">
               <div className="flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-xl ${tool.bg} flex items-center justify-center shrink-0`}>
-                  <tool.icon className={`w-6 h-6 bg-gradient-to-br ${tool.gradient} bg-clip-text`} style={{ color: tool.gradient.includes('blue') ? '#3b82f6' : tool.gradient.includes('teal') ? '#14b8a6' : '#6366f1' }} />
+                  <tool.icon className="w-6 h-6" style={{ color: tool.color }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
-                    {tool.title}
+                    {t(tool.titleKey)}
                   </h2>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    {tool.description}
+                    {t(tool.descKey)}
                   </p>
                 </div>
                 <div className="text-muted-foreground/40 group-hover:text-primary transition-colors mt-1">
@@ -100,13 +104,13 @@ export default function Home() {
         {/* Features */}
         <div className="grid grid-cols-3 gap-3 pt-4">
           {[
-            { icon: ShieldCheck, label: "פרטיות מלאה" },
-            { icon: Activity, label: "ניתוח מיידי" },
-            { icon: Heart, label: "AI מתקדם" },
+            { icon: ShieldCheck, labelKey: "home.feat_privacy" },
+            { icon: Activity, labelKey: "home.feat_instant" },
+            { icon: Heart, labelKey: "home.feat_ai" },
           ].map((feat) => (
-            <div key={feat.label} className="text-center p-3 rounded-xl bg-white/60 border border-slate-100 select-none">
+            <div key={feat.labelKey} className="text-center p-3 rounded-xl bg-white/60 border border-slate-100 select-none">
               <feat.icon className="w-5 h-5 mx-auto text-primary/60 mb-1.5" />
-              <p className="text-[11px] font-medium text-muted-foreground">{feat.label}</p>
+              <p className="text-[11px] font-medium text-muted-foreground">{t(feat.labelKey)}</p>
             </div>
           ))}
         </div>

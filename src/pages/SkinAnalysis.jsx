@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Stethoscope, Loader2, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Stethoscope, Loader2, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
@@ -8,8 +8,11 @@ import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
+import BackButton from "@/components/BackButton";
+import { useI18n } from "@/lib/i18n";
 
 export default function SkinAnalysis() {
+  const { t, lang } = useI18n();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState("");
@@ -39,6 +42,7 @@ export default function SkinAnalysis() {
         analysisType: "skin",
         domainRole: "דרמטולוג מומחה",
         clinicalContext,
+        language: lang,
         matchingInstructions: `1. בחן את הנגע בצורה שיטתית: מורפולוגיה (מקולרי/פפולרי/נודולרי/וסיקולרי), צבע, גודל, גבולות, פיזור, סימטריה.
 2. השווה את הממצאים מול המאפיינים המרכזיים של כל מחלה במאגר — גם חיובי וגם שלילי.
 3. השתמש בכלל ABCDE להערכת נגעים פיגמנטיים: Asymmetry, Border, Color, Diameter, Evolution.
@@ -55,25 +59,23 @@ export default function SkinAnalysis() {
       setResult(res);
     } catch (err) {
       console.error(err);
-      setError(err.message || "אירעה שגיאה במהלך הניתוח. נסה שנית.");
+      setError(err.message || t("analysis.error_fallback"));
     } finally {
       setLoading(false);
       setStage("");
     }
   };
 
-  const stageLabel = stage === "matching" ? "מתאים מול מאגר הידע ומאגרי אינטרנט רפואיים..." : "מנתח ומכין דוח מפורט...";
+  const stageLabel = stage === "matching" ? t("analysis.stage_matching") : t("analysis.stage_diagnosing");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-slate-50">
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          <BackButton />
           <div className="flex items-center gap-2">
             <Stethoscope className="w-5 h-5 text-teal-500" />
-            <h1 className="font-bold text-base">אבחון עור</h1>
+            <h1 className="font-bold text-base">{t("analysis.skin_title")}</h1>
           </div>
         </div>
       </div>
@@ -82,15 +84,15 @@ export default function SkinAnalysis() {
         {kbCount > 0 && (
           <Link to="/knowledge-base" className="flex items-center gap-2 text-xs text-teal-600 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2">
             <BookOpen className="w-4 h-4" />
-            מאגר הידע כולל {kbCount} מחלות עור להשוואה
+            {t("analysis.skin_kb_link", { n: kbCount })}
           </Link>
         )}
 
         <ImageUploader
           files={files}
           onFilesChange={handleFilesChange}
-          label="העלה תמונה של הנגע"
-          hint="מקרוב, רחוק, דרמטוסקופיה — מספר זוויות משפרות דיוק"
+          label={t("analysis.skin_upload_label")}
+          hint={t("analysis.skin_upload_hint")}
         />
 
         {files.length > 0 && !result && (
@@ -101,14 +103,14 @@ export default function SkinAnalysis() {
               disabled={loading}
               className="w-full h-12 rounded-xl text-sm font-semibold bg-teal-600 hover:bg-teal-700 shadow-md shadow-teal-500/20"
             >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {stageLabel}
-              </span>
-            ) : (
-              "נתח תמונה"
-            )}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {stageLabel}
+                </span>
+              ) : (
+                t("analysis.skin_button")
+              )}
             </Button>
           </>
         )}
