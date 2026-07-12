@@ -40,15 +40,13 @@ export async function runDiagnosisPipeline({
   const outputLang = langNames[language] || "Hebrew";
   const langDirective = `\n## Output Language\nALL text in your response (titles, reasoning, summary, analysis, guideline, finding labels) MUST be written in ${outputLang}. This is critical — the user selected ${outputLang} as their language.`;
 
-  // 1. Upload all images (first is the primary analysis image)
-  const uploadResults = await Promise.all(
-    files.map((f) => base44.integrations.Core.UploadFile({ file: f }))
-  );
+  // 1. Upload images + fetch knowledge-base cases in parallel (independent I/O)
+  const [uploadResults, allCases] = await Promise.all([
+    Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f }))),
+    base44.entities[entityName].list("-created_date", 100),
+  ]);
   const fileUrls = uploadResults.map((r) => r.file_url);
   const file_url = fileUrls[0];
-
-  // 2. Fetch all knowledge-base cases
-  const allCases = await base44.entities[entityName].list("-created_date", 100);
 
   if (!allCases || allCases.length === 0) {
     throw new Error(emptyKbErrors[language] || emptyKbErrors.he);
@@ -108,7 +106,7 @@ ${langDirective}`,
       required: ["matches"],
     },
     add_context_from_internet: true,
-    model: "gemini_3_1_pro",
+    model: "gemini_3_flash",
   });
 
   const matches = (matchingResult.matches || [])
