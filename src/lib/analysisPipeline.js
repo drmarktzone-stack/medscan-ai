@@ -43,7 +43,7 @@ export async function runDiagnosisPipeline({
   // 1. Upload images + fetch knowledge-base cases in parallel (independent I/O)
   const [uploadResults, allCases] = await Promise.all([
     Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f }))),
-    base44.entities[entityName].list("-created_date", 100),
+    base44.entities[entityName].list("-created_date", 500),
   ]);
   const fileUrls = uploadResults.map((r) => r.file_url);
   const file_url = fileUrls[0];
@@ -77,12 +77,12 @@ ${matchingInstructions}
 - אם סופק הקשר קליני של המטופל, שקול אותו בעת ההתאמה — גיל, מין, תסמינים ורקע רפואי עשויים לשנות משמעותית את סבירות האבחנה.
 
 ## פלט נדרש (JSON)
-מערך matches מסודר מהתואם ביותר לפחות תואם. כל פריט כולל:
+מערך matches המכיל אך ורק את 12 ההתאמות הטובות ביותר בלבד (אל תכלול התאמות חלשות — צמצם לטופ 12). מסודר מהתואם ביותר לפחות תואם. כל פריט כולל:
 - case_id: מזהה המקרה (כפי שמופיע ברשימה)
 - title: כותרת המקרה
 - diagnosis: האבחנה
 - confidence: מספר שלם 0-100
-- reasoning: הסבר קצר לניקוד
+- reasoning: הסבר קצר לניקוד (עד 2 משפטים)
 ${langDirective}`,
     file_urls: fileUrls,
     response_json_schema: {
@@ -132,7 +132,8 @@ ${langDirective}`,
     .map((id) => allCases.find((c) => c.id === id))
     .filter(Boolean);
 
-  const referenceImages = topCases
+  const referenceCases = topCases.slice(0, 3);
+  const referenceImages = referenceCases
     .filter((c) => c.image_url)
     .map((c) => c.image_url);
 
@@ -140,7 +141,7 @@ ${langDirective}`,
 
   let imageLegend = "";
   if (referenceImages.length > 0) {
-    const legendItems = topCases
+    const legendItems = referenceCases
       .filter((c) => c.image_url)
       .map((c, i) => `תמונה ${i + 2}: ייחוס עבור "${c.title}" (${c.diagnosis})`);
     imageLegend = `## תמונות להשוואה ויזואלית\nתמונה 1: התמונה לניתוח.\n${legendItems.join("\n")}`;

@@ -23,11 +23,11 @@ export function buildCasesForMatching(cases) {
   }
 
   return cases.map((c, i) => {
-    let entry = `#${i + 1} [id: ${c.id}]\n`;
-    entry += `כותרת: ${c.title}\n`;
-    entry += `אבחנה: ${c.diagnosis}\n`;
-    if (c.key_features) entry += `מאפיינים: ${c.key_features}\n`;
-    if (c.description) entry += `תיאור: ${c.description}\n`;
+    let entry = `#${i + 1} [id:${c.id}] ${c.title}`;
+    if (c.diagnosis) entry += ` — ${c.diagnosis}`;
+    if (c.category) entry += ` [${c.category}]`;
+    if (c.urgent) entry += " ⚠דחוף";
+    if (c.key_features) entry += ` | ${c.key_features}`;
     return entry;
   }).join("\n");
 }
