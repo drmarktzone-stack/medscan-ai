@@ -3,6 +3,7 @@ import SeverityBadge from "@/components/SeverityBadge";
 import ReactMarkdown from "react-markdown";
 import { CheckCircle2, Download, Loader2 } from "lucide-react";
 import AnnotatedImage from "@/components/AnnotatedImage";
+import ECGInterpretationCard from "@/components/ECGInterpretationCard";
 import UncertaintyWarning from "@/components/UncertaintyWarning";
 import FeedbackButtons from "@/components/FeedbackButtons";
 import PrintableReport from "@/components/PrintableReport";
@@ -16,7 +17,7 @@ function confidenceStyle(conf) {
   return "text-slate-500 bg-slate-50 border-slate-200";
 }
 
-export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty, guideline, analysisId, analysisType }) {
+export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty, guideline, analysisId, analysisType, ecgInterpretation }) {
   const { t, dir } = useI18n();
   const printRef = useRef(null);
   const [exporting, setExporting] = useState(false);
@@ -53,6 +54,8 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
             <p className="text-sm font-semibold text-primary">{summary}</p>
           </div>
         )}
+
+        {ecgInterpretation && <ECGInterpretationCard interpretation={ecgInterpretation} />}
 
         {imageUrl && findings && findings.length > 0 && (
           <AnnotatedImage imageUrl={imageUrl} findings={findings} />

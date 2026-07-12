@@ -137,6 +137,7 @@ export default function ECGAnalysis() {
               findings={result.findings}
               uncertainty={result.uncertainty}
               guideline={result.guideline}
+              ecgInterpretation={result.ecgInterpretation}
               analysisId={result.analysisId}
               analysisType="ecg"
             />
