@@ -43,7 +43,7 @@ export async function runDiagnosisPipeline({
   // 1. Upload images + fetch knowledge-base cases in parallel (independent I/O)
   const [uploadResults, allCases] = await Promise.all([
     Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f }))),
-    base44.entities[entityName].list("-created_date", 500),
+    base44.entities[entityName].list("-created_date", 1000),
   ]);
   const fileUrls = uploadResults.map((r) => r.file_url);
   const file_url = fileUrls[0];
