@@ -48,6 +48,11 @@ export default function Home() {
 
       {/* Header */}
       <header className="pt-6 pb-8 px-6 text-center">
+        <img
+          src="https://media.base44.com/images/public/6a44d05c8195d3fd459fae15/73f2e9a38_generated_image.png"
+          alt="MedScan AI — ניתוח רפואי חכם"
+          className="w-full max-w-md mx-auto rounded-2xl mb-6 shadow-lg shadow-blue-500/10"
+        />
         <div className="flex justify-center mb-5">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/25">
             <Heart className="w-8 h-8 text-white" />
