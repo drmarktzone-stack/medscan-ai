@@ -1,6 +1,7 @@
 import { base44 } from "@/api/base44Client";
 import { buildCasesForMatching, buildMatchedCasesText } from "./knowledgeBase";
 import { getMeasurementProtocol, EXTRACTION_SCHEMA } from "./diagnosticProtocols";
+import { ECG_FULL_RULES, ECG_INTERPRETATION_SCHEMA } from "./ecgRules";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -157,6 +158,40 @@ ${langDirective}`,
     ? measurements.map((m) => `- **${m.parameter}**: ${m.value}${m.notes ? ` — ${m.notes}` : ""}`).join("\n")
     : "לא חולצו מדידות.";
 
+  // ---------- Stage 1.5: ECG systematic rule-based self-diagnosis ----------
+  let ecgInterpretation = null;
+  if (analysisType === "ecg") {
+    onStage?.("interpreting");
+    const interpRes = await base44.integrations.Core.InvokeLLM({
+      prompt: `אתה קרדיולוג מומחה. בצע פענוח ECG שיטתי עצמאי באמצעות מנוע החוקים המלא. הפעל את כל הכללים לפני שאתה משווה למאגר הידע — האבחנה נגזרת מהחוקים ומההובלות, לא מניחוש.
+
+## התמונות לניתוח
+תמונה 1 היא התרשים הראשי. שאר התמונות (אם קיימות) הן לידים/רצועות נוספים.
+${clinicalContext ? `\n## הקשר קליני\n${clinicalContext}\n` : ""}
+## מדידות שחולצו בשלב הסריקה
+${measurementsText}
+${redFlags ? `\n## דגלים אדומים\n${redFlags}\n` : ""}
+${ECG_FULL_RULES}
+
+## הוראות ביצוע
+1. בצע את כל 10 שלבי הפענוח השיטתי — אל תדלג על שלב.
+2. לכל הובלה / קבוצת הובלות, תעד את הממצא והטריטוריה המתאימה.
+3. הפעל את כל קבוצות כללי האבחנה (א–ח). לכל כלל: סמן met / not_met / indeterminate עם ראיה מהמדידות וההובלות.
+4. צלב את הכללים שמתקיימים → קבע אבחנה ראשית על בסיס החוקים בלבד.
+5. רשום אבחנות מבדלות.
+6. הנימוק חייב להתבסס על הובלות ספציפיות וכללים ספציפיים (למשל: "ST elevation ב-II, III, aVF → דופן תחתית → STEMI תחתית").
+
+## חיפוש משלים באינטרנט
+חפש דפוסי ECG וקריטריוני אבחון בספרות רפואית עדכנית כדי לאמת את הפרשנות.
+${langDirective}`,
+      file_urls: fileUrls,
+      response_json_schema: ECG_INTERPRETATION_SCHEMA,
+      add_context_from_internet: true,
+      model: "gemini_3_1_pro",
+    });
+    ecgInterpretation = interpRes;
+  }
+
   // ---------- Stage 2: Criteria Verification + Diagnosis ----------
   onStage?.("verifying");
 
@@ -173,6 +208,18 @@ ${clinicalContext ? `\n## הקשר קליני של המטופל\n${clinicalConte
 ## מדידות שחולצו מהתמונה (שלב הסריקה והמדידה)
 ${measurementsText}
 ${redFlags ? `\n## דגלים אדומים שזוהו\n${redFlags}\n` : ""}
+${ecgInterpretation ? `
+## פרשנות עצמאית ממנוע החוקים (ECG)
+- **אבחנה ראשית על בסיס חוקים:** ${ecgInterpretation.preliminary_diagnosis || "—"}
+- **אבחנות מבדלות:** ${(ecgInterpretation.differentials || []).join(", ") || "—"}
+- **נימוק:** ${ecgInterpretation.reasoning || "—"}
+
+### ממצאים לפי הובלות
+${(ecgInterpretation.lead_findings || []).map((lf) => `- **${lf.leads}** (${lf.territory || "—"}): ${lf.finding}`).join("\n") || "—"}
+
+### הפעלת כללי אבחנה
+${(ecgInterpretation.rule_applications || []).map((ra) => `- **${ra.rule}** — ${ra.status} (${ra.confidence || "?"}%): ${ra.evidence}`).join("\n") || "—"}
+` : ""}
 ## תוצאות שלב ההתאמה — המקרים התואמים ביותר
 ${matchesSummary}
 
@@ -310,6 +357,7 @@ ${langDirective}`,
     uncertainty,
     guideline: diagnosis.guideline,
     measurements,
+    ecgInterpretation,
     analysisId: analysisRecord.id,
   };
 }

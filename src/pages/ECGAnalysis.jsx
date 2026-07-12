@@ -67,6 +67,7 @@ export default function ECGAnalysis() {
   const stageLabels = {
     extracting: t("analysis.stage_extracting"),
     matching: t("analysis.stage_matching"),
+    interpreting: t("analysis.stage_interpreting"),
     verifying: t("analysis.stage_verifying"),
     diagnosing: t("analysis.stage_diagnosing"),
   };
