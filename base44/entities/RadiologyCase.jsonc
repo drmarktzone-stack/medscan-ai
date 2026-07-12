@@ -32,6 +32,13 @@
       "type": "string",
       "description": "Formal diagnostic criteria checklist \u2014 the specific measurable radiological criteria required to confirm this diagnosis (e.g. density, size, margins, location, mass effect, associated signs). Used by the criteria-verification stage."
     },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags / keywords for this case (e.g. pediatric, emergency, CT, chest, trauma)"
+    },
     "description": {
       "type": "string",
       "description": "Detailed clinical description"

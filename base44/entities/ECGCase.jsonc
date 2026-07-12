@@ -32,6 +32,13 @@
       "type": "string",
       "description": "Formal diagnostic criteria checklist \u2014 the specific measurable ECG criteria required to confirm this diagnosis (e.g. intervals, morphology, lead distribution). Used by the criteria-verification stage."
     },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags / keywords for this case (e.g. pediatric, emergency, arrhythmia)"
+    },
     "description": {
       "type": "string",
       "description": "Detailed clinical description"

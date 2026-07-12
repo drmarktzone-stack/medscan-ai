@@ -1,5 +1,6 @@
 import React from "react";
-import { Search, X, Filter, AlertCircle } from "lucide-react";
+import { Search, X, Filter, AlertCircle, Tag } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 export default function SearchFilter({
   query,
@@ -10,18 +11,39 @@ export default function SearchFilter({
   urgentOnly,
   onUrgentOnlyChange,
   urgentCount,
+  tags = [],
+  selectedTags = [],
+  onSelectedTagsChange,
 }) {
-  const hasActiveFilters = query || category || urgentOnly;
+  const { t } = useI18n();
+  const hasActiveFilters = query || category || urgentOnly || selectedTags.length > 0;
+
+  const toggleTag = (tag) => {
+    if (!onSelectedTagsChange) return;
+    onSelectedTagsChange(
+      selectedTags.includes(tag)
+        ? selectedTags.filter((tg) => tg !== tag)
+        : [...selectedTags, tag]
+    );
+  };
+
+  const clearAll = () => {
+    onQueryChange("");
+    onCategoryChange("");
+    onUrgentOnlyChange?.(false);
+    onSelectedTagsChange?.([]);
+  };
 
   return (
     <div className="space-y-3">
+      {/* Text search */}
       <div className="relative">
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
         <input
           type="text"
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="חיפוש לפי כותרת, אבחנה או מאפיינים..."
+          placeholder={t("kb.search_placeholder")}
           className="w-full h-10 rounded-xl border border-slate-200 bg-white pr-10 pl-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
         />
         {query && (
@@ -34,6 +56,7 @@ export default function SearchFilter({
         )}
       </div>
 
+      {/* Urgent toggle */}
       {onUrgentOnlyChange && (
         <button
           onClick={() => onUrgentOnlyChange(!urgentOnly)}
@@ -44,11 +67,12 @@ export default function SearchFilter({
           }`}
         >
           <AlertCircle className="w-4 h-4" />
-          דחופים בלבד
+          {t("kb.urgent_only")}
           {urgentCount > 0 && <span className="opacity-80">({urgentCount})</span>}
         </button>
       )}
 
+      {/* Category chips (finding type) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
           <Filter className="w-3.5 h-3.5" />
@@ -61,7 +85,7 @@ export default function SearchFilter({
               : "bg-white border border-slate-200 text-muted-foreground hover:border-primary/30"
           }`}
         >
-          הכל
+          {t("kb.all")}
         </button>
         {categories.map((cat) => (
           <button
@@ -76,19 +100,41 @@ export default function SearchFilter({
             {cat.label}
           </button>
         ))}
-        {hasActiveFilters && (
-          <button
-            onClick={() => {
-              onQueryChange("");
-              onCategoryChange("");
-              onUrgentOnlyChange?.(false);
-            }}
-            className="text-xs text-red-500 hover:text-red-600 shrink-0 mr-1"
-          >
-            נקה
-          </button>
-        )}
       </div>
+
+      {/* Tag chips (multi-select) */}
+      {tags.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+            <Tag className="w-3.5 h-3.5" />
+          </div>
+          {tags.map((tag) => {
+            const active = selectedTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap transition-all ${
+                  active
+                    ? "bg-accent text-accent-foreground shadow-sm"
+                    : "bg-white border border-slate-200 text-muted-foreground hover:border-accent/40"
+                }`}
+              >
+                {tag}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {hasActiveFilters && (
+        <button
+          onClick={clearAll}
+          className="text-xs text-red-500 hover:text-red-600"
+        >
+          {t("kb.clear_all")}
+        </button>
+      )}
     </div>
   );
 }

@@ -14,10 +14,16 @@ const ecgCategories = ["rhythm", "conduction", "ischemic", "chamber_abnormality"
 const skinCategories = ["benign", "malignant", "precancerous", "inflammatory", "infectious", "autoimmune", "pigmentation", "vascular", "other"];
 const radiologyCategories = ["chest", "abdominal", "musculoskeletal", "neurological", "cardiac", "vascular", "genitourinary", "other"];
 
-function filterCases(cases, query, category, urgentOnly) {
+function filterCases(cases, query, category, urgentOnly, selectedTags = []) {
   let filtered = cases;
   if (urgentOnly) filtered = filtered.filter((c) => c.urgent);
   if (category) filtered = filtered.filter((c) => c.category === category);
+  if (selectedTags.length > 0) {
+    filtered = filtered.filter((c) => {
+      const cTags = c.tags || [];
+      return selectedTags.every((tag) => cTags.includes(tag));
+    });
+  }
   if (query) {
     const q = query.trim().toLowerCase();
     filtered = filtered.filter((c) =>
@@ -38,6 +44,7 @@ export default function KnowledgeBase() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [urgentOnly, setUrgentOnly] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [bulkOpen, setBulkOpen] = useState(false);
 
   const catLabels = categoryTranslations[lang] || categoryTranslations.he;
@@ -46,9 +53,9 @@ export default function KnowledgeBase() {
     setLoading(true);
     try {
       const [ecg, skin, radiology] = await Promise.all([
-        base44.entities.ECGCase.list("-created_date", 100),
-        base44.entities.SkinCase.list("-created_date", 100),
-        base44.entities.RadiologyCase.list("-created_date", 100),
+        base44.entities.ECGCase.list("-created_date", 500),
+        base44.entities.SkinCase.list("-created_date", 500),
+        base44.entities.RadiologyCase.list("-created_date", 500),
       ]);
       setEcgCases(ecg);
       setSkinCases(skin);
@@ -67,14 +74,17 @@ export default function KnowledgeBase() {
     setQuery("");
     setCategory("");
     setUrgentOnly(false);
+    setSelectedTags([]);
   };
 
   const urgentEcgCount = ecgCases.filter((c) => c.urgent).length;
   const urgentSkinCount = skinCases.filter((c) => c.urgent).length;
   const urgentRadiologyCount = radiologyCases.filter((c) => c.urgent).length;
-  const filteredEcgCases = filterCases(ecgCases, query, category, urgentOnly);
-  const filteredSkinCases = filterCases(skinCases, query, category, urgentOnly);
-  const filteredRadiologyCases = filterCases(radiologyCases, query, category, urgentOnly);
+  const filteredEcgCases = filterCases(ecgCases, query, category, urgentOnly, selectedTags);
+  const filteredSkinCases = filterCases(skinCases, query, category, urgentOnly, selectedTags);
+  const filteredRadiologyCases = filterCases(radiologyCases, query, category, urgentOnly, selectedTags);
+  const activeAllCases = tab === "ecg" ? ecgCases : tab === "skin" ? skinCases : radiologyCases;
+  const availableTags = Array.from(new Set(activeAllCases.flatMap((c) => c.tags || []))).sort();
   const activeCategories = (tab === "ecg" ? ecgCategories : tab === "skin" ? skinCategories : radiologyCategories).map((v) => ({ value: v, label: catLabels[v] || v }));
   const activeUrgentCount = tab === "ecg" ? urgentEcgCount : tab === "skin" ? urgentSkinCount : urgentRadiologyCount;
 
@@ -167,6 +177,9 @@ export default function KnowledgeBase() {
                 urgentOnly={urgentOnly}
                 onUrgentOnlyChange={setUrgentOnly}
                 urgentCount={activeUrgentCount}
+                tags={availableTags}
+                selectedTags={selectedTags}
+                onSelectedTagsChange={setSelectedTags}
               />
             </div>
           )}

@@ -33,6 +33,13 @@
       "type": "string",
       "description": "Formal diagnostic criteria checklist \u2014 the specific measurable clinical/dermoscopic criteria required to confirm this diagnosis (e.g. ABCDE criteria, morphology, distribution, dermoscopic structures). Used by the criteria-verification stage."
     },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags / keywords for this case (e.g. pediatric, face, pigmented, emergency)"
+    },
     "description": {
       "type": "string",
       "description": "Detailed clinical description"
