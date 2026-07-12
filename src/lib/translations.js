@@ -166,6 +166,15 @@ export const translations = {
     "eval.add_gold": "הוסף מקרה לסט הזהב",
     "eval.bulk_gold": "העשרה המונית של סט הזהב",
     "eval.error": "שגיאה בהרצת ההערכה.",
+
+    "report.subtitle": "דוח אבחון רפואי",
+    "report.date": "תאריך הפקה",
+    "report.type": "סוג בדיקה",
+    "report.final_diagnosis": "אבחנה ראשית",
+    "report.image": "תמונה לניתוח",
+    "report.recommendations": "המלצות טיפוליות",
+    "report.detailed_analysis": "ניתוח מפורט",
+    "report.id": "מזהה דוח",
   },
 
   en: {
@@ -335,6 +344,15 @@ export const translations = {
     "eval.add_gold": "Add Case to Gold Standard",
     "eval.bulk_gold": "Bulk Enrich Gold Standard",
     "eval.error": "Error running evaluation.",
+
+    "report.subtitle": "Medical Diagnostic Report",
+    "report.date": "Date",
+    "report.type": "Examination Type",
+    "report.final_diagnosis": "Primary Diagnosis",
+    "report.image": "Analysis Image",
+    "report.recommendations": "Treatment Recommendations",
+    "report.detailed_analysis": "Detailed Analysis",
+    "report.id": "Report ID",
   },
 
   ar: {
@@ -504,6 +522,15 @@ export const translations = {
     "eval.add_gold": "إضافة حالة للمعيار الذهبي",
     "eval.bulk_gold": "إثراء جماعي للمعيار الذهبي",
     "eval.error": "خطأ في تشغيل التقييم.",
+
+    "report.subtitle": "تقرير تشخيص طبي",
+    "report.date": "التاريخ",
+    "report.type": "نوع الفحص",
+    "report.final_diagnosis": "التشخيص الرئيسي",
+    "report.image": "صورة التحليل",
+    "report.recommendations": "التوصيات العلاجية",
+    "report.detailed_analysis": "تحليل مفصل",
+    "report.id": "معرف التقرير",
   },
 };
 

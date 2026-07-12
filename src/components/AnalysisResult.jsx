@@ -5,6 +5,7 @@ import { CheckCircle2, Download, Loader2 } from "lucide-react";
 import AnnotatedImage from "@/components/AnnotatedImage";
 import UncertaintyWarning from "@/components/UncertaintyWarning";
 import FeedbackButtons from "@/components/FeedbackButtons";
+import PrintableReport from "@/components/PrintableReport";
 import { exportReportToPDF } from "@/lib/pdfExport";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
@@ -17,16 +18,16 @@ function confidenceStyle(conf) {
 
 export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty, guideline, analysisId, analysisType }) {
   const { t, dir } = useI18n();
-  const reportRef = useRef(null);
+  const printRef = useRef(null);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState(null);
 
   const handleExport = async () => {
-    if (!reportRef.current) return;
+    if (!printRef.current) return;
     setExporting(true);
     setExportError(null);
     try {
-      await exportReportToPDF(reportRef.current);
+      await exportReportToPDF(printRef.current);
     } catch (err) {
       console.error(err);
       setExportError(t("result.export_error"));
@@ -37,7 +38,7 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
 
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
-      <div ref={reportRef} className="space-y-5">
+      <div className="space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h3 className="text-lg font-bold text-foreground">{t("result.title")}</h3>
           <SeverityBadge severity={severity} />
@@ -103,6 +104,22 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
       {exportError && <p className="text-xs text-red-500 text-center">{exportError}</p>}
 
       {analysisId && <FeedbackButtons analysisId={analysisId} analysisType={analysisType} />}
+
+      {/* Off-screen print-optimized report for PDF export */}
+      <div style={{ position: "fixed", left: "-99999px", top: 0, pointerEvents: "none" }} aria-hidden="true">
+        <PrintableReport
+          ref={printRef}
+          summary={summary}
+          severity={severity}
+          imageUrl={imageUrl}
+          findings={findings}
+          matchedCases={matchedCases}
+          guideline={guideline}
+          result={result}
+          analysisType={analysisType}
+          analysisId={analysisId}
+        />
+      </div>
     </div>
   );
 }
