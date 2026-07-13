@@ -61,7 +61,7 @@ export async function runDiagnosisPipeline({
   // ---------- Stage 1: Scan, Measure & Match ----------
   onStage?.("extracting");
 
-  const extractMatchResult = await base44.integrations.Core.InvokeLLM({
+  const stage1Promise = base44.integrations.Core.InvokeLLM({
     prompt: `אתה ${domainRole} עם ניסיון רב שנים. משימה זו מחולקת לשני חלקים: ראשית סריקה ומדידה שיטתית של התמונה, ולאחר מכן התאמה מול כל מקרי מאגר הידע.
 
 ## התמונות לניתוח
@@ -82,7 +82,6 @@ ${matchingInstructions}
 - לכל מקרה החזר ציון ביטחון 0-100 והסבר קצר המבוסס על המדידות.
 - דרג מהתואם ביותר לפחות. החזר רק את 12 ההתאמות הטובות ביותר.
 - אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות, במיוחד מצבים מסכני חיים.
-- חפש באינטרנט מאגרי תמונות רפואיים וספרות קלינית להשלמת ההשוואה.
 ${langDirective}`,
     file_urls: fileUrls,
     response_json_schema: {
@@ -107,9 +106,48 @@ ${langDirective}`,
       },
       required: ["measurements", "matches"],
     },
-    add_context_from_internet: true,
+    add_context_from_internet: false,
     model: "gemini_3_flash",
   });
+
+  // ---------- Stage 1.5: ECG interpretation (parallel with Stage 1) ----------
+  let ecgInterpPromise = null;
+  if (analysisType === "ecg") {
+    ecgInterpPromise = base44.integrations.Core.InvokeLLM({
+      prompt: `אתה קרדיולוג מומחה. בצע פענוח ECG שיטתי עצמאי באמצעות מנוע החוקים המלא. מטרתך לזהות כל חריגה — גם עדינה — ולתעד אותה. אינך מחליט "תקין" אלא אם כן כל 10 שלבי הפענוח ללא יוצא מן הכלל תקינים.
+
+## כלל ברזל — איסור תקין שקרי
+- חוסר עמידה בכלל ספציפי אינו שולל פתולוגיה. ייתכן שהתמונה אינה מאפשרת מדידה מדויקת אך עדיין יש פתולוגיה.
+- אם לא זיהית פתולוגיה ספציפית אך יש כל חריגה כלשהי (קצב, מורפולוגיה, ST, T, QRS) → הקפד לציין "דפוס לא-ספציפי — לא ניתן לשלול פתולוגיה ללא בדיקה נוספת".
+- רק אם כל המדידות וכל ההובלות תקינות לחלוטין → כתוב "תקין".
+- העדף יתר על אבחנת יתר (לזהות פתולוגיה כשיש ספק) על-פני אבחנת חסר.
+
+## התמונות לניתוח
+תמונה 1 היא התרשים הראשי. שאר התמונות (אם קיימות) הן לידים/רצועות נוספים.
+${clinicalContext ? `\n## הקשר קליני\n${clinicalContext}\n` : ""}
+${ECG_FULL_RULES}
+
+## הוראות ביצוע
+1. בצע את כל 10 שלבי הפענוח השיטתי — אל תדלג על שלב. בצע מדידות עצמאיות מהתרשים.
+2. לכל הובלה / קבוצת הובלות, תעד את הממצא והטריטוריה המתאימה. ציין במפורש כל חריגה.
+3. הפעל את כל קבוצות כללי האבחנה (א–ח). לכל כלל: סמן met / not_met / indeterminate עם ראיה. "indeterminate" פירושו שלא ניתן לשלול — לא שלילי.
+4. צלב את הכללים והחריגות שזיהית → קבע את הפתולוגיה העיקרית שזוהתה.
+5. רשום אבחנות מבדלות.
+6. הנימוק חייב להתבסס על הובלות ספציפיות וכללים ספציפיים (למשל: "ST elevation ב-II, III, aVF → דופן תחתית → STEMI תחתית").
+${langDirective}`,
+      file_urls: fileUrls,
+      response_json_schema: ECG_INTERPRETATION_SCHEMA,
+      add_context_from_internet: false,
+      model: "gemini_3_flash",
+    });
+  }
+
+  // ---------- Await parallel stages ----------
+  const [extractMatchResult, ecgInterpResult] = await Promise.all([
+    stage1Promise,
+    ecgInterpPromise || Promise.resolve(null),
+  ]);
+  const ecgInterpretation = ecgInterpResult;
 
   const measurements = Array.isArray(extractMatchResult.measurements)
     ? extractMatchResult.measurements.filter((m) => m.parameter)
@@ -157,43 +195,6 @@ ${langDirective}`,
   const measurementsText = measurements.length > 0
     ? measurements.map((m) => `- **${m.parameter}**: ${m.value}${m.notes ? ` — ${m.notes}` : ""}`).join("\n")
     : "לא חולצו מדידות.";
-
-  // ---------- Stage 1.5: ECG systematic rule-based self-diagnosis ----------
-  let ecgInterpretation = null;
-  if (analysisType === "ecg") {
-    onStage?.("interpreting");
-    const interpRes = await base44.integrations.Core.InvokeLLM({
-      prompt: `אתה קרדיולוג מומחה. בצע פענוח ECG שיטתי עצמאי באמצעות מנוע החוקים המלא. מטרתך לזהות כל חריגה — גם עדינה — ולתעד אותה. אינך מחליט "תקין" אלא אם כן כל 10 שלבי הפענוח ללא יוצא מן הכלל תקינים.
-
-## כלל ברזל — איסור תקין שקרי
-- חוסר עמידה בכלל ספציפי אינו שולל פתולוגיה. ייתכן שהתמונה אינה מאפשרת מדידה מדויקת אך עדיין יש פתולוגיה.
-- אם לא זיהית פתולוגיה ספציפית אך יש כל חריגה כלשהי (קצב, מורפולוגיה, ST, T, QRS) → הקפד לציין "דפוס לא-ספציפי — לא ניתן לשלול פתולוגיה ללא בדיקה נוספת".
-- רק אם כל המדידות וכל ההובלות תקינות לחלוטין → כתוב "תקין".
-- העדף יתר על אבחנת יתר (לזהות פתולוגיה כשיש ספק) על-פני אבחנת חסר.
-
-## התמונות לניתוח
-תמונה 1 היא התרשים הראשי. שאר התמונות (אם קיימות) הן לידים/רצועות נוספים.
-${clinicalContext ? `\n## הקשר קליני\n${clinicalContext}\n` : ""}
-## מדידות שחולצו בשלב הסריקה
-${measurementsText}
-${redFlags ? `\n## דגלים אדומים\n${redFlags}\n` : ""}
-${ECG_FULL_RULES}
-
-## הוראות ביצוע
-1. בצע את כל 10 שלבי הפענוח השיטתי — אל תדלג על שלב.
-2. לכל הובלה / קבוצת הובלות, תעד את הממצא והטריטוריה המתאימה. ציין במפורש כל חריגה.
-3. הפעל את כל קבוצות כללי האבחנה (א–ח). לכל כלל: סמן met / not_met / indeterminate עם ראיה. "indeterminate" פירושו שלא ניתן לשלול — לא שלילי.
-4. צלב את הכללים והחריגות שזיהית → קבע את הפתולוגיה העיקרית שזוהתה.
-5. רשום אבחנות מבדלות.
-6. הנימוק חייב להתבסס על הובלות ספציפיות וכללים ספציפיים (למשל: "ST elevation ב-II, III, aVF → דופן תחתית → STEMI תחתית").
-${langDirective}`,
-      file_urls: fileUrls,
-      response_json_schema: ECG_INTERPRETATION_SCHEMA,
-      add_context_from_internet: false,
-      model: "gemini_3_1_pro",
-    });
-    ecgInterpretation = interpRes;
-  }
 
   // ---------- Stage 2: Criteria Verification + Diagnosis ----------
   onStage?.("verifying");

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import SeverityBadge from "@/components/SeverityBadge";
+import DiagnosisBadge from "@/components/DiagnosisBadge";
 import ReactMarkdown from "react-markdown";
 import { CheckCircle2, Download, Loader2 } from "lucide-react";
 import AnnotatedImage from "@/components/AnnotatedImage";
@@ -22,6 +22,7 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
   const printRef = useRef(null);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState(null);
+  const primaryDiagnosis = matchedCases?.[0]?.diagnosis || matchedCases?.[0]?.title || summary || "";
 
   const handleExport = async () => {
     if (!printRef.current) return;
@@ -42,7 +43,7 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
       <div className="space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h3 className="text-lg font-bold text-foreground">{t("result.title")}</h3>
-          <SeverityBadge severity={severity} />
+          <DiagnosisBadge diagnosis={primaryDiagnosis} severity={severity} />
         </div>
 
         {uncertainty && uncertainty.level !== "low" && (
