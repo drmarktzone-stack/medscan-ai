@@ -235,9 +235,6 @@ ${imageLegend}
 
 ${protocol.criteria}
 
-## הערכה מורחבת מהאינטרנט
-חפש באינטרנט מאגרי תמונות רפואיים, ספרות קלינית עדכנית וקריטריוני אבחון מקצועיים. הסתמך על מקורות מהימנים.
-
 ## הוראות ניתוח
 ${diagnosisInstructions}
 
@@ -318,8 +315,8 @@ ${langDirective}`,
       },
       required: ["summary", "severity", "analysis", "findings"],
     },
-    add_context_from_internet: true,
-    model: "gemini_3_1_pro",
+    add_context_from_internet: false,
+    model: "gemini_3_flash",
   });
 
   // ---------- Validate & clamp findings (normalized 0-100) ----------
