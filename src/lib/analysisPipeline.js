@@ -30,6 +30,7 @@ const defaultFindingLabels = { he: "ממצא", en: "Finding", ar: "نتيجة" }
 
 export async function runDiagnosisPipeline({
   files,
+  preUploadedUrls,
   entityName,
   analysisType,
   domainRole,
@@ -44,12 +45,14 @@ export async function runDiagnosisPipeline({
 
   const protocol = getMeasurementProtocol(analysisType);
 
-  // 0. Upload images + fetch knowledge-base cases in parallel (independent I/O)
-  const [uploadResults, allCases] = await Promise.all([
-    Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f }))),
+  // 0. Upload images (or use pre-uploaded URLs) + fetch knowledge-base cases in parallel
+  const [resolvedUrls, allCases] = await Promise.all([
+    preUploadedUrls && preUploadedUrls.length > 0
+      ? Promise.resolve(preUploadedUrls)
+      : Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f }))).then((rs) => rs.map((r) => r.file_url)),
     base44.entities[entityName].list("-created_date", 1000),
   ]);
-  const fileUrls = uploadResults.map((r) => r.file_url);
+  const fileUrls = resolvedUrls;
   const file_url = fileUrls[0];
 
   if (!allCases || allCases.length === 0) {

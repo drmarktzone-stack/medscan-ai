@@ -2,16 +2,18 @@ import React, { useRef, useState, useMemo, useEffect } from "react";
 import { Upload, X, Plus, Camera } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
-export default function ImageUploader({ files, onFilesChange, label, hint }) {
+export default function ImageUploader({ files, onFilesChange, label, hint, imageUrls = [], onImageUrlsChange }) {
   const { t } = useI18n();
   const inputRef = useRef(null);
   const cameraRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
 
-  const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
+  const filePreviews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
   useEffect(() => {
-    return () => previews.forEach((url) => URL.revokeObjectURL(url));
-  }, [previews]);
+    return () => filePreviews.forEach((url) => URL.revokeObjectURL(url));
+  }, [filePreviews]);
+
+  const allPreviews = [...filePreviews, ...(imageUrls || [])];
 
   const addFiles = (fileList) => {
     const valid = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
@@ -31,14 +33,19 @@ export default function ImageUploader({ files, onFilesChange, label, hint }) {
   };
 
   const removeFile = (idx) => {
-    onFilesChange(files.filter((_, i) => i !== idx));
+    if (idx < files.length) {
+      onFilesChange(files.filter((_, i) => i !== idx));
+    } else {
+      const urlIdx = idx - files.length;
+      onImageUrlsChange?.((imageUrls || []).filter((_, i) => i !== urlIdx));
+    }
   };
 
   return (
     <div className="w-full space-y-3">
-      {previews.length > 0 && (
+      {allPreviews.length > 0 && (
         <div className="grid grid-cols-3 gap-2">
-          {previews.map((url, idx) => (
+          {allPreviews.map((url, idx) => (
             <div key={idx} className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-50 aspect-square">
               <img src={url} alt={t("uploader.image_alt", { n: idx + 1 })} className="w-full h-full object-cover" />
               {idx === 0 && (
@@ -65,11 +72,11 @@ export default function ImageUploader({ files, onFilesChange, label, hint }) {
       >
         <div className="flex flex-col items-center gap-2 mb-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            {previews.length > 0 ? <Plus className="w-5 h-5 text-primary" /> : <Upload className="w-6 h-6 text-primary" />}
+            {allPreviews.length > 0 ? <Plus className="w-5 h-5 text-primary" /> : <Upload className="w-6 h-6 text-primary" />}
           </div>
           <div>
             <p className="text-sm font-semibold text-foreground">
-              {previews.length > 0 ? t("uploader.add_more") : label || t("uploader.upload_default")}
+              {allPreviews.length > 0 ? t("uploader.add_more") : label || t("uploader.upload_default")}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">{hint || t("uploader.hint_default")}</p>
           </div>

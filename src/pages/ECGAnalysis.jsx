@@ -14,6 +14,8 @@ import { useI18n } from "@/lib/i18n";
 export default function ECGAnalysis() {
   const { t, lang } = useI18n();
   const [files, setFiles] = useState([]);
+  const [uploadedUrls, setUploadedUrls] = useState([]);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState("");
   const [result, setResult] = useState(null);
@@ -21,23 +23,56 @@ export default function ECGAnalysis() {
   const [kbCount, setKbCount] = useState(0);
   const [clinicalContext, setClinicalContext] = useState("");
 
+  const updateUploadedUrls = (urls) => {
+    setUploadedUrls(urls);
+    if (urls.length > 0) {
+      sessionStorage.setItem("ecg_file_urls", JSON.stringify(urls));
+    } else {
+      sessionStorage.removeItem("ecg_file_urls");
+    }
+  };
+
   useEffect(() => {
+    const saved = sessionStorage.getItem("ecg_file_urls");
+    if (saved) {
+      try {
+        const urls = JSON.parse(saved);
+        if (Array.isArray(urls) && urls.length > 0) setUploadedUrls(urls);
+      } catch {}
+    }
     base44.entities.ECGCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
   }, []);
 
-  const handleFilesChange = (newFiles) => {
+  const handleFilesChange = async (newFiles) => {
     setFiles(newFiles);
     setResult(null);
     setError(null);
+    updateUploadedUrls([]);
+
+    if (newFiles.length > 0) {
+      setUploading(true);
+      try {
+        const urls = await Promise.all(
+          newFiles.map((f) => base44.integrations.Core.UploadFile({ file: f }))
+        );
+        const fileUrls = urls.map((r) => r.file_url);
+        updateUploadedUrls(fileUrls);
+      } catch (err) {
+        console.error("Upload failed", err);
+      } finally {
+        setUploading(false);
+      }
+    }
   };
 
   const handleAnalyze = async () => {
-    if (files.length === 0) return;
+    if (uploadedUrls.length === 0 && files.length === 0) return;
     setLoading(true);
     setError(null);
     try {
       const res = await runDiagnosisPipeline({
         files,
+        preUploadedUrls: uploadedUrls,
         entityName: "ECGCase",
         analysisType: "ecg",
         domainRole: "קרדיולוג מומחה",
@@ -55,6 +90,7 @@ export default function ECGAnalysis() {
         onStage: setStage,
       });
       setResult(res);
+      sessionStorage.removeItem("ecg_file_urls");
     } catch (err) {
       console.error(err);
       setError(err.message || t("analysis.error_fallback"));
@@ -98,17 +134,24 @@ export default function ECGAnalysis() {
           onFilesChange={handleFilesChange}
           label={t("analysis.ecg_upload_label")}
           hint={t("analysis.ecg_upload_hint")}
+          imageUrls={uploadedUrls}
+          onImageUrlsChange={updateUploadedUrls}
         />
 
-        {files.length > 0 && !result && (
+        {(files.length > 0 || uploadedUrls.length > 0) && !result && (
           <>
             <ClinicalContextForm onChange={setClinicalContext} />
             <Button
               onClick={handleAnalyze}
-              disabled={loading}
+              disabled={loading || uploading}
               className="w-full h-12 rounded-xl text-sm font-semibold shadow-md shadow-primary/20"
             >
-              {loading ? (
+              {uploading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  מעלה תמונות...
+                </span>
+              ) : loading ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   {stageLabel}
