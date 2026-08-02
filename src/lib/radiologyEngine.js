@@ -222,7 +222,6 @@ export async function runRadiologyEngine({
       severity: pass1.clinical_urgency,
       language,
       invokeLLM,
-      model,
     }).catch(() => null);
     if (verification && verification.refuted) {
       confidence -= 20;
