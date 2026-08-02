@@ -42,6 +42,7 @@ export async function runEvaluation({ type, onProgress, onUpdate }) {
   const results = [];
   let correct = 0;
   let tp = 0, fn = 0, tn = 0, fp = 0;
+  let confidentErrors = 0; // wrong AND asserted with high confidence == hallucination proxy
 
   for (let i = 0; i < testable.length; i++) {
     const gs = testable[i];
@@ -94,6 +95,7 @@ ${casesForMatching}
       if (isCorrect && !aiUrgent) tn++; else fp++;
     }
     if (isCorrect) correct++;
+    if (!isCorrect && (topMatch?.confidence || 0) >= 70) confidentErrors++;
 
     results.push({
       title: gs.title,
@@ -112,13 +114,15 @@ ${casesForMatching}
   const accuracy = Math.round((correct / total) * 100);
   const sensitivity = tp + fn > 0 ? Math.round((tp / (tp + fn)) * 100) : 0;
   const specificity = tn + fp > 0 ? Math.round((tn / (tn + fp)) * 100) : 0;
+  // Hallucination rate: share of cases the AI got WRONG while asserting high confidence.
+  const hallucination_rate = total > 0 ? Math.round((confidentErrors / total) * 100) : 0;
 
   await base44.entities.TestRun.create({
     type, total_cases: total, correct, accuracy, sensitivity, specificity,
     results: JSON.stringify(results),
   });
 
-  return { total, correct, accuracy, sensitivity, specificity, results };
+  return { total, correct, accuracy, sensitivity, specificity, hallucination_rate, confident_errors: confidentErrors, results };
 }
 
 export async function generateCasesWithAI({ type, target, topic, count = 10 }) {
