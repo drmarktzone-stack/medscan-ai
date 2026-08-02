@@ -6,6 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
+import PediatricToggle from "@/components/PediatricToggle";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
@@ -20,6 +21,7 @@ export default function RadiologyAnalysis() {
   const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
   const [clinicalContext, setClinicalContext] = useState("");
+  const [pediatric, setPediatric] = useState(false);
 
   useEffect(() => {
     base44.entities.RadiologyCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
@@ -43,6 +45,7 @@ export default function RadiologyAnalysis() {
         domainRole: "רדיולוג מומחה",
         clinicalContext,
         language: lang,
+        pediatric,
         matchingInstructions: `1. זהה את סוג הבדיקה הרדיולוגית (רנטגן, CT, MRI, אולטראסאונד) ואת האזור האנטומי המצולם.
 2. סרוק את הצילום בצורה שיטתית מלמעלה למטה ומצד לצד — אל תדלג על אזורים.
 3. הערך צפיפות רקמות, מבנה אנטומי, סימטריה, וכל חריגה מהתקין.
@@ -105,6 +108,7 @@ export default function RadiologyAnalysis() {
         {files.length > 0 && !result && (
           <>
             <ClinicalContextForm onChange={setClinicalContext} />
+            <PediatricToggle value={pediatric} onChange={setPediatric} />
             <Button
               onClick={handleAnalyze}
               disabled={loading}
@@ -141,6 +145,7 @@ export default function RadiologyAnalysis() {
               guideline={result.guideline}
               analysisId={result.analysisId}
               analysisType="radiology"
+              structuredInterpretation={result.structuredInterpretation}
             />
           </div>
         )}
