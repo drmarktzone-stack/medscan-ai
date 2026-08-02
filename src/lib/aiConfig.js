@@ -22,6 +22,13 @@
 // diagnostic precision and the strongest anti-hallucination behavior.
 export const DIAGNOSIS_MODEL = "claude_opus_4_8";
 
+// Faster model for heavy-but-non-critical diagnostic sub-steps: knowledge-base
+// matching over the full case library, and the adversarial verifier. Keeps the
+// critical structured interpretation + final diagnosis on Opus while cutting
+// latency/cost on the surrounding steps.
+// Claude Sonnet 4.6.
+export const FAST_MODEL = "claude_sonnet_4_6";
+
 // Model used for bulk content generation / evaluation matching (throughput).
 // Claude Sonnet 4.6 — faster/cheaper, fine for non-diagnostic bulk work.
 export const GENERATION_MODEL = "claude_sonnet_4_6";
