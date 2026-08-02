@@ -4,7 +4,7 @@ import { getMeasurementProtocol, EXTRACTION_SCHEMA } from "./diagnosticProtocols
 import { runEcgEngine, buildEcgEvidenceBlock } from "./ecgEngine";
 import { runRadiologyEngine, buildRadiologyEvidenceBlock } from "./radiologyEngine";
 import { runSkinEngine, buildSkinEvidenceBlock } from "./skinEngine";
-import { DIAGNOSIS_MODEL } from "./aiConfig";
+import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -124,7 +124,7 @@ ${langDirective}`,
       required: ["measurements", "matches"],
     },
     add_context_from_internet: false,
-    model: DIAGNOSIS_MODEL,
+    model: FAST_MODEL,
   });
 
   // ---------- Stage 1.5: Structured domain engine (parallel with Stage 1) ----------
