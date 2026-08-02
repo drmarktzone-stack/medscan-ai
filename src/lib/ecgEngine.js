@@ -495,7 +495,7 @@ function buildVerifierPrompt(structured, language) {
  * @param {string}   opts.sex             optional, for QTc thresholds
  * @param {Function} opts.invokeLLM       async ({prompt,file_urls,response_json_schema,...}) => obj
  * @param {Function} [opts.onStage]       progress callback
- * @param {string}   [opts.model]         model id (default gemini_3_flash)
+ * @param {string}   [opts.model]         model id (default from aiConfig.DIAGNOSIS_MODEL)
  * @returns {Promise<Object>} rich interpretation result
  */
 export async function runEcgEngine({
