@@ -5,6 +5,7 @@ import { CheckCircle2, Download, Loader2 } from "lucide-react";
 import AnnotatedImage from "@/components/AnnotatedImage";
 import ECGInterpretationCard from "@/components/ECGInterpretationCard";
 import UncertaintyWarning from "@/components/UncertaintyWarning";
+import EmergencyTriageBanner from "@/components/EmergencyTriageBanner";
 import FeedbackButtons from "@/components/FeedbackButtons";
 import PrintableReport from "@/components/PrintableReport";
 import { exportReportToPDF } from "@/lib/pdfExport";
@@ -41,6 +42,8 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
       <div className="space-y-5">
+        <EmergencyTriageBanner severity={severity} urgency={ecgInterpretation?.structured?.clinical_urgency} />
+
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h3 className="text-lg font-bold text-foreground">{t("result.title")}</h3>
           <DiagnosisBadge diagnosis={primaryDiagnosis} severity={severity} />
