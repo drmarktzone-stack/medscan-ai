@@ -35,6 +35,7 @@
  */
 
 import { ECG_FULL_RULES } from "./ecgRules";
+import { DIAGNOSIS_MODEL } from "./aiConfig";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -504,7 +505,7 @@ export async function runEcgEngine({
   sex,
   invokeLLM,
   onStage,
-  model = "gemini_3_flash",
+  model = DIAGNOSIS_MODEL,
 }) {
   const systemPrompt = buildEcgSystemPrompt({ clinicalContext, language });
 
