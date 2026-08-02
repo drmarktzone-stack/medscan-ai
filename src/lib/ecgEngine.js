@@ -35,7 +35,7 @@
  */
 
 import { ECG_FULL_RULES } from "./ecgRules";
-import { DIAGNOSIS_MODEL } from "./aiConfig";
+import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -566,7 +566,7 @@ export async function runEcgEngine({
         file_urls: fileUrls,
         response_json_schema: VERIFIER_SCHEMA,
         add_context_from_internet: false,
-        model,
+        model: FAST_MODEL,
       }).catch(() => null),
     ]);
     secondRead = p2;
