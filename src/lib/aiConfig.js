@@ -18,7 +18,21 @@
 
 // High-precision vision + reasoning model used for image interpretation,
 // the structured engines, criteria verification and adversarial checks.
-export const DIAGNOSIS_MODEL = "gemini_3_flash";
+// Claude Opus 4.8 — the top-tier reasoning/vision model, chosen for maximum
+// diagnostic precision and the strongest anti-hallucination behavior.
+export const DIAGNOSIS_MODEL = "claude_opus_4_8";
 
 // Model used for bulk content generation / evaluation matching (throughput).
-export const GENERATION_MODEL = "gemini_3_1_pro";
+// Claude Sonnet 4.6 — faster/cheaper, fine for non-diagnostic bulk work.
+export const GENERATION_MODEL = "claude_sonnet_4_6";
+
+// Base44-provisioned model identifiers available in this workspace:
+//   claude_opus_4_8, claude_opus_4_7, claude_opus_4_6, claude_sonnet_4_6,
+//   gpt_5_5, gpt_5_4, gpt_5_mini, gemini_3_1_pro, gemini_3_flash
+// To change the model used everywhere, edit the two constants above.
+export const AVAILABLE_MODELS = [
+  "claude_opus_4_8",
+  "claude_opus_4_7",
+  "claude_opus_4_6",
+  "claude_sonnet_4_6",
+];
