@@ -3,6 +3,7 @@ import { buildCasesForMatching, buildMatchedCasesText } from "./knowledgeBase";
 import { getMeasurementProtocol, EXTRACTION_SCHEMA } from "./diagnosticProtocols";
 import { runEcgEngine } from "./ecgEngine";
 import { runInputGate } from "./inputGate";
+import { verifyDiagnosis } from "./verify";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -404,6 +405,31 @@ ${langDirective}`,
     const floor = urgencyFloor[ecgStructured.clinical_urgency];
     if (floor && (severityRank[floor] || 0) > (severityRank[finalSeverity] || 0)) {
       finalSeverity = floor;
+    }
+  }
+
+  // ---------- Adversarial verification for non-ECG urgent/uncertain reads ----------
+  if (analysisType !== "ecg") {
+    const needsVerify = ["urgent", "severe"].includes(finalSeverity) || !!uncertainty;
+    if (needsVerify) {
+      const verdict = await verifyDiagnosis({
+        fileUrls,
+        analysisType,
+        primaryDiagnosis: enrichedMatches[0]?.diagnosis || enrichedMatches[0]?.title || diagnosis.summary,
+        summary: diagnosis.summary,
+        severity: finalSeverity,
+        measurementsText,
+        language,
+        invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
+      }).catch(() => null);
+      if (verdict && verdict.refuted) {
+        uncertainty = {
+          level: "high",
+          reason: `${reasons.high} (בקרה נגדית: ${verdict.refutation})`,
+        };
+      } else if (verdict && Array.isArray(verdict.missed_findings) && verdict.missed_findings.length) {
+        uncertainty = uncertainty || { level: "medium", reason: reasons.medium };
+      }
     }
   }
 
