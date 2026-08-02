@@ -4,6 +4,8 @@ import ReactMarkdown from "react-markdown";
 import { CheckCircle2, Download, Loader2 } from "lucide-react";
 import AnnotatedImage from "@/components/AnnotatedImage";
 import ECGInterpretationCard from "@/components/ECGInterpretationCard";
+import RadiologyInterpretationCard from "@/components/RadiologyInterpretationCard";
+import SkinInterpretationCard from "@/components/SkinInterpretationCard";
 import UncertaintyWarning from "@/components/UncertaintyWarning";
 import EmergencyTriageBanner from "@/components/EmergencyTriageBanner";
 import FeedbackButtons from "@/components/FeedbackButtons";
@@ -18,7 +20,8 @@ function confidenceStyle(conf) {
   return "text-slate-500 bg-slate-50 border-slate-200";
 }
 
-export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty, guideline, analysisId, analysisType, ecgInterpretation }) {
+export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty, guideline, analysisId, analysisType, ecgInterpretation, structuredInterpretation }) {
+  const structured = structuredInterpretation || ecgInterpretation;
   const { t, dir } = useI18n();
   const printRef = useRef(null);
   const [exporting, setExporting] = useState(false);
@@ -42,7 +45,7 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
       <div className="space-y-5">
-        <EmergencyTriageBanner severity={severity} urgency={ecgInterpretation?.structured?.clinical_urgency} />
+        <EmergencyTriageBanner severity={severity} urgency={structured?.structured?.clinical_urgency} />
 
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h3 className="text-lg font-bold text-foreground">{t("result.title")}</h3>
@@ -59,7 +62,9 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
           </div>
         )}
 
-        {ecgInterpretation && <ECGInterpretationCard interpretation={ecgInterpretation} />}
+        {analysisType === "ecg" && structured && <ECGInterpretationCard interpretation={structured} />}
+        {analysisType === "radiology" && structured && <RadiologyInterpretationCard interpretation={structured} />}
+        {analysisType === "skin" && structured && <SkinInterpretationCard interpretation={structured} />}
 
         {imageUrl && findings && findings.length > 0 && (
           <AnnotatedImage imageUrl={imageUrl} findings={findings} />
