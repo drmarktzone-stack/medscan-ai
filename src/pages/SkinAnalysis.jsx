@@ -6,6 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
+import PediatricToggle from "@/components/PediatricToggle";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
@@ -20,6 +21,7 @@ export default function SkinAnalysis() {
   const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
   const [clinicalContext, setClinicalContext] = useState("");
+  const [pediatric, setPediatric] = useState(false);
 
   useEffect(() => {
     base44.entities.SkinCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
@@ -43,6 +45,7 @@ export default function SkinAnalysis() {
         domainRole: "דרמטולוג מומחה",
         clinicalContext,
         language: lang,
+        pediatric,
         matchingInstructions: `1. בחן את הנגע בצורה שיטתית: מורפולוגיה (מקולרי/פפולרי/נודולרי/וסיקולרי), צבע, גודל, גבולות, פיזור, סימטריה.
 2. השווה את הממצאים מול המאפיינים המרכזיים של כל מחלה במאגר — גם חיובי וגם שלילי.
 3. השתמש בכלל ABCDE להערכת נגעים פיגמנטיים: Asymmetry, Border, Color, Diameter, Evolution.
@@ -104,6 +107,7 @@ export default function SkinAnalysis() {
         {files.length > 0 && !result && (
           <>
             <ClinicalContextForm onChange={setClinicalContext} />
+            <PediatricToggle value={pediatric} onChange={setPediatric} />
             <Button
               onClick={handleAnalyze}
               disabled={loading}
@@ -140,6 +144,7 @@ export default function SkinAnalysis() {
               guideline={result.guideline}
               analysisId={result.analysisId}
               analysisType="skin"
+              structuredInterpretation={result.structuredInterpretation}
             />
           </div>
         )}
