@@ -14,6 +14,7 @@
  */
 
 import { verifyDiagnosis } from "./verify";
+import { DIAGNOSIS_MODEL } from "./aiConfig";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -180,7 +181,7 @@ export async function runRadiologyEngine({
   pediatric = false,
   invokeLLM,
   onStage,
-  model = "gemini_3_flash",
+  model = DIAGNOSIS_MODEL,
 }) {
   onStage?.("interpreting");
   const prompt = buildRadiologySystemPrompt({ clinicalContext, language, pediatric });
