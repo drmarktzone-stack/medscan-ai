@@ -172,7 +172,7 @@ export async function generateCasesWithAI({ type, target, topic, count = 10 }) {
       required: ["cases"],
     },
     add_context_from_internet: true,
-    model: "gemini_3_1_pro",
+    model: GENERATION_MODEL,
   });
 
   return result.cases || [];
