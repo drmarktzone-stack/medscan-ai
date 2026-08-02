@@ -1,5 +1,6 @@
 import { base44 } from "@/api/base44Client";
 import { buildCasesForMatching } from "./knowledgeBase";
+import { GENERATION_MODEL } from "./aiConfig";
 
 function normalize(s) {
   return (s || "")
@@ -77,7 +78,7 @@ ${casesForMatching}
         required: ["matches"],
       },
       add_context_from_internet: true,
-      model: "gemini_3_1_pro",
+      model: GENERATION_MODEL,
     });
 
     const matches = (matchingResult.matches || [])
