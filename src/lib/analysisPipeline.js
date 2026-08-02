@@ -1,11 +1,15 @@
 import { base44 } from "@/api/base44Client";
 import { buildCasesForMatching, buildMatchedCasesText } from "./knowledgeBase";
 import { getMeasurementProtocol, EXTRACTION_SCHEMA } from "./diagnosticProtocols";
-import { runEcgEngine } from "./ecgEngine";
-import { runInputGate } from "./inputGate";
-import { verifyDiagnosis } from "./verify";
+import { runEcgEngine, buildEcgEvidenceBlock } from "./ecgEngine";
+import { runRadiologyEngine, buildRadiologyEvidenceBlock } from "./radiologyEngine";
+import { runSkinEngine, buildSkinEvidenceBlock } from "./skinEngine";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
+
+// Domain engine dispatch: each returns { abstain, structured, warnings, confidence, uncertaintyLevel }
+const ENGINE_BY_TYPE = { ecg: runEcgEngine, radiology: runRadiologyEngine, skin: runSkinEngine };
+const EVIDENCE_BY_TYPE = { ecg: buildEcgEvidenceBlock, radiology: buildRadiologyEvidenceBlock, skin: buildSkinEvidenceBlock };
 
 const emptyKbErrors = {
   he: "מאגר הידע ריק. יש להוסיף מקרים למאגר לפני ביצוע אבחון.",
@@ -14,9 +18,9 @@ const emptyKbErrors = {
 };
 
 const abstainErrors = {
-  he: (r) => `לא ניתן להפיק פענוח אמין: ${r} נא להעלות תמונת ECG ברורה ומלאה (רצוי 12 לידים ורשת כיול נראית).`,
-  en: (r) => `Cannot produce a reliable reading: ${r} Please upload a clear, complete ECG image (ideally 12 leads with a visible calibration grid).`,
-  ar: (r) => `تعذّر إنتاج قراءة موثوقة: ${r} يرجى رفع صورة تخطيط قلب واضحة وكاملة (يفضّل 12 اتجاهًا مع شبكة معايرة مرئية).`,
+  he: (r) => `לא ניתן להפיק פענוח אמין: ${r} נא להעלות תמונה מתאימה, חדה וברורה.`,
+  en: (r) => `Cannot produce a reliable reading: ${r} Please upload a suitable, sharp, clear image.`,
+  ar: (r) => `تعذّر إنتاج قراءة موثوقة: ${r} يرجى رفع صورة مناسبة وواضحة.`,
 };
 
 const uncertaintyReasons = {
@@ -47,6 +51,7 @@ export async function runDiagnosisPipeline({
   clinicalContext,
   onStage,
   language = "he",
+  pediatric = false,
 }) {
   const outputLang = langNames[language] || "Hebrew";
   const langDirective = `\n## Output Language\nALL text in your response (titles, reasoning, summary, analysis, guideline, finding labels) MUST be written in ${outputLang}. This is critical — the user selected ${outputLang} as their language.`;
@@ -121,52 +126,36 @@ ${langDirective}`,
     model: "gemini_3_flash",
   });
 
-  // ---------- Stage 1.5: State-of-the-art ECG engine (parallel with Stage 1) ----------
-  // Structured 7-step reading + deterministic cross-check + (for urgent/uncertain
-  // reads) self-consistency & adversarial verification. See ecgEngine.js.
-  let ecgEnginePromise = null;
-  if (analysisType === "ecg") {
-    ecgEnginePromise = runEcgEngine({
-      fileUrls,
-      clinicalContext,
-      language,
-      invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
-      onStage,
-      model: "gemini_3_flash",
-    });
-  }
-
-  // ---------- Input quality/relevance gate for non-ECG domains (parallel) ----------
-  // ECG has its own richer gate inside the engine; skin & radiology use this.
-  let gatePromise = null;
-  if (analysisType !== "ecg") {
-    gatePromise = runInputGate({
-      fileUrls,
-      analysisType,
-      language,
-      invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
-    });
-  }
+  // ---------- Stage 1.5: Structured domain engine (parallel with Stage 1) ----------
+  // ECG / radiology / skin each get a state-of-the-art structured reading with a
+  // relevance/quality gate, internal-consistency checks and adversarial
+  // verification for urgent/uncertain reads. See ecgEngine / radiologyEngine /
+  // skinEngine.
+  const engineFn = ENGINE_BY_TYPE[analysisType];
+  const enginePromise = engineFn
+    ? engineFn({
+        fileUrls,
+        clinicalContext,
+        language,
+        pediatric,
+        invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
+        onStage,
+      })
+    : null;
 
   // ---------- Await parallel stages ----------
-  const [extractMatchResult, ecgEngineResult, gateResult] = await Promise.all([
+  const [extractMatchResult, engineResult] = await Promise.all([
     stage1Promise,
-    ecgEnginePromise || Promise.resolve(null),
-    gatePromise || Promise.resolve(null),
+    enginePromise || Promise.resolve(null),
   ]);
 
-  // ---------- Input gate: refuse irrelevant / poor-quality images ----------
-  if (gateResult && !gateResult.ok) {
-    throw new Error(gateResult.reason);
-  }
-
-  // ---------- ECG abstention gate (anti-hallucination: refuse bad input) ----------
-  if (ecgEngineResult && ecgEngineResult.abstain) {
+  // ---------- Abstention gate (anti-hallucination: refuse irrelevant/unreadable input) ----------
+  if (engineResult && engineResult.abstain) {
     const build = abstainErrors[language] || abstainErrors.he;
-    throw new Error(build(ecgEngineResult.abstain_reason || ""));
+    throw new Error(build(engineResult.abstain_reason || ""));
   }
-  const ecgEngine = ecgEngineResult && !ecgEngineResult.abstain ? ecgEngineResult : null;
-  const ecgStructured = ecgEngine?.structured || null;
+  const engine = engineResult && !engineResult.abstain ? engineResult : null;
+  const engineStructured = engine?.structured || null;
 
   const measurements = Array.isArray(extractMatchResult.measurements)
     ? extractMatchResult.measurements.filter((m) => m.parameter)
@@ -190,13 +179,13 @@ ${langDirective}`,
     uncertainty = { level: "medium", reason: reasons.medium };
   }
 
-  // Merge the ECG engine's own uncertainty verdict (from cross-check / verifier).
-  if (ecgEngine?.uncertaintyLevel) {
+  // Merge the structured engine's own uncertainty verdict (cross-check / verifier).
+  if (engine?.uncertaintyLevel) {
     const lvlRank = { medium: 1, high: 2 };
-    if (!uncertainty || (lvlRank[ecgEngine.uncertaintyLevel] || 0) > (lvlRank[uncertainty.level] || 0)) {
+    if (!uncertainty || (lvlRank[engine.uncertaintyLevel] || 0) > (lvlRank[uncertainty.level] || 0)) {
       uncertainty = {
-        level: ecgEngine.uncertaintyLevel,
-        reason: reasons[ecgEngine.uncertaintyLevel] || reasons.medium,
+        level: engine.uncertaintyLevel,
+        reason: reasons[engine.uncertaintyLevel] || reasons.medium,
       };
     }
   }
@@ -226,37 +215,8 @@ ${langDirective}`,
     ? measurements.map((m) => `- **${m.parameter}**: ${m.value}${m.notes ? ` — ${m.notes}` : ""}`).join("\n")
     : "לא חולצו מדידות.";
 
-  // ---------- Build the structured ECG evidence block for the diagnosis stage ----------
-  let ecgEvidenceBlock = "";
-  if (ecgStructured) {
-    const st = ecgStructured;
-    const iv = st.intervals || {};
-    const rr = st.rhythm_and_rate || {};
-    const tc = st.technical_check || {};
-    const morph = st.wave_and_segment_morphology || {};
-    const hyp = st.hypertrophy_and_enlargement || {};
-    const ev = (st.finding_evidence || [])
-      .map((e) => `  - ${e.finding}: ${e.evidence}${e.leads ? ` [${e.leads}]` : ""}`)
-      .join("\n");
-    const warns = ecgEngine.warnings || [];
-    ecgEvidenceBlock = `
-## פענוח ECG מובנה ממנוע הכללים (ראיה משלימה — הסתמך על המדידות, לא על הצהרות)
-- **בדיקה טכנית:** ${tc.quality || "—"} | מהירות ${tc.speed_mm_s ?? 25}mm/s | כיול ${tc.calibration_mm_mv ?? 10}mm/mV
-- **קצב:** ${rr.heart_rate_bpm ?? "?"} bpm | ${rr.rhythm_type || "—"} | ${rr.regularity || "—"} | גל P ${rr.p_wave_present ? "נוכח" : "נעדר"}
-- **ציר חשמלי:** ${st.axis?.degrees ?? "?"}° (${st.axis?.interpretation || "—"})
-- **מרווחים:** PR ${iv.pr_ms ?? "?"}ms | QRS ${iv.qrs_ms ?? "?"}ms | QT ${iv.qt_ms ?? "?"}ms | RR ${iv.rr_ms ?? "?"}ms | QTc(Bazett) ${iv.qtc_bazett_ms ?? "?"}ms | QTc(Fridericia) ${iv.qtc_fridericia_ms ?? "?"}ms — ${iv.qtc_status || "—"}
-- **מורפולוגיה:** ST: ${morph.st_segment || "—"} | T: ${morph.t_waves || "—"} | Q: ${morph.q_waves || "—"}
-- **היפרטרופיה/הגדלה:** LVH ${hyp.lvh_present ? "כן" : "לא"} | RVH ${hyp.rvh_present ? "כן" : "לא"} | עליות: ${hyp.atrial_enlargement || "—"}
-- **ממצאים עיקריים:** ${(st.primary_findings || []).join("; ") || "—"}
-- **ראיות תומכות (לכל ממצא):**\n${ev || "  —"}
-- **אבחנות מבדלות:** ${(st.differential_diagnoses || []).join(", ") || "—"}
-- **דחיפות (מנוע, לאחר בקרה):** ${st.clinical_urgency || "—"}
-- **צעדי המשך מומלצים:** ${(st.recommended_next_steps || []).join(", ") || "—"}
-- **ביטחון מכויל (לאחר הצלבה/בקרה נגדית):** ${ecgEngine.confidence}%
-${warns.length ? `\n### ⚠️ אזהרות אנטי-הזיה — התייחס אליהן, אל תתעלם:\n${warns.map((w) => "- " + w).join("\n")}` : ""}
-
-⚠️ כלל ברזל: אל תאמץ ממצא שסומן כלא-מבוסס, או שהבקרה הנגדית הפריכה, כאבחנה ודאית. אם קיימות אזהרות סתירה/אי-עקביות — שקף אי-ודאות מפורשת בפלט הסופי.`;
-  }
+  // ---------- Structured-engine evidence block for the diagnosis stage ----------
+  const engineEvidenceBlock = engine ? (EVIDENCE_BY_TYPE[analysisType]?.(engine) || "") : "";
 
   // ---------- Stage 2: Criteria Verification + Diagnosis ----------
   onStage?.("verifying");
@@ -270,11 +230,11 @@ ${warns.length ? `\n### ⚠️ אזהרות אנטי-הזיה — התייחס �
 
 ## התמונות לניתוח
 תמונה 1 (התמונה הראשונה) היא התמונה הראשית. שאר התמונות הן זוויות/לידים נוספים. סמן ממצאים בתמונה 1 בלבד.
-${clinicalContext ? `\n## הקשר קליני של המטופל\n${clinicalContext}\n` : ""}
+${clinicalContext ? `\n## הקשר קליני של המטופל\n${clinicalContext}\n` : ""}${pediatric ? "\n## מצב ילדים (Pediatric) פעיל — החל נורמות וקטלוג אבחנות תואמי-גיל.\n" : ""}
 ## מדידות שחולצו מהתמונה (שלב הסריקה והמדידה)
 ${measurementsText}
 ${redFlags ? `\n## דגלים אדומים שזוהו\n${redFlags}\n` : ""}
-${ecgEvidenceBlock}
+${engineEvidenceBlock}
 ## תוצאות שלב ההתאמה — המקרים התואמים ביותר
 ${matchesSummary}
 
@@ -291,7 +251,7 @@ ${diagnosisInstructions}
 ## כלל ברזל — איסור תקין שקרי (CRITICAL)
 1. אל תסיק "תקין" אלא אם כן כל המדידות וכל ההובלות תקינות לחלוטין ללא כל חריגה.
 2. כל חריגה (ST, T, QRS, קצב, ציר, מרווח) חייבת להיות מסווגת ומוסברת.
-3. הפרשנות ממנוע החוקים היא ראיה משלימה בלבד — אל תאמץ ממצא לא-מבוסס כשלילת/קביעת פתולוגיה.
+3. הפרשנות ממנוע הכללים היא ראיה משלימה בלבד — אל תאמץ ממצא לא-מבוסס כשלילת/קביעת פתולוגיה.
 4. כשיש ספק, העדף הפניה לבירור דחוף על-פני "תקין".
 5. העדף אבחנת יתר (לזהות פתולוגיה) על-פני אבחנת חסר — במיוחד במצבים מסכני חיים.
 
@@ -397,39 +357,14 @@ ${langDirective}`,
     return m;
   });
 
-  // ---------- Severity safety-net: never under-call an ECG emergency ----------
+  // ---------- Severity safety-net: never under-call an engine-flagged emergency ----------
   const severityRank = { normal: 0, mild: 1, moderate: 2, severe: 3, urgent: 4 };
   let finalSeverity = diagnosis.severity;
-  if (ecgStructured) {
+  if (engineStructured) {
     const urgencyFloor = { Normal: null, Urgent: "severe", Emergency: "urgent" };
-    const floor = urgencyFloor[ecgStructured.clinical_urgency];
+    const floor = urgencyFloor[engineStructured.clinical_urgency];
     if (floor && (severityRank[floor] || 0) > (severityRank[finalSeverity] || 0)) {
       finalSeverity = floor;
-    }
-  }
-
-  // ---------- Adversarial verification for non-ECG urgent/uncertain reads ----------
-  if (analysisType !== "ecg") {
-    const needsVerify = ["urgent", "severe"].includes(finalSeverity) || !!uncertainty;
-    if (needsVerify) {
-      const verdict = await verifyDiagnosis({
-        fileUrls,
-        analysisType,
-        primaryDiagnosis: enrichedMatches[0]?.diagnosis || enrichedMatches[0]?.title || diagnosis.summary,
-        summary: diagnosis.summary,
-        severity: finalSeverity,
-        measurementsText,
-        language,
-        invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
-      }).catch(() => null);
-      if (verdict && verdict.refuted) {
-        uncertainty = {
-          level: "high",
-          reason: `${reasons.high} (בקרה נגדית: ${verdict.refutation})`,
-        };
-      } else if (verdict && Array.isArray(verdict.missed_findings) && verdict.missed_findings.length) {
-        uncertainty = uncertainty || { level: "medium", reason: reasons.medium };
-      }
     }
   }
 
@@ -452,7 +387,8 @@ ${langDirective}`,
     uncertainty,
     guideline: diagnosis.guideline,
     measurements,
-    ecgInterpretation: ecgEngine,
+    ecgInterpretation: analysisType === "ecg" ? engine : null,
+    structuredInterpretation: engine,
     analysisId: analysisRecord.id,
   };
 }
