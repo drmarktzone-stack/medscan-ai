@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag, ScanLine } from "lucide-react";
+import { Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag, ScanLine, AlertTriangle, Inbox, PlusCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { base44 } from "@/api/base44Client";
 import { runEvaluation } from "@/lib/evaluation";
@@ -20,16 +20,20 @@ export default function Evaluation() {
   const [liveResults, setLiveResults] = useState([]);
   const [lastResult, setLastResult] = useState(null);
   const [error, setError] = useState(null);
+  const [feedbackItems, setFeedbackItems] = useState([]);
+  const [promoted, setPromoted] = useState(new Set());
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [gold, testRuns] = await Promise.all([
+      const [gold, testRuns, feedback] = await Promise.all([
         base44.entities.GoldStandardCase.filter({ type: tab }),
         base44.entities.TestRun.filter({ type: tab }, "-created_date", 50),
+        base44.entities.Feedback.filter({ analysis_type: tab, is_correct: false }, "-created_date", 50).catch(() => []),
       ]);
       setGoldCases(gold);
       setRuns(testRuns);
+      setFeedbackItems(feedback || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -63,6 +67,30 @@ export default function Evaluation() {
   const handleDelete = async (id) => {
     await base44.entities.GoldStandardCase.delete(id);
     loadData();
+  };
+
+  // Closed feedback loop: promote a user correction into a labeled gold-standard test case.
+  const handlePromote = async (fb) => {
+    try {
+      let image_url = "";
+      if (fb.analysis_id) {
+        try {
+          const a = await base44.entities.Analysis.get(fb.analysis_id);
+          image_url = a?.image_url || "";
+        } catch { /* image optional */ }
+      }
+      await base44.entities.GoldStandardCase.create({
+        type: tab,
+        title: (fb.corrected_diagnosis || "תיקון משתמש").slice(0, 60),
+        correct_diagnosis: fb.corrected_diagnosis || "",
+        description: fb.notes || "נוצר מתיקון משתמש (משוב)",
+        image_url,
+      });
+      setPromoted((p) => new Set(p).add(fb.id));
+      loadData();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const testableCount = goldCases.filter((c) => c.image_url).length;
@@ -111,16 +139,27 @@ export default function Evaluation() {
               )}
 
               {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+
+              {testableCount === 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-[11px] text-amber-800 leading-relaxed">
+                    לא ניתן להפעיל הערכה: אין מקרי זהב עם תמונה. הוסף תמונה לכל מקרה זהב (או צור מקרים חדשים עם תמונה) — הערכה דורשת תמונות מתויגות כדי למדוד דיוק, רגישות ושיעור הזיות. אפשר גם לקדם תיקוני משתמשים לסט הזהב (למטה).
+                  </p>
+                </div>
+              )}
             </div>
 
             {lastResult && (
               <div className="bg-white rounded-xl border border-purple-200 p-4">
                 <h4 className="text-sm font-bold mb-3">{t("eval.last_result")}</h4>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <MetricCard label={t("eval.accuracy")} value={lastResult.accuracy} color="text-blue-600" />
                   <MetricCard label={t("eval.sensitivity")} value={lastResult.sensitivity} color="text-red-600" />
                   <MetricCard label={t("eval.specificity")} value={lastResult.specificity} color="text-teal-600" />
+                  <MetricCard label="שיעור הזיות" value={lastResult.hallucination_rate ?? 0} color={(lastResult.hallucination_rate ?? 0) > 15 ? "text-red-600" : "text-amber-600"} />
                 </div>
+                <p className="text-[10px] text-muted-foreground mt-2 text-center leading-relaxed">שיעור הזיות = אחוז המקרים שבהם האבחון שגוי אך הוצג בביטחון גבוה (≥70%). ככל שנמוך יותר — טוב יותר.</p>
                 <p className="text-xs text-muted-foreground mt-2 text-center">{t("eval.correct_count", { n: lastResult.correct, m: lastResult.total })}</p>
               </div>
             )}
@@ -181,6 +220,35 @@ export default function Evaluation() {
                 </div>
               )}
             </div>
+
+            {feedbackItems.length > 0 && (
+              <div>
+                <h4 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
+                  <Inbox className="w-4 h-4 text-purple-500" /> תיקוני משתמשים ({feedbackItems.length})
+                </h4>
+                <p className="text-[11px] text-muted-foreground mb-2 leading-relaxed">
+                  תיקונים שדיווחו משתמשים כאשר האבחון היה שגוי. קדם אותם לסט הזהב כדי להפוך אותם למקרי בדיקה מתויגים (סגירת לולאת המשוב).
+                </p>
+                <div className="space-y-2">
+                  {feedbackItems.map((fb) => (
+                    <div key={fb.id} className="bg-white rounded-lg border border-slate-200 p-3 flex items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-foreground truncate">{fb.corrected_diagnosis || "(ללא אבחנה מתוקנת)"}</p>
+                        {fb.notes && <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{fb.notes}</p>}
+                      </div>
+                      <button
+                        onClick={() => handlePromote(fb)}
+                        disabled={promoted.has(fb.id) || !fb.corrected_diagnosis}
+                        className="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-purple-50 text-purple-700 border border-purple-200 disabled:opacity-50 shrink-0"
+                      >
+                        <PlusCircle className="w-3.5 h-3.5" />
+                        {promoted.has(fb.id) ? "נוסף" : "לסט הזהב"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div>
               <h4 className="text-sm font-bold text-foreground mb-2">{t("eval.add_gold")}</h4>
