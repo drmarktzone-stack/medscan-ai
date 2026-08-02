@@ -6,6 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
+import PediatricToggle from "@/components/PediatricToggle";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
@@ -22,6 +23,7 @@ export default function ECGAnalysis() {
   const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
   const [clinicalContext, setClinicalContext] = useState("");
+  const [pediatric, setPediatric] = useState(false);
 
   const updateUploadedUrls = (urls) => {
     setUploadedUrls(urls);
@@ -78,6 +80,7 @@ export default function ECGAnalysis() {
         domainRole: "קרדיולוג מומחה",
         clinicalContext,
         language: lang,
+        pediatric,
         matchingInstructions: `1. בחן את התרשים בצורה שיטתית: קצב, רגולריות, גלי P, מרווח PR, קומפלקס QRS, מקטע ST, גלי T, מקטע QT, ציר חשמלי.
 2. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
 3. שים לב במיוחד למצבים מסכני חיים: STEMI, VT, VF, חסמים מלאים, היפרקלמיה.
@@ -141,6 +144,7 @@ export default function ECGAnalysis() {
         {(files.length > 0 || uploadedUrls.length > 0) && !result && (
           <>
             <ClinicalContextForm onChange={setClinicalContext} />
+            <PediatricToggle value={pediatric} onChange={setPediatric} />
             <Button
               onClick={handleAnalyze}
               disabled={loading || uploading}
@@ -181,6 +185,7 @@ export default function ECGAnalysis() {
               uncertainty={result.uncertainty}
               guideline={result.guideline}
               ecgInterpretation={result.ecgInterpretation}
+              structuredInterpretation={result.structuredInterpretation}
               analysisId={result.analysisId}
               analysisType="ecg"
             />
