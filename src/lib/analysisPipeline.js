@@ -2,6 +2,7 @@ import { base44 } from "@/api/base44Client";
 import { buildCasesForMatching, buildMatchedCasesText } from "./knowledgeBase";
 import { getMeasurementProtocol, EXTRACTION_SCHEMA } from "./diagnosticProtocols";
 import { runEcgEngine } from "./ecgEngine";
+import { runInputGate } from "./inputGate";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -134,11 +135,29 @@ ${langDirective}`,
     });
   }
 
+  // ---------- Input quality/relevance gate for non-ECG domains (parallel) ----------
+  // ECG has its own richer gate inside the engine; skin & radiology use this.
+  let gatePromise = null;
+  if (analysisType !== "ecg") {
+    gatePromise = runInputGate({
+      fileUrls,
+      analysisType,
+      language,
+      invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
+    });
+  }
+
   // ---------- Await parallel stages ----------
-  const [extractMatchResult, ecgEngineResult] = await Promise.all([
+  const [extractMatchResult, ecgEngineResult, gateResult] = await Promise.all([
     stage1Promise,
     ecgEnginePromise || Promise.resolve(null),
+    gatePromise || Promise.resolve(null),
   ]);
+
+  // ---------- Input gate: refuse irrelevant / poor-quality images ----------
+  if (gateResult && !gateResult.ok) {
+    throw new Error(gateResult.reason);
+  }
 
   // ---------- ECG abstention gate (anti-hallucination: refuse bad input) ----------
   if (ecgEngineResult && ecgEngineResult.abstain) {
