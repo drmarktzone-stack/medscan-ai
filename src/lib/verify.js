@@ -15,6 +15,8 @@
  * ============================================================================
  */
 
+import { DIAGNOSIS_MODEL } from "./aiConfig";
+
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
 const domainRoles = {
@@ -48,7 +50,7 @@ export async function verifyDiagnosis({
   measurementsText,
   language = "he",
   invokeLLM,
-  model = "gemini_3_flash",
+  model = DIAGNOSIS_MODEL,
 }) {
   const outputLang = langNames[language] || "Hebrew";
   const role = (domainRoles[analysisType] || domainRoles.skin)[language] || (domainRoles[analysisType] || domainRoles.skin).he;
