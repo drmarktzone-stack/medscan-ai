@@ -1,7 +1,7 @@
 import { base44 } from "@/api/base44Client";
 import { buildCasesForMatching, buildMatchedCasesText } from "./knowledgeBase";
 import { getMeasurementProtocol, EXTRACTION_SCHEMA } from "./diagnosticProtocols";
-import { ECG_FULL_RULES, ECG_INTERPRETATION_SCHEMA } from "./ecgRules";
+import { runEcgEngine } from "./ecgEngine";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -9,6 +9,12 @@ const emptyKbErrors = {
   he: "מאגר הידע ריק. יש להוסיף מקרים למאגר לפני ביצוע אבחון.",
   en: "The knowledge base is empty. Please add cases before running a diagnosis.",
   ar: "قاعدة المعرفة فارغة. يرجى إضافة حالات قبل إجراء التشخيص.",
+};
+
+const abstainErrors = {
+  he: (r) => `לא ניתן להפיק פענוח אמין: ${r} נא להעלות תמונת ECG ברורה ומלאה (רצוי 12 לידים ורשת כיול נראית).`,
+  en: (r) => `Cannot produce a reliable reading: ${r} Please upload a clear, complete ECG image (ideally 12 leads with a visible calibration grid).`,
+  ar: (r) => `تعذّر إنتاج قراءة موثوقة: ${r} يرجى رفع صورة تخطيط قلب واضحة وكاملة (يفضّل 12 اتجاهًا مع شبكة معايرة مرئية).`,
 };
 
 const uncertaintyReasons = {
@@ -113,44 +119,34 @@ ${langDirective}`,
     model: "gemini_3_flash",
   });
 
-  // ---------- Stage 1.5: ECG interpretation (parallel with Stage 1) ----------
-  let ecgInterpPromise = null;
+  // ---------- Stage 1.5: State-of-the-art ECG engine (parallel with Stage 1) ----------
+  // Structured 7-step reading + deterministic cross-check + (for urgent/uncertain
+  // reads) self-consistency & adversarial verification. See ecgEngine.js.
+  let ecgEnginePromise = null;
   if (analysisType === "ecg") {
-    ecgInterpPromise = base44.integrations.Core.InvokeLLM({
-      prompt: `אתה קרדיולוג מומחה. בצע פענוח ECG שיטתי עצמאי באמצעות מנוע החוקים המלא. מטרתך לזהות כל חריגה — גם עדינה — ולתעד אותה. אינך מחליט "תקין" אלא אם כן כל 10 שלבי הפענוח ללא יוצא מן הכלל תקינים.
-
-## כלל ברזל — איסור תקין שקרי
-- חוסר עמידה בכלל ספציפי אינו שולל פתולוגיה. ייתכן שהתמונה אינה מאפשרת מדידה מדויקת אך עדיין יש פתולוגיה.
-- אם לא זיהית פתולוגיה ספציפית אך יש כל חריגה כלשהי (קצב, מורפולוגיה, ST, T, QRS) → הקפד לציין "דפוס לא-ספציפי — לא ניתן לשלול פתולוגיה ללא בדיקה נוספת".
-- רק אם כל המדידות וכל ההובלות תקינות לחלוטין → כתוב "תקין".
-- העדף יתר על אבחנת יתר (לזהות פתולוגיה כשיש ספק) על-פני אבחנת חסר.
-
-## התמונות לניתוח
-תמונה 1 היא התרשים הראשי. שאר התמונות (אם קיימות) הן לידים/רצועות נוספים.
-${clinicalContext ? `\n## הקשר קליני\n${clinicalContext}\n` : ""}
-${ECG_FULL_RULES}
-
-## הוראות ביצוע
-1. בצע את כל 10 שלבי הפענוח השיטתי — אל תדלג על שלב. בצע מדידות עצמאיות מהתרשים.
-2. לכל הובלה / קבוצת הובלות, תעד את הממצא והטריטוריה המתאימה. ציין במפורש כל חריגה.
-3. הפעל את כל קבוצות כללי האבחנה (א–ח). לכל כלל: סמן met / not_met / indeterminate עם ראיה. "indeterminate" פירושו שלא ניתן לשלול — לא שלילי.
-4. צלב את הכללים והחריגות שזיהית → קבע את הפתולוגיה העיקרית שזוהתה.
-5. רשום אבחנות מבדלות.
-6. הנימוק חייב להתבסס על הובלות ספציפיות וכללים ספציפיים (למשל: "ST elevation ב-II, III, aVF → דופן תחתית → STEMI תחתית").
-${langDirective}`,
-      file_urls: fileUrls,
-      response_json_schema: ECG_INTERPRETATION_SCHEMA,
-      add_context_from_internet: false,
+    ecgEnginePromise = runEcgEngine({
+      fileUrls,
+      clinicalContext,
+      language,
+      invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
+      onStage,
       model: "gemini_3_flash",
     });
   }
 
   // ---------- Await parallel stages ----------
-  const [extractMatchResult, ecgInterpResult] = await Promise.all([
+  const [extractMatchResult, ecgEngineResult] = await Promise.all([
     stage1Promise,
-    ecgInterpPromise || Promise.resolve(null),
+    ecgEnginePromise || Promise.resolve(null),
   ]);
-  const ecgInterpretation = ecgInterpResult;
+
+  // ---------- ECG abstention gate (anti-hallucination: refuse bad input) ----------
+  if (ecgEngineResult && ecgEngineResult.abstain) {
+    const build = abstainErrors[language] || abstainErrors.he;
+    throw new Error(build(ecgEngineResult.abstain_reason || ""));
+  }
+  const ecgEngine = ecgEngineResult && !ecgEngineResult.abstain ? ecgEngineResult : null;
+  const ecgStructured = ecgEngine?.structured || null;
 
   const measurements = Array.isArray(extractMatchResult.measurements)
     ? extractMatchResult.measurements.filter((m) => m.parameter)
@@ -172,6 +168,17 @@ ${langDirective}`,
     uncertainty = { level: "high", reason: reasons.high };
   } else if (topConfidence < 65 && matches.length > 1 && confidenceGap <= 15) {
     uncertainty = { level: "medium", reason: reasons.medium };
+  }
+
+  // Merge the ECG engine's own uncertainty verdict (from cross-check / verifier).
+  if (ecgEngine?.uncertaintyLevel) {
+    const lvlRank = { medium: 1, high: 2 };
+    if (!uncertainty || (lvlRank[ecgEngine.uncertaintyLevel] || 0) > (lvlRank[uncertainty.level] || 0)) {
+      uncertainty = {
+        level: ecgEngine.uncertaintyLevel,
+        reason: reasons[ecgEngine.uncertaintyLevel] || reasons.medium,
+      };
+    }
   }
 
   // ---------- Resolve top matched cases (full detail + reference images) ----------
@@ -199,6 +206,38 @@ ${langDirective}`,
     ? measurements.map((m) => `- **${m.parameter}**: ${m.value}${m.notes ? ` — ${m.notes}` : ""}`).join("\n")
     : "לא חולצו מדידות.";
 
+  // ---------- Build the structured ECG evidence block for the diagnosis stage ----------
+  let ecgEvidenceBlock = "";
+  if (ecgStructured) {
+    const st = ecgStructured;
+    const iv = st.intervals || {};
+    const rr = st.rhythm_and_rate || {};
+    const tc = st.technical_check || {};
+    const morph = st.wave_and_segment_morphology || {};
+    const hyp = st.hypertrophy_and_enlargement || {};
+    const ev = (st.finding_evidence || [])
+      .map((e) => `  - ${e.finding}: ${e.evidence}${e.leads ? ` [${e.leads}]` : ""}`)
+      .join("\n");
+    const warns = ecgEngine.warnings || [];
+    ecgEvidenceBlock = `
+## פענוח ECG מובנה ממנוע הכללים (ראיה משלימה — הסתמך על המדידות, לא על הצהרות)
+- **בדיקה טכנית:** ${tc.quality || "—"} | מהירות ${tc.speed_mm_s ?? 25}mm/s | כיול ${tc.calibration_mm_mv ?? 10}mm/mV
+- **קצב:** ${rr.heart_rate_bpm ?? "?"} bpm | ${rr.rhythm_type || "—"} | ${rr.regularity || "—"} | גל P ${rr.p_wave_present ? "נוכח" : "נעדר"}
+- **ציר חשמלי:** ${st.axis?.degrees ?? "?"}° (${st.axis?.interpretation || "—"})
+- **מרווחים:** PR ${iv.pr_ms ?? "?"}ms | QRS ${iv.qrs_ms ?? "?"}ms | QT ${iv.qt_ms ?? "?"}ms | RR ${iv.rr_ms ?? "?"}ms | QTc(Bazett) ${iv.qtc_bazett_ms ?? "?"}ms | QTc(Fridericia) ${iv.qtc_fridericia_ms ?? "?"}ms — ${iv.qtc_status || "—"}
+- **מורפולוגיה:** ST: ${morph.st_segment || "—"} | T: ${morph.t_waves || "—"} | Q: ${morph.q_waves || "—"}
+- **היפרטרופיה/הגדלה:** LVH ${hyp.lvh_present ? "כן" : "לא"} | RVH ${hyp.rvh_present ? "כן" : "לא"} | עליות: ${hyp.atrial_enlargement || "—"}
+- **ממצאים עיקריים:** ${(st.primary_findings || []).join("; ") || "—"}
+- **ראיות תומכות (לכל ממצא):**\n${ev || "  —"}
+- **אבחנות מבדלות:** ${(st.differential_diagnoses || []).join(", ") || "—"}
+- **דחיפות (מנוע, לאחר בקרה):** ${st.clinical_urgency || "—"}
+- **צעדי המשך מומלצים:** ${(st.recommended_next_steps || []).join(", ") || "—"}
+- **ביטחון מכויל (לאחר הצלבה/בקרה נגדית):** ${ecgEngine.confidence}%
+${warns.length ? `\n### ⚠️ אזהרות אנטי-הזיה — התייחס אליהן, אל תתעלם:\n${warns.map((w) => "- " + w).join("\n")}` : ""}
+
+⚠️ כלל ברזל: אל תאמץ ממצא שסומן כלא-מבוסס, או שהבקרה הנגדית הפריכה, כאבחנה ודאית. אם קיימות אזהרות סתירה/אי-עקביות — שקף אי-ודאות מפורשת בפלט הסופי.`;
+  }
+
   // ---------- Stage 2: Criteria Verification + Diagnosis ----------
   onStage?.("verifying");
 
@@ -215,19 +254,7 @@ ${clinicalContext ? `\n## הקשר קליני של המטופל\n${clinicalConte
 ## מדידות שחולצו מהתמונה (שלב הסריקה והמדידה)
 ${measurementsText}
 ${redFlags ? `\n## דגלים אדומים שזוהו\n${redFlags}\n` : ""}
-${ecgInterpretation ? `
-## פרשנות עצמאית ממנוע החוקים (ECG) — ראיה משלימה בלבד
-⚠️ חשוב: פלט זה הוא ראיה משלימה, לא החלטה סופית. אל תסתמך על "preliminary_diagnosis" שלילי כשלילת פתולוגיה. חוסר עמידה בכלל ספציפי אינו שולל אבחנה — הסתמך על הממצאים בהובלות ועל המאגר.
-- **פתולוגיה עיקרית שזוהתה:** ${ecgInterpretation.preliminary_diagnosis || "—"}
-- **אבחנות מבדלות:** ${(ecgInterpretation.differentials || []).join(", ") || "—"}
-- **נימוק:** ${ecgInterpretation.reasoning || "—"}
-
-### ממצאים לפי הובלות (הסתמך על אלו)
-${(ecgInterpretation.lead_findings || []).map((lf) => `- **${lf.leads}** (${lf.territory || "—"}): ${lf.finding}`).join("\n") || "—"}
-
-### הפעלת כללי אבחנה
-${(ecgInterpretation.rule_applications || []).map((ra) => `- **${ra.rule}** — ${ra.status} (${ra.confidence || "?"}%): ${ra.evidence}`).join("\n") || "—"}
-` : ""}
+${ecgEvidenceBlock}
 ## תוצאות שלב ההתאמה — המקרים התואמים ביותר
 ${matchesSummary}
 
@@ -244,7 +271,7 @@ ${diagnosisInstructions}
 ## כלל ברזל — איסור תקין שקרי (CRITICAL)
 1. אל תסיק "תקין" אלא אם כן כל המדידות וכל ההובלות תקינות לחלוטין ללא כל חריגה.
 2. כל חריגה (ST, T, QRS, קצב, ציר, מרווח) חייבת להיות מסווגת ומוסברת.
-3. הפרשנות ממנוע החוקים היא ראיה משלימה בלבד — אל תאמץ "preliminary_diagnosis" שלילי כשלילת פתולוגיה.
+3. הפרשנות ממנוע החוקים היא ראיה משלימה בלבד — אל תאמץ ממצא לא-מבוסס כשלילת/קביעת פתולוגיה.
 4. כשיש ספק, העדף הפניה לבירור דחוף על-פני "תקין".
 5. העדף אבחנת יתר (לזהות פתולוגיה) על-פני אבחנת חסר — במיוחד במצבים מסכני חיים.
 
@@ -350,18 +377,29 @@ ${langDirective}`,
     return m;
   });
 
+  // ---------- Severity safety-net: never under-call an ECG emergency ----------
+  const severityRank = { normal: 0, mild: 1, moderate: 2, severe: 3, urgent: 4 };
+  let finalSeverity = diagnosis.severity;
+  if (ecgStructured) {
+    const urgencyFloor = { Normal: null, Urgent: "severe", Emergency: "urgent" };
+    const floor = urgencyFloor[ecgStructured.clinical_urgency];
+    if (floor && (severityRank[floor] || 0) > (severityRank[finalSeverity] || 0)) {
+      finalSeverity = floor;
+    }
+  }
+
   // ---------- Persist the analysis ----------
   const analysisRecord = await base44.entities.Analysis.create({
     type: analysisType,
     image_url: file_url,
     result: diagnosis.analysis,
-    severity: diagnosis.severity,
+    severity: finalSeverity,
     summary: diagnosis.summary,
   });
 
   return {
     summary: diagnosis.summary,
-    severity: diagnosis.severity,
+    severity: finalSeverity,
     analysis: diagnosis.analysis,
     matchedCases: enrichedMatches,
     imageUrl: file_url,
@@ -369,7 +407,7 @@ ${langDirective}`,
     uncertainty,
     guideline: diagnosis.guideline,
     measurements,
-    ecgInterpretation,
+    ecgInterpretation: ecgEngine,
     analysisId: analysisRecord.id,
   };
 }
