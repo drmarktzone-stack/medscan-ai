@@ -96,15 +96,18 @@ const ANTI_HALLUCINATION_LAWS = `## חוקי-ברזל נגד הזיות (קרי�
 /**
  * Build the full ECG interpretation system prompt.
  */
-export function buildEcgSystemPrompt({ clinicalContext, language = "he" } = {}) {
+export function buildEcgSystemPrompt({ clinicalContext, language = "he", pediatric = false } = {}) {
   const outputLang = langNames[language] || "Hebrew";
+  const pediatricNote = pediatric
+    ? "\n## מצב ילדים (Pediatric) פעיל\nהחל נורמות תלויות-גיל: דופק גבוה יותר תקין, מרווחים קצרים יותר, היפוך T ילדי (juvenile T-wave) בהובלות ימניות כתקין, וקריטריוני היפרטרופיה מותאמי-גיל.\n"
+    : "";
   return `אתה קרדיולוג בכיר ומומחה-על בפענוח אלקטרוקרדיוגרם, עם עשרות שנות ניסיון קליני. משימתך: לקרוא את ה-ECG כפי שקרדיולוג אנושי קורא — שלב אחר שלב, ממדידה לפרשנות — ולהחזיר פלט מובנה ומדויק.
 
 ## אלקטרופיזיולוגיה ומכניקה (בסיס ההיגיון שלך)
 מסלול ההולכה: צומת SA → עליות (גל P) → צומת AV (השהיית מקטע PR) → צרור His / מערכת Purkinje → חדרים (קומפלקס QRS) → רה-פולריזציה חדרית (מקטע ST וגל T).
 גיאומטריית הובלות: 12 הובלות סטנדרטיות — גפיים (I, II, III, aVR, aVL, aVF) וחזה (V1–V6). כל הובלה משקיפה על טריטוריה מוגדרת.
 
-${clinicalContext ? `## הקשר קליני של המטופל\n${clinicalContext}\n(שקלל את ההקשר, אך אל תיתן לו לגבור על מה שנראה בתרשים.)\n` : ""}
+${pediatricNote}${clinicalContext ? `## הקשר קליני של המטופל\n${clinicalContext}\n(שקלל את ההקשר, אך אל תיתן לו לגבור על מה שנראה בתרשים.)\n` : ""}
 ${ECG_METHODOLOGY}
 
 ${ECG_FULL_RULES}
@@ -113,6 +116,41 @@ ${ANTI_HALLUCINATION_LAWS}
 
 ## פורמט פלט
 החזר אך ורק JSON התואם לסכמה שסופקה. כל שדה טקסט — כתוב ב-${outputLang}. שמות פתולוגיות רפואיות ניתן להשאיר גם באנגלית לצד התרגום.`;
+}
+
+/**
+ * Build the ECG structured-evidence markdown block, injected into the
+ * KB-grounded diagnosis stage of the main pipeline.
+ */
+export function buildEcgEvidenceBlock(engineResult) {
+  const st = engineResult?.structured;
+  if (!st) return "";
+  const iv = st.intervals || {};
+  const rr = st.rhythm_and_rate || {};
+  const tc = st.technical_check || {};
+  const morph = st.wave_and_segment_morphology || {};
+  const hyp = st.hypertrophy_and_enlargement || {};
+  const ev = (st.finding_evidence || [])
+    .map((e) => `  - ${e.finding}: ${e.evidence}${e.leads ? ` [${e.leads}]` : ""}`)
+    .join("\n");
+  const warns = engineResult.warnings || [];
+  return `
+## פענוח ECG מובנה ממנוע הכללים (ראיה משלימה — הסתמך על המדידות, לא על הצהרות)
+- **בדיקה טכנית:** ${tc.quality || "—"} | מהירות ${tc.speed_mm_s ?? 25}mm/s | כיול ${tc.calibration_mm_mv ?? 10}mm/mV
+- **קצב:** ${rr.heart_rate_bpm ?? "?"} bpm | ${rr.rhythm_type || "—"} | ${rr.regularity || "—"} | גל P ${rr.p_wave_present ? "נוכח" : "נעדר"}
+- **ציר חשמלי:** ${st.axis?.degrees ?? "?"}° (${st.axis?.interpretation || "—"})
+- **מרווחים:** PR ${iv.pr_ms ?? "?"}ms | QRS ${iv.qrs_ms ?? "?"}ms | QT ${iv.qt_ms ?? "?"}ms | RR ${iv.rr_ms ?? "?"}ms | QTc(Bazett) ${iv.qtc_bazett_ms ?? "?"}ms | QTc(Fridericia) ${iv.qtc_fridericia_ms ?? "?"}ms — ${iv.qtc_status || "—"}
+- **מורפולוגיה:** ST: ${morph.st_segment || "—"} | T: ${morph.t_waves || "—"} | Q: ${morph.q_waves || "—"}
+- **היפרטרופיה/הגדלה:** LVH ${hyp.lvh_present ? "כן" : "לא"} | RVH ${hyp.rvh_present ? "כן" : "לא"} | עליות: ${hyp.atrial_enlargement || "—"}
+- **ממצאים עיקריים:** ${(st.primary_findings || []).join("; ") || "—"}
+- **ראיות תומכות (לכל ממצא):**\n${ev || "  —"}
+- **אבחנות מבדלות:** ${(st.differential_diagnoses || []).join(", ") || "—"}
+- **דחיפות (מנוע, לאחר בקרה):** ${st.clinical_urgency || "—"}
+- **צעדי המשך מומלצים:** ${(st.recommended_next_steps || []).join(", ") || "—"}
+- **ביטחון מכויל (לאחר הצלבה/בקרה נגדית):** ${engineResult.confidence}%
+${warns.length ? `\n### ⚠️ אזהרות אנטי-הזיה — התייחס אליהן, אל תתעלם:\n${warns.map((w) => "- " + w).join("\n")}` : ""}
+
+⚠️ כלל ברזל: אל תאמץ ממצא שסומן כלא-מבוסס, או שהבקרה הנגדית הפריכה, כאבחנה ודאית. אם קיימות אזהרות סתירה/אי-עקביות — שקף אי-ודאות מפורשת בפלט הסופי.`;
 }
 
 /* ==========================================================================
