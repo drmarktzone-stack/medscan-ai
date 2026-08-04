@@ -32,8 +32,16 @@ export default function LabInterpreter() {
   const addRow = () => setRows((r) => [...r, emptyRow()]);
   const removeRow = (i) => setRows((r) => r.filter((_, idx) => idx !== i));
 
-  const filledRows = rows.filter((r) => r.analyte.trim() && r.value !== "");
-  const canRun = filledRows.length > 0 && ageValue !== "";
+  const filledRows = rows.filter((r) => r.analyte.trim() && String(r.value).trim() !== "");
+
+  // שורה עם שם מדד אבל בלי ערך — לא משמיטים בשקט.
+  // השמטה שקטה של תוצאת מעבדה היא בדיוק מה שהמערכת נבנתה למנוע:
+  // הרופא/ה יראה/תראה ניתוח שנראה שלם ולא ידע/תדע שמדד נפל.
+  const incompleteRows = rows.filter(
+    (r) => r.analyte.trim() && String(r.value).trim() === ""
+  );
+
+  const canRun = filledRows.length > 0 && ageValue !== "" && incompleteRows.length === 0;
 
   const handleRun = async () => {
     setLoading(true);
@@ -194,11 +202,12 @@ export default function LabInterpreter() {
                 {qualitative ? (
                   /* תרבית / גנטיקה / איכותי — אין מספר ואין טווח */
                   <div>
+                    <label className="text-[10px] font-medium text-slate-500 block mb-0.5">תוצאה</label>
                     <Input
                       value={row.value}
                       onChange={(e) => updateRow(i, "value", e.target.value)}
-                      placeholder="תוצאה: חיובי / שלילי / שם מחולל / ממצא"
-                      className="text-xs h-9"
+                      placeholder="חיובי / שלילי / שם מחולל / ממצא"
+                      className={`text-xs h-9 ${!String(row.value).trim() ? "border-amber-400" : ""}`}
                     />
                     <p className="text-[10px] text-slate-400 mt-0.5">
                       תוצאה איכותית — לא נדרש טווח ייחוס.
@@ -206,38 +215,62 @@ export default function LabInterpreter() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-4 gap-1">
-                    <Input
-                      type="number" inputMode="decimal"
-                      value={row.value}
-                      onChange={(e) => updateRow(i, "value", e.target.value)}
-                      placeholder="ערך"
-                      className="text-xs h-9"
-                    />
-                    <Input
-                      value={row.unit}
-                      onChange={(e) => updateRow(i, "unit", e.target.value)}
-                      placeholder="יחידה"
-                      className="text-xs h-9"
-                    />
-                    <Input
-                      type="number" inputMode="decimal"
-                      value={row.ref_low}
-                      onChange={(e) => updateRow(i, "ref_low", e.target.value)}
-                      placeholder="טווח מ"
-                      className="text-xs h-9 px-1"
-                    />
-                    <Input
-                      type="number" inputMode="decimal"
-                      value={row.ref_high}
-                      onChange={(e) => updateRow(i, "ref_high", e.target.value)}
-                      placeholder="עד"
-                      className="text-xs h-9 px-1"
-                    />
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-600 block mb-0.5">
+                        ערך <span className="text-red-500">*</span>
+                      </label>
+                      <Input
+                        type="number" inputMode="decimal"
+                        value={row.value}
+                        onChange={(e) => updateRow(i, "value", e.target.value)}
+                        className={`text-xs h-9 ${
+                          !String(row.value).trim() ? "border-amber-400 bg-amber-50/40" : ""
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium text-slate-500 block mb-0.5">יחידה</label>
+                      <Input
+                        value={row.unit}
+                        onChange={(e) => updateRow(i, "unit", e.target.value)}
+                        className="text-xs h-9"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium text-slate-500 block mb-0.5">טווח מ</label>
+                      <Input
+                        type="number" inputMode="decimal"
+                        value={row.ref_low}
+                        onChange={(e) => updateRow(i, "ref_low", e.target.value)}
+                        className="text-xs h-9 px-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium text-slate-500 block mb-0.5">עד</label>
+                      <Input
+                        type="number" inputMode="decimal"
+                        value={row.ref_high}
+                        onChange={(e) => updateRow(i, "ref_high", e.target.value)}
+                        className="text-xs h-9 px-1"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
             );
           })}
+
+          {incompleteRows.length > 0 && (
+            <div className="bg-amber-50 border border-amber-300 rounded-lg p-2.5">
+              <p className="text-[11px] text-amber-900 leading-relaxed">
+                <strong>חסר ערך</strong> בשורות: {incompleteRows.map((r) => r.analyte).join(", ")}.
+                <span className="block mt-0.5">
+                  שורה בלי ערך לא תיכנס לניתוח. מלא/י אותה או מחק/י את השורה —
+                  כדי שלא תקבל/י ניתוח שנראה שלם וחסר בו מדד.
+                </span>
+              </p>
+            </div>
+          )}
 
           <p className="text-[10px] text-slate-400 leading-relaxed">
             מדד ללא טווח ייחוס לא יסומן כחריג <strong>ולא כתקין</strong> — הוא לא ישתתף בניתוח,
