@@ -1,14 +1,15 @@
 /**
- * בדיקת שכבת הפרשנות המעוגנת לרדיולוגיה.
+ * בדיקות צינור הפרשנות המעוגנת (רדיולוגיה כמקרה מייצג).
  *
  * בודקת את חילוץ הממצאים ואת האינווריאנטים של ההפרדה תפיסה/פרשנות
  * בלי לגעת ברשת: `loadKnowledgeBase` ו-`createInvokeLLM` נבדקים בנפרד,
  * וכאן אנחנו בודקים את הלוגיקה הטהורה + את הצינור עם הזרקה.
  *
- * הרצה:  node src/lib/medscan/engines/radiologyGrounded.test.mjs
+ * הרצה:  node src/lib/medscan/engines/visionGrounded.test.mjs
  */
 
-import { extractObservations, extractIndeterminateZones } from './observations.js';
+import { extractObservationsFor, extractIndeterminateZones } from './visionObservations.js';
+const extractObservations = (s) => extractObservationsFor('radiology', s);
 import { groundedInvoke } from '../gate/groundedInvoke.js';
 import { runRulesEngine } from '../rules/rulesEngine.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
