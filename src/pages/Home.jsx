@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch, ListChecks } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -60,6 +60,15 @@ const tools = [
     gradient: "from-sky-500 to-blue-400",
     bg: "bg-sky-50",
     color: "#0ea5e9",
+  },
+  {
+    titleKey: "home.differential_title",
+    descKey: "home.differential_desc",
+    icon: ListChecks,
+    path: "/differential",
+    gradient: "from-rose-500 to-pink-400",
+    bg: "bg-rose-50",
+    color: "#f43f5e",
   },
 ];
 
