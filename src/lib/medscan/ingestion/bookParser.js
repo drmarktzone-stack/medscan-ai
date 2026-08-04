@@ -22,7 +22,7 @@
  */
 
 /** ניקוי תווי-רוחב ורווחים כפולים, בלי לגעת בתוכן. */
-const clean = (s) =>
+export const clean = (s) =>
   String(s ?? '')
     .replace(/ /g, ' ')
     .replace(/[ \t]+/g, ' ')
@@ -32,7 +32,7 @@ const clean = (s) =>
  * תא-כותרת מזוהה לפי צורה: קצר, בלי תבליטים, ולא נגמר בסימן סוף-משפט.
  * הכותרת אינה ידע בפני עצמה — היא ההקשר של התאים שאחריה באותה עמודה.
  */
-function isHeading(text) {
+export function isHeading(text) {
   return Boolean(text) && text.length < 60 && !/[•\n]/.test(text) && !/[.:]$/.test(text);
 }
 
