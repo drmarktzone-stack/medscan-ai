@@ -10,7 +10,7 @@
 import {
   verifyNoInvention, itemsToPrompt, columnsToChunks, reconstructPage,
 } from './layoutReconstruction.js';
-import { detectSeams, chunkText, validateExtraction } from './knowledgeIngestion.js';
+import { detectSeams, chunkText, validateExtraction } from './extractionCore.js';
 
 let pass = 0, fail = 0;
 const fails = [];
