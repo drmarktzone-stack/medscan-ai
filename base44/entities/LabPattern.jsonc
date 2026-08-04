@@ -1,0 +1,137 @@
+{
+  "name": "LabPattern",
+  "type": "object",
+  "description": "\u05d3\u05e4\u05d5\u05e1 \u05de\u05e2\u05d1\u05d3\u05d4 \u05e8\u05d1-\u05e4\u05e8\u05de\u05d8\u05e8\u05d9 \u2192 \u05db\u05d9\u05d5\u05d5\u05df \u05d0\u05d1\u05d7\u05d5\u05e0\u05d9. \u05d4\u05d4\u05ea\u05d0\u05de\u05d4 \u05dc\u05e2\u05e8\u05db\u05d9 \u05d4\u05de\u05d8\u05d5\u05e4\u05dc \u05e0\u05e2\u05e9\u05d9\u05ea \u05d1\u05e7\u05d5\u05d3 \u05d3\u05d8\u05e8\u05de\u05d9\u05e0\u05d9\u05e1\u05d8\u05d9; \u05d4-LLM \u05de\u05e0\u05de\u05e7 \u05d1\u05dc\u05d1\u05d3. \u05d4\u05e1\u05e4\u05d9\u05dd \u05d4\u05de\u05e1\u05e4\u05e8\u05d9\u05d9\u05dd \u05d0\u05d9\u05e0\u05dd \u05db\u05d0\u05df \u2014 \u05d4\u05dd \u05d1-ReferenceRange.",
+  "properties": {
+    "pattern_key": {
+      "type": "string"
+    },
+    "title_he": {
+      "type": "string"
+    },
+    "components": {
+      "type": "array",
+      "description": "\u05e8\u05db\u05d9\u05d1\u05d9 \u05d4\u05d3\u05e4\u05d5\u05e1. \u05db\u05dc \u05e8\u05db\u05d9\u05d1 \u05e2\u05dd \u05db\u05d9\u05d5\u05d5\u05df \u05d0\u05d9\u05db\u05d5\u05ea\u05e0\u05d9 \u05d1\u05dc\u05d1\u05d3 (high/low/present). \u05d4\u05e1\u05e3 \u05d4\u05de\u05e1\u05e4\u05e8\u05d9 \u05e0\u05e7\u05d1\u05e2 \u05de\u05d5\u05dc ReferenceRange \u05dc\u05e4\u05d9 \u05d2\u05d9\u05dc.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "analyte": {
+            "type": "string",
+            "description": "\u05e9\u05dd \u05d4\u05de\u05d3\u05d3. \u05e0\u05d9\u05ea\u05df \u05dc\u05e6\u05d9\u05d9\u05df \u05d7\u05dc\u05d5\u05e4\u05d5\u05ea \u05e2\u05dd / \u2014 \u05dc\u05de\u05e9\u05dc WBC/neutrophils"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "high",
+              "low",
+              "present",
+              "absent",
+              "ratio"
+            ]
+          },
+          "note_he": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "analyte",
+          "direction"
+        ]
+      }
+    },
+    "min_components": {
+      "type": "number",
+      "default": 2,
+      "description": "\u05db\u05de\u05d4 \u05e8\u05db\u05d9\u05d1\u05d9\u05dd \u05d7\u05d9\u05d9\u05d1\u05d9\u05dd \u05dc\u05d4\u05ea\u05e7\u05d9\u05d9\u05dd \u05db\u05d3\u05d9 \u05e9\u05d4\u05d3\u05e4\u05d5\u05e1 \u05d9\u05d5\u05e4\u05e2\u05dc. \u05de\u05d3\u05d3 \u05dc\u05dc\u05d0 \u05d8\u05d5\u05d5\u05d7 \u05d9\u05d9\u05d7\u05d5\u05e1 \u05de\u05d0\u05d5\u05de\u05ea \u05d0\u05d9\u05e0\u05d5 \u05e0\u05e1\u05e4\u05e8."
+    },
+    "direction_he": {
+      "type": "string",
+      "description": "\u05d4\u05db\u05d9\u05d5\u05d5\u05df \u05d4\u05d0\u05d1\u05d7\u05d5\u05e0\u05d9 \u05e9\u05d4\u05d3\u05e4\u05d5\u05e1 \u05de\u05d5\u05d1\u05d9\u05dc \u05d0\u05dc\u05d9\u05d5"
+    },
+    "suspicion": {
+      "type": "string",
+      "enum": [
+        "green",
+        "yellow",
+        "red"
+      ]
+    },
+    "clinical_reasoning_he": {
+      "type": "string"
+    },
+    "confirm_with_he": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "age_scope": {
+      "type": "string",
+      "enum": [
+        "neonate",
+        "infant",
+        "child",
+        "adolescent",
+        "all"
+      ],
+      "default": "all"
+    },
+    "source_anchor": {
+      "type": "string"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "draft_needs_verification",
+        "verified",
+        "flagged"
+      ],
+      "default": "draft_needs_verification"
+    },
+    "verified_by": {
+      "type": "string"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "review_note_he": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "pattern_key",
+    "title_he",
+    "components",
+    "direction_he",
+    "suspicion",
+    "source_anchor"
+  ],
+  "rls": {
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
