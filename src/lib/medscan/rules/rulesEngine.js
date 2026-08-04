@@ -89,8 +89,13 @@ export function computeRedFlags({ redFlagKb = [], patient = {}, findings = [], l
  * יכולים לתמוך בדפוס ולא לשלול אותו.
  */
 export function matchLabPatterns({ patternKb = [], labs = [], patient = {}, mode = 'clinical' }) {
+  // אינדקס כפול: גם לפי השם שהוזן וגם לפי המפתח הקנוני.
+  // בלי הקנוני, דפוס שדורש hemoglobin לא יופעל על ערך שהוזן כ-"Hb".
   const byAnalyte = new Map();
-  for (const l of labs) byAnalyte.set(normalizeText(l.analyte), l);
+  for (const l of labs) {
+    byAnalyte.set(normalizeText(l.analyte), l);
+    if (l.canonical_key) byAnalyte.set(normalizeText(l.canonical_key), l);
+  }
 
   const matched = [];
   const partial = [];
