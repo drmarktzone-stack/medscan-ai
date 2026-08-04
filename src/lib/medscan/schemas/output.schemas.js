@@ -10,6 +10,10 @@
  *   F#  — פריט ידע מאומת מה-FACT BLOCK (נלסון / KB)
  *   D#  — ערך שחושב בקוד דטרמיניסטי (מינון, נוזלים, GFR, percentile)
  *   P#  — ערך מדידה של המטופל (תוצאת מעבדה / ממצא שהוזן)
+ *   L#  — מאמר שנשלף בפועל מ-PubMed
+ *
+ * המודל מפנה ל-L# בלבד. הוא לעולם אינו כותב PMID או DOI —
+ * הקוד מרחיב את ההפניה לציטוט מלא, מתוך מה שנשלף בפועל.
  */
 
 /** תיוג סוג הטענה. */
@@ -23,7 +27,7 @@ export const DISCLAIMER_HE =
   'כל החלטה טעונה אימות ע"י רופא/ה מוסמך/ת.';
 
 /** דפוס מזהה-עוגן תקין. נאכף גם בסכמה וגם בוולידטור. */
-const REF_PATTERN = '^[FDP][0-9]+$';
+const REF_PATTERN = '^[FDPL][0-9]+$';
 
 const refArray = (description, minItems = 0) => ({
   type: 'array',
@@ -189,6 +193,27 @@ const ENVELOPE_PROPERTIES = {
     description:
       'מה שהמודל אינו יודע ואינו נמצא במקור. מנגנון 6 — רשימה ריקה בקלט מורכב היא סימן אזהרה בפני עצמו.',
     items: { type: 'string' },
+  },
+  literature_support: {
+    type: 'array',
+    description:
+      'קישור בין טענות לספרות שנשלפה. הפנה אך ורק ל-L# — אל תכתוב PMID/DOI.',
+    items: {
+      type: 'object',
+      properties: {
+        claim_or_direction_id: { type: 'string' },
+        literature_refs: {
+          type: 'array',
+          items: { type: 'string', pattern: '^L[0-9]+$' },
+          minItems: 1,
+        },
+        relevance_he: {
+          type: 'string',
+          description: 'מה במאמר רלוונטי, ובמה הוא שונה מהמקרה שלפנינו',
+        },
+      },
+      required: ['literature_refs', 'relevance_he'],
+    },
   },
   overall_suspicion: { type: 'string', enum: SUSPICION_LEVELS },
   uncertainty_note_he: { type: 'string' },
