@@ -81,8 +81,20 @@ export function bookToChunks(book, { minChars = 40 } = {}) {
         const page = block.p ?? topic.pg ?? null;
 
         if (block.k === 't') {
-          // כותרת אחרונה שנראתה בכל עמודה — ההקשר לתאים שמתחתיה
+          // כותרת אחרונה שנראתה בכל עמודה.
+          //
+          // ⚠ הכותרת לא תמיד יושבת באותה עמודה כמו התוכן שלה:
+          // כותרת ממורכזת מעל עמודה רחבה נוחתת בתא שכן. לכן מחפשים
+          // בעמודה עצמה, ואז בשכנות. שיוך שגוי של כותרת גרוע מהיעדרה —
+          // הוא ישייך ידע לנושא הלא-נכון.
           const colHeading = {};
+          const headingFor = (col) => {
+            for (const c of [col, col + 1, col - 1]) {
+              if (colHeading[c]) return colHeading[c];
+            }
+            return null;
+          };
+
           (block.v ?? []).forEach((row) => {
             (row ?? []).forEach((cell, col) => {
               const text = clean(cell);
@@ -93,7 +105,7 @@ export function bookToChunks(book, { minChars = 40 } = {}) {
                 chapter_no: ci + 1,
                 chapter: chapter.t,
                 topic: topic.t,
-                section: colHeading[col] ?? null,
+                section: headingFor(col),
                 page,
                 kind: 'table_cell',
                 text,
