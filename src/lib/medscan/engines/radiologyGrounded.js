@@ -25,6 +25,7 @@ import {
   loadVerifiedDrugTerms,
   writeAudit,
 } from '../llmAdapter.js';
+import { retrieveEvidence } from '../evidence/evidenceGrounding.js';
 
 export { extractObservations };
 
@@ -56,7 +57,13 @@ const ENGINE_PROMPT = `אתה מפרש **ממצאים רדיולוגיים שכ�
    חלקית או ארטיפקט מחלישים כל מסקנה שנשענת עליה — ציין זאת ב-refutes_he.
 
 6. **אזור שלא ניתן היה להעריך אינו אזור תקין.** אם סופקו לך אזורים
-   כאלה — הצהר עליהם ב-unknowns_he. פער שלא הוצהר נקרא ככיסוי מלא.`;
+   כאלה — הצהר עליהם ב-unknowns_he. פער שלא הוצהר נקרא ככיסוי מלא.
+
+7. **ספרות (L#).** אם סופקו לך מאמרים — השתמש בהם דרך literature_support,
+   וציין **במה המקרה שלפנינו שונה** מהמאמר (אוכלוסייה, גיל, הקשר).
+   מאמר על מבוגרים אינו ראיה ישירה על ילד בן שנתיים.
+   **אל תכתוב PMID או DOI בעצמך** — הפנה ל-L# והקוד ירחיב.
+   מזהה שתכתוב מהזיכרון יחסום את הפלט כולו.`;
 
 /**
  * מריץ את שכבת הפרשנות המעוגנת.
@@ -73,6 +80,7 @@ export async function runGroundedRadiologyInterpretation({
   patient = {},
   clinicalContext = null,
   mode = 'clinical',
+  withLiterature = true,
 }) {
   // המנוע נמנע (תמונה לא רלוונטית/לא קריאה) — אין ממצאים, אין מה לפרש.
   if (!engineResult || engineResult.abstain) return null;
@@ -85,9 +93,21 @@ export async function runGroundedRadiologyInterpretation({
   const patientData = toPatientFacts(observations, structured);
   const indeterminate = extractIndeterminateZones(structured);
 
-  const [kb, allowedTerms] = await Promise.all([
+  const invokeLLM = createInvokeLLM();   // ללא file_urls — אנחנו לא קוראים תמונה
+
+  // שליפת הספרות רצה במקביל לטעינת ה-KB. כשל באחת מהן
+  // אינו מפיל את השנייה — ואינו מפיל את הניתוח.
+  const [kb, allowedTerms, evidence] = await Promise.all([
     loadKnowledgeBase(),
     loadVerifiedDrugTerms(),
+    withLiterature
+      ? retrieveEvidence({
+          findings,
+          patient,
+          invokeLLM,
+          extraContext: structured?.image_metadata ?? null,
+        })
+      : Promise.resolve({ literature: [], meta: { attempted: false, note_he: 'שליפת ספרות כובתה ע"י הקורא.' } }),
   ]);
 
   // מנוע ה-Rules רץ על הממצאים הנצפים בדיוק כמו על ממצא שהוזן ידנית.
@@ -111,10 +131,11 @@ export async function runGroundedRadiologyInterpretation({
     enginePrompt: ENGINE_PROMPT,
     grounding,
     patientData,
-    invokeLLM: createInvokeLLM(),   // ללא file_urls — אנחנו לא קוראים תמונה
+    invokeLLM,
     mode,
     knownTopicKeys: kb.knownTopicKeys,
     allowedTerms,
+    literature: evidence.literature,
     extraContext: {
       ...(clinicalContext ? { clinical_context_he: clinicalContext } : {}),
       ...(indeterminate.length ? { zones_not_assessable_he: indeterminate } : {}),
@@ -134,6 +155,9 @@ export async function runGroundedRadiologyInterpretation({
 
   return {
     ...envelope,
+    // מוצג תמיד, גם בכשלון. שליפה שנכשלה בשקט היא הגרוע מכל:
+    // הפלט ייראה מבוסס-ספרות בזמן שאין ספרות בכלל.
+    evidence_meta: evidence.meta,
     observations,
     observation_note_he:
       'הממצאים למטה הם הקריאה הוויזואלית של המנוע. הם אינם מעוגנים ב-Knowledge Base ' +
