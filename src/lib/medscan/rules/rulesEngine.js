@@ -355,18 +355,51 @@ function evaluateCondition(cond, ctx) {
   return null;
 }
 
+/**
+ * מפרש גבולות טווח מכל הצורות שבהן הם מגיעים בפועל.
+ *
+ * ⚠ הגרסה הקודמת דרשה Array.isArray בלבד, ולכן אופרטור range
+ * היה **מת לחלוטין בפרודקשן**: שכבת האחסון של הישויות שומרת
+ * את condition.value כמחרוזת, ומערך כלל אינו נשמר. התוצאה: כל
+ * כלל עם טווח החזיר null ולעולם לא נורה — בלי שגיאה, בלי אזהרה,
+ * ובלי שדבר יראה שבור. זהו בדיוק הכשל השקט שהמערכת אמורה למנוע.
+ */
+function parseRange(expected) {
+  if (Array.isArray(expected) && expected.length >= 2) {
+    const lo = Number(expected[0]);
+    const hi = Number(expected[1]);
+    return Number.isFinite(lo) && Number.isFinite(hi) ? [lo, hi] : null;
+  }
+  if (typeof expected === 'string') {
+    // "29-90" · "[29,90]" · "29,90" · "29 – 90". מספר שלילי אינו צפוי בהקשר
+    // קליני (גיל, משך, ערך מעבדה), ולכן מקף נקרא כמפריד.
+    const nums = expected.match(/\d+(?:\.\d+)?/g);
+    if (nums?.length >= 2) return [Number(nums[0]), Number(nums[1])];
+  }
+  return null;
+}
+
 function compare(actual, op, expected) {
   if (!Number.isFinite(actual)) return null;
+
+  if (op === 'range') {
+    const bounds = parseRange(expected);
+    if (!bounds) return null;
+    const [lo, hi] = bounds;
+    return actual >= lo && actual <= hi;
+  }
+
   const e = Number(expected);
+  // סף שאינו מספר אינו "לא מתקיים" — הוא "לא ניתן להערכה".
+  // החזרת false היתה מציגה שלילה ודאית במקום חוסר ידיעה.
+  if (!Number.isFinite(e)) return null;
+
   switch (op) {
     case '>':  return actual > e;
     case '>=': return actual >= e;
     case '<':  return actual < e;
     case '<=': return actual <= e;
     case '==': return actual === e;
-    case 'range':
-      if (!Array.isArray(expected)) return null;
-      return actual >= Number(expected[0]) && actual <= Number(expected[1]);
     default: return null;
   }
 }
