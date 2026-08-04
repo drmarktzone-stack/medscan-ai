@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -51,6 +51,15 @@ const tools = [
     gradient: "from-violet-500 to-purple-400",
     bg: "bg-violet-50",
     color: "#8b5cf6",
+  },
+  {
+    titleKey: "home.protocols_title",
+    descKey: "home.protocols_desc",
+    icon: GitBranch,
+    path: "/protocols",
+    gradient: "from-sky-500 to-blue-400",
+    bg: "bg-sky-50",
+    color: "#0ea5e9",
   },
 ];
 
