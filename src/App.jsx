@@ -21,6 +21,7 @@ import RadiologyAnalysis from '@/pages/RadiologyAnalysis';
 import LabInterpreter from '@/pages/LabInterpreter';
 import PatientContext from '@/pages/PatientContext';
 import ProtocolRunner from '@/pages/ProtocolRunner';
+import Differential from '@/pages/Differential';
 import History from '@/pages/History';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import Evaluation from '@/pages/Evaluation';
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
           <Route path="/labs" element={<LabInterpreter />} />
           <Route path="/patient-context" element={<PatientContext />} />
           <Route path="/protocols" element={<ProtocolRunner />} />
+          <Route path="/differential" element={<Differential />} />
           <Route path="/history" element={<History />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/evaluation" element={<Evaluation />} />
