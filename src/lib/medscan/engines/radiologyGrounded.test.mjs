@@ -8,7 +8,7 @@
  * הרצה:  node src/lib/medscan/engines/radiologyGrounded.test.mjs
  */
 
-import { extractObservations } from './radiologyGrounded.js';
+import { extractObservations, extractIndeterminateZones } from './observations.js';
 import { groundedInvoke } from '../gate/groundedInvoke.js';
 import { runRulesEngine } from '../rules/rulesEngine.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
