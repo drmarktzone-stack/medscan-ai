@@ -1,0 +1,102 @@
+{
+  "name": "DoseRecord",
+  "type": "object",
+  "description": "\u05e8\u05e9\u05d5\u05de\u05ea \u05de\u05d9\u05e0\u05d5\u05df \u05de\u05d0\u05d5\u05de\u05ea\u05ea. \u26a0 \u05d9\u05e9\u05d5\u05ea \u05e7\u05e8\u05d9\u05d8\u05d9\u05ea \u05dc\u05d1\u05d8\u05d9\u05d7\u05d5\u05ea: MedScan \u05d0\u05d9\u05e0\u05d5 \u05de\u05d7\u05d6\u05d9\u05e7 \u05d8\u05d1\u05dc\u05d0\u05d5\u05ea \u05de\u05d9\u05e0\u05d5\u05df \u05d1\u05e7\u05d5\u05d3 \u05d5\u05d0\u05d9\u05e0\u05d5 \u05de\u05e1\u05d9\u05e7 \u05de\u05d9\u05e0\u05d5\u05df \u05de\u05d4\u05d9\u05d3\u05e2 \u05d4\u05db\u05dc\u05dc\u05d9 \u05e9\u05dc \u05de\u05e0\u05d5\u05e2 \u05d4\u05e9\u05e4\u05d4. \u05de\u05e0\u05d5\u05e2 \u05d4\u05de\u05d9\u05e0\u05d5\u05df \u05e7\u05d5\u05e8\u05d0 \u05d0\u05da \u05d5\u05e8\u05e7 \u05de\u05db\u05d0\u05df, \u05d5\u05de\u05e1\u05e8\u05d1 \u05dc\u05d7\u05e9\u05d1 \u05d0\u05dd verification_status \u05d0\u05d9\u05e0\u05d5 verified.",
+  "properties": {
+    "drug_key": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d9\u05d9\u05d7\u05d5\u05d3\u05d9"
+    },
+    "drug_name_he": {
+      "type": "string"
+    },
+    "drug_name_en": {
+      "type": "string",
+      "description": "\u05d2\u05dd \u05de\u05d5\u05ea\u05e8 \u05dc-entityGuard \u05db\u05e9\u05dd \u05de\u05d5\u05db\u05e8"
+    },
+    "indication_he": {
+      "type": "string"
+    },
+    "route": {
+      "type": "string",
+      "description": "PO / IV / IM / PR / ..."
+    },
+    "mg_per_kg_per_dose": {
+      "type": "number"
+    },
+    "doses_per_day": {
+      "type": "number"
+    },
+    "max_mg_per_dose": {
+      "type": "number",
+      "description": "\u05ea\u05e7\u05e8\u05d4 \u05dc\u05de\u05e0\u05d4. \u05d4\u05de\u05e0\u05d5\u05e2 \u05d0\u05d5\u05db\u05e3 \u05d0\u05d5\u05ea\u05d4."
+    },
+    "max_mg_per_day": {
+      "type": "number",
+      "description": "\u05ea\u05e7\u05e8\u05d4 \u05d9\u05de\u05de\u05ea\u05d9\u05ea. \u05d4\u05de\u05e0\u05d5\u05e2 \u05d0\u05d5\u05db\u05e3 \u05d0\u05d5\u05ea\u05d4."
+    },
+    "min_age_days": {
+      "type": "number",
+      "description": "\u05de\u05ea\u05d7\u05ea \u05dc\u05d2\u05d9\u05dc \u05d6\u05d4 \u05d4\u05de\u05e0\u05d5\u05e2 \u05de\u05e1\u05e8\u05d1 \u05dc\u05d7\u05e9\u05d1"
+    },
+    "max_age_days": {
+      "type": "number"
+    },
+    "source": {
+      "type": "string",
+      "description": "\u05d7\u05d5\u05d1\u05d4. \u05e4\u05e8\u05d5\u05d8\u05d5\u05e7\u05d5\u05dc \u05de\u05d7\u05dc\u05e7\u05ea\u05d9 / \u05de\u05e9\u05e8\u05d3 \u05d4\u05d1\u05e8\u05d9\u05d0\u05d5\u05ea / \u05e0\u05dc\u05e1\u05d5\u05df \u05e4\u05e8\u05e7 \u2014 \u05d4\u05de\u05e7\u05d5\u05e8 \u05e9\u05de\u05de\u05e0\u05d5 \u05e0\u05dc\u05e7\u05d7 \u05d4\u05de\u05d9\u05e0\u05d5\u05df."
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "draft_needs_verification",
+        "verified",
+        "flagged"
+      ],
+      "default": "draft_needs_verification"
+    },
+    "verified_by": {
+      "type": "string"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "review_note_he": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "drug_key",
+    "drug_name_he",
+    "mg_per_kg_per_dose",
+    "source"
+  ],
+  "rls": {
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
