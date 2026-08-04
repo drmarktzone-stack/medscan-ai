@@ -19,6 +19,7 @@ import ECGAnalysis from '@/pages/ECGAnalysis';
 import SkinAnalysis from '@/pages/SkinAnalysis';
 import RadiologyAnalysis from '@/pages/RadiologyAnalysis';
 import LabInterpreter from '@/pages/LabInterpreter';
+import PatientContext from '@/pages/PatientContext';
 import History from '@/pages/History';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import Evaluation from '@/pages/Evaluation';
@@ -56,6 +57,7 @@ const AuthenticatedApp = () => {
           <Route path="/skin" element={<SkinAnalysis />} />
           <Route path="/radiology" element={<RadiologyAnalysis />} />
           <Route path="/labs" element={<LabInterpreter />} />
+          <Route path="/patient-context" element={<PatientContext />} />
           <Route path="/history" element={<History />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/evaluation" element={<Evaluation />} />
