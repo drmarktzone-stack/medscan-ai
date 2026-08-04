@@ -35,6 +35,7 @@ import { runAnchorGuards } from '../antihallucination/anchorGuard.js';
 import { checkCoverage, applyCoverageAutoFixes } from '../antihallucination/coverageGuard.js';
 import { sanitizeClinicalInput } from '../antihallucination/inputSanitizer.js';
 import { sampleForConsistency, applyConsistency, shouldSample } from '../antihallucination/consistency.js';
+import { citationGuard, expandCitations, unusedLiterature } from '../evidence/citationGuard.js';
 import {
   buildInsufficientEnvelope,
   buildDegradedEnvelope,
@@ -102,6 +103,7 @@ export async function groundedInvoke({
   extraContext = null,
   knownTopicKeys = null,
   allowedTerms = [],
+  literature = [],
   consistencySamples = null,
   requestConsistency = false,
 }) {
@@ -134,6 +136,7 @@ export async function groundedInvoke({
     kbItems: grounding.kbItems ?? [],
     deterministic,
     patientData,
+    literature,
     mode,
   });
 
@@ -232,6 +235,9 @@ export async function groundedInvoke({
     output: raw, factBlock, knownTopicKeys, extraTerms: allowedTerms,
   });
 
+  // ציטוטים: המודל אינו מייצר מזהים, הוא רק מפנה ל-L# שנשלף
+  const citations = citationGuard(raw, factBlock);
+
   // ── [O] כיסוי: מה שהמנוע מצא והמודל השמיט ────────────────────────────────
   // זו הבדיקה היחידה כאן שמחפשת חֶסֶר ולא עודף.
   const coverage = checkCoverage({ output: raw, factBlock, grounding });
@@ -303,6 +309,7 @@ export async function groundedInvoke({
     ...validation.violations,
     ...numeric.violations,
     ...anchorResult.violations,
+    ...citations.violations,
     ...coverage.violations,
     ...inputWarnings,
     ...contradictionResult.contradictions.map((c) => ({
@@ -313,6 +320,7 @@ export async function groundedInvoke({
   const hardFail =
     numeric.blocked.length > 0 ||
     anchorResult.blocking.length > 0 ||
+    citations.blocked.length > 0 ||
     coverage.blocking.length > 0 ||
     verdicts.hardFail === true ||
     hasUnrecoverableViolation(validation.blocking) ||
@@ -322,6 +330,7 @@ export async function groundedInvoke({
     const reasons = [];
     if (numeric.blocked.length) reasons.push('unsourced_critical_numbers');
     if (anchorResult.blocking.length) reasons.push('fabricated_attribution');
+    if (citations.blocked.length) reasons.push('fabricated_citation');
     if (coverage.blocking.length) reasons.push('critical_omission');
     if (verdicts.hardFail) reasons.push('self_check_failed');
     if (hasUnrecoverableViolation(validation.blocking)) reasons.push('blocking_violations');
@@ -332,6 +341,7 @@ export async function groundedInvoke({
       details: [
         ...numeric.blocked.map((b) => ({ code: b.code, message_he: b.message_he, context: b.context })),
         ...anchorResult.blocking.map((b) => ({ code: b.code, message_he: b.message_he })),
+        ...citations.blocked.map((b) => ({ code: b.code, message_he: b.message_he })),
         ...coverage.blocking.map((b) => ({ code: b.code, message_he: b.message_he })),
         ...validation.blocking.map((b) => ({ code: b.code, message_he: b.message_he })),
         ...(verdicts.blockedDetails ?? []),
@@ -378,6 +388,20 @@ export async function groundedInvoke({
         'פריטים שהמנוע הדטרמיניסטי הפעיל ואשר הפלט לא התייחס אליהם. ' +
         'השמטה נראית כמו תשובה שלמה — לכן היא מוצגת במפורש.',
     };
+  }
+
+  // ציטוטים מורחבים בקוד מתוך מה שנשלף — ולכן נכונים בהגדרה.
+  if (factBlock.hasLiterature) {
+    envelope.references = expandCitations({ output: envelope, factBlock });
+    const unused = unusedLiterature({ output: envelope, factBlock });
+    if (unused.length) {
+      envelope.unused_literature = {
+        items: unused,
+        note_he:
+          'מאמרים שנשלפו כרלוונטיים ולא שולבו בפלט. מוצגים כדי שלא ' +
+          'תיווצר תחושת כיסוי מלא על סמך חלק מהספרות בלבד.',
+      };
+    }
   }
 
   return envelope;
