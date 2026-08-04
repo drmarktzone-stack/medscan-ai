@@ -40,6 +40,9 @@ const REASONS_HE = {
   complete_pattern:
     'דפוס מאומת התקיים במלואו על סמך מספר ערכים מדודים — ' +
     'חוזק הראיה מספיק גם בלי עוגן שני בלתי-תלוי',
+  draft_reference_range:
+    'הדפוס נשען על ערך שסומן כחריג לפי טווח ייחוס שטרם אומת — ' +
+    'הסימון עצמו עשוי להיות שגוי',
   exceeds_source_claim:
     'המקור המאומת עצמו אינו טוען לרמת חשד גבוהה כל כך — ' +
     'הציון הוגבל למה שהידע מרשה',
@@ -108,6 +111,14 @@ export function computeCeiling({
       reasons.push(REASONS_HE.partial_pattern);
     }
     score += Math.round(bestRatio * 3);
+
+    // דפוס שנשען על טווח ייחוס לא-מאומת אינו יכול לייצר חשד אדום.
+    // השרשרת כולה — ערך → סימון → דפוס → כיוון — חזקה כחולשת
+    // החוליה החלשה בה, וכאן זה הטווח שלא אומת מול גיליון המעבדה.
+    if (usedPatterns.some((p) => p.relies_on_draft_range)) {
+      ceiling = minLevel(ceiling, 'yellow');
+      reasons.push(REASONS_HE.draft_reference_range);
+    }
   }
 
   // ── עוגן בנתונים מדודים ───────────────────────────────────────────────
