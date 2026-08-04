@@ -166,7 +166,11 @@ export function validateExtraction(extraction) {
 
   for (const t of extraction?.topics ?? []) {
     if (!checkQuote(t, 'topic', t.topic_key)) continue;
-    if (!/^nelson\.[a-z0-9_]+\.[a-z0-9_]+$/i.test(t.topic_key ?? '')) {
+    // ⚠ הדפוס חייב להיות מודע-יוניקוד. הגרסה הקודמת היתה [a-z0-9_]
+    // ולכן התריעה על **כל** העוגנים שהספר מייצר — topicKeyFor גוזר
+    // אותם משמות הפרקים והנושאים בעברית. אזהרה שנורית על הכל
+    // אינה אזהרה — היא רעש שמאמן להתעלם גם מאזהרות אמיתיות.
+    if (!/^nelson\.[\p{L}\p{N}_]+\.[\p{L}\p{N}_]+$/u.test(t.topic_key ?? '')) {
       problems.push({
         kind: 'topic', key: t.topic_key, severity: 'warn',
         why_he: 'topic_key אינו בפורמט nelson.<domain>.<topic>',
