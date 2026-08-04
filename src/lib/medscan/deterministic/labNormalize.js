@@ -9,6 +9,7 @@
  */
 
 import { resolveRange, RANGE_STATUS } from './refRanges.js';
+import { resolveAnalyte, canonicalKey, RESULT_TYPES } from './analyteCatalog.js';
 
 /**
  * המרות יחידות מקובלות. רק המרות שהן **זהות מתמטית**, לא הערכות.
@@ -75,20 +76,48 @@ export function normalizeLabs({ labs = [], patient = {} } = {}) {
     if (!lab?.analyte) continue;
     const rawValue = Number(lab.value);
 
+    // זיהוי המדד בקטלוג — מקנה מפתח קנוני שהוא מה ש-LabPattern
+    // מתאים מולו. בלי זה, "המוגלובין" ו-"Hb" הם שני מדדים שונים.
+    const known = resolveAnalyte(lab.analyte);
+    const resultType = lab.result_type ?? known?.type ?? RESULT_TYPES.NUMERIC;
+
+    // תוצאה שאינה מספרית מטבעה (תרבית, גנטיקה, איכותי) —
+    // לא שגיאה, ולא צריך עבורה טווח ייחוס. היא עוברת כממצא.
+    if (resultType !== RESULT_TYPES.NUMERIC) {
+      const positive = isPositiveResult(lab.value);
+      normalized.push({
+        analyte: lab.analyte,
+        canonical_key: known?.key ?? canonicalKey(lab.analyte),
+        label_he: lab.label_he ?? known?.he ?? lab.analyte,
+        value: lab.value,
+        unit: null,
+        flag: positive === null ? 'qualitative' : (positive ? 'positive' : 'negative'),
+        result_type: resultType,
+        range_status: 'not_applicable',
+        category: known?.cat ?? null,
+        note_he: 'תוצאה איכותית — אינה דורשת טווח ייחוס.',
+      });
+      continue;
+    }
+
     if (!Number.isFinite(rawValue)) {
       warnings.push({
         code: 'non_numeric_value',
         severity: 'warn',
         analyte: lab.analyte,
-        message_he: `הערך של ${lab.analyte} אינו מספרי ולכן לא נורמל.`,
+        message_he:
+          `הערך של ${lab.analyte} אינו מספרי ולכן לא נורמל. ` +
+          'אם זו תוצאה איכותית (תרבית/גנטיקה) — יש לסמן את סוג התוצאה.',
       });
       normalized.push({
         analyte: lab.analyte,
-        label_he: lab.label_he ?? lab.analyte,
+        canonical_key: known?.key ?? canonicalKey(lab.analyte),
+        label_he: lab.label_he ?? known?.he ?? lab.analyte,
         value: lab.value,
         unit: lab.unit ?? null,
         flag: 'unknown_range',
         range_status: RANGE_STATUS.UNKNOWN_RANGE,
+        category: known?.cat ?? null,
       });
       continue;
     }
@@ -145,7 +174,10 @@ export function normalizeLabs({ labs = [], patient = {} } = {}) {
 
     normalized.push({
       analyte: lab.analyte,
-      label_he: lab.label_he ?? range.label_he ?? lab.analyte,
+      canonical_key: known?.key ?? canonicalKey(lab.analyte),
+      category: known?.cat ?? null,
+      result_type: RESULT_TYPES.NUMERIC,
+      label_he: lab.label_he ?? range.label_he ?? known?.he ?? lab.analyte,
       value,
       original_value: rawValue,
       unit,
@@ -183,14 +215,26 @@ export function normalizeLabs({ labs = [], patient = {} } = {}) {
   return { normalized, missingRanges, warnings };
 }
 
+/**
+ * האם תוצאה איכותית חיובית. null = לא ניתן להכריע —
+ * ואז לא מנחשים, משאירים כטקסט.
+ */
+function isPositiveResult(value) {
+  const v = String(value ?? '').trim().toLowerCase();
+  if (!v) return null;
+  if (/^(חיובי|positive|pos|נמצא|detected|reactive|\+)$/.test(v)) return true;
+  if (/^(שלילי|negative|neg|לא נמצא|not detected|non-?reactive|סטרילי|no growth|-)$/.test(v)) return false;
+  return null;
+}
+
 /** ממיר תוצאות מנורמלות לפריטי P# עבור ה-FACT BLOCK. */
 export function toPatientFacts(normalized = []) {
   return normalized.map((n) => ({
-    key: n.analyte,
+    key: n.canonical_key ?? n.analyte,
     label_he: n.label_he,
     value: n.value,
     unit: n.unit,
-    flag: n.flag === 'unknown_range' ? null : n.flag,
+    flag: (n.flag === 'unknown_range' || n.flag === 'qualitative') ? null : n.flag,
     ref_low: n.ref_low,
     ref_high: n.ref_high,
   }));
