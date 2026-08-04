@@ -1,0 +1,108 @@
+{
+  "name": "KnowledgeTopic",
+  "type": "object",
+  "description": "\u05d9\u05d7\u05d9\u05d3\u05ea \u05d9\u05d3\u05e2 \u05de\u05d5\u05d1\u05e0\u05d9\u05ea \u05de\u05e0\u05dc\u05e1\u05d5\u05df \u2014 \u05e0\u05d5\u05e9\u05d0 \u05d1\u05ea\u05d5\u05da \u05e4\u05e8\u05e7. \u05e2\u05d5\u05d2\u05df-\u05d4\u05d0\u05de\u05ea \u05e9\u05db\u05dc Rule/Association/LabPattern \u05de\u05e4\u05e0\u05d4 \u05d0\u05dc\u05d9\u05d5 \u05d3\u05e8\u05da source_anchor.",
+  "properties": {
+    "topic_key": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d9\u05d9\u05d7\u05d5\u05d3\u05d9 \u05d5\u05d9\u05e6\u05d9\u05d1 \u05dc\u05e0\u05e6\u05d7. \u05e4\u05d5\u05e8\u05de\u05d8: nelson.<domain>.<topic>, \u05dc\u05de\u05e9\u05dc nelson.id.kawasaki"
+    },
+    "chapter_number": {
+      "type": "number"
+    },
+    "chapter_title_he": {
+      "type": "string"
+    },
+    "topic_title_he": {
+      "type": "string"
+    },
+    "topic_title_en": {
+      "type": "string"
+    },
+    "page_start": {
+      "type": "number"
+    },
+    "page_end": {
+      "type": "number"
+    },
+    "summary_he": {
+      "type": "string",
+      "description": "\u05e1\u05d9\u05db\u05d5\u05dd \u05e2\u05d1\u05e8\u05d9 \u05de\u05d5\u05d1\u05e0\u05d4. \u05de\u05e9\u05de\u05e9 \u05dc\u05d0\u05d7\u05d6\u05d5\u05e8-\u05d4\u05e7\u05e9\u05e8, \u05dc\u05d0 \u05db\u05de\u05e7\u05d5\u05e8 \u05dc\u05de\u05e1\u05e4\u05e8\u05d9\u05dd."
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "\u05d8\u05d1\u05dc\u05d0\u05d5\u05ea \u05e9\u05d7\u05d5\u05dc\u05e6\u05d5 (\u05e7\u05e8\u05d9\u05d8\u05e8\u05d9\u05d5\u05e0\u05d9\u05dd, \u05e1\u05e4\u05d9\u05dd). \u05d8\u05d1\u05dc\u05d0\u05d5\u05ea \u05d5\u05dc\u05d0 \u05e4\u05e8\u05d5\u05d6\u05d4 \u2014 \u05db\u05d3\u05d9 \u05e9\u05d9\u05d4\u05d9\u05d5 \u05d1\u05e8-\u05d4\u05e8\u05e6\u05d4 \u05d5\u05d1\u05e8-\u05d0\u05d9\u05de\u05d5\u05ea."
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "age_scope": {
+      "type": "string",
+      "enum": [
+        "neonate",
+        "infant",
+        "child",
+        "adolescent",
+        "all"
+      ],
+      "default": "all"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "draft_needs_verification",
+        "verified",
+        "flagged"
+      ],
+      "default": "draft_needs_verification",
+      "description": "\u05e8\u05e7 verified \u05de\u05d5\u05e6\u05d2 \u05d1\u05e4\u05dc\u05d8 \u05e7\u05dc\u05d9\u05e0\u05d9. flagged = \u05e1\u05d5\u05de\u05df \u05db\u05e9\u05d2\u05d5\u05d9 \u05d5\u05dc\u05d0 \u05e0\u05db\u05e0\u05e1 \u05dc\u05e2\u05d5\u05dc\u05dd."
+    },
+    "verified_by": {
+      "type": "string"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "review_note_he": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "topic_key",
+    "topic_title_he"
+  ],
+  "rls": {
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
