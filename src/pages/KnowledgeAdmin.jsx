@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import {
   Database, Loader2, CheckCircle2, AlertTriangle, Flag, Download,
-  ChevronDown, ChevronUp, ShieldCheck, Trash2,
+  ChevronDown, ChevronUp, ShieldCheck, Trash2, BookUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -177,6 +178,12 @@ export default function KnowledgeAdmin() {
                   </p>
                 </div>
               )}
+
+              <Link to="/knowledge-import"
+                className="flex items-center justify-center gap-2 rounded-lg border border-amber-300 bg-amber-50 py-2.5 mb-3">
+                <BookUp className="w-4 h-4 text-amber-600" />
+                <span className="text-xs font-semibold text-amber-800">ייבוא ידע מנלסון</span>
+              </Link>
 
               <div className="space-y-1">
                 {status.map((s) => (
