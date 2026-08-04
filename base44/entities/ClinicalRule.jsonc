@@ -1,0 +1,161 @@
+{
+  "name": "ClinicalRule",
+  "type": "object",
+  "description": "\u05db\u05dc\u05dc \u05e7\u05dc\u05d9\u05e0\u05d9: \u05ea\u05e0\u05d0\u05d9\u05dd \u2192 \u05de\u05e1\u05e7\u05e0\u05d4/\u05db\u05d9\u05d5\u05d5\u05df. \u05de\u05e0\u05d5\u05e2 \u05d4-Rules \u05d4\u05d3\u05d8\u05e8\u05de\u05d9\u05e0\u05d9\u05e1\u05d8\u05d9 \u05de\u05e8\u05d9\u05e5 \u05d0\u05dc\u05d4 \u05d1\u05e7\u05d5\u05d3, \u05dc\u05e4\u05e0\u05d9 \u05e7\u05e8\u05d9\u05d0\u05ea \u05d4-LLM. \u05d0\u05d9\u05df \u05de\u05d9\u05e0\u05d5\u05e0\u05d9\u05dd \u05d1\u05db\u05dc\u05dc\u05d9\u05dd \u2014 \u05de\u05d9\u05e0\u05d5\u05df \u05de\u05d2\u05d9\u05e2 \u05de-DoseRecord.",
+  "properties": {
+    "rule_key": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d9\u05d9\u05d7\u05d5\u05d3\u05d9"
+    },
+    "title_he": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "description": "diagnostic_triad / management / iron_rule / criteria"
+    },
+    "domain": {
+      "type": "string",
+      "description": "infectious / hematology / renal / endocrine / ..."
+    },
+    "conditions": {
+      "type": "array",
+      "description": "\u05ea\u05e0\u05d0\u05d9\u05dd \u05de\u05d5\u05d1\u05e0\u05d9\u05dd. \u05db\u05dc \u05ea\u05e0\u05d0\u05d9: {type, key, op, value, unit}. type: finding|lab|symptom|age|duration|background. op: present|absent|>|>=|<|<=|==|range|high|low",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "finding",
+              "lab",
+              "symptom",
+              "age",
+              "duration",
+              "background"
+            ]
+          },
+          "key": {
+            "type": "string"
+          },
+          "op": {
+            "type": "string",
+            "enum": [
+              "present",
+              "absent",
+              ">",
+              ">=",
+              "<",
+              "<=",
+              "==",
+              "range",
+              "high",
+              "low"
+            ]
+          },
+          "value": {},
+          "unit": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "key",
+          "op"
+        ]
+      }
+    },
+    "logic": {
+      "type": "string",
+      "enum": [
+        "all",
+        "any",
+        "min_count"
+      ],
+      "default": "all"
+    },
+    "min_count": {
+      "type": "number",
+      "default": 0
+    },
+    "conclusion_he": {
+      "type": "string",
+      "description": "\u05d4\u05de\u05e1\u05e7\u05e0\u05d4/\u05d4\u05db\u05d9\u05d5\u05d5\u05df \u2014 \u05dc\u05d0 \u05d0\u05d1\u05d7\u05e0\u05d4 \u05e1\u05d5\u05e4\u05d9\u05ea"
+    },
+    "suspicion": {
+      "type": "string",
+      "enum": [
+        "green",
+        "yellow",
+        "red"
+      ]
+    },
+    "clinical_reasoning_he": {
+      "type": "string"
+    },
+    "recommended_workup_he": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_anchor": {
+      "type": "string",
+      "description": "topic_key \u05d1\u05e0\u05dc\u05e1\u05d5\u05df. \u05d7\u05d5\u05d1\u05d4 \u2014 \u05d8\u05e2\u05e0\u05d4 \u05dc\u05dc\u05d0 \u05e2\u05d5\u05d2\u05df \u05d0\u05d9\u05e0\u05d4 \u05e2\u05d5\u05dc\u05d4 \u05dc\u05e4\u05e8\u05d5\u05d3\u05e7\u05e9\u05df."
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "draft_needs_verification",
+        "verified",
+        "flagged"
+      ],
+      "default": "draft_needs_verification"
+    },
+    "verified_by": {
+      "type": "string"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "review_note_he": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "rule_key",
+    "title_he",
+    "conditions",
+    "conclusion_he",
+    "suspicion",
+    "source_anchor"
+  ],
+  "rls": {
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
