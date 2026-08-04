@@ -1,0 +1,63 @@
+{
+  "name": "NelsonChapter",
+  "type": "object",
+  "description": "\u05e4\u05e8\u05e7 \u05de\u05e1\u05e4\u05e8\u05d5\u05df \u05e1\u05d9\u05db\u05d5\u05de\u05d9 \u05e0\u05dc\u05e1\u05d5\u05df, \u05de\u05d0\u05d5\u05d7\u05e1\u05df \u05d1\u05d0\u05e4\u05dc\u05d9\u05e7\u05e6\u05d9\u05d4. \u05e0\u05d8\u05e2\u05df \u05e4\u05e2\u05dd \u05d0\u05d7\u05ea \u05d5\u05e0\u05e9\u05d0\u05e8. \u05db\u05dc \u05e4\u05e8\u05e7 \u05d4\u05d5\u05d0 \u05e8\u05e9\u05d5\u05de\u05d4 \u2014 \u05db\u05d3\u05d9 \u05dc\u05d0 \u05dc\u05d7\u05e8\u05d5\u05d2 \u05de\u05de\u05d2\u05d1\u05dc\u05ea \u05d2\u05d5\u05d3\u05dc \u05e8\u05e9\u05d5\u05de\u05d4, \u05d5\u05db\u05d3\u05d9 \u05dc\u05d0\u05e4\u05e9\u05e8 \u05d8\u05e2\u05d9\u05e0\u05d4 \u05d7\u05dc\u05e7\u05d9\u05ea.",
+  "properties": {
+    "chapter_no": {
+      "type": "number",
+      "description": "\u05de\u05e1\u05e4\u05e8 \u05d4\u05e4\u05e8\u05e7, 1\u201325"
+    },
+    "title_he": {
+      "type": "string"
+    },
+    "topic_count": {
+      "type": "number"
+    },
+    "cell_count": {
+      "type": "number"
+    },
+    "topics": {
+      "type": "array",
+      "description": "\u05e0\u05d5\u05e9\u05d0\u05d9 \u05d4\u05e4\u05e8\u05e7. \u05db\u05dc \u05e0\u05d5\u05e9\u05d0: {t: \u05e9\u05dd, k: topic_key \u05d9\u05e6\u05d9\u05d1, pg: \u05e2\u05de\u05d5\u05d3\u05d9\u05dd, s: \u05e1\u05e2\u05d9\u05e4\u05d9\u05dd[]}. \u05db\u05dc \u05e1\u05e2\u05d9\u05e3: {h: \u05db\u05d5\u05ea\u05e8\u05ea, p: \u05e2\u05de\u05d5\u05d3, c: \u05ea\u05d0\u05d9\u05dd[]}.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "source_note_he": {
+      "type": "string",
+      "description": "\u05de\u05e7\u05d5\u05e8 \u05d5\u05d0\u05d5\u05e4\u05df \u05d4\u05d4\u05e4\u05e7\u05d4 \u2014 \u05e0\u05e9\u05de\u05e8 \u05db\u05d3\u05d9 \u05e9\u05ea\u05de\u05d9\u05d3 \u05d9\u05d4\u05d9\u05d4 \u05d1\u05e8\u05d5\u05e8 \u05de\u05d0\u05d9\u05e4\u05d4 \u05d4\u05d2\u05d9\u05e2 \u05d4\u05ea\u05d5\u05db\u05df"
+    }
+  },
+  "required": [
+    "chapter_no",
+    "title_he",
+    "topics"
+  ],
+  "rls": {
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
