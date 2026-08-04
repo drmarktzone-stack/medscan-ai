@@ -27,14 +27,25 @@ export const CHUNK_CHARS = 6000;
  * ציטוט-מקור אמיתי, והרופא/ה יאשר/תאשר אותו — כי הציטוט אכן
  * מופיע במסמך. רק שהוא מעולם לא נכתב כמשפט אחד.
  */
-const SEAM_PATTERNS = [
-  // עברית אחרי נקודתיים/סוגר-סוגריים בלי רווח — חתך אופייני
+/**
+ * שורת-הוכחה: דפוס שאינו נוצר בטקסט תקין, ולכן נוכחותו
+ * מספיקה — אין צורך בשיעור.
+ *
+ * רשימת תבליטים לגיטימית מתחילה בראש שורה ומופיעה פעם אחת בה.
+ * תבליט שני באותה שורה, או תבליט אחרי טקסט עברי, פירושו ששני
+ * שברי-עמודה נתפרו לשורה אחת.
+ */
+const SEAM_PROOF = [
+  { re: /[֐-׿][^\n]*\s•\s*\S/, why: 'תבליט אחרי טקסט עברי באותה שורה' },
+  { re: /•[^\n]*•/, why: 'שני תבליטים באותה שורה' },
+];
+
+/**
+ * רמז: דפוס שעלול להופיע גם בטקסט תקין, ולכן נשקל לפי שיעור.
+ */
+const SEAM_HINTS = [
   { re: /[֐-׿][:)\]][֐-׿]/, why: 'מעבר עברית→עברית בלי רווח אחרי סימן פיסוק' },
   { re: /\)\s*•/, why: 'סוגר-סוגריים צמוד לתבליט' },
-  { re: /•[^\n]*•/, why: 'שני תבליטים באותה שורה' },
-  // תבליט שאינו בתחילת השורה: רשימה מתחילה בראש שורה,
-  // ולכן תבליט באמצע מעיד על שני שברי-עמודה שנתפרו.
-  { re: /\S\s+[•o]\s+\S/, why: 'תבליט באמצע שורה' },
 ];
 
 /**
@@ -53,21 +64,58 @@ const SEAM_PATTERNS = [
  */
 
 /**
+ * ⚠ למה ההכרעה אינה לפי שיעור בלבד
+ *
+ * בגרסה קודמת ההכרעה היתה שיעור השורות המסומנות. זה מחמיץ
+ * בדיוק את המקרים החמורים: בתא ארוך שממזג שתי עמודות, רק
+ * השורות שבהן היה טקסט בשתי העמודות נושאות סימן. תא בן 46
+ * שורות שהוא ודאית ממוזג קיבל 11% — מתחת לכל סף סביר.
+ *
+ * לכן שתי רמות: **הוכחה** (נוכחות מספיקה) ו**רמז** (שיעור).
+ * מדידה על הספר בפועל: ההפרדה מוחלטת — כל תא שנראה ממוזג
+ * נושא שורת-הוכחה, וכל תא נקי הוא אפס. 66 מתוך 2,131.
+ *
+ * ⚠ הדפוס מציין תבליט • בלבד, לא o. בטקסט RTL שחולץ מ-PDF,
+ * שורה כמו «o Early-onset (…)» נשמרת כ-«Early-onset o (…)» —
+ * ה-o נראה באמצע השורה אבל זה סידור דו-כיווני, לא מיזוג.
+ *
  * @returns {{score: number, lines: object[], verdict: 'clean'|'suspect'|'corrupt'}}
  */
 export function detectSeams(text) {
   const lines = String(text ?? '').split('\n').filter((l) => l.trim().length > 20);
-  if (!lines.length) return { score: 0, lines: [], verdict: 'clean' };
+  if (!lines.length) return { score: 0, lines: [], verdict: 'clean', total_lines: 0 };
 
   const flagged = [];
+  let proofLines = 0;
+  let hintLines = 0;
+
   for (const line of lines) {
-    const hits = SEAM_PATTERNS.filter((p) => p.re.test(line));
-    if (hits.length) flagged.push({ line: line.slice(0, 120), reasons: hits.map((h) => h.why) });
+    const proofs = SEAM_PROOF.filter((p) => p.re.test(line));
+    const hints = SEAM_HINTS.filter((p) => p.re.test(line));
+    if (proofs.length) proofLines += 1;
+    else if (hints.length) hintLines += 1;
+    if (proofs.length || hints.length) {
+      flagged.push({
+        line: line.slice(0, 120),
+        reasons: [...proofs, ...hints].map((h) => h.why),
+        proof: proofs.length > 0,
+      });
+    }
   }
 
-  const score = flagged.length / lines.length;
-  const verdict = score > 0.25 ? 'corrupt' : score > 0.08 ? 'suspect' : 'clean';
-  return { score: Number(score.toFixed(3)), lines: flagged.slice(0, 8), verdict, total_lines: lines.length };
+  const hintScore = hintLines / lines.length;
+  const verdict = proofLines > 0 ? 'corrupt'
+    : hintScore > 0.25 ? 'corrupt'
+    : hintScore > 0.08 ? 'suspect'
+    : 'clean';
+
+  return {
+    score: Number(((proofLines + hintLines) / lines.length).toFixed(3)),
+    proof_lines: proofLines,
+    lines: flagged.slice(0, 8),
+    verdict,
+    total_lines: lines.length,
+  };
 }
 
 /**
