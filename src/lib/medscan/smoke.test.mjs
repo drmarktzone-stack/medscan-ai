@@ -117,13 +117,15 @@ await t('3ב. משפט רב-מדדים אינו מייצר סתירת שווא',
       supports_he: ['אלבומין נמוך, כולסטרול גבוה'],
     })],
   });
-  const { blocking } = detectContradictions({ output: out2, factBlock: fb });
+  const mp = [{ pattern_key: 'smoke.inflammation', matched_ratio: 1 }];
+  const { blocking } = detectContradictions({ output: out2, factBlock: fb, matchedPatterns: mp });
   eq(blocking.length, 0, 'נוצרה סתירת שווא ממשפט שמונה כמה מדדים');
 
   // ועדיין — סתירה אמיתית באותה פסוקית נתפסת
   const bad = out({ directions: [dir({ supports_he: ['אלבומין גבוה'] })] });
   ok(
-    detectContradictions({ output: bad, factBlock: fb }).blocking.length > 0,
+    detectContradictions({ output: bad, factBlock: fb, matchedPatterns: mp })
+      .blocking.some((c) => c.kind === 'finding_vs_finding'),
     'סתירה אמיתית לא נתפסה — התיקון הלאים את הבדיקה'
   );
 });
