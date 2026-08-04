@@ -1,0 +1,209 @@
+/**
+ * MedScan — Lab Normalization (שכבה דטרמיניסטית)
+ *
+ * ממיר תוצאות גולמיות לצורה שהמנוע יודע לעבוד איתה: יחידות, טווח-גיל, דגל.
+ * **אין כאן LLM.** הסימון high/low הוא החלטה קלינית — הוא נעשה בקוד או שאינו נעשה.
+ *
+ * כלל מרכזי: כשאין טווח ייחוס מאומת — הערך מסומן `unknown_range`, לא `normal`.
+ * "לא יודע" ו-"תקין" הם שני דברים שונים לחלוטין, ובלבול ביניהם הוא באג בטיחותי.
+ */
+
+import { resolveRange, RANGE_STATUS } from './refRanges.js';
+
+/**
+ * המרות יחידות מקובלות. רק המרות שהן **זהות מתמטית**, לא הערכות.
+ * המרה שדורשת משקל מולקולרי מוגדרת במפורש עם המקדם ומקורו.
+ */
+const UNIT_CONVERSIONS = {
+  // ספירת דם — 10^3/µL ו-10^9/L זהים מספרית
+  '10^3/ul→10^9/l': { factor: 1, note: 'זהות מספרית' },
+  '10^9/l→10^3/ul': { factor: 1, note: 'זהות מספרית' },
+  'k/ul→10^9/l': { factor: 1, note: 'זהות מספרית' },
+  // CRP
+  'mg/dl→mg/l': { factor: 10, note: 'המרה ישירה' },
+  'mg/l→mg/dl': { factor: 0.1, note: 'המרה ישירה' },
+  // כללי
+  'g/dl→g/l': { factor: 10, note: 'המרה ישירה' },
+  'g/l→g/dl': { factor: 0.1, note: 'המרה ישירה' },
+};
+
+const norm = (u) => String(u ?? '').trim().toLowerCase().replace(/\s+/g, '');
+
+export function convertUnit(value, from, to) {
+  if (!from || !to) return { value, converted: false, note: null };
+  if (norm(from) === norm(to)) return { value, converted: false, note: null };
+
+  const key = `${norm(from)}→${norm(to)}`;
+  const conv = UNIT_CONVERSIONS[key];
+  if (!conv) {
+    return {
+      value,
+      converted: false,
+      error: 'unsupported_conversion',
+      note: `אין המרה מאומתת מ-${from} ל-${to}. הערך נשאר ביחידות המקוריות.`,
+    };
+  }
+  return { value: value * conv.factor, converted: true, note: conv.note };
+}
+
+/**
+ * מנרמל מערך תוצאות.
+ *
+ * @param {object} params
+ * @param {object[]} params.labs   [{analyte, value, unit, ref_low?, ref_high?}]
+ * @param {object} params.patient  {age_days, sex}
+ * @returns {{normalized: object[], missingRanges: string[], warnings: object[]}}
+ */
+export function normalizeLabs({ labs = [], patient = {} } = {}) {
+  const ageDays = Number(patient.age_days);
+  const sex = patient.sex ?? 'any';
+  const normalized = [];
+  const missingRanges = [];
+  const warnings = [];
+
+  if (!Number.isFinite(ageDays)) {
+    warnings.push({
+      code: 'missing_age',
+      severity: 'block',
+      message_he:
+        'לא סופק גיל המטופל בימים. ברפואת ילדים כמעט כל טווח ייחוס תלוי-גיל — ' +
+        'בלי גיל אין נרמול, ולכן לא יבוצע סימון חריגות.',
+    });
+  }
+
+  for (const lab of labs) {
+    if (!lab?.analyte) continue;
+    const rawValue = Number(lab.value);
+
+    if (!Number.isFinite(rawValue)) {
+      warnings.push({
+        code: 'non_numeric_value',
+        severity: 'warn',
+        analyte: lab.analyte,
+        message_he: `הערך של ${lab.analyte} אינו מספרי ולכן לא נורמל.`,
+      });
+      normalized.push({
+        analyte: lab.analyte,
+        label_he: lab.label_he ?? lab.analyte,
+        value: lab.value,
+        unit: lab.unit ?? null,
+        flag: 'unknown_range',
+        range_status: RANGE_STATUS.UNKNOWN_RANGE,
+      });
+      continue;
+    }
+
+    const range = Number.isFinite(ageDays)
+      ? resolveRange({ analyte: lab.analyte, ageDays, sex })
+      : { status: RANGE_STATUS.UNKNOWN_RANGE, low: null, high: null, unit: null,
+          note_he: 'לא ניתן לפתור טווח ללא גיל.' };
+
+    // טווח שהוזן ידנית ע"י המשתמש (מגיליון המעבדה) גובר — הוא המדויק ביותר
+    const manualLow = Number.isFinite(Number(lab.ref_low)) ? Number(lab.ref_low) : null;
+    const manualHigh = Number.isFinite(Number(lab.ref_high)) ? Number(lab.ref_high) : null;
+    const usingManual = manualLow !== null || manualHigh !== null;
+
+    let value = rawValue;
+    let unit = lab.unit ?? range.unit ?? null;
+    let conversionNote = null;
+
+    if (!usingManual && lab.unit && range.unit && norm(lab.unit) !== norm(range.unit)) {
+      const conv = convertUnit(rawValue, lab.unit, range.unit);
+      if (conv.error) {
+        warnings.push({
+          code: 'unit_mismatch',
+          severity: 'warn_high',
+          analyte: lab.analyte,
+          message_he:
+            `יחידות ${lab.analyte} (${lab.unit}) אינן תואמות לטווח הייחוס (${range.unit}) ` +
+            'ואין המרה מאומתת. הערך לא יסומן כחריג.',
+        });
+      } else {
+        value = conv.value;
+        unit = range.unit;
+        conversionNote = conv.note;
+      }
+    }
+
+    const low = usingManual ? manualLow : range.low;
+    const high = usingManual ? manualHigh : range.high;
+    const canFlag =
+      (usingManual || range.status === RANGE_STATUS.OK || range.status === RANGE_STATUS.UNVERIFIED_RANGE) &&
+      (low !== null || high !== null) &&
+      !(!usingManual && lab.unit && range.unit && norm(lab.unit) !== norm(range.unit) && !conversionNote);
+
+    let flag = 'unknown_range';
+    if (canFlag) {
+      if (high !== null && value > high) flag = 'high';
+      else if (low !== null && value < low) flag = 'low';
+      else flag = 'normal';
+    } else if (!usingManual && range.status === RANGE_STATUS.UNKNOWN_RANGE) {
+      missingRanges.push(lab.analyte);
+    }
+
+    const rangeStatus = usingManual ? 'manual_range' : range.status;
+
+    normalized.push({
+      analyte: lab.analyte,
+      label_he: lab.label_he ?? range.label_he ?? lab.analyte,
+      value,
+      original_value: rawValue,
+      unit,
+      original_unit: lab.unit ?? null,
+      ref_low: low,
+      ref_high: high,
+      flag,
+      range_status: rangeStatus,
+      range_source: usingManual ? 'הוזן ידנית מגיליון המעבדה' : range.source ?? null,
+      range_verification: usingManual ? 'user_provided' : range.verification_status ?? null,
+      note_he: conversionNote ?? range.note_he ?? null,
+    });
+
+    if (!usingManual && range.status === RANGE_STATUS.UNVERIFIED_RANGE) {
+      warnings.push({
+        code: 'unverified_range',
+        severity: 'warn_high',
+        analyte: lab.analyte,
+        message_he: range.note_he,
+      });
+    }
+  }
+
+  if (missingRanges.length) {
+    warnings.push({
+      code: 'missing_reference_ranges',
+      severity: 'warn_high',
+      analytes: missingRanges,
+      message_he:
+        `לא נטענו טווחי ייחוס מאומתים עבור: ${missingRanges.join(', ')}. ` +
+        'מדדים אלה לא סומנו כחריגים או כתקינים, ולא ישתתפו בהתאמת דפוסים.',
+    });
+  }
+
+  return { normalized, missingRanges, warnings };
+}
+
+/** ממיר תוצאות מנורמלות לפריטי P# עבור ה-FACT BLOCK. */
+export function toPatientFacts(normalized = []) {
+  return normalized.map((n) => ({
+    key: n.analyte,
+    label_he: n.label_he,
+    value: n.value,
+    unit: n.unit,
+    flag: n.flag === 'unknown_range' ? null : n.flag,
+    ref_low: n.ref_low,
+    ref_high: n.ref_high,
+  }));
+}
+
+/** גיל בימים מכל צורת קלט סבירה. */
+export function toAgeDays({ age_days, age_months, age_years, birth_date } = {}) {
+  if (Number.isFinite(Number(age_days))) return Number(age_days);
+  if (Number.isFinite(Number(age_months))) return Math.round(Number(age_months) * 30.4375);
+  if (Number.isFinite(Number(age_years))) return Math.round(Number(age_years) * 365.25);
+  if (birth_date) {
+    const ms = Date.now() - new Date(birth_date).getTime();
+    if (Number.isFinite(ms) && ms >= 0) return Math.floor(ms / 86400000);
+  }
+  return null;
+}
