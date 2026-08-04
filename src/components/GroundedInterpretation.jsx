@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   AlertTriangle, ShieldAlert, ChevronDown, ChevronUp, Eye, Anchor,
-  HelpCircle, GitBranch, Info, ShieldCheck, Repeat,
+  HelpCircle, GitBranch, Info, ShieldCheck, Repeat, BookOpen, ExternalLink,
 } from "lucide-react";
 
 /**
@@ -334,6 +334,78 @@ export default function GroundedInterpretation({ data }) {
               </li>
             ))}
           </ul>
+        </Section>
+      )}
+
+      {/* 5ב. ספרות — ציטוטים ברי-לחיצה שנשלפו בפועל */}
+      {(data.references?.length > 0 || data.evidence_meta) && (
+        <Section icon={BookOpen} title="ספרות תומכת">
+          {data.evidence_meta?.note_he && (
+            <p className="text-[11px] text-slate-500 mb-2 leading-relaxed">
+              {data.evidence_meta.note_he}
+            </p>
+          )}
+
+          {data.references?.length > 0 ? (
+            <ol className="space-y-2">
+              {data.references.map((r) => (
+                <li key={r.ref} className="text-xs leading-relaxed">
+                  <span className="text-[10px] font-mono text-slate-400 ml-1">[{r.ref}]</span>
+                  <span className="text-slate-800">{r.title}</span>
+                  {r.year && <span className="text-slate-500"> ({r.year})</span>}
+                  <span className="flex items-center gap-3 mt-0.5">
+                    {r.url && (
+                      <a
+                        href={r.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] text-indigo-600"
+                      >
+                        <ExternalLink className="w-3 h-3" /> PubMed
+                      </a>
+                    )}
+                    {r.doi_url && (
+                      <a
+                        href={r.doi_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] text-indigo-600"
+                      >
+                        <ExternalLink className="w-3 h-3" /> DOI
+                      </a>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="text-xs text-slate-500">לא שולבה ספרות בפלט זה.</p>
+          )}
+
+          {data.unused_literature?.items?.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-slate-100">
+              <p className="text-[11px] text-slate-500 mb-1">
+                {data.unused_literature.note_he}
+              </p>
+              <ul className="space-y-1">
+                {data.unused_literature.items.map((u) => (
+                  <li key={u.ref} className="text-[11px] text-slate-600">
+                    ·{" "}
+                    {u.url ? (
+                      <a href={u.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600">
+                        {u.title}
+                      </a>
+                    ) : u.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <p className="text-[10px] text-slate-400 mt-3 leading-relaxed">
+            המקורות נשלפו מ-PubMed ע"י המערכת ולא נכתבו ע"י מנוע הנימוק.
+            שליפה אינה אימות רפואי של הטענה — יש לקרוא את המקור ולשקול את התאמתו למקרה.
+          </p>
         </Section>
       )}
 
