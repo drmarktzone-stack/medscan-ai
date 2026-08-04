@@ -350,7 +350,7 @@ export default function GroundedInterpretation({ data }) {
 
       {/* 7. השמטות שדווחו */}
       {data.coverage?.omitted?.length > 0 && (
-        <Section icon={Info} title="הופעל ע\"י המנוע ולא נדון בפלט" tone="amber">
+        <Section icon={Info} title="הופעל על-ידי המנוע ולא נדון בפלט" tone="amber">
           <p className="text-[11px] text-amber-700 mb-2">{data.coverage.note_he}</p>
           <ul className="space-y-1">
             {data.coverage.omitted.map((o, i) => (
