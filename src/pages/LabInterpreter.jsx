@@ -5,9 +5,14 @@ import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
+import AnalytePicker from "@/components/AnalytePicker";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
+import { RESULT_TYPES, CATALOG_SIZE } from "@/lib/medscan/deterministic/analyteCatalog";
 
-const emptyRow = () => ({ analyte: "", value: "", unit: "", ref_low: "", ref_high: "" });
+const emptyRow = () => ({
+  analyte: "", value: "", unit: "", ref_low: "", ref_high: "",
+  result_type: RESULT_TYPES.NUMERIC,
+});
 
 export default function LabInterpreter() {
   const [ageValue, setAgeValue] = useState("");
@@ -43,13 +48,18 @@ export default function LabInterpreter() {
         height_cm: height ? Number(height) : undefined,
       };
 
-      const labs = filledRows.map((r) => ({
-        analyte: r.analyte.trim(),
-        value: Number(r.value),
-        unit: r.unit.trim() || undefined,
-        ref_low: r.ref_low !== "" ? Number(r.ref_low) : undefined,
-        ref_high: r.ref_high !== "" ? Number(r.ref_high) : undefined,
-      }));
+      const labs = filledRows.map((r) => {
+        const qualitative = r.result_type !== RESULT_TYPES.NUMERIC;
+        return {
+          analyte: r.analyte.trim(),
+          // תוצאה איכותית נשלחת כטקסט — המרה למספר היתה הופכת אותה ל-NaN
+          value: qualitative ? r.value.trim() : Number(r.value),
+          result_type: r.result_type,
+          unit: qualitative ? undefined : (r.unit.trim() || undefined),
+          ref_low: !qualitative && r.ref_low !== "" ? Number(r.ref_low) : undefined,
+          ref_high: !qualitative && r.ref_high !== "" ? Number(r.ref_high) : undefined,
+        };
+      });
 
       const findings = findingsText
         .split(/[,\n]/)
@@ -82,6 +92,10 @@ export default function LabInterpreter() {
           הכלי מזהה <strong>דפוסים רב-פרמטריים</strong>, לא ערכים בודדים.
           ככל שתזין יותר מדדים מאותה בדיקה — כך הזיהוי מדויק יותר.
           טווח ייחוס שתזין מגיליון המעבדה גובר על כל מקור אחר.
+          <span className="block mt-1 text-slate-400">
+            הקטלוג כולל {CATALOG_SIZE} מדדים — ספירת דם, כימיה, אנדוקרינולוגיה,
+            אימונולוגיה, מיקרוביולוגיה, גנטיקה, שתן, CSF ועוד. התחל/י להקליד.
+          </span>
         </p>
 
         {/* פרטי המטופל */}
@@ -149,60 +163,81 @@ export default function LabInterpreter() {
             </button>
           </div>
 
-          <div className="grid grid-cols-[1fr_auto] gap-2 text-[10px] font-medium text-slate-400 px-1">
-            <div className="grid grid-cols-4 gap-1">
-              <span>מדד</span><span>ערך</span><span>יחידה</span><span>טווח (מ–עד)</span>
-            </div>
-            <span />
-          </div>
-
-          {rows.map((row, i) => (
-            <div key={i} className="grid grid-cols-[1fr_auto] gap-2 items-center">
-              <div className="grid grid-cols-4 gap-1">
-                <Input
-                  value={row.analyte}
-                  onChange={(e) => updateRow(i, "analyte", e.target.value)}
-                  placeholder="CRP"
-                  className="text-xs h-9"
-                />
-                <Input
-                  type="number" inputMode="decimal"
-                  value={row.value}
-                  onChange={(e) => updateRow(i, "value", e.target.value)}
-                  className="text-xs h-9"
-                />
-                <Input
-                  value={row.unit}
-                  onChange={(e) => updateRow(i, "unit", e.target.value)}
-                  placeholder="mg/L"
-                  className="text-xs h-9"
-                />
-                <div className="flex gap-1">
-                  <Input
-                    type="number" inputMode="decimal"
-                    value={row.ref_low}
-                    onChange={(e) => updateRow(i, "ref_low", e.target.value)}
-                    placeholder="מ"
-                    className="text-xs h-9 px-1"
+          {rows.map((row, i) => {
+            const qualitative = row.result_type !== RESULT_TYPES.NUMERIC;
+            return (
+              <div key={i} className="rounded-lg border border-slate-100 p-2 space-y-1.5">
+                <div className="flex items-start gap-2">
+                  <AnalytePicker
+                    className="flex-1"
+                    value={row.analyte}
+                    onChange={(v) => updateRow(i, "analyte", v)}
+                    onSelect={(a) => {
+                      updateRow(i, "analyte", a.he);
+                      updateRow(i, "unit", a.unit || "");
+                      updateRow(i, "result_type", a.type);
+                      if (a.type !== RESULT_TYPES.NUMERIC) {
+                        updateRow(i, "ref_low", "");
+                        updateRow(i, "ref_high", "");
+                      }
+                    }}
                   />
-                  <Input
-                    type="number" inputMode="decimal"
-                    value={row.ref_high}
-                    onChange={(e) => updateRow(i, "ref_high", e.target.value)}
-                    placeholder="עד"
-                    className="text-xs h-9 px-1"
-                  />
+                  <button
+                    onClick={() => removeRow(i)}
+                    disabled={rows.length <= 1}
+                    className="text-slate-300 hover:text-red-500 disabled:opacity-30 mt-2"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
+
+                {qualitative ? (
+                  /* תרבית / גנטיקה / איכותי — אין מספר ואין טווח */
+                  <div>
+                    <Input
+                      value={row.value}
+                      onChange={(e) => updateRow(i, "value", e.target.value)}
+                      placeholder="תוצאה: חיובי / שלילי / שם מחולל / ממצא"
+                      className="text-xs h-9"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      תוצאה איכותית — לא נדרש טווח ייחוס.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-4 gap-1">
+                    <Input
+                      type="number" inputMode="decimal"
+                      value={row.value}
+                      onChange={(e) => updateRow(i, "value", e.target.value)}
+                      placeholder="ערך"
+                      className="text-xs h-9"
+                    />
+                    <Input
+                      value={row.unit}
+                      onChange={(e) => updateRow(i, "unit", e.target.value)}
+                      placeholder="יחידה"
+                      className="text-xs h-9"
+                    />
+                    <Input
+                      type="number" inputMode="decimal"
+                      value={row.ref_low}
+                      onChange={(e) => updateRow(i, "ref_low", e.target.value)}
+                      placeholder="טווח מ"
+                      className="text-xs h-9 px-1"
+                    />
+                    <Input
+                      type="number" inputMode="decimal"
+                      value={row.ref_high}
+                      onChange={(e) => updateRow(i, "ref_high", e.target.value)}
+                      placeholder="עד"
+                      className="text-xs h-9 px-1"
+                    />
+                  </div>
+                )}
               </div>
-              <button
-                onClick={() => removeRow(i)}
-                disabled={rows.length <= 1}
-                className="text-slate-300 hover:text-red-500 disabled:opacity-30"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
+            );
+          })}
 
           <p className="text-[10px] text-slate-400 leading-relaxed">
             מדד ללא טווח ייחוס לא יסומן כחריג <strong>ולא כתקין</strong> — הוא לא ישתתף בניתוח,
