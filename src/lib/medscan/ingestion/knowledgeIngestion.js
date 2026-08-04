@@ -26,6 +26,46 @@ import { resolveAnalyte } from '../deterministic/analyteCatalog.js';
 export const CHUNK_CHARS = 6000;
 
 /**
+ * גילוי "תפר" — שתי עמודות שנתפרו לשורה אחת.
+ *
+ * ## למה זה הבדיקה החשובה ביותר בשלב הייבוא
+ * מסמכים רפואיים נכתבים שכיחות בשתי עמודות — לעיתים שתי **מחלות
+ * שונות** זו לצד זו. כשה-PDF משטח אותן לשורה אחת, מתקבל משפט
+ * שנראה קוהרנטי ומערבב עובדות משתי מחלות.
+ *
+ * זה הגרוע מכל: המודל יחלץ ממנו ידע שנראה תקין, הוא יישא
+ * ציטוט-מקור אמיתי, והרופא/ה יאשר/תאשר אותו — כי הציטוט אכן
+ * מופיע במסמך. רק שהוא מעולם לא נכתב כמשפט אחד.
+ */
+const SEAM_PATTERNS = [
+  // עברית אחרי נקודתיים/סוגר-סוגריים בלי רווח — חתך אופייני
+  { re: /[֐-׿][:)\]][֐-׿]/, why: 'מעבר עברית→עברית בלי רווח אחרי סימן פיסוק' },
+  // סוגר סוגריים לפני פותח — שארית של שתי עמודות
+  { re: /\)\s*[••]/, why: 'סוגר-סוגריים צמוד לתבליט' },
+  { re: /[••]\s*[••]/, why: 'שני תבליטים באותה שורה' },
+  // פתיחת סוגריים שלא נסגרה באותה שורה, ולהפך
+  { re: /\)[^(]*$/, why: 'סוגר סוגריים ללא פותח' },
+];
+
+/**
+ * @returns {{score: number, lines: object[], verdict: 'clean'|'suspect'|'corrupt'}}
+ */
+export function detectSeams(text) {
+  const lines = String(text ?? '').split('\n').filter((l) => l.trim().length > 20);
+  if (!lines.length) return { score: 0, lines: [], verdict: 'clean' };
+
+  const flagged = [];
+  for (const line of lines) {
+    const hits = SEAM_PATTERNS.filter((p) => p.re.test(line));
+    if (hits.length) flagged.push({ line: line.slice(0, 120), reasons: hits.map((h) => h.why) });
+  }
+
+  const score = flagged.length / lines.length;
+  const verdict = score > 0.25 ? 'corrupt' : score > 0.08 ? 'suspect' : 'clean';
+  return { score: Number(score.toFixed(3)), lines: flagged.slice(0, 8), verdict, total_lines: lines.length };
+}
+
+/**
  * מפצל טקסט לקטעים, בגבולות טבעיים.
  * חיתוך באמצע נושא גורם לחילוץ חלקי שנראה שלם — לכן מעדיפים
  * גבול פסקה, ורק כמוצא אחרון חותכים באמצע.
@@ -289,18 +329,44 @@ export async function saveExtraction(kept) {
   return { saved, failed };
 }
 
-/** הזרימה המלאה לקטע אחד. */
-export async function ingestChunk({ text, chapterHint, invokeLLM }) {
+/**
+ * הזרימה המלאה לקטע אחד.
+ *
+ * קטע שזוהה כמשובש **אינו מחולץ כלל**. עדיף לאבד קטע
+ * מאשר לייצר ממנו ידע שמערבב שתי מחלות — טעות כזו תעבור
+ * את כל שכבות ההגנה, כי הציטוט שלה אמיתי.
+ */
+export async function ingestChunk({ text, chapterHint, invokeLLM, allowSuspect = false }) {
+  const seams = detectSeams(text);
+  if (seams.verdict === 'corrupt' || (seams.verdict === 'suspect' && !allowSuspect)) {
+    return {
+      ok: false,
+      error: 'text_seams_detected',
+      seams,
+      message_he:
+        `הקטע לא חולץ: זוהו סימני תפר בין עמודות ב-${Math.round(seams.score * 100)}% מהשורות. ` +
+        'טקסט שמערבב שתי עמודות מייצר ידע שנראה תקין ומערבב עובדות ' +
+        'משתי מחלות שונות — והוא יעבור את כל הבדיקות, כי הציטוט שלו אמיתי.',
+    };
+  }
+
   const { extraction, error } = await extractFromChunk({ text, chapterHint, invokeLLM });
-  if (error || !extraction) return { ok: false, error, extraction: null };
+  if (error || !extraction) return { ok: false, error, extraction: null, seams };
 
   const { kept, problems, dropped } = validateExtraction(extraction);
+  if (seams.verdict === 'suspect') {
+    problems.push({
+      kind: 'extraction', key: '—', severity: 'warn',
+      why_he: `זוהו סימני תפר ב-${Math.round(seams.score * 100)}% מהשורות. יש לבדוק כל פריט מול המקור.`,
+    });
+  }
   return {
     ok: true,
     extraction,
     kept,
     problems,
     dropped,
+    seams,
     gaps_he: extraction.gaps_he ?? [],
     dosing_mentions_he: extraction.dosing_mentions_he ?? [],
   };
