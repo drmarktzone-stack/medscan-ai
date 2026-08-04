@@ -40,6 +40,9 @@ const REASONS_HE = {
   complete_pattern:
     'דפוס מאומת התקיים במלואו על סמך מספר ערכים מדודים — ' +
     'חוזק הראיה מספיק גם בלי עוגן שני בלתי-תלוי',
+  exceeds_source_claim:
+    'המקור המאומת עצמו אינו טוען לרמת חשד גבוהה כל כך — ' +
+    'הציון הוגבל למה שהידע מרשה',
   contradiction_present: 'קיימת סתירה שלא יושבה בין הממצאים או המקורות',
   self_check_overstated: 'המאמת-הנגדי קבע שהניסוח חורג ממה שהראיה מאפשרת',
   red_flag_escalation: 'קיים דגל אדום בטיחותי — החשד מוסלם ללא תלות בשאר הראיות',
@@ -128,6 +131,24 @@ export function computeCeiling({
   const distinctAnchors = new Set(kbRefs.map((f) => f.source_anchor).filter(Boolean));
   const completeVerifiedPattern =
     bestRatio >= 1 && verifiedKb.length > 0 && patientRefs.length >= 1;
+
+  // הכלל החזק ביותר כאן, והעקרוני ביותר:
+  // **אי אפשר לחרוג ממה שהמקור עצמו טוען.**
+  // אם כל פריטי הידע שעליהם נשען הכיוון מגדירים את החשד כצהוב,
+  // המודל אינו רשאי להפוך אותו לאדום — זו הסלמה שאינה נשענת על
+  // דבר, גם אם הדפוס התקיים במלואו. שלמות הדפוס אומרת "התנאים
+  // התקיימו", לא "המשמעות חמורה יותר".
+  const sourceClaims = kbRefs.map((f) => f.kb_suspicion).filter(Boolean);
+  if (sourceClaims.length) {
+    const highestSourceClaim = sourceClaims.reduce(
+      (acc, s) => maxLevel(acc, s),
+      'insufficient'
+    );
+    if (rank(highestSourceClaim) < rank(ceiling)) {
+      ceiling = minLevel(ceiling, highestSourceClaim);
+      reasons.push(REASONS_HE.exceeds_source_claim);
+    }
+  }
 
   if (distinctAnchors.size <= 1) {
     if (completeVerifiedPattern) {
