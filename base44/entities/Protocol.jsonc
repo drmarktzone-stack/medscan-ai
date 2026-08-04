@@ -1,0 +1,147 @@
+{
+  "name": "Protocol",
+  "type": "object",
+  "description": "\u05e4\u05e8\u05d5\u05d8\u05d5\u05e7\u05d5\u05dc \u05e7\u05dc\u05d9\u05e0\u05d9 \u05de\u05d5\u05d1\u05e0\u05d4 \u05db\u05e2\u05e5-\u05d4\u05d7\u05dc\u05d8\u05d4. \u05d4\u05e4\u05e8\u05d5\u05d8\u05d5\u05e7\u05d5\u05dc \u05d4\u05d5\u05d0 \u05e0\u05ea\u05d5\u05df \u2014 \u05d4-LLM \u05de\u05e1\u05d1\u05d9\u05e8 \u05d0\u05ea \u05d4\u05e9\u05dc\u05d1 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9 \u05d1\u05e2\u05d1\u05e8\u05d9\u05ea \u05d5\u05de\u05e0\u05de\u05e7, \u05d0\u05da \u05d0\u05d9\u05e0\u05d5 \u05d1\u05d5\u05e8\u05d0 \u05e9\u05dc\u05d1 \u05e9\u05d0\u05d9\u05e0\u05d5 \u05db\u05d0\u05df \u05d5\u05d0\u05d9\u05e0\u05d5 \u05de\u05d7\u05e9\u05d1 \u05de\u05d9\u05e0\u05d5\u05df. \u05e4\u05e8\u05d5\u05d8\u05d5\u05e7\u05d5\u05dc \u05e9\u05d0\u05d9\u05e0\u05d5 verified \u05d0\u05d9\u05e0\u05d5 \u05e8\u05e5.",
+  "properties": {
+    "protocol_key": {
+      "type": "string"
+    },
+    "title_he": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "age_scope": {
+      "type": "string",
+      "enum": [
+        "neonate",
+        "infant",
+        "child",
+        "adolescent",
+        "all"
+      ],
+      "default": "all"
+    },
+    "entry_criteria_he": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": {
+            "type": "string"
+          },
+          "title_he": {
+            "type": "string"
+          },
+          "actions_he": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deterministic_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "\u05de\u05e4\u05ea\u05d7\u05d5\u05ea \u05de\u05d7\u05e9\u05d1\u05d5\u05df (dosing/fluids/egfr) \u05e9\u05de\u05d7\u05d5\u05e9\u05d1\u05d9\u05dd \u05d1\u05e7\u05d5\u05d3 \u2014 \u05dc\u05d0 \u05d1-LLM"
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "condition_he": {
+                  "type": "string"
+                },
+                "next_step_id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "condition_he",
+                "next_step_id"
+              ]
+            }
+          },
+          "red_flags_he": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "step_id",
+          "title_he"
+        ]
+      }
+    },
+    "source_anchor": {
+      "type": "string"
+    },
+    "local_protocol_ref": {
+      "type": "string",
+      "description": "\u05d4\u05e4\u05e0\u05d9\u05d4 \u05dc\u05e4\u05e8\u05d5\u05d8\u05d5\u05e7\u05d5\u05dc \u05de\u05d7\u05dc\u05e7\u05ea\u05d9/\u05de\u05e9\u05e8\u05d3 \u05d4\u05d1\u05e8\u05d9\u05d0\u05d5\u05ea. \u26a0 \u05d1\u05e1\u05ea\u05d9\u05e8\u05d4 \u2014 \u05d4\u05e4\u05e8\u05d5\u05d8\u05d5\u05e7\u05d5\u05dc \u05d4\u05de\u05e7\u05d5\u05de\u05d9 \u05d2\u05d5\u05d1\u05e8 \u05e2\u05dc \u05e0\u05dc\u05e1\u05d5\u05df. \u05d4\u05de\u05e2\u05e8\u05db\u05ea \u05de\u05e6\u05d9\u05d2\u05d4 \u05d0\u05ea \u05e9\u05e0\u05d9\u05d4\u05dd \u05d5\u05d0\u05d9\u05e0\u05d4 \u05de\u05db\u05e8\u05d9\u05e2\u05d4 \u05d1\u05de\u05e7\u05d5\u05dd \u05d4\u05de\u05d5\u05e1\u05d3."
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "draft_needs_verification",
+        "verified",
+        "flagged"
+      ],
+      "default": "draft_needs_verification"
+    },
+    "verified_by": {
+      "type": "string"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "review_note_he": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "protocol_key",
+    "title_he",
+    "steps",
+    "source_anchor"
+  ],
+  "rls": {
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
