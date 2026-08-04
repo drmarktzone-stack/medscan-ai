@@ -29,6 +29,11 @@ import {
   loadProtocol,
   writeAudit,
 } from '../llmAdapter.js';
+import { resolveStep, validateProtocolOutput, buildCalcRequests } from './protocolTree.js';
+
+// מיוצאים מחדש לנוחות הקוראים — המימוש יושב ב-protocolTree.js
+// כדי שיהיה בר-בדיקה בלי התלות ה-alias של Vite.
+export { resolveStep, validateProtocolOutput };
 
 const ENGINE_PROMPT = `אתה מסביר **שלב בפרוטוקול קליני קיים**. אינך בונה פרוטוקול.
 
@@ -187,21 +192,9 @@ export async function runProtocolStep({
   }
 
   // ── מחשבונים לשלב הזה ────────────────────────────────────────────────
-  const calcRequests = [];
-  for (const ref of step.deterministic_refs ?? []) {
-    if (/fluid/i.test(ref)) {
-      calcRequests.push({ type: 'maintenance_fluids', params: { weight_kg: pt.weight_kg } });
-    } else if (/bsa/i.test(ref)) {
-      calcRequests.push({ type: 'bsa', params: { height_cm: pt.height_cm, weight_kg: pt.weight_kg } });
-    } else if (/dos/i.test(ref)) {
-      const rec = doseRecords.find((d) => ref.includes(d.drug_key));
-      calcRequests.push({
-        type: 'dose',
-        params: { weight_kg: pt.weight_kg, age_days: ageDays, doseRecord: rec ?? null },
-      });
-    }
-  }
-  const { deterministic, refusals } = runCalculators(calcRequests);
+  const { deterministic, refusals } = runCalculators(
+    buildCalcRequests({ step, patient: pt, doseRecords })
+  );
 
   // ── דגלים אדומים רלוונטיים למצב הנוכחי ───────────────────────────────
   const kb = await loadKnowledgeBase();
