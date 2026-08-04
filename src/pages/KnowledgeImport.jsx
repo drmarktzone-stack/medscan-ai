@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   BookUp, Loader2, Upload, Play, Square, AlertTriangle, CheckCircle2,
-  ChevronDown, ChevronUp, FileWarning, Pill, BookOpen, Save,
+  ChevronDown, ChevronUp, FileWarning, Pill, Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
