@@ -188,6 +188,10 @@ export function normalizeLabs({ labs = [], patient = {} } = {}) {
       range_status: rangeStatus,
       range_source: usingManual ? 'הוזן ידנית מגיליון המעבדה' : range.source ?? null,
       range_verification: usingManual ? 'user_provided' : range.verification_status ?? null,
+      // הסימון נשען על טווח שטרם אומת — מסומן כדי שהכיול
+      // יוכל להגביל את הביטחון שנבנה מעליו.
+      flagged_by_draft_range:
+        !usingManual && flag !== 'unknown_range' && range.status === RANGE_STATUS.UNVERIFIED_RANGE,
       note_he: conversionNote ?? range.note_he ?? null,
     });
 
