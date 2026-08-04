@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -33,6 +33,15 @@ const tools = [
     gradient: "from-indigo-500 to-violet-400",
     bg: "bg-indigo-50",
     color: "#6366f1",
+  },
+  {
+    titleKey: "home.labs_title",
+    descKey: "home.labs_desc",
+    icon: FlaskConical,
+    path: "/labs",
+    gradient: "from-emerald-500 to-teal-400",
+    bg: "bg-emerald-50",
+    color: "#10b981",
   },
 ];
 
