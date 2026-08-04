@@ -121,6 +121,20 @@ export async function loadReferenceRangePayload() {
   }
 }
 
+/**
+ * רשומות אינטראקציות.
+ * ישות שטרם נוצרה מחזירה מערך ריק — והמנוע יצהיר במפורש
+ * שלא בוצעה בדיקה, במקום להציג "לא נמצאו אינטראקציות".
+ */
+export async function loadInteractionKb() {
+  try {
+    const rows = await base44.entities.DrugInteraction.list('-created_date', 2000);
+    return Array.isArray(rows) ? rows : [];
+  } catch {
+    return [];
+  }
+}
+
 /** שמות תרופות מרשומות מינון מאומתות — מותרים ל-entityGuard. */
 export async function loadVerifiedDrugTerms() {
   try {
