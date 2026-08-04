@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, Activity, Stethoscope, Loader2, ImageOff, Flag, ScanLine } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Plus, Trash2, Activity, Stethoscope, Loader2, ImageOff, Flag, ScanLine, BookOpen, ChevronLeft } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
@@ -9,6 +10,7 @@ import BulkImport from "@/components/knowledge/BulkImport";
 import BackButton from "@/components/BackButton";
 import { useI18n } from "@/lib/i18n";
 import { categoryTranslations } from "@/lib/translations";
+import { loadBook, bookStats } from "@/lib/medscan/knowledge/bookStore";
 
 const ecgCategories = ["rhythm", "conduction", "ischemic", "chamber_abnormality", "electrolyte", "syndrome", "drug_effect", "other"];
 const skinCategories = ["benign", "malignant", "precancerous", "inflammatory", "infectious", "autoimmune", "pigmentation", "vascular", "other"];
@@ -46,8 +48,15 @@ export default function KnowledgeBase() {
   const [urgentOnly, setUrgentOnly] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [book, setBook] = useState(null);
 
   const catLabels = categoryTranslations[lang] || categoryTranslations.he;
+
+  useEffect(() => {
+    loadBook()
+      .then((rows) => setBook(bookStats(rows)))
+      .catch(() => setBook({ chapters: 0, topics: 0, cells: 0 }));
+  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -153,6 +162,27 @@ export default function KnowledgeBase() {
       </div>
 
       <div className="max-w-lg mx-auto px-5 py-6">
+        {/* ספר המקור — מעל למקרי ה-Vision, כי הוא המקור לכל הכלים */}
+        <Link to="/book" className="block mb-5">
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-3
+                          hover:border-slate-300 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+              <BookOpen className="w-5 h-5 text-slate-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-bold text-slate-800">נלסון — הספר</h3>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                {book === null
+                  ? "טוען…"
+                  : book.chapters > 0
+                    ? `${book.chapters} פרקים · ${book.topics} נושאים · ${book.cells.toLocaleString()} פריטים`
+                    : "עדיין לא נטען — טעינה אחת והוא נשאר"}
+              </p>
+            </div>
+            <ChevronLeft className="w-4 h-4 text-slate-300 shrink-0" />
+          </div>
+        </Link>
+
         <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList className="grid grid-cols-3 w-full rounded-xl">
             <TabsTrigger value="ecg" className="rounded-xl"><Activity className="w-4 h-4 ml-1.5" /> {t("kb.tab_ecg", { n: ecgCases.length })}</TabsTrigger>
