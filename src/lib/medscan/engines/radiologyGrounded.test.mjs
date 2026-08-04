@@ -73,6 +73,12 @@ await t('אזור תקין ואזור לא-ניתן-להערכה אינם נספ
   ok(!texts.includes('לא ניתן להעריך'), 'אזור Indeterminate נספר כממצא');
 });
 
+await t('אזור שלא הוערך נאסף בנפרד — "לא הוערך" אינו "תקין"', async () => {
+  const zones = extractIndeterminateZones(ENGINE_RESULT.structured);
+  eq(zones.length, 1, 'אזור Indeterminate לא נאסף כפער');
+  eq(zones[0], 'לב');
+});
+
 await t('דגל שהמודל דיווח נכנס כממצא, לא כדגל מערכת', async () => {
   const withFlag = {
     ...ENGINE_RESULT.structured,
