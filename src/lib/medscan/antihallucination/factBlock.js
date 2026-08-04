@@ -13,6 +13,17 @@
  *   F#  — עובדה קלינית מה-KB (נלסון)
  *   D#  — ערך שחושב בקוד דטרמיניסטי
  *   P#  — מדידה/ממצא של המטופל בפועל
+ *   L#  — מאמר שנשלף בפועל מ-PubMed (ספרות)
+ *
+ * ## למה L# קיים
+ * ההזיה הנפוצה ביותר בציטוטים היא **מזהה אמיתי עם כותרת מומצאת** —
+ * ה-DOI נפתח יפה, והמאמר שמאחוריו אחר לגמרי. בדיקת ציטוט בדיעבד
+ * תופסת את זה **אחרי** שנוצר. לכן העיקרון כאן הפוך:
+ *
+ *   **המודל לעולם אינו מייצר ציטוט. הוא רק מפנה ל-L# שנשלף בפועל.**
+ *
+ * שליפה-אז-הפניה, ולא יצירה-אז-אימות. זה הופך ציטוט מומצא לבלתי-אפשרי
+ * במקום לניתן-לגילוי.
  */
 
 /** רק ידע מאומת נכנס לפלט קליני. טיוטה נכנסת רק במצב פיתוח, ומסומנת. */
@@ -96,6 +107,7 @@ export function buildFactBlock({
   kbItems = [],
   deterministic = [],
   patientData = [],
+  literature = [],
   mode = 'clinical',
 } = {}) {
   const { admitted, rejected } = filterByVerification(kbItems, mode);
@@ -104,6 +116,9 @@ export function buildFactBlock({
   const index = new Map();
   const anchors = new Set();
   const allowedNumbers = new Set();
+  // מזהי הציטוטים שנשלפו בפועל — קבוצה סגורה.
+  // כל מזהה בפלט שאינו כאן הוא המצאה, ללא יוצא מן הכלל.
+  const citations = new Set();
 
   const register = (fact) => {
     facts.push(fact);
@@ -169,6 +184,35 @@ export function buildFactBlock({
     });
   });
 
+  // ── L# : ספרות שנשלפה בפועל ──────────────────────────────
+  literature.forEach((lit, i) => {
+    const authors = Array.isArray(lit.authors) && lit.authors.length
+      ? `${lit.authors[0]}${lit.authors.length > 1 ? ' et al.' : ''}`
+      : '—';
+    const ids = [
+      lit.pmid ? `PMID ${lit.pmid}` : null,
+      lit.doi ? `DOI ${lit.doi}` : null,
+    ].filter(Boolean).join(' | ');
+
+    if (lit.pmid) citations.add(String(lit.pmid));
+    if (lit.doi) citations.add(String(lit.doi).toLowerCase());
+
+    register({
+      id: `L${i + 1}`,
+      kind: 'literature',
+      text: `"${lit.title}" — ${authors}, ${lit.journal ?? '—'} ${lit.year ?? ''} [${ids}]` +
+        (lit.abstract ? `\n     תקציר: ${lit.abstract}` : ''),
+      source_anchor: lit.doi ? `doi:${lit.doi}` : (lit.pmid ? `pmid:${lit.pmid}` : null),
+      entity_key: lit.pmid ?? lit.doi ?? null,
+      is_draft: false,
+      verification_status: 'retrieved',
+      pmid: lit.pmid ?? null,
+      doi: lit.doi ?? null,
+      article_types: lit.article_types ?? [],
+      year: lit.year ?? null,
+    });
+  });
+
   const text = renderFactBlockText(facts, mode);
   const hasVerifiedClinicalContent = facts.some((f) => f.kind === 'kb' && !f.is_draft);
 
@@ -187,8 +231,10 @@ export function buildFactBlock({
     anchors,
     rejected,
     draftRejectedCount,
+    citations,
     isEmpty: facts.length === 0,
     hasKbContent: facts.some((f) => f.kind === 'kb'),
+    hasLiterature: facts.some((f) => f.kind === 'literature'),
     hasVerifiedClinicalContent,
     mode,
   };
@@ -215,6 +261,7 @@ export function renderFactBlockText(facts, mode = 'clinical') {
     ['F', 'עובדות קליניות (נלסון / KB)'],
     ['D', 'ערכים שחושבו בקוד דטרמיניסטי — צטט כפי שהם, אל תחשב מחדש'],
     ['P', 'נתוני המטופל בפועל'],
+    ['L', 'ספרות שנשלפה מ-PubMed — צטט אך ורק לפי L#. אל תכתוב PMID/DOI בעצמך'],
   ];
 
   for (const [prefix, heading] of groups) {
