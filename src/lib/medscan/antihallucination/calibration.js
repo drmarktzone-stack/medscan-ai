@@ -37,6 +37,9 @@ const REASONS_HE = {
   partial_pattern: 'רק חלק מרכיבי הדפוס מתקיימים בנתונים',
   single_source: 'הכיוון נשען על מקור יחיד ללא תימוכין בלתי-תלוי',
   no_measured_data: 'הכיוון נשען על הסקה בלבד, ללא ערכים מדודים תומכים',
+  complete_pattern:
+    'דפוס מאומת התקיים במלואו על סמך מספר ערכים מדודים — ' +
+    'חוזק הראיה מספיק גם בלי עוגן שני בלתי-תלוי',
   contradiction_present: 'קיימת סתירה שלא יושבה בין הממצאים או המקורות',
   self_check_overstated: 'המאמת-הנגדי קבע שהניסוח חורג ממה שהראיה מאפשרת',
   red_flag_escalation: 'קיים דגל אדום בטיחותי — החשד מוסלם ללא תלות בשאר הראיות',
@@ -85,21 +88,18 @@ export function computeCeiling({
   }
 
   // ── מקורות בלתי-תלויים ────────────────────────────────────────────────
-  const distinctAnchors = new Set(kbRefs.map((f) => f.source_anchor).filter(Boolean));
-  if (distinctAnchors.size <= 1) {
-    ceiling = minLevel(ceiling, 'yellow');
-    reasons.push(REASONS_HE.single_source);
-  } else {
-    score += 2;
-  }
+  // (חישוב המקורות הבלתי-תלויים הועבר מטה — הוא תלוי בשלמות הדפוס)
 
   // ── שלמות הדפוס ───────────────────────────────────────────────────────
   const usedPatterns = (direction?.based_on_patterns ?? [])
     .map((k) => matchedPatterns.find((p) => p.pattern_key === k))
     .filter(Boolean);
 
+  const bestRatio = usedPatterns.length
+    ? Math.max(...usedPatterns.map((p) => p.matched_ratio ?? 0))
+    : 0;
+
   if (usedPatterns.length) {
-    const bestRatio = Math.max(...usedPatterns.map((p) => p.matched_ratio ?? 0));
     if (bestRatio < 1) {
       ceiling = minLevel(ceiling, 'yellow');
       reasons.push(REASONS_HE.partial_pattern);
@@ -111,6 +111,32 @@ export function computeCeiling({
   if (!patientRefs.length) {
     ceiling = minLevel(ceiling, 'yellow');
     reasons.push(REASONS_HE.no_measured_data);
+  } else {
+    score += 2;
+  }
+
+  // מקורות בלתי-תלויים.
+  // ⚠ כלל שדורש עדינות: דרישה לשני עוגנים עבור כל חשד אדום
+  // נשמעת זהירה, והיא מנטרלת את הכלי בשקט: בספר לימוד קיים בדרך
+  // כלל **עוגן אחד לכל מצב**, ולכן כל כיוון היה נחסם לצהוב לנצח,
+  // גם כשהראיה חזקה מאוד. כלי שלעולם אינו אומר "אדום" אינו בטוח —
+  // הוא חסר-שימוש, ובהקשר הזה חסר-שימוש הוא גם לא-בטוח.
+  //
+  // האבחנה הנכונה: דפוס מאומת שהתקיים **במלואו** על סמך ערכים
+  // מדודים אינו "מקור יחיד דלול". שלושת רכיבי השלישייה הנפרוטית
+  // הם שלוש ראיות בלתי-תלויות, גם אם נלסון מתאר אותן בפרק אחד.
+  const distinctAnchors = new Set(kbRefs.map((f) => f.source_anchor).filter(Boolean));
+  const completeVerifiedPattern =
+    bestRatio >= 1 && verifiedKb.length > 0 && patientRefs.length >= 1;
+
+  if (distinctAnchors.size <= 1) {
+    if (completeVerifiedPattern) {
+      reasons.push(REASONS_HE.complete_pattern);
+      score += 1;
+    } else {
+      ceiling = minLevel(ceiling, 'yellow');
+      reasons.push(REASONS_HE.single_source);
+    }
   } else {
     score += 2;
   }
