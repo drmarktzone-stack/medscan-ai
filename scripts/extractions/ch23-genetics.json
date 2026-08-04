@@ -1,0 +1,341 @@
+{
+  "chapter_title_he": "גנטיקה",
+  "topics": [
+    {
+      "topic_key": "nelson.גנטיקה.גנטיקה",
+      "topic_title_he": "גנטיקה — אנאופלואידיות, מיקרו-דלציות והרחבות גנומיות",
+      "topic_title_en": "Genetics — aneuploidies, microdeletions, genomic expansions",
+      "summary_he": "תסמונות כרומוזומליות שכיחות בילדים: אנאופלואידיות (טרנר, קלינפלטר, טריזומיות 13/18/21), הרחבות גנומיות (Fragile X), מיקרו-דלציות עם imprinting (Angelman, Prader-Willi), מאקרו-דלציות (Cri du Chat, Wolf-Hirschhorn) ומיקרו-דלציות נוספות (Alagille, DiGeorge, WAGR, Williams). לכל תסמונת: מנגנון גנטי, שכיחות ומאפיינים קליניים.",
+      "keywords": ["טרנר", "קלינפלטר", "דאון", "פאטאו", "אדוארדס", "Fragile X", "Angelman", "Prader-Willi", "DiGeorge", "Williams", "WAGR", "Alagille", "אנאופלואידיה", "מיקרו-דלציה"],
+      "age_scope": "all",
+      "source_quote_he": "אנ-אאו-פלואידיות | טרנר | XXY | טריזומיה 13 (פאטאו) | טריזומיה 18 (אדוארדס) | טריזומיה 21 (דאון)"
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson.genetics.digeorge_hypocalcemia_tcell",
+      "title_he": "היפו-קלצמיה עם חסר תאי T — חשד ל-DiGeorge",
+      "components": [
+        { "analyte": "Calcium", "direction": "low", "note_he": "פגיעה בפרא-תיירואיד" },
+        { "analyte": "Lymphocytes", "direction": "low", "note_he": "חסר תאי T עקב פגיעה בתימוס" }
+      ],
+      "min_components": 2,
+      "direction_he": "תסמונת DiGeorge — מחיקה ב-22q11",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "התימוס ובלוטות הפרא-תיירואיד נגזרים שניהם מקשתות הזימים השלישית והרביעית, ולכן מחיקה ב-22q11 פוגעת בשניהם יחד.",
+      "confirm_with_he": ["FISH או מיקרו-מערך ל-22q11", "הערכה אימונולוגית של תאי T", "אקו לב לאיתור מום קונוטרונקלי"],
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "חסר חיסוני (תאי T) עקב פגיעה בתימוס • היפו-קלצמיה (פגיעה בפרא-תיירואיד)"
+    }
+  ],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson.genetics.down_atlantoaxial",
+      "label_he": "תסמונת דאון — חוסר יציבות אטלנטו-אקסיאלית",
+      "trigger": { "findings": ["תסמונת דאון", "סימנים נוירולוגיים בגפיים", "כאב צוואר או תנוחת צוואר חריגה"], "logic": "any" },
+      "severity": "red",
+      "action_he": "הימנעות ממניפולציה של הצוואר ומפעילות בסיכון עד להערכה. הדמיה של C1-C2 והתייעצות אורתופדית/נוירוכירורגית לפני הרדמה או ספורט מגע.",
+      "reason_he": "חוסר יציבות C1-2 מעמידה את חוט השדרה בסיכון לפגיעה בלתי הפיכה.",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "חוסר יציבות אטלנטו-אקסיאלית C1-2 ולכן סיכון מוגבר לפגיעה בחוט השדרה"
+    },
+    {
+      "flag_key": "nelson.genetics.turner_mosaic_gonadoblastoma",
+      "label_he": "טרנר במוזאיקה 45,XO/46,XY — סיכון לגונדובלסטומה",
+      "trigger": { "findings": ["תסמונת טרנר", "מוזאיקה עם כרומוזום Y"], "logic": "all" },
+      "severity": "red",
+      "action_he": "הפניה לגינקולוגיה/אנדוקרינולוגיה ילדים לדיון בכריתת גונדות מניעתית.",
+      "reason_he": "נוכחות חומר כרומוזומלי Y בגונדה מפוספסת מעלה משמעותית את הסיכון לגונדובלסטומה.",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "במוזאיקה 45,XO/46,XY סיכון מוגבר לגונדובלסטומה"
+    },
+    {
+      "flag_key": "nelson.genetics.trisomy13_18_mortality",
+      "label_he": "טריזומיה 13 או 18 — תמותה גבוהה מאוד בשנה הראשונה",
+      "trigger": { "findings": ["טריזומיה 13", "טריזומיה 18"], "logic": "any" },
+      "severity": "red",
+      "action_he": "שיחת תיאום ציפיות ותכנון טיפול מוקדם עם המשפחה, בשיתוף גנטיקאי וצוות פליאטיבי.",
+      "reason_he": "הישרדות חציונית של 12 ימים ב-13, ותמותה של עד 88% עד גיל שנה ב-18.",
+      "age_min_days": 0,
+      "age_max_days": 365,
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "הישרדות חציונית של 12 ימים, 80% תמותה עד גיל שנה, 87% עד גיל 10 שנים"
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson.genetics.turner_screening",
+      "title_he": "טרנר — סקר איברים מחייב",
+      "category": "management",
+      "domain": "genetics",
+      "conditions": [{ "type": "background", "key": "תסמונת טרנר", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "יש לסקור באופן שיטתי לב, כליות ובלוטת התריס — שלושתם מעורבים בשיעור גבוה וחלקם אינם תסמיניים.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "מומי לב שמאליים מופיעים ב-40%, מומים רנאליים ב-50% והיפו-תיירואידיזם נרכש ב-15-30%. שיעורים אלה גבוהים מכדי להסתמך על גילוי אקראי.",
+      "recommended_workup_he": ["אקו לב לאיתור Bicuspid Aortic Valve, קוארקטציה והרחבת אאורטה עולה", "אולטרסאונד כליות לאיתור Horseshoe Kidney", "תפקודי תריס במעקב", "סקר צליאק ו-IBD לפי קליניקה", "בדיקת שמיעה — חירשות סנסו-נוירלית ודלקות אוזניים חוזרות"],
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "מומי לב שמאליים )%Bicuspid Aortic :)40 Valve, קוארקטציה, הרחבת אאורטה עולה"
+    },
+    {
+      "rule_key": "nelson.genetics.fragile_x_repeats",
+      "title_he": "Fragile X — סף חזרות CGG",
+      "category": "criteria",
+      "domain": "genetics",
+      "conditions": [
+        { "type": "finding", "key": "חזרות CGG בגן FMR1", "op": ">", "value": 200 }
+      ],
+      "logic": "all",
+      "conclusion_he": "מעל 200 חזרות CGG — מחלה גלויה. 54-200 חזרות — נשאות. עד 40 חזרות — תקין.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "הרחבת רצפי CGG באיזור ה-5' של הגן FMR1 גורמת למתילציה מקומית ולהיעדר ביטוי של FMRP, פקטור שיעתוק של mRNA רבים.",
+      "recommended_workup_he": ["בדיקת מספר חזרות CGG בגן FMR1", "ייעוץ גנטי למשפחה — נשאות אימהית עלולה להתרחב בדור הבא"],
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "oתקין–עד40חזרות(בד\"כ25-35) oנשאות–54-200חזרות oמחלהגלויה–מעל200חזרות"
+    },
+    {
+      "rule_key": "nelson.genetics.down_screening_yield",
+      "title_he": "סקר טרום-לידתי לתסמונת דאון — שיעורי גילוי",
+      "category": "criteria",
+      "domain": "genetics",
+      "conditions": [{ "type": "background", "key": "סקר טרום-לידתי", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "סקר טרימסטר ראשון כולל NT — 87% גילוי. סקר טרימסטר שני מרובע — 80% גילוי עם 5% FN. שילוב שני הסקרים — 95% גילוי. NIPT — מעל 98% גילוי.",
+      "suspicion": "green",
+      "clinical_reasoning_he": "שיעורי הגילוי משמשים לייעוץ טרום-לידתי ולבחירת מסלול הסקר, ואינם מהווים אבחנה — אישור מחייב בדיקה פולשנית.",
+      "recommended_workup_he": ["ייעוץ גנטי לפני בחירת מסלול הסקר", "אישור ממצא חיובי בבדיקה אבחנתית"],
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "סקרטרימסטר-I)כולל87%:)NTגילוי • סקרטרימסטר-II(מרובע):80%גילוי, %FN5"
+    },
+    {
+      "rule_key": "nelson.genetics.down_maternal_age",
+      "title_he": "טריזומיה 21 — קורלציה לגיל אם וסיכון חוזר",
+      "category": "criteria",
+      "domain": "genetics",
+      "conditions": [
+        { "type": "background", "key": "תסמונת דאון בילד קודם", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "המנגנון קובע את הסיכון החוזר: בטריזומיה 21 חופשית (95%) הסיכון לילד נוסף מוגבר במעט בלבד, ואילו בטרנסלוקציה רוברטסונית (4%) הסיכון גבוה מאוד. חובה לברר את המנגנון לפני מתן ייעוץ.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "טריזומיה חופשית נובעת מהפרעה במיוזה ומקושרת לגיל אם מתקדם מעל 35; טרנסלוקציה עשויה להיות מורשת מהורה נשא ולכן חוזרת בשיעור גבוה.",
+      "recommended_workup_he": ["קריוטיפ לילד לקביעת המנגנון", "קריוטיפ להורים כאשר נמצאה טרנסלוקציה", "ייעוץ גנטי לפני היריון נוסף"],
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "4% o טרנסלוקציה, בד\"כ רוברטסונית - DS סיכוןגבוהמאדל- בילדנוסף."
+    },
+    {
+      "rule_key": "nelson.genetics.turner_vs_noonan",
+      "title_he": "אבחנה מבדלת: טרנר מול Noonan",
+      "category": "diagnostic_triad",
+      "domain": "genetics",
+      "conditions": [
+        { "type": "finding", "key": "קומה נמוכה", "op": "present" },
+        { "type": "finding", "key": "דיסמורפיזם עם קפלי צוואר", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "יש לשקול תסמונת Noonan לצד טרנר. Noonan מורשת AD ונובעת ממוטציות בגנים במסלול ה-MAPK, השכיחה שבהן PTPN11 — ולכן מופיעה גם בזכרים ובקריוטיפ תקין.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "שתי התסמונות חולקות קומה נמוכה ודיסמורפיזם צווארי, אך שונות במנגנון, בהורשה ובמומי הלב האופייניים — ולכן קריוטיפ תקין אינו שולל את האבחנה.",
+      "recommended_workup_he": ["פאנל גנטי למסלול ה-MAPK כולל PTPN11", "אקו לב", "אנמנזה משפחתית — הורשה AD"],
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "Noonan Syndrome :DDX –הורשה AD, מוטציותבגניםבמסלול ה-MAPK,השכיחה ביותרPTPN11."
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson.genetics.turner_features",
+      "anchor_finding_he": "קומה נמוכה בבת עם אמנוריאה ראשונית",
+      "co_findings": ["לימפאדמה של כפות ידיים ורגליים בלידה", "עיבוי הצוואר", "חזה רחב עם פטמות מרוחקות", "קו שיער נמוך", "Cubitus Valgus"],
+      "implies_he": "תסמונת טרנר — יש לשלוח קריוטיפ ולסקור לב, כליות ותריס",
+      "suspicion": "yellow",
+      "mechanism_he": "אבדן כרומוזום מין: ב-50% קריוטיפ 45,XO והשאר מוזאיקה או שינויים אחרים בכרומוזומי המין. ב-75% אבדן הכרומוזום האבהי.",
+      "action_he": "קריוטיפ, אקו לב, אולטרסאונד כליות, תפקודי תריס, והפניה לאנדוקרינולוגיה ילדים.",
+      "age_scope": "all",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "בילדות – קומה נמוכה, חזה רחב עם פטמות מרוחקות, דיסמורפיזם אופייני הכולל קו-שיער נמוך, Cubitus Valgus של המרפקים."
+    },
+    {
+      "assoc_key": "nelson.genetics.klinefelter_features",
+      "anchor_finding_he": "מתבגר עם אשכים קטנים מאוד וגינקומסטיה",
+      "co_findings": ["קומה גבוהה עם גפיים ארוכות", "שיעור מיני תקין", "קשיי למידה או שפה"],
+      "implies_he": "תסמונת קלינפלטר (47,XXY) — הסיבה הגנטית השכיחה ביותר להיפוגונדיזם ואי-פריון בגברים",
+      "suspicion": "yellow",
+      "mechanism_he": "כרומוזום X נוסף. ב-20% מהמקרים מוזאיקה 46XY/47XXY או יותר משני כרומוזומי X.",
+      "action_he": "קריוטיפ, הערכה אנדוקרינית, ודיון בשימור פוריות. מעקב אחר צפיפות עצם בבגרות.",
+      "age_scope": "adolescent",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "בגיל ההתבגרות – שיעור מיני אך נפח האשכים קטן מאד."
+    },
+    {
+      "assoc_key": "nelson.genetics.down_comorbidities",
+      "anchor_finding_he": "תסמונת דאון",
+      "co_findings": ["היפוטוניה", "מומי לב", "זיהומים רספירטוריים חוזרים"],
+      "implies_he": "מערך מחלות נלוות המחייב מעקב יזום: מומי לב (50%), היפו-תיירואידיזם קונגניטלי ונרכש, צליאק ומומי GI, OSA, סוכרת, לוקמיה, וחוסר יציבות אטלנטו-אקסיאלית",
+      "suspicion": "yellow",
+      "mechanism_he": "טריזומיה 21 — כמעט תמיד כרומוזום אמהי נוסף עקב הפרעה במיוזה.",
+      "action_he": "אקו לב, תפקודי תריס חוזרים, סקר צליאק, הערכת OSA, וספירת דם. הדמיית C1-C2 לפני הרדמה או ספורט מגע.",
+      "age_scope": "all",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "ב-50% מומי לב: ASD ,VSD ,AV-Canal, TOF ,PDA והפרעות מסתמיות."
+    },
+    {
+      "assoc_key": "nelson.genetics.patau_features",
+      "anchor_finding_he": "יילוד עם הולופרוזנצפליה",
+      "co_findings": ["Cutis Aplasia", "מיקרואופתלמיה והיפו-טלוריזם", "חיך ושפה שסועים", "פולידקטיליה פוסט-אקסיאלית", "מומי לב"],
+      "implies_he": "טריזומיה 13 (פאטאו)",
+      "suspicion": "red",
+      "mechanism_he": "טריזומיה של כרומוזום 13, שכיחות 1:10,000 לידות.",
+      "action_he": "קריוטיפ דחוף, הערכת מומים מלאה, ותיאום ציפיות עם המשפחה לנוכח הפרוגנוזה.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "מיקרואופתלמיה, היפו-טלוריזם, הפרעות קרנית • חיך ושפה שסועים (60-80%)"
+    },
+    {
+      "assoc_key": "nelson.genetics.edwards_features",
+      "anchor_finding_he": "יילוד SGA עם ידיים קפוצות וחפיפת אצבעות",
+      "co_findings": ["Rocker-Bottom Feet", "מיקרוגנטיה", "סטרנום קצר", "מומי לב מולדים", "הגבלה באבדוקצית ירך"],
+      "implies_he": "טריזומיה 18 (אדוארדס)",
+      "suspicion": "red",
+      "mechanism_he": "טריזומיה של כרומוזום 18, שכיחות 1:6,000 לידות.",
+      "action_he": "קריוטיפ דחוף והערכת מומים מלאה. שיחת תכנון טיפול מוקדמת.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "קלינודרטיליה וחפיפה של אצבע 2 מעל 3 ו-5 מעל 4, ידיים קפוצות"
+    },
+    {
+      "assoc_key": "nelson.genetics.fragile_x_features",
+      "anchor_finding_he": "פיגור שכלי בזכר עם אשכים גדולים",
+      "co_findings": ["אוזניים בולטות ולסת מרובעת", "ראש גדול", "אוטיזם", "גמישות יתר", "MVP", "דלקות אוזניים חוזרות"],
+      "implies_he": "Fragile X — גורם ל-3% ממקרי הפיגור בזכרים",
+      "suspicion": "yellow",
+      "mechanism_he": "הרחבת רצפי CGG בגן FMR1 ב-Xq27.3 הגורמת למתילציה והיעדר ביטוי FMRP.",
+      "action_he": "בדיקת חזרות CGG, ייעוץ גנטי משפחתי, והערכה התפתחותית. הדגש: המראה בולט יותר לאחר ההתבגרות.",
+      "age_scope": "child",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "ראש גדול, מצח , לסת מרובית ואזניים בולטות – בולט בהתבגרות"
+    },
+    {
+      "assoc_key": "nelson.genetics.angelman_features",
+      "anchor_finding_he": "פיגור חמור עם היעדר יכולת דיבור",
+      "co_findings": ["תנועות אטקטיות של הידיים והרגליים", "הפרעה פרכוסית קשה", "צחוק בלתי-נשלט", "היפוטוניה", "שיער עדין ובהיר"],
+      "implies_he": "תסמונת Angelman — מחיקה של 15q11-13 האמהי",
+      "suspicion": "yellow",
+      "mechanism_he": "חסר בגן UBE3A המבוטא אך ורק בכרומוזום האמהי. ב-3-5% Uniparental Paternal Disomy.",
+      "action_he": "מיקרו-מערך ובדיקת מתילציה של 15q11-13, טיפול אנטי-אפילפטי, והערכה התפתחותית.",
+      "age_scope": "child",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "פיגור בינוני-חמור, היעדר יכולת דיבור • תנועות אטקטיות של הידיים והרגליים"
+    },
+    {
+      "assoc_key": "nelson.genetics.prader_willi_features",
+      "anchor_finding_he": "תינוק היפוטוני עם קשיי האכלה שהופך לילד עם השמנה קיצונית",
+      "co_findings": ["תיאבון בלתי-נשלט לאחר גיל שנה", "עיני שקד", "כפות ידיים ורגליים קטנות", "היפוגונדיזם היפו-גונדוטרופי", "פיגור שכלי"],
+      "implies_he": "תסמונת Prader-Willi — מחיקה של 15q11-13 האבהי",
+      "suspicion": "yellow",
+      "mechanism_he": "ב-70% מחיקה של 15q11-13 האבהי עם חסר בגן SNPN המבוטא רק בכרומוזום האבהי; ב-30% Uniparental Maternal Disomy.",
+      "action_he": "בדיקת מתילציה של 15q11-13, ניהול תזונתי מוקדם ואגרסיבי, והפניה לאנדוקרינולוגיה.",
+      "age_scope": "all",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "לאחר גיל שנה ועליית הטונוס התפתחות תיאבון בלתי-נשלט הגורם להשמנה קיצונית."
+    },
+    {
+      "assoc_key": "nelson.genetics.cri_du_chat_features",
+      "anchor_finding_he": "בכי אופייני דמוי-צווחה בתינוק",
+      "co_findings": ["היפוטוניה", "קומה נמוכה", "מיקרוצפליה", "היפר-טלוריזם", "חיך גבוה", "גשר אף שטוח"],
+      "implies_he": "Cri du Chat — מחיקה ב-5p",
+      "suspicion": "yellow",
+      "mechanism_he": "מאקרו-דלציה בזרוע הקצרה של כרומוזום 5.",
+      "action_he": "קריוטיפ או מיקרו-מערך, והערכה התפתחותית.",
+      "age_scope": "infant",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "בכי אופייני דמוי-צווחה • מיקרוצפליה, היפר-טלוריזם, קפלים אפיקנטליים, חיך גבוה, גשר אף שטוח"
+    },
+    {
+      "assoc_key": "nelson.genetics.wolf_hirschhorn_features",
+      "anchor_finding_he": "מראה פנים \"קסדה יוונית\"",
+      "co_findings": ["היפר-טלוריזם עיני", "Frontal Bossing", "מיקרוצפליה ודוליכוצפליה", "חיך ושפה שסועים", "היפוספדיאס", "מומי לב"],
+      "implies_he": "Wolf-Hirschhorn — מחיקה ב-4p",
+      "suspicion": "yellow",
+      "mechanism_he": "מאקרו-דלציה בזרוע הקצרה של כרומוזום 4.",
+      "action_he": "מיקרו-מערך, אקו לב, והערכה התפתחותית.",
+      "age_scope": "all",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "מראה \"קסדה יוונית\": היפר-טלוריזם עיני, גלבלה בולטת, Frontal Bossing, מיקרוצפליה"
+    },
+    {
+      "assoc_key": "nelson.genetics.digeorge_features",
+      "anchor_finding_he": "מום לב קונוטרונקלי בילוד",
+      "co_findings": ["היפו-קלצמיה", "חסר חיסוני תאי T", "אף בולט וגשר אף רחב", "שפה וחיך שסועה", "פגיעה בתקשורת ושפה"],
+      "implies_he": "תסמונת DiGeorge — מחיקה ב-22q11",
+      "suspicion": "red",
+      "mechanism_he": "ספקטרום של ביטויים עקב מחיקות ב-22q11. ברוב המקרים דה-נובו, ותיתכן הורשה AD.",
+      "action_he": "בדיקת סידן דחופה, FISH או מיקרו-מערך ל-22q11, אקו לב, והערכה אימונולוגית לפני מתן חיסון חי או מנת דם.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "מומי לב קונטרונקליים: Truncus Arteriosus, TOF VSD , , קשת אאורטה ימנית"
+    },
+    {
+      "assoc_key": "nelson.genetics.alagille_features",
+      "anchor_finding_he": "צהבת כולסטטית עם היעדר דרכי מרה חוץ-כבדיות",
+      "co_findings": ["מום לב, במיוחד PS", "Posterior Embryotoxon", "חוליות-פרפר"],
+      "implies_he": "תסמונת Alagille — מוטציה או מחיקה של JAG1 ב-20p12",
+      "suspicion": "yellow",
+      "mechanism_he": "פגיעה בגן JAG1 במסלול Notch, הפוגעת בהתפתחות דרכי המרה, הלב, העין והשלד.",
+      "action_he": "בדיקת עיניים למציאת Posterior Embryotoxon, צילום עמוד שדרה, אקו לב, ובדיקה גנטית ל-JAG1.",
+      "age_scope": "infant",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "Biliary Atresia עם דפוס של היעדר דרכי מרה חוץ-כבדיות וצהבת"
+    },
+    {
+      "assoc_key": "nelson.genetics.wagr_features",
+      "anchor_finding_he": "אנירידיה בילוד",
+      "co_findings": ["מומים גניטו-אורינריים", "פיגור שכלי", "פנים ארוכות עם פטוזיס ואף נשרי"],
+      "implies_he": "WAGR — מחיקה ב-11p13 הכוללת את הגן WT1, עם סיכון לנפרובלסטומה (Wilms)",
+      "suspicion": "red",
+      "mechanism_he": "מחיקה ב-11p13 הכוללת את WT1, גן מדכא גידולים של הכליה.",
+      "action_he": "אנירידיה מבודדת מחייבת בירור ל-WT1. מעקב אולטרסאונד כליות סדרתי לאיתור מוקדם של גידול וילמס.",
+      "age_scope": "all",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "נפרובלסטומה (Wilm's Tumor) • אנירידיה • מומים גניטו-אורינריים וגונדובלסטומות"
+    },
+    {
+      "assoc_key": "nelson.genetics.williams_features",
+      "anchor_finding_he": "AS סופרה-וולבולרי",
+      "co_findings": ["דיסמורפיזם \"דמוי אלף\" עם שפתיים ולחיים מלאות", "Stellate Pattern בקשתית", "היפר-קלצמיה בינקות", "\"אישיות מסיבת-קוקטייל\""],
+      "implies_he": "תסמונת Williams — מחיקה קטנה ב-7q11.23",
+      "suspicion": "yellow",
+      "mechanism_he": "מיקרו-דלציה ב-7q11.23; רוב המקרים דה-נובו, בחלק קטן תורשה AD.",
+      "action_he": "בדיקת סידן, אקו לב, מיקרו-מערך ל-7q11.23, ותפקודי תריס. שים לב: 10% דווקא אוטיסטיים ולא חברתיים.",
+      "age_scope": "all",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "AS סופרה-וולבולרי ו-PS ומומי לב נוספים"
+    },
+    {
+      "assoc_key": "nelson.genetics.xp21_contiguous",
+      "anchor_finding_he": "DMD או Becker בזכר עם ממצאים נוספים",
+      "co_findings": ["רטיניטיס פיגמנטוזה", "היפופלסיה אדרנלית", "פיגור שכלי", "חסר בגליצרול קינאז"],
+      "implies_he": "תסמונת גנים רציפים — חסר ב-Xp21.2-21.3 החורג מגן הדיסטרופין בלבד",
+      "suspicion": "yellow",
+      "mechanism_he": "חסרים במידה משתנה ב-Xp21.2-21.3, המערבים מספר גנים סמוכים.",
+      "action_he": "בדיקת תפקוד אדרנל, בדיקת עיניים, והערכה התפתחותית — אין להסתפק באבחנת DMD בלבד.",
+      "age_scope": "child",
+      "source_anchor": "nelson.גנטיקה.גנטיקה",
+      "source_quote_he": "DMD ו-Becker • רטיניטיס פיגמנטוזה • היפופלסיה אדרנלית • פיגור שכלי"
+    }
+  ],
+
+  "gaps_he": [
+    "שכיחויות מדויקות (למשל 1:2,500-5,000 בטרנר, 1:580 בקלינפלטר, 1:733 בדאון) לא חולצו לכללים — הן נתוני רקע אפידמיולוגיים ולא תנאי הפעלה.",
+    "פירוט מומי השלד בטרנר (Madelung Deformity, דיסגנזה של האפיפיזות, קיצור מטקרפל/מטטרסל רביעיים) מופיע במקור אך לא חולץ לאסוציאציה נפרדת — הוא ממצא תומך ולא מוביל.",
+    "המקור מציין ב-Fragile X גם FXTAS בזכרים עם פרה-מוטציה (55-200 חזרות); לא חולץ לכלל נפרד כי הוא נוגע לבגרות ולא לרפואת ילדים.",
+    "טבלאות המשך בעמוד 246 מכילות שברי טקסט של מומי הלב בטרנר ושל ממצאי השלד — הן שכפול חלקי של התוכן הראשי ולא נחלצו בנפרד.",
+    "ההבחנה בין Angelman ל-Prader-Willi מבוססת במקור על מקור הכרומוזום (אמהי מול אבהי); לא נוצר כלל אבחנה-מבדלת ייעודי כי המקור אינו מפרט קריטריון קליני מבחין.",
+    "לא צוינו במקור ספי מעבדה מספריים להיפו/היפר-קלצמיה ב-DiGeorge וב-Williams — לכן דפוס המעבדה מוגדר בכיוון בלבד."
+  ],
+
+  "dosing_mentions_he": []
+}
