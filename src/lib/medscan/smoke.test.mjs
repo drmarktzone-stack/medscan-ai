@@ -102,6 +102,32 @@ await t('3. דגל אדום מסלים חשד שהמודל הרגיע', async ()
   eq(output.overall_suspicion, 'red');
 });
 
+await t('3ב. משפט רב-מדדים אינו מייצר סתירת שווא', async () => {
+  // "אלבומין נמוך, כולסטרול גבוה" — ניסוח קליני שגור לחלוטין.
+  // חלון שאינו עוצר בפסיק ייחס את "גבוה" לאלבומין ויחסום פלט תקין.
+  const fb = buildFactBlock({
+    kbItems: [PATTERN],
+    patientData: [
+      { key: 'albumin', label_he: 'אלבומין', value: 1.8, unit: 'g/dL', flag: 'low' },
+      { key: 'cholesterol', label_he: 'כולסטרול', value: 380, unit: 'mg/dL', flag: 'high' },
+    ],
+  });
+  const out2 = out({
+    directions: [dir({
+      supports_he: ['אלבומין נמוך, כולסטרול גבוה'],
+    })],
+  });
+  const { blocking } = detectContradictions({ output: out2, factBlock: fb });
+  eq(blocking.length, 0, 'נוצרה סתירת שווא ממשפט שמונה כמה מדדים');
+
+  // ועדיין — סתירה אמיתית באותה פסוקית נתפסת
+  const bad = out({ directions: [dir({ supports_he: ['אלבומין גבוה'] })] });
+  ok(
+    detectContradictions({ output: bad, factBlock: fb }).blocking.length > 0,
+    'סתירה אמיתית לא נתפסה — התיקון הלאים את הבדיקה'
+  );
+});
+
 await t('4. ציטוט מקור שאינו קיים נחסם', async () => {
   const bad = out({ directions: [dir({ source_anchors: ['nelson.id.does_not_exist'] })] });
   const r = runAnchorGuards({ output: bad, factBlock: fb() });
