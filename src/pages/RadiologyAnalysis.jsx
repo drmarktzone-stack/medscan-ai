@@ -12,7 +12,7 @@ import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
 import { useI18n } from "@/lib/i18n";
-import { runGroundedRadiologyInterpretation } from "@/lib/medscan/engines/radiologyGrounded";
+import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
 
 export default function RadiologyAnalysis() {
   const { t, lang } = useI18n();
@@ -73,7 +73,8 @@ export default function RadiologyAnalysis() {
       // (הצינור כבר זורק על abstain, אז מה שמגיע לכאן תמיד קריא.)
       if (res?.structuredInterpretation) {
         setGroundedLoading(true);
-        runGroundedRadiologyInterpretation({
+        runGroundedVisionInterpretation({
+          modality: "radiology",
           engineResult: res.structuredInterpretation,
           clinicalContext,
         })
