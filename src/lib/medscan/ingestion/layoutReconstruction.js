@@ -111,43 +111,54 @@ export function itemsToPrompt(items) {
  * זו ההגנה שהופכת את השלב הזה לבטוח. המודל מסדר מחדש; אם הוא
  * **הוסיף** משהו — נדע, כי הטקסט לא יימצא בקלט.
  *
- * ההשוואה מתעלמת מרווחים ומפיסוק, כי הסידור מחדש משנה אותם באופן
- * לגיטימי. מה שנבדק הוא רצף התווים המשמעותיים.
+ * ## למה ברמת מילה ולא ברצף תווים
+ * סידור מחדש הוא **בדיוק מה שהמודל אמור לעשות** — הוא מפריד עמודות
+ * ומרכיב אותן מחדש. בדיקת רצף רציף הייתה נכשלת על כל שחזור תקין,
+ * כי מקטע בפלט חוצה גבול בין פריטים שאינם סמוכים בקלט.
+ *
+ * מילה, לעומת זאת, אינה משתנה בסידור מחדש. מילה שאינה בקלט —
+ * המודל המציא אותה. זו בדיקה עמידה-לסידור וחדה-להמצאה.
  */
 export function verifyNoInvention({ items, columns }) {
-  const norm = (s) => String(s ?? '').replace(/[\s‏‎]/g, '');
-  const haystack = norm(items.map((i) => i.s).join(''));
+  const clean = (s) => String(s ?? '')
+    .replace(/[‏‎]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+
+  const sourceWords = new Set(
+    clean(items.map((i) => i.s).join(' ')).split(' ').filter((w) => w.length >= 3)
+  );
 
   const problems = [];
+  let totalOut = 0;
+
   for (const [idx, col] of (columns ?? []).entries()) {
-    const text = norm(col.text_he);
-    if (!text) continue;
+    const words = clean(col.text_he).split(' ').filter((w) => w.length >= 3);
+    totalOut += words.length;
+    if (!words.length) continue;
 
-    // בודקים במקטעים — התאמה מלאה תיכשל בגלל סדר, מקטעים תופסים המצאה
-    const CHUNK = 24;
-    let missing = 0, checked = 0;
-    for (let i = 0; i + CHUNK <= text.length; i += CHUNK) {
-      checked += 1;
-      if (!haystack.includes(text.slice(i, i + CHUNK))) missing += 1;
-    }
-    if (checked === 0) continue;
+    const invented = words.filter((w) => !sourceWords.has(w));
+    const ratio = invented.length / words.length;
 
-    const ratio = missing / checked;
-    if (ratio > 0.05) {
+    // סף 10%: מרווח לחיתוכי-מילים בקלט ("ובדי"+"קה גופנית"),
+    // אך צר מספיק שמשפט שנוסח מחדש ייתפס.
+    if (ratio > 0.10) {
       problems.push({
         column: idx + 1,
         severity: 'block',
         missing_ratio: Number(ratio.toFixed(3)),
+        sample: invented.slice(0, 6),
         why_he:
-          `${Math.round(ratio * 100)}% ממקטעי הטקסט בעמודה ${idx + 1} אינם מופיעים בקלט. ` +
-          'המודל הוסיף או שינה טקסט במקום לסדר אותו מחדש.',
+          `${Math.round(ratio * 100)}% מהמילים בעמודה ${idx + 1} אינן מופיעות בקלט ` +
+          `(למשל: ${invented.slice(0, 4).join(', ')}). ` +
+          'המודל הוסיף או ניסח מחדש במקום לסדר את הטקסט הקיים.',
       });
     }
   }
 
   // כיסוי: כמה מהקלט הופיע בפלט
-  const outAll = norm((columns ?? []).map((c) => c.text_he).join(''));
-  const coverage = haystack.length ? Math.min(1, outAll.length / haystack.length) : 1;
+  const srcCount = clean(items.map((i) => i.s).join(' ')).split(' ').filter((w) => w.length >= 3).length;
+  const coverage = srcCount ? Math.min(1, totalOut / srcCount) : 1;
   if (coverage < 0.7) {
     problems.push({
       column: null,
