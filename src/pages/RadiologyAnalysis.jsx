@@ -69,10 +69,12 @@ export default function RadiologyAnalysis() {
 
       // שכבת הפרשנות המעוגנת — רצה **אחרי** הצינור הקיים ובנפרד ממנו.
       // כישלון כאן לעולם לא מפיל את הפענוח שהמשתמש כבר קיבל.
-      if (res?.engineResult && !res.engineResult.abstain) {
+      // הצינור מחזיר את תוצר המנוע תחת structuredInterpretation.
+      // (הצינור כבר זורק על abstain, אז מה שמגיע לכאן תמיד קריא.)
+      if (res?.structuredInterpretation) {
         setGroundedLoading(true);
         runGroundedRadiologyInterpretation({
-          engineResult: res.engineResult,
+          engineResult: res.structuredInterpretation,
           clinicalContext,
         })
           .then(setGrounded)
