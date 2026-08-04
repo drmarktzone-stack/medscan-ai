@@ -1,13 +1,15 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   BookUp, Loader2, Upload, Play, Square, AlertTriangle, CheckCircle2,
-  ChevronDown, ChevronUp, FileWarning, Pill,
+  ChevronDown, ChevronUp, FileWarning, Pill, BookOpen, Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
 import { extractBookSource, summarizeBook } from "@/lib/medscan/ingestion/bookParser";
 import { estimateRun, runIngestion } from "@/lib/medscan/ingestion/runIngestion";
+import { saveBookToApp, loadBook, bookStats } from "@/lib/medscan/knowledge/bookStore";
 
 /**
  * פענוח בטוח של מבנה BOOK.
@@ -38,6 +40,32 @@ export default function KnowledgeImport() {
   const [result, setResult] = useState(null);
   const [openSection, setOpenSection] = useState(null);
   const stopRef = useRef(false);
+
+  // שמירת הספר עצמו באפליקציה — צעד נפרד מהחילוץ, ומקדים לו
+  const [inApp, setInApp] = useState(null);
+  const [saving, setSaving] = useState(null);
+  const [saveResult, setSaveResult] = useState(null);
+
+  useEffect(() => {
+    loadBook()
+      .then((rows) => setInApp(bookStats(rows)))
+      .catch(() => setInApp({ chapters: 0, topics: 0, cells: 0 }));
+  }, []);
+
+  const saveBook = async () => {
+    setSaveResult(null);
+    setSaving({ done: 0, total: 0, title: null });
+    try {
+      const s = await saveBookToApp(book, { onProgress: setSaving });
+      setSaveResult(s);
+      const rows = await loadBook();
+      setInApp(bookStats(rows));
+    } catch (e) {
+      setSaveResult({ fatal: e?.message || String(e) });
+    } finally {
+      setSaving(null);
+    }
+  };
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
@@ -180,10 +208,67 @@ export default function KnowledgeImport() {
           )}
         </div>
 
+        {/* שמירת הספר באפליקציה */}
+        {(summary || inApp?.chapters > 0) && (
+          <div className="bg-white rounded-2xl border border-slate-100 p-4">
+            <h3 className="text-sm font-bold mb-1">2. שמור את הספר באפליקציה</h3>
+            <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
+              פעולה חד-פעמית. מרגע זה הספר נמצא במאגר ולא תצטרך את הקובץ שוב —
+              גם לקריאה, וגם כיעד לכל ציטוט שהכלים מפנים אליו.
+            </p>
+
+            {inApp?.chapters > 0 && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 mb-3">
+                <p className="text-xs text-emerald-900">
+                  הספר באפליקציה: <strong>{inApp.chapters}</strong> פרקים ·{" "}
+                  {inApp.topics} נושאים · {inApp.cells.toLocaleString()} פריטים.
+                </p>
+                <Link to="/book"
+                  className="text-[11px] text-emerald-700 underline mt-1 inline-block">
+                  פתח את הספר
+                </Link>
+              </div>
+            )}
+
+            {summary && (
+              <Button onClick={saveBook} disabled={!!saving}
+                className="w-full h-11 rounded-xl text-sm font-semibold bg-slate-800 hover:bg-slate-900">
+                {saving
+                  ? <><Loader2 className="w-4 h-4 ml-1.5 animate-spin" /> שומר {saving.title ?? "…"}</>
+                  : <><Save className="w-4 h-4 ml-1.5" /> {inApp?.chapters > 0 ? "עדכן מהקובץ" : "שמור את הספר"}</>}
+              </Button>
+            )}
+
+            {saving?.total > 0 && (
+              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                <div className="h-full bg-slate-700 transition-all"
+                  style={{ width: `${(saving.done / saving.total) * 100}%` }} />
+              </div>
+            )}
+
+            {saveResult?.fatal && (
+              <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg p-2.5 mt-2">
+                {saveResult.fatal}
+              </p>
+            )}
+            {saveResult && !saveResult.fatal && (
+              <p className="text-xs text-slate-600 mt-2">
+                {saveResult.created} פרקים נוספו · {saveResult.updated} עודכנו
+                {saveResult.failed > 0 && <span className="text-red-600"> · {saveResult.failed} נכשלו</span>}
+              </p>
+            )}
+
+            <p className="text-[10px] text-slate-400 mt-3 leading-relaxed">
+              נשמרים תאי הטבלאות בלבד. בלוקי הפסקאות שבקובץ הם טקסט משובש
+              מחילוץ ה-PDF (רסיסי משפטים מעמודות שונות) ואינם נכנסים.
+            </p>
+          </div>
+        )}
+
         {/* בחירת פרק */}
         {summary && (
           <div className="bg-white rounded-2xl border border-slate-100 p-4">
-            <h3 className="text-sm font-bold mb-1">2. מה לייבא</h3>
+            <h3 className="text-sm font-bold mb-1">3. מה לחלץ לידע מובנה</h3>
             <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
               מומלץ פרק-אחר-פרק. ריצה נעצרת אינה מאבדת את מה שכבר יובא,
               והרצה חוזרת מדלגת על נושאים קיימים.
@@ -216,7 +301,7 @@ export default function KnowledgeImport() {
         {/* הרצה */}
         {estimate && (
           <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-            <h3 className="text-sm font-bold">3. הרצה</h3>
+            <h3 className="text-sm font-bold">4. הרצה</h3>
 
             <div className="bg-slate-50 rounded-lg p-3">
               <p className="text-xs text-slate-700">
