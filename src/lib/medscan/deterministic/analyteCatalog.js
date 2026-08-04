@@ -79,8 +79,8 @@ const CATALOG = [
   { key: 'bands', he: 'תאי מוט (Bands)', en: 'Band forms', syn: ['bands', 'מוטות', 'left shift'], unit: '%', cat: 'hematology' },
   // 'לימפוציטים'/'Lymphocytes' ללא הכוונה ממופה לספירה המוחלטת ולא לאחוז:
   // בהקשר קליני (לימפופניה, חסר חיסוני) המספר המוחלט הוא הקובע.
-  { key: 'lymphocytes_abs', he: 'לימפוציטים (מוחלט)', en: 'ALC', syn: ['ALC', 'absolute lymphocyte count', 'Lymphocytes', 'lymphocyte count'], unit: '10^9/L', cat: 'hematology' },
-  { key: 'lymphocytes_pct', he: 'לימפוציטים (%)', en: 'Lymphocytes %', syn: ['לימפוציטים'], unit: '%', cat: 'hematology' },
+  { key: 'lymphocytes_abs', he: 'לימפוציטים (מוחלט)', en: 'ALC', syn: ['ALC', 'absolute lymphocyte count', 'Lymphocytes', 'לימפוציטים', 'lymphocyte count'], unit: '10^9/L', cat: 'hematology' },
+  { key: 'lymphocytes_pct', he: 'לימפוציטים (%)', en: 'Lymphocytes %', syn: ['לימפוציטים אחוז'], unit: '%', cat: 'hematology' },
   { key: 'monocytes_pct', he: 'מונוציטים (%)', en: 'Monocytes %', syn: ['מונוציטים'], unit: '%', cat: 'hematology' },
   { key: 'eosinophils_abs', he: 'אאוזינופילים (מוחלט)', en: 'AEC', syn: ['אאוזינופילים'], unit: '10^9/L', cat: 'hematology' },
   { key: 'eosinophils_pct', he: 'אאוזינופילים (%)', en: 'Eosinophils %', syn: ['eos'], unit: '%', cat: 'hematology' },
