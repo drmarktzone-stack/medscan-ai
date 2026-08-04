@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch, ListChecks } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch, ListChecks, Database } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -69,6 +69,15 @@ const tools = [
     gradient: "from-rose-500 to-pink-400",
     bg: "bg-rose-50",
     color: "#f43f5e",
+  },
+  {
+    titleKey: "home.kbadmin_title",
+    descKey: "home.kbadmin_desc",
+    icon: Database,
+    path: "/knowledge-admin",
+    gradient: "from-slate-500 to-slate-400",
+    bg: "bg-slate-100",
+    color: "#64748b",
   },
 ];
 
