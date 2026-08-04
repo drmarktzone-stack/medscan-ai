@@ -124,7 +124,12 @@ export function matchLabPatterns({ patternKb = [], labs = [], patient = {}, mode
         continue;
       }
       if (directionMatches(c.direction, found.flag)) {
-        hits.push({ analyte: found.analyte, direction: c.direction, value: found.value, unit: found.unit, flag: found.flag });
+        hits.push({
+          analyte: found.analyte, direction: c.direction,
+          value: found.value, unit: found.unit, flag: found.flag,
+          // הרכיב נשען על טווח ייחוס שטרם אומת
+          from_draft_range: Boolean(found.flagged_by_draft_range),
+        });
       } else {
         misses.push({ analyte: found.analyte, expected: c.direction, actual: found.flag });
       }
@@ -148,6 +153,9 @@ export function matchLabPatterns({ patternKb = [], labs = [], patient = {}, mode
       required_count: need,
       total_components: components.length,
       matched_ratio: components.length ? hits.length / components.length : 0,
+      // אם ולו רכיב אחד נשען על טווח לא-מאומת, הדפוס כולו
+      // נשען על בסיס שלא אומת. הכיול מגביל בהתאם.
+      relies_on_draft_range: hits.some((h) => h.from_draft_range),
     };
 
     if (hits.length >= need) matched.push(record);
