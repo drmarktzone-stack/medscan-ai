@@ -121,17 +121,25 @@ export default function NelsonBook() {
                   <span>{h.chapter}</span>
                   <ChevronLeft className="w-3 h-3" />
                   <span className="text-slate-500">{h.topic}</span>
-                  {h.heading && (
-                    <>
-                      <ChevronLeft className="w-3 h-3" />
-                      <span className="text-slate-500">{h.heading}</span>
-                    </>
-                  )}
                   {h.page && <span className="text-slate-300">· עמ׳ {h.page}</span>}
                 </div>
                 <p className="text-xs text-slate-700 leading-relaxed">
                   <Mark text={h.text} q={query} />
                 </p>
+
+                {/* שאר השורה — בטבלה תא לבדו חסר פשר. «71 מ"ג/ד"ל» של מה? */}
+                {h.row?.length > 1 && (
+                  <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed border-t border-slate-50 pt-1.5">
+                    {h.row.filter((c) => c !== h.text).join(" · ")}
+                  </p>
+                )}
+
+                <button
+                  onClick={() => { setQuery(""); setOpenChapter(h.chapter_no); setOpenTopic(h.topic_key); }}
+                  className="text-[10px] text-indigo-600 mt-1.5"
+                >
+                  פתח בהקשר המלא
+                </button>
               </div>
             ))}
           </div>
@@ -209,24 +217,58 @@ function Topic({ tp, open, onToggle }) {
       </button>
 
       {open && (
-        <div className="px-3.5 pb-3 space-y-3">
-          {tp.s.map((sec, i) => (
-            <div key={i}>
-              {sec.h && (
-                <p className="text-[11px] font-semibold text-slate-500 mb-1">{sec.h}</p>
-              )}
-              <ul className="space-y-1.5">
-                {sec.c.map((cell, j) => (
-                  <li key={j}
-                    className="text-xs text-slate-700 leading-relaxed border-r-2 border-slate-100 pr-2.5">
-                    {cell}
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className="px-3 pb-3 space-y-3">
+          {tp.tb.map((tbl, i) => (
+            <BookTable key={i} table={tbl} />
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * הטבלה כפי שהיא במקור.
+ *
+ * השורה הראשונה מודגשת ככותרת ויזואלית בלבד — לא מסוננת ולא
+ * מפורשת. בחלק מהטבלאות השורה הראשונה היא כבר תוכן, ולכן היא
+ * נשארת קריאה בכל מקרה. גלילה אופקית על הטבלה עצמה — הדף לא זז.
+ */
+function BookTable({ table }) {
+  const [head, ...body] = table.r;
+  const cols = Math.max(...table.r.map((r) => r.length));
+
+  return (
+    <div>
+      {table.p && (
+        <p className="text-[10px] text-slate-300 mb-1">עמ׳ {table.p}</p>
+      )}
+      <div className="overflow-x-auto -mx-1 px-1">
+        <table className="w-full border-collapse text-xs" style={{ minWidth: cols > 2 ? 420 : 0 }}>
+          <tbody>
+            <tr>
+              {head.map((c, i) => (
+                <td key={i}
+                  className="align-top border border-slate-100 bg-slate-50 px-2 py-1.5
+                             font-semibold text-slate-600 leading-relaxed">
+                  {c}
+                </td>
+              ))}
+            </tr>
+            {body.map((row, r) => (
+              <tr key={r}>
+                {Array.from({ length: cols }, (_, c) => (
+                  <td key={c}
+                    className="align-top border border-slate-100 px-2 py-1.5
+                               text-slate-700 leading-relaxed">
+                    {row[c] ?? ""}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
