@@ -18,7 +18,7 @@
       "title_he": "היפו-קלצמיה עם חסר תאי T — חשד ל-DiGeorge",
       "components": [
         { "analyte": "Calcium", "direction": "low", "note_he": "פגיעה בפרא-תיירואיד" },
-        { "analyte": "Lymphocytes", "direction": "low", "note_he": "חסר תאי T עקב פגיעה בתימוס" }
+        { "analyte": "ALC", "direction": "low", "note_he": "חסר תאי T עקב פגיעה בתימוס" }
       ],
       "min_components": 2,
       "direction_he": "תסמונת DiGeorge — מחיקה ב-22q11",
