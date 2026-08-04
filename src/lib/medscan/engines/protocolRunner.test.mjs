@@ -7,7 +7,7 @@
  * הרצה:  node src/lib/medscan/engines/protocolRunner.test.mjs
  */
 
-import { resolveStep, validateProtocolOutput } from './protocolRunner.js';
+import { resolveStep, validateProtocolOutput, buildCalcRequests } from './protocolTree.js';
 
 let pass = 0, fail = 0;
 const fails = [];
@@ -144,6 +144,33 @@ t('החלפת מזהה הפרוטוקול נחסמת', () => {
 
 t('פלט ריק אינו מייצר חסימות שווא', () => {
   eq(validate({}).blocking.length, 0, 'פלט ריק ייצר חסימה מיותרת');
+});
+
+/* ═══ מחשבונים של השלב ═══ */
+
+t('deterministic_refs ממופה לבקשת מחשבון', () => {
+  const reqs = buildCalcRequests({
+    step: PROTOCOL.steps[0],
+    patient: { weight_kg: 17, age_days: 1461 },
+  });
+  eq(reqs.length, 1);
+  eq(reqs[0].type, 'maintenance_fluids');
+  eq(reqs[0].params.weight_kg, 17);
+});
+
+t('הפניה למינון ללא רשומה מאומתת — doseRecord null, והמחשבון יסרב', () => {
+  const reqs = buildCalcRequests({
+    step: { deterministic_refs: ['dosing.amox'] },
+    patient: { weight_kg: 17, age_days: 1461 },
+    doseRecords: [],
+  });
+  eq(reqs.length, 1);
+  eq(reqs[0].type, 'dose');
+  eq(reqs[0].params.doseRecord, null, 'סופקה רשומת מינון שאינה קיימת');
+});
+
+t('שלב ללא deterministic_refs — אין בקשות', () => {
+  eq(buildCalcRequests({ step: PROTOCOL.steps[1], patient: {} }).length, 0);
 });
 
 console.log(`\n${'─'.repeat(52)}`);
