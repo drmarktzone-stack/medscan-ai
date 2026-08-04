@@ -4,39 +4,47 @@
  * מופרד מ-bookStore.js כדי שיהיה בדיק: אין כאן ייבוא של base44,
  * ולכן הכל רץ ב-node ישירות. bookStore מוסיף מעליו רק את ה-I/O.
  *
- * ## מה נכנס לספר ומה לא — ולמה
+ * ## מה נכנס לספר ומה לא
  *
- * **נכנס:** תאי הטבלאות. כל תא הוא יחידת ידע עצמאית עם שיוך מלא
- * (פרק › נושא › סעיף › עמוד). זה מה שהופך ציטוט לניתן-לבדיקה.
+ * **נכנס:** הטבלאות **כפי שהן** — שורות ועמודות, כל תא במקומו.
  *
- * **לא נכנס:** בלוקי הפסקאות שבמקור. בבדיקתם התברר שהם שאריות טקסט
- * משובש מחילוץ ה-PDF — רסיסי משפטים משתי עמודות שנתפרו זה לזה. הם
- * קריאים למראית עין, ולכן מסוכנים במיוחד: משפט אחד יכול לערבב עובדות
- * משתי מחלות שונות.
+ * ⚠ הניסיון הראשון כאן שיטח את הטבלאות ל"סעיפים" לפי כותרת-עמודה,
+ * תוך סינון תאים קצרים כתוויות. מדידה על הספר בפועל הראתה ש-31%
+ * מהתאים נזרקו כך, וביניהם ספי-החלטה:
+ *   «61-90 ימים: 71 מ"ג/ד"ל» · «29-90 ימים: 8 תאים/מ"מ»
+ * כלומר בדיוק המספרים שבגללם פותחים את הספר. סינון הוא הימור על מה
+ * חשוב; טבלה שנשמרת כמות שהיא אינה מהמרת.
  *
- * ⚠ גלאי-התפר (detectSeams) לא סימן אותם. הוא מחפש תפר *בתוך* שורה,
- * וכאן החיבור עובר *בין* שורות. זה פער ידוע של הגלאי, ולכן ההחרגה
- * כאן מבנית ולא מבוססת-גלאי: בלוק k='p' לא נכנס, נקודה.
+ * ההיוריסטיקה של כותרת/תוכן נשארת ב-bookToChunks, במקום שבו היא באמת
+ * נדרשת — חילוץ יחידות ידע. שם ההשמטה גורמת לחוסר, לא לטעות. כאן,
+ * במקור עצמו, אין סיבה להשמיט דבר.
+ *
+ * **לא נכנס:** בלוקי הפסקאות שבמקור. הם שאריות טקסט משובש מחילוץ
+ * ה-PDF — רסיסי משפטים משתי עמודות שנתפרו זה לזה. הם קריאים למראית
+ * עין, ולכן מסוכנים במיוחד: משפט אחד יכול לערבב עובדות משתי מחלות.
+ *
+ * ⚠ גלאי-התפר (detectSeams) לא סימן אותם: הוא מחפש תפר *בתוך* שורה,
+ * וכאן החיבור עובר *בין* שורות. לכן ההחרגה כאן מבנית ולא מבוססת-גלאי:
+ * בלוק k='p' לא נכנס, נקודה.
  */
 
-import { clean, isHeading, topicKeyFor } from '../ingestion/bookParser.js';
+import { clean, topicKeyFor } from '../ingestion/bookParser.js';
 
 export { topicKeyFor };
 
-/** מתחת לזה, תא הוא בדרך כלל תווית עמודה ולא ידע. */
-export const CONTENT_MIN = 30;
-
 export const BOOK_SOURCE_NOTE_HE =
-  'ספרון סיכומי נלסון 21 בטבלאות. נכללים תאי הטבלאות בלבד — ' +
-  'בלוקי הפסקאות הושמטו בכוונה: הם טקסט משובש מחילוץ ה-PDF ' +
+  'ספרון סיכומי נלסון 21 בטבלאות. נכללות הטבלאות במלואן, כפי שהן. ' +
+  'בלוקי הפסקאות שבמקור הושמטו בכוונה: הם טקסט משובש מחילוץ ה-PDF ' +
   '(רסיסי משפטים מעמודות שונות) ואינם מקור מהימן.';
+
+/** שורה שכל תאיה ריקים אינה מוסיפה דבר ומקשה על הקריאה. */
+const hasContent = (row) => (row ?? []).some((c) => clean(c).length > 0);
 
 /**
  * הופך את מבנה BOOK הגולמי לרשומות פרק מוכנות לשמירה.
  *
- * כל תא נקשר לכותרת העמודה שלו. הכותרת נלקחת מהעמודה עצמה, ואם אין —
- * מהשכנה: בטבלאות מוזגות-תאים כותרת ממורכזת נוחתת בעמודה סמוכה. אותה
- * לוגיקה בדיוק כמו ב-bookToChunks, כדי שהספר וההַפְנָיוֹת אליו יסכימו.
+ * הטבלאות נשמרות verbatim. הניקוי היחיד הוא רווחים ותווי-רוחב —
+ * שינוי תצוגה, לא שינוי תוכן.
  */
 export function buildChapterRecords(book) {
   const chapters = [];
@@ -45,36 +53,25 @@ export function buildChapterRecords(book) {
     const topics = [];
 
     for (const tp of ch.topics ?? []) {
-      const sections = [];
-      const heading = {};
-      const headingFor = (col) => {
-        for (const c of [col, col + 1, col - 1]) if (heading[c]) return heading[c];
-        return null;
-      };
+      const tables = [];
 
       for (const block of tp.b ?? []) {
         if (block.k !== 't') continue; // פסקאות — ראה הערת הקובץ
 
-        for (const row of block.v ?? []) {
-          (row ?? []).forEach((raw, col) => {
-            const value = clean(raw);
-            if (!value) return;
-            if (isHeading(value)) {
-              heading[col] = value;
-              return;
-            }
-            if (value.length < CONTENT_MIN) return;
+        const rows = (block.v ?? [])
+          .filter(hasContent)
+          .map((row) => (row ?? []).map(clean));
 
-            const h = headingFor(col);
-            const last = sections[sections.length - 1];
-            if (last && last.h === h) last.c.push(value);
-            else sections.push({ h, p: block.p ?? tp.pg ?? null, c: [value] });
-          });
-        }
+        if (rows.length) tables.push({ p: block.p ?? tp.pg ?? null, r: rows });
       }
 
-      if (sections.length) {
-        topics.push({ t: tp.t, k: topicKeyFor(ch.t, tp.t), pg: tp.pg ?? null, s: sections });
+      if (tables.length) {
+        topics.push({
+          t: tp.t,
+          k: topicKeyFor(ch.t, tp.t),
+          pg: tp.pg ?? null,
+          tb: tables,
+        });
       }
     }
 
@@ -83,7 +80,7 @@ export function buildChapterRecords(book) {
         chapter_no: ci + 1,
         title_he: ch.t,
         topic_count: topics.length,
-        cell_count: topics.reduce((n, t) => n + t.s.reduce((m, s) => m + s.c.length, 0), 0),
+        cell_count: topics.reduce((n, t) => n + countCells(t), 0),
         topics,
         source_note_he: BOOK_SOURCE_NOTE_HE,
       });
@@ -93,32 +90,46 @@ export function buildChapterRecords(book) {
   return chapters;
 }
 
+function countCells(topic) {
+  let n = 0;
+  for (const tbl of topic.tb ?? []) {
+    for (const row of tbl.r ?? []) {
+      for (const cell of row) if (cell) n += 1;
+    }
+  }
+  return n;
+}
+
 /**
  * חיפוש חופשי בספר.
  *
- * מחזיר תאים, לא נושאים — היחידה שהרופא/ה צריך/ה לראות היא המשפט עצמו
- * במקומו, ולא הפניה לנושא שצריך לסרוק ידנית.
+ * מחזיר תאים, לא נושאים — היחידה שהרופא/ה צריך/ה לראות היא המשפט
+ * עצמו במקומו. כל תוצאה נושאת את השורה המלאה שבה נמצא התא, כי בטבלה
+ * המשמעות של תא נקבעת ע"י שכניו: «71 מ"ג/ד"ל» לבדו חסר פשר.
  */
-export function searchBook(chapters, query, { limit = 80 } = {}) {
+export function searchBook(chapters, query, { limit = 80, minChars = 2 } = {}) {
   const q = clean(query).toLowerCase();
-  if (q.length < 2) return [];
+  if (q.length < minChars) return [];
 
   const hits = [];
   for (const ch of chapters ?? []) {
     for (const tp of ch.topics ?? []) {
-      for (const sec of tp.s ?? []) {
-        for (const cell of sec.c ?? []) {
-          if (!cell.toLowerCase().includes(q)) continue;
-          hits.push({
-            chapter_no: ch.chapter_no,
-            chapter: ch.title_he,
-            topic: tp.t,
-            topic_key: tp.k,
-            heading: sec.h,
-            page: sec.p,
-            text: cell,
-          });
-          if (hits.length >= limit) return hits;
+      for (const tbl of tp.tb ?? []) {
+        for (const row of tbl.r ?? []) {
+          for (const cell of row) {
+            if (!cell || !cell.toLowerCase().includes(q)) continue;
+            hits.push({
+              chapter_no: ch.chapter_no,
+              chapter: ch.title_he,
+              topic: tp.t,
+              topic_key: tp.k,
+              page: tbl.p,
+              text: cell,
+              row: row.filter(Boolean),
+            });
+            if (hits.length >= limit) return hits;
+            break; // תא אחד לכל שורה — לא מציפים תוצאה אחת פעמיים
+          }
         }
       }
     }
@@ -148,9 +159,7 @@ export function bookStats(chapters) {
   let cells = 0;
   for (const ch of chapters ?? []) {
     topics += ch.topics?.length ?? 0;
-    for (const tp of ch.topics ?? []) {
-      for (const sec of tp.s ?? []) cells += sec.c?.length ?? 0;
-    }
+    for (const tp of ch.topics ?? []) cells += countCells(tp);
   }
   return { chapters: chapters?.length ?? 0, topics, cells };
 }
