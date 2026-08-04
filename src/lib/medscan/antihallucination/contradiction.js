@@ -41,6 +41,54 @@ const OPPOSITE = { high: 'low', low: 'high' };
 /** חלון החיפוש סביב שם המדד, בתווים. */
 const ANALYTE_WINDOW = 40;
 
+/**
+ * מגביל את חלון החיפוש לפסוקית הנוכחית.
+ *
+ * ⚠ בלי זה, המשפט "אלבומין נמוך, כולסטרול גבוה" מייצר סתירת
+ * שווא: החלון סביב "אלבומין" בולע גם את "גבוה" ששייך לכולסטרול.
+ * משפט שמונה כמה מדדים ברצף הוא הנורמה בכתיבה קלינית, לא החריג.
+ */
+const CLAUSE_BOUNDARY = /[,.;:!?،؛|\n•·–—]/;
+
+function clauseAround(text, idx, len) {
+  let start = Math.max(0, idx - ANALYTE_WINDOW);
+  let end = Math.min(text.length, idx + len + ANALYTE_WINDOW);
+
+  // אחורה עד גבול פסוקית
+  for (let i = idx - 1; i >= start; i -= 1) {
+    if (CLAUSE_BOUNDARY.test(text[i])) { start = i + 1; break; }
+  }
+  // קדימה עד גבול פסוקית
+  for (let i = idx + len; i < end; i += 1) {
+    if (CLAUSE_BOUNDARY.test(text[i])) { end = i; break; }
+  }
+
+  return { window: text.slice(start, end), offset: start };
+}
+
+/**
+ * בוחר את מילת-הכיוון **הקרובה ביותר** לשם המדד, ולא את הראשונה
+ * לפי סדר הרשימה. בלי זה, "גבוה" תמיד ינצח על "נמוך" רק מפני
+ * שהוא ראשון במערך.
+ */
+function nearestDirection(window, analyteIdxInWindow, analyteLen) {
+  let best = null;
+  let bestDist = Infinity;
+
+  for (const d of DIRECTION_WORDS) {
+    const re = new RegExp(d.re.source, 'gu');
+    let m;
+    while ((m = re.exec(window)) !== null) {
+      const dist = m.index >= analyteIdxInWindow + analyteLen
+        ? m.index - (analyteIdxInWindow + analyteLen)
+        : analyteIdxInWindow - (m.index + m[0].length);
+      if (dist < bestDist) { bestDist = dist; best = d; }
+      if (re.lastIndex === m.index) re.lastIndex += 1;
+    }
+  }
+  return best;
+}
+
 function normalizeLabel(s) {
   return String(s ?? '').trim().toLowerCase();
 }
@@ -74,11 +122,8 @@ export function detectFindingContradictions(output, factBlock) {
         const idx = normalizeLabel(text).indexOf(normalizeLabel(alias));
         if (idx === -1) continue;
 
-        const start = Math.max(0, idx - ANALYTE_WINDOW);
-        const end = Math.min(text.length, idx + alias.length + ANALYTE_WINDOW);
-        const window = text.slice(start, end);
-
-        const stated = DIRECTION_WORDS.find((d) => d.re.test(window));
+        const { window, offset } = clauseAround(text, idx, alias.length);
+        const stated = nearestDirection(window, idx - offset, alias.length);
         if (!stated) continue;
 
         const isOpposite = stated.dir === OPPOSITE[flag];
