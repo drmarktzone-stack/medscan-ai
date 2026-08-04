@@ -19,7 +19,7 @@
  * כאן מבנית ולא מבוססת-גלאי: בלוק k='p' לא נכנס, נקודה.
  */
 
-import { clean, isHeading, topicKeyFor } from '@/lib/medscan/ingestion/bookParser';
+import { clean, isHeading, topicKeyFor } from '../ingestion/bookParser.js';
 
 export { topicKeyFor };
 
