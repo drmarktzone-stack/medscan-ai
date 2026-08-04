@@ -1,9 +1,13 @@
 /**
  * בדיקות אחסון הספר.
  *
- * הבדיקה החשובה כאן היא לא "האם הספר נשמר" אלא **האם הציטוט מוביל
- * למקור**. עוגן שנשבר בשקט הוא כישלון גרוע יותר מקריסה: הפלט ייראה
- * מעוגן, הקישור יוביל לדף ריק, ואף בדיקה לא תתלונן.
+ * שתי הבדיקות שנושאות כאן משקל אמיתי:
+ *
+ * 1. **שום תא לא נעלם.** הגרסה הראשונה סיננה תאים קצרים כ"תוויות",
+ *    ובלעה איתם ספי-החלטה («71 מ"ג/ד"ל»). ספר שמשמיט בשקט גרוע מספר
+ *    שאינו קיים — כי אי-אפשר לדעת שחסר.
+ * 2. **הציטוט מוביל למקור.** עוגן שנשבר בשקט הוא כישלון גרוע מקריסה:
+ *    הפלט ייראה מעוגן, הקישור יוביל לדף ריק, ואף בדיקה לא תתלונן.
  */
 
 import assert from 'node:assert';
@@ -37,12 +41,12 @@ const BOOK = {
                   'כל חום מעל 38 מחייב בירור ספסיס מלא כולל ניקור מותני',
                   'ניתן להסתפק בבדיקת שתן ובמעקב צמוד אם המצב הכללי טוב',
                 ],
-                ['קצר', 'גם קצר'],
+                ['61-90 ימים: 71 מ"ג/ד"ל', 'CRP'],
+                ['', ''],
               ],
             },
             {
-              k: 'p',
-              p: 13,
+              k: 'p', p: 13,
               v: 'ירוד/טוקסיים/מדדים חיוניים לא -תקינים יש חשד לזיהום חיידק י ולכן פנאומוקוק',
             },
           ],
@@ -58,45 +62,59 @@ const BOOK = {
   ],
 };
 
+const cellsOf = (chapters) =>
+  chapters.flatMap((ch) =>
+    ch.topics.flatMap((t) => (t.tb ?? []).flatMap((tb) => tb.r.flat())),
+  ).filter(Boolean);
+
 console.log('\nbookCore\n');
 
+/* ── אין השמטה שקטה ────────────────────────────────────────────────── */
+
+test('סף מספרי קצר נשמר ואינו מסונן כתווית', () => {
+  const cells = cellsOf(buildChapterRecords(BOOK));
+  ok(cells.includes('61-90 ימים: 71 מ"ג/ד"ל'), 'סף החלטה נעלם מהספר');
+  ok(cells.includes('CRP'), 'תווית קצרה נעלמה');
+});
+
+test('כל תא לא-ריק מהטבלה נשמר', () => {
+  const cells = cellsOf(buildChapterRecords(BOOK));
+  eq(cells.length, 6, 'מספר התאים אינו תואם את המקור');
+});
+
+test('שורה ריקה לגמרי מושמטת — תצוגה, לא תוכן', () => {
+  const [ch] = buildChapterRecords(BOOK);
+  eq(ch.topics[0].tb[0].r.length, 3);
+});
+
+/* ── פסקאות ────────────────────────────────────────────────────────── */
+
 test('פסקאות אינן נכנסות לספר', () => {
-  const chapters = buildChapterRecords(BOOK);
-  const all = JSON.stringify(chapters);
+  const all = JSON.stringify(buildChapterRecords(BOOK));
   ok(!all.includes('טוקסיים'), 'טקסט פסקה משובש נכנס לספר');
   ok(!all.includes('טקסט פסקה בלבד'), 'פסקה נכנסה לספר');
 });
 
 test('פרק שכולו פסקאות מושמט לגמרי', () => {
   const chapters = buildChapterRecords(BOOK);
-  eq(chapters.length, 1, 'פרק ללא תאי טבלה לא אמור להישמר');
+  eq(chapters.length, 1);
   eq(chapters[0].title_he, 'מחלות זיהומיות');
 });
 
-test('תאי טבלה נכנסים עם הכותרת והעמוד שלהם', () => {
-  const [ch] = buildChapterRecords(BOOK);
-  const [tp] = ch.topics;
-  const flat = tp.s.flatMap((s) => s.c);
-  eq(flat.length, 2, 'שני תאי תוכן');
-  ok(tp.s.some((s) => s.h === 'תינוק עד חודש'));
-  ok(tp.s.every((s) => s.p === 12), 'עמוד לא נשמר');
-});
-
-test('תאים קצרים מסוננים כתוויות ולא כידע', () => {
-  const [ch] = buildChapterRecords(BOOK);
-  const flat = ch.topics.flatMap((t) => t.s.flatMap((s) => s.c));
-  ok(!flat.includes('קצר'));
+test('מבנה הטבלה נשמר — שורות ועמודות, לא רשימה שטוחה', () => {
+  const [tbl] = buildChapterRecords(BOOK)[0].topics[0].tb;
+  eq(tbl.p, 12, 'עמוד לא נשמר');
+  ok(Array.isArray(tbl.r[0]), 'שורה אינה מערך');
+  eq(tbl.r[0][0], 'תינוק עד חודש');
+  eq(tbl.r[0][1], 'ילד מעל 3 חודשים');
 });
 
 test('ספירת התאים תואמת את התוכן בפועל', () => {
   const [ch] = buildChapterRecords(BOOK);
-  const actual = ch.topics.reduce(
-    (n, t) => n + t.s.reduce((m, s) => m + s.c.length, 0), 0,
-  );
-  eq(ch.cell_count, actual);
+  eq(ch.cell_count, cellsOf([ch]).length);
 });
 
-/* ── חוזה העוגן: זו הבדיקה שמונעת ציטוט שמוביל לשום מקום ─────────── */
+/* ── חוזה העוגן ────────────────────────────────────────────────────── */
 
 test('מפתח העוגן בספר זהה לזה שמייצר החילוץ', () => {
   const [ch] = buildChapterRecords(BOOK);
@@ -105,7 +123,7 @@ test('מפתח העוגן בספר זהה לזה שמייצר החילוץ', () 
 
 test('כל עוגן שהחילוץ מייצר נפתר בספר', () => {
   const chapters = buildChapterRecords(BOOK);
-  const fromExtraction = bookToChunks(BOOK)
+  const fromExtraction = bookToChunks(BOOK, { minChars: 10 })
     .filter((c) => c.kind === 'table_cell')
     .map((c) => topicKeyFor(c.chapter, c.topic));
 
@@ -139,6 +157,12 @@ test('חיפוש מחזיר את התא עם השיוך המלא שלו', () => 
   ok(hit.topic_key.startsWith('nelson.'));
 });
 
+test('תוצאה נושאת את השורה כולה — תא בטבלה חסר פשר לבדו', () => {
+  const chapters = buildChapterRecords(BOOK);
+  const [hit] = searchBook(chapters, '71 מ"ג');
+  ok(hit.row.includes('CRP'), 'הקשר השורה אבד — לא ברור מה נמדד');
+});
+
 test('שאילתה קצרה מדי אינה מחזירה את כל הספר', () => {
   const chapters = buildChapterRecords(BOOK);
   eq(searchBook(chapters, 'א').length, 0);
@@ -147,7 +171,7 @@ test('שאילתה קצרה מדי אינה מחזירה את כל הספר', ()
 
 test('חיפוש מכבד את מגבלת התוצאות', () => {
   const chapters = buildChapterRecords(BOOK);
-  ok(searchBook(chapters, 'ב', { limit: 1 }).length <= 1);
+  ok(searchBook(chapters, 'ח', { limit: 1, minChars: 1 }).length <= 1);
 });
 
 test('חיפוש בספר ריק אינו קורס', () => {
@@ -156,11 +180,10 @@ test('חיפוש בספר ריק אינו קורס', () => {
 });
 
 test('bookStats סופר את מה שבאמת נשמר', () => {
-  const chapters = buildChapterRecords(BOOK);
-  const s = bookStats(chapters);
+  const s = bookStats(buildChapterRecords(BOOK));
   eq(s.chapters, 1);
   eq(s.topics, 1);
-  eq(s.cells, 2);
+  eq(s.cells, 6);
 });
 
 test('קלט פגום אינו מפיל את הבנייה', () => {
@@ -168,6 +191,7 @@ test('קלט פגום אינו מפיל את הבנייה', () => {
   eq(buildChapterRecords({}).length, 0);
   eq(buildChapterRecords({ chapters: [{ t: 'ריק' }] }).length, 0);
   eq(buildChapterRecords({ chapters: [{ t: 'א', topics: [{ t: 'ב', b: null }] }] }).length, 0);
+  eq(buildChapterRecords({ chapters: [{ t: 'א', topics: [{ t: 'ב', b: [{ k: 't', v: null }] }] }] }).length, 0);
 });
 
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);
