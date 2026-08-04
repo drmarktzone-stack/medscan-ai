@@ -33,15 +33,20 @@ for (const k of LISTS) {
   const mark = inCount === outCount ? '✓' : '⚠';
   console.log(`  ${mark} ${k.padEnd(16)} ${String(outCount).padStart(3)} / ${inCount}`);
 }
-console.log(`\n  סה"כ נשמרים: ${count(kept)}  ·  נפלו: ${dropped?.length ?? 0}`);
+// ⚠ validateExtraction מחזיר dropped כ-**מספר**, לא כמערך.
+// הפרטים עצמם יושבים ב-problems עם severity==='drop'.
+const droppedItems = (problems ?? []).filter((p) => p.severity === 'drop');
+const warnings = (problems ?? []).filter((p) => p.severity !== 'drop');
 
-if (dropped?.length) {
+console.log(`\n  סה"כ נשמרים: ${count(kept)}  ·  נפלו: ${dropped}`);
+
+if (droppedItems.length) {
   console.log('\n  פריטים שנפלו:');
-  for (const d of dropped) console.log(`    ✗ ${d.kind}/${d.key}: ${d.why_he}`);
+  for (const d of droppedItems) console.log(`    ✗ ${d.kind}/${d.key}: ${d.why_he}`);
 }
-if (problems?.length) {
-  console.log('\n  הערות:');
-  for (const p of problems) console.log(`    · ${p.kind}/${p.key}: ${p.why_he}`);
+if (warnings.length) {
+  console.log('\n  אזהרות:');
+  for (const p of warnings) console.log(`    · ${p.kind}/${p.key}: ${p.why_he}`);
 }
 
 // gaps_he ריק בפרק ארוך הוא סימן אזהרה בפני עצמו — ראה extractionSchema
@@ -55,4 +60,4 @@ if (emitTo) {
 }
 console.log('');
 
-process.exit(dropped?.length ? 1 : 0);
+process.exit(dropped ? 1 : 0);
