@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -42,6 +42,15 @@ const tools = [
     gradient: "from-emerald-500 to-teal-400",
     bg: "bg-emerald-50",
     color: "#10b981",
+  },
+  {
+    titleKey: "home.context_title",
+    descKey: "home.context_desc",
+    icon: UserCog,
+    path: "/patient-context",
+    gradient: "from-violet-500 to-purple-400",
+    bg: "bg-violet-50",
+    color: "#8b5cf6",
   },
 ];
 
