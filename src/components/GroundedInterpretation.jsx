@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   AlertTriangle, ShieldAlert, ChevronDown, ChevronUp, Eye, Anchor,
   HelpCircle, GitBranch, Info, ShieldCheck, Repeat, BookOpen, ExternalLink,
@@ -228,14 +229,43 @@ function DirectionCard({ d }) {
           )}
 
           {d.source_anchors?.length > 0 && (
-            <p className="text-[10px] text-slate-400 flex items-center gap-1">
-              <Anchor className="w-3 h-3" />
-              מקור: {d.source_anchors.join(" · ")}
-            </p>
+            <div className="text-[10px] text-slate-400 flex items-center gap-1 flex-wrap">
+              <Anchor className="w-3 h-3 shrink-0" />
+              <span>מקור:</span>
+              {d.source_anchors.map((a, i) => (
+                <React.Fragment key={a}>
+                  {i > 0 && <span>·</span>}
+                  <SourceAnchorLink anchor={a} />
+                </React.Fragment>
+              ))}
+            </div>
           )}
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * עוגן שניתן ללחוץ עליו ולקרוא את המקור.
+ *
+ * זה מה שהופך ציטוט לניתן-לבדיקה בפועל ולא רק להצהרה. anchorGuard כבר
+ * חסם עוגן שאינו קיים; כאן הרופא/ה יכול/ה לראות בעיניים מה כתוב שם.
+ * עוגנים שאינם של נלסון (מקור אחר) מוצגים כטקסט — אין לאן להוביל.
+ */
+function SourceAnchorLink({ anchor }) {
+  const label = String(anchor).replace(/^nelson\./, "").replace(/[._]/g, " ");
+  if (!String(anchor).startsWith("nelson.")) {
+    return <span>{anchor}</span>;
+  }
+  return (
+    <Link
+      to={`/book?topic=${encodeURIComponent(anchor)}`}
+      className="text-indigo-500 hover:text-indigo-700 underline decoration-dotted"
+      title="פתח בספר"
+    >
+      {label}
+    </Link>
   );
 }
 
