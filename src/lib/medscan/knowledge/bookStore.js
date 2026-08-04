@@ -20,11 +20,13 @@
  */
 
 import { base44 } from "@/api/base44Client";
+import { clean, isHeading, topicKeyFor } from "@/lib/medscan/ingestion/bookParser";
 
-const NBSP = / /g;
+// הפיצוח ומפתח-העוגן מיובאים מ-bookParser ולא מוגדרים שוב.
+// שתי הגדרות נפרדות של topicKeyFor היו נסדקות בשקט: החילוץ ייצור
+// עוגן אחד, הספר יאחסן אחר, וכל ציטוט יוביל לשום מקום — בלי שדבר ייכשל.
+export { topicKeyFor };
 
-/** תווית קצרה מדי / כותרת — לא תוכן. */
-const HEADING_MAX = 60;
 /** מתחת לזה, תא הוא בדרך כלל תווית עמודה ולא ידע. */
 const CONTENT_MIN = 30;
 
@@ -32,22 +34,6 @@ export const BOOK_SOURCE_NOTE_HE =
   "ספרון סיכומי נלסון 21 בטבלאות. נכללים תאי הטבלאות בלבד — " +
   "בלוקי הפסקאות הושמטו בכוונה: הם טקסט משובש מחילוץ ה-PDF " +
   "(רסיסי משפטים מעמודות שונות) ואינם מקור מהימן.";
-
-const clean = (s) => String(s ?? "").replace(NBSP, " ").replace(/[ \t]+/g, " ").trim();
-
-const isHeading = (s) =>
-  s.length > 0 && s.length < HEADING_MAX && !/[•\n]/.test(s) && !/[.:]$/.test(s);
-
-export const slug = (s) =>
-  String(s ?? "")
-    .trim()
-    .replace(/[^\p{L}\p{N}]+/gu, "_")
-    .replace(/^_+|_+$/g, "")
-    .slice(0, 40);
-
-export function topicKeyFor(chapterTitle, topicTitle) {
-  return `nelson.${slug(chapterTitle)}.${slug(topicTitle)}`;
-}
 
 /**
  * הופך את מבנה BOOK הגולמי לרשומות פרק מוכנות לשמירה.
