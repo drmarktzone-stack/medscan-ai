@@ -121,6 +121,35 @@ export async function loadReferenceRangePayload() {
   }
 }
 
+/** טוען פרוטוקול בודד לפי מפתח. */
+export async function loadProtocol(protocolKey) {
+  try {
+    const rows = await base44.entities.Protocol.list('-created_date', 500);
+    return (rows ?? []).find((p) => p.protocol_key === protocolKey) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** רשימת הפרוטוקולים לבחירה. מסמן אילו מאומתים — רק הם ירוצו. */
+export async function listProtocols() {
+  try {
+    const rows = await base44.entities.Protocol.list('-created_date', 500);
+    return (rows ?? []).map((p) => ({
+      protocol_key: p.protocol_key,
+      title_he: p.title_he,
+      domain: p.domain ?? null,
+      age_scope: p.age_scope ?? 'all',
+      entry_criteria_he: p.entry_criteria_he ?? [],
+      step_count: (p.steps ?? []).length,
+      verification_status: p.verification_status ?? 'draft_needs_verification',
+      local_protocol_ref: p.local_protocol_ref ?? null,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 /**
  * רשומות אינטראקציות.
  * ישות שטרם נוצרה מחזירה מערך ריק — והמנוע יצהיר במפורש
