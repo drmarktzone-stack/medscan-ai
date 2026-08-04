@@ -12,8 +12,10 @@
  */
 
 import { chunksForChapter, bookToChunks, topicKeyFor } from './bookParser.js';
-import { chunkText, detectSeams, validateExtraction, CHUNK_CHARS } from './extractionCore.js';
-import { extractFromChunk, saveExtraction } from './knowledgeIngestion.js';
+import {
+  chunkText, detectSeams, validateExtraction, extractFromChunk, CHUNK_CHARS,
+} from './extractionCore.js';
+import { saveExtraction } from './knowledgeIngestion.js';
 import { createInvokeLLM, listKbEntity } from '../llmAdapter.js';
 
 /**
