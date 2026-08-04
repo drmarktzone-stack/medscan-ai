@@ -121,6 +121,104 @@ export async function loadReferenceRangePayload() {
   }
 }
 
+/* ════════════════════════════════════════════════════════════════
+ * ניהול ידע — קריאה, כתיבה ואימות
+ * ═══════════════════════════════════════════════════════════════ */
+
+const KB_ENTITIES = {
+  KnowledgeTopic: 'topic_key',
+  ClinicalRule: 'rule_key',
+  LabPattern: 'pattern_key',
+  RedFlag: 'flag_key',
+  Association: 'assoc_key',
+  Protocol: 'protocol_key',
+  DoseRecord: 'drug_key',
+  DrugInteraction: 'interaction_key',
+  ReferenceRange: 'analyte',
+};
+
+export const KB_ENTITY_NAMES = Object.keys(KB_ENTITIES);
+
+/** רשומות ישות ידע אחת. */
+export async function listKbEntity(entityName, limit = 2000) {
+  try {
+    const rows = await base44.entities[entityName].list('-created_date', limit);
+    return Array.isArray(rows) ? rows : [];
+  } catch {
+    return [];
+  }
+}
+
+/** סיכום מצב הידע — כמה מאומת, כמה טיוטה, בכל ישות. */
+export async function loadKbStatus() {
+  const entries = await Promise.all(
+    KB_ENTITY_NAMES.map(async (name) => {
+      const rows = await listKbEntity(name);
+      const verified = rows.filter((r) => r.verification_status === 'verified').length;
+      const flagged = rows.filter((r) => r.verification_status === 'flagged').length;
+      return {
+        entity: name,
+        key_field: KB_ENTITIES[name],
+        total: rows.length,
+        verified,
+        draft: rows.length - verified - flagged,
+        flagged,
+      };
+    })
+  );
+  return entries;
+}
+
+/** יצירת רשומת ידע. תמיד נכנסת כטיוטה — במכוון. */
+export async function createKbRecord(entityName, data) {
+  return base44.entities[entityName].create({
+    ...data,
+    verification_status: 'draft_needs_verification',
+  });
+}
+
+export async function updateKbRecord(entityName, id, data) {
+  return base44.entities[entityName].update(id, data);
+}
+
+export async function deleteKbRecord(entityName, id) {
+  return base44.entities[entityName].delete(id);
+}
+
+/**
+ * אימות רשומה.
+ *
+ * החתימה (מי ומתי) אינה פורמלית: היא מה שהופך את האימות
+ * מסימון לאחריות. בלעדיה, "verified" הוא סתם דגל.
+ */
+export async function verifyKbRecord(entityName, id, verifiedBy, note = null) {
+  return base44.entities[entityName].update(id, {
+    verification_status: 'verified',
+    verified_by: verifiedBy,
+    verified_at: new Date().toISOString(),
+    ...(note ? { review_note_he: note } : {}),
+  });
+}
+
+/** סימון רשומה כשגויה. רשומה flagged אינה נכנסת לפלט לעולם. */
+export async function flagKbRecord(entityName, id, reason, flaggedBy) {
+  return base44.entities[entityName].update(id, {
+    verification_status: 'flagged',
+    verified_by: flaggedBy,
+    verified_at: new Date().toISOString(),
+    review_note_he: reason,
+  });
+}
+
+/** המשתמש הנוכחי — לחתימת אימות. */
+export async function currentUser() {
+  try {
+    return await base44.auth.me();
+  } catch {
+    return null;
+  }
+}
+
 /** טוען פרוטוקול בודד לפי מפתח. */
 export async function loadProtocol(protocolKey) {
   try {
