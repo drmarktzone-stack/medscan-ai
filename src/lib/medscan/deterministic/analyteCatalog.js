@@ -73,10 +73,13 @@ const CATALOG = [
   { key: 'rdw', he: 'פיזור גודל תאים', en: 'RDW', syn: ['RDW'], unit: '%', cat: 'hematology' },
   { key: 'platelets', he: 'טסיות', en: 'Platelets', syn: ['PLT', 'טרומבוציטים', 'thrombocytes'], unit: '10^9/L', cat: 'hematology' },
   { key: 'mpv', he: 'נפח טסית ממוצע', en: 'MPV', syn: ['MPV'], unit: 'fL', cat: 'hematology' },
-  { key: 'neutrophils_abs', he: 'נויטרופילים (מוחלט)', en: 'ANC', syn: ['ANC', 'נויטרופילים מוחלט', 'absolute neutrophil count'], unit: '10^9/L', cat: 'hematology' },
+  { key: 'neutrophils_abs', he: 'נויטרופילים (מוחלט)', en: 'ANC', syn: ['ANC', 'נויטרופילים מוחלט', 'absolute neutrophil count', 'Neutrophils', 'נויטרופילים', 'neutrophil count'], unit: '10^9/L', cat: 'hematology' },
   { key: 'neutrophils_pct', he: 'נויטרופילים (%)', en: 'Neutrophils %', syn: ['נויטרופילים אחוז', 'segs'], unit: '%', cat: 'hematology' },
+  // כמו בלימפוציטים: 'נויטרופילים' ללא הכוונה → ספירה מוחלטת (ANC).
   { key: 'bands', he: 'תאי מוט (Bands)', en: 'Band forms', syn: ['bands', 'מוטות', 'left shift'], unit: '%', cat: 'hematology' },
-  { key: 'lymphocytes_abs', he: 'לימפוציטים (מוחלט)', en: 'ALC', syn: ['ALC', 'absolute lymphocyte count'], unit: '10^9/L', cat: 'hematology' },
+  // 'לימפוציטים'/'Lymphocytes' ללא הכוונה ממופה לספירה המוחלטת ולא לאחוז:
+  // בהקשר קליני (לימפופניה, חסר חיסוני) המספר המוחלט הוא הקובע.
+  { key: 'lymphocytes_abs', he: 'לימפוציטים (מוחלט)', en: 'ALC', syn: ['ALC', 'absolute lymphocyte count', 'Lymphocytes', 'lymphocyte count'], unit: '10^9/L', cat: 'hematology' },
   { key: 'lymphocytes_pct', he: 'לימפוציטים (%)', en: 'Lymphocytes %', syn: ['לימפוציטים'], unit: '%', cat: 'hematology' },
   { key: 'monocytes_pct', he: 'מונוציטים (%)', en: 'Monocytes %', syn: ['מונוציטים'], unit: '%', cat: 'hematology' },
   { key: 'eosinophils_abs', he: 'אאוזינופילים (מוחלט)', en: 'AEC', syn: ['אאוזינופילים'], unit: '10^9/L', cat: 'hematology' },
