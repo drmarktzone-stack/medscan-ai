@@ -27,6 +27,25 @@ fs.mkdirSync(outDir, { recursive: true });
 const DRAFT = 'draft_needs_verification';
 const note = (r) => `ציטוט מקור: "${r.source_quote_he}"`;
 
+/**
+ * ממיר condition.value למחרוזת.
+ *
+ * ⚠ שכבת האחסון של הישויות מקבלת רק מחרוזת בשדה הזה:
+ * מספר או מערך מפילים את הכתיבה כולה. המנוע ממיר בחזרה
+ * ב-parseRange/Number ב-rulesEngine, ולכן ההמרה כאן בטוחה.
+ *
+ * טווח נכתב כ-"lo-hi" ולא כ-JSON: זו הצורה שרופא/ה קורא/ת
+ * במסך אימות הידע, והמנוע מפרש אותה נכון.
+ */
+const stringifyValue = (v) => {
+  if (v === null || v === undefined) return null;
+  if (Array.isArray(v)) return v.join('-');
+  return String(v);
+};
+
+const normalizeConditions = (conditions) =>
+  (conditions ?? []).map((c) => ({ ...c, value: stringifyValue(c.value) }));
+
 const MAP = {
   KnowledgeTopic: [kept.topics, (t) => ({
     topic_key: t.topic_key,
@@ -66,7 +85,7 @@ const MAP = {
     title_he: r.title_he,
     category: r.category ?? null,
     domain: r.domain ?? null,
-    conditions: r.conditions,
+    conditions: normalizeConditions(r.conditions),
     logic: r.logic ?? 'all',
     min_count: r.min_count ?? 0,
     conclusion_he: r.conclusion_he,
