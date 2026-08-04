@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ScanLine, Loader2, BookOpen } from "lucide-react";
+import { ScanLine, Loader2, BookOpen, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
@@ -8,9 +8,11 @@ import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import PediatricToggle from "@/components/PediatricToggle";
 import AnalysisResult from "@/components/AnalysisResult";
+import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
 import { useI18n } from "@/lib/i18n";
+import { runGroundedRadiologyInterpretation } from "@/lib/medscan/engines/radiologyGrounded";
 
 export default function RadiologyAnalysis() {
   const { t, lang } = useI18n();
@@ -22,6 +24,8 @@ export default function RadiologyAnalysis() {
   const [kbCount, setKbCount] = useState(0);
   const [clinicalContext, setClinicalContext] = useState("");
   const [pediatric, setPediatric] = useState(false);
+  const [grounded, setGrounded] = useState(null);
+  const [groundedLoading, setGroundedLoading] = useState(false);
 
   useEffect(() => {
     base44.entities.RadiologyCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
@@ -30,6 +34,7 @@ export default function RadiologyAnalysis() {
   const handleFilesChange = (newFiles) => {
     setFiles(newFiles);
     setResult(null);
+    setGrounded(null);
     setError(null);
   };
 
@@ -61,6 +66,22 @@ export default function RadiologyAnalysis() {
         onStage: setStage,
       });
       setResult(res);
+
+      // שכבת הפרשנות המעוגנת — רצה **אחרי** הצינור הקיים ובנפרד ממנו.
+      // כישלון כאן לעולם לא מפיל את הפענוח שהמשתמש כבר קיבל.
+      if (res?.engineResult && !res.engineResult.abstain) {
+        setGroundedLoading(true);
+        runGroundedRadiologyInterpretation({
+          engineResult: res.engineResult,
+          clinicalContext,
+        })
+          .then(setGrounded)
+          .catch((e) => {
+            console.error("grounded interpretation failed", e);
+            setGrounded(null);
+          })
+          .finally(() => setGroundedLoading(false));
+      }
     } catch (err) {
       console.error(err);
       setError(err.message || t("analysis.error_fallback"));
@@ -147,6 +168,28 @@ export default function RadiologyAnalysis() {
               analysisType="radiology"
               structuredInterpretation={result.structuredInterpretation}
             />
+          </div>
+        )}
+
+        {groundedLoading && (
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 py-4">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            מריץ אימות עיגון על הפרשנות…
+          </div>
+        )}
+
+        {grounded && (
+          <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+              <ShieldCheck className="w-5 h-5 text-indigo-500" />
+              <div>
+                <h3 className="font-bold text-sm">פרשנות מעוגנת</h3>
+                <p className="text-[11px] text-slate-500">
+                  עברה אימות מול בסיס הידע המאומת
+                </p>
+              </div>
+            </div>
+            <GroundedInterpretation data={grounded} />
           </div>
         )}
 
