@@ -268,6 +268,18 @@ const CATALOG = [
   { key: 'urine_sodium', he: 'נתרן בשתן', en: 'Urine sodium', syn: ['Na urine'], unit: 'mmol/L', cat: 'urine' },
   { key: 'urine_osmolality', he: 'אוסמולריות בשתן', en: 'Urine osmolality', syn: ['osm urine'], unit: 'mOsm/kg', cat: 'urine' },
 
+  /* מדדי אבני כליה — נדרשים לכללי nelson.נפרולוגיה.נפרוליתיאזיס.
+     ה-pH הוא הערך המספרי היחיד שמקור הידע נוקב עבורו סף (5.5 / 6.5),
+     ולכן הוא היחיד שעליו נבנו LabPatterns. השאר נוספו כדי שהמלצות
+     הבירור יוכלו להיפתר למדד מוכר. */
+  { key: 'urine_ph', he: 'pH שתן', en: 'Urine pH', syn: ['pH בשתן', 'urine pH'], unit: '', cat: 'urine' },
+  { key: 'urine_calcium', he: 'סידן בשתן', en: 'Urine calcium', syn: ['היפרקלציוריה', 'Ca urine'], unit: 'mg/24h', cat: 'urine' },
+  { key: 'urine_oxalate', he: 'אוקסלאט בשתן', en: 'Urine oxalate', syn: ['אוקסלאט', 'oxalate'], unit: 'mg/24h', cat: 'urine' },
+  { key: 'urine_urate', he: 'אוראט בשתן', en: 'Urine urate', syn: ['חומצת שתן בשתן', 'uric acid urine'], unit: 'mg/24h', cat: 'urine' },
+  { key: 'urine_citrate', he: 'ציטראט בשתן', en: 'Urine citrate', syn: ['ציטראט', 'citrate'], unit: 'mg/24h', cat: 'urine' },
+  { key: 'urine_cystine', he: 'ציסטין בשתן', en: 'Urine cystine', syn: ['ציסטין', 'cystine'], unit: 'mg/24h', cat: 'urine' },
+  { key: 'urine_volume_24h', he: 'נפח שתן 24 שעות', en: '24h urine volume', syn: ['נפח שתן'], unit: 'mL/24h', cat: 'urine' },
+
   /* ── נוזל שדרה ─────────────────────────────────────────────────────── */
   { key: 'csf_wbc', he: 'לויקוציטים ב-CSF', en: 'CSF WBC', syn: ['CSF WBC', 'פלאוציטוזיס'], unit: '/µL', cat: 'csf' },
   { key: 'csf_rbc', he: 'אריתרוציטים ב-CSF', en: 'CSF RBC', syn: ['CSF RBC'], unit: '/µL', cat: 'csf' },
