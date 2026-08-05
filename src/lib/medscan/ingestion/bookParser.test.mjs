@@ -109,8 +109,15 @@ t('כותרת אינה נשמרת כידע בפני עצמה', () => {
   ok(!texts.includes('חום ונויטרופניה'), 'כותרת נשמרה כקטע ידע');
 });
 
-t('פסקה קצרה מסוננת', () => {
-  const paras = bookToChunks(BOOK).filter((c) => c.kind === 'paragraph');
+t('פסקאות אינן נכנסות לחילוץ כברירת מחדל', () => {
+  // בלוקי פסקאות במקור הם שאריות טקסט משובש — 80% מהנפח,
+  // 0% מהערך. הספר מחריג אותם, והחילוץ חייב להסכים איתו.
+  eq(bookToChunks(BOOK).filter((c) => c.kind === 'paragraph').length, 0);
+});
+
+t('פסקאות נכנסות רק בבקשה מפורשת, וקצרה מסוננת', () => {
+  const paras = bookToChunks(BOOK, { includeParagraphs: true })
+    .filter((c) => c.kind === 'paragraph');
   eq(paras.length, 1, 'פסקה קצרה מדי נשמרה');
 });
 
@@ -146,7 +153,8 @@ t('סיכום מונה נכון', () => {
 });
 
 t('ייבוא פרק-אחר-פרק מסנן נכון', () => {
-  eq(chunksForChapter(BOOK, 1).length, 4);
+  eq(chunksForChapter(BOOK, 1).length, 3, 'תאי טבלה בלבד');
+  eq(chunksForChapter(BOOK, 1, { includeParagraphs: true }).length, 4);
   eq(chunksForChapter(BOOK, 2).length, 0);
 });
 
