@@ -12,20 +12,6 @@ import { parseJsLiteral } from "@/lib/medscan/ingestion/jsLiteral";
 import { estimateRun, runIngestion } from "@/lib/medscan/ingestion/runIngestion";
 import { saveBookToApp, loadBook, bookStats } from "@/lib/medscan/knowledge/bookStore";
 
-/**
- * פענוח בטוח של מבנה BOOK.
- *
- * ⚠ הקובץ שהמשתמש מעלה הוא קלט חיצוני. איננו מריצים ממנו JavaScript.
- * `JSON.parse` בלבד, אחרי נרמול מפתחות לא-מצוטטים — שהוא הפער היחיד
- * בין תחביר אובייקט JS לבין JSON.
- */
-function parseBookSource(source) {
-  const json = source
-    .replace(/([{,]\s*)([A-Za-z_$][\w$]*)\s*:/g, '$1"$2":')
-    .replace(/,(\s*[}\]])/g, "$1");
-  return JSON.parse(json);
-}
-
 export default function KnowledgeImport() {
   const [book, setBook] = useState(null);
   const [summary, setSummary] = useState(null);
