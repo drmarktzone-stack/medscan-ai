@@ -1,0 +1,225 @@
+{
+  "chapter_title_he": "אנדוקרינולוגיה",
+  "_provenance_he": "⚠ שוחזר ידנית מתא שסומן corrupt (פרק 12 › DI SIADH, 1062 תווים). התא ממזג שלוש עמודות של אבחנה מבדלת: Central DI · Nephrogenic DI (כלייתית/שניונית) · Primary Polydipsia. השחזור לפי שרשור סמנטי. המקטע «אוסמולליות תהיה נמוכה מ-100mOsm» שויך לעמודת ה-Primary Polydipsia לפי מיקומו ולפי ההיגיון הקליני; השיוך מחייב אימות.",
+
+  "topics": [
+    {
+      "topic_key": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "topic_title_he": "DI SIADH",
+      "topic_title_en": "Diabetes insipidus and SIADH",
+      "summary_he": "אבחנה מבדלת של פוליאוריה ופולידיפסיה בשלוש קבוצות: Central DI (פגיעה בהפרשת ADH), Nephrogenic DI (חוסר תגובה כלייתית), ו-Primary Polydipsia (שתייה מוגזמת המדכאת את ההפרשה). לכל קבוצה רשימת אטיולוגיות נפרדת.",
+      "keywords": ["DI", "SIADH", "ADH", "פוליאוריה", "פולידיפסיה", "AVP", "AQP2", "V2", "Wolfram", "ליתיום", "היפרקלצמיה", "אוסמולליות שתן"],
+      "age_scope": "all",
+      "source_quote_he": "פגיעה בהפרשת ADH ולכן היעדר ריכוז שתן מספק ואבדן מים משמעותי"
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson.di.dilute_urine_primary_polydipsia",
+      "title_he": "אוסמולליות שתן נמוכה מ-100 mOsm",
+      "components": [
+        { "analyte": "אוסמולריות בשתן", "direction": "low", "note_he": "נמוכה מ-100 mOsm" }
+      ],
+      "min_components": 1,
+      "direction_he": "שתן מדולל מאוד — מתאים ל-Primary Polydipsia",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ב-Primary Polydipsia האוסמולליות תהיה נמוכה מ-100 mOsm. השתייה הקיצונית והירידה באוסמולריות גורמות להפסקת הפרשת ADH, ולכן התמונה המעבדתית עלולה להיראות כמו DI.",
+      "confirm_with_he": ["נתרן ואוסמולריות בסרום", "מבחן צימאון בהשגחה", "אנמנזה של דפוס השתייה"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "אוסמולליות תהיה נמוכה מ-100mOsm"
+    }
+  ],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson.di.central_di_new_onset",
+      "label_he": "Central DI שאובחן לראשונה — יש לשלול גידול או תהליך חודר",
+      "trigger": { "findings": ["Central DI", "פוליאוריה עם שתן מדולל", "היפר-נתרמיה עם פוליאוריה"], "logic": "any" },
+      "severity": "high",
+      "action_he": "יש לבצע הדמיית מוח ולשלול גידול (ג'רמינומה, פינלומה, קרניופרינגיומה, LCH), הסננה, זיהום או אוטם. גם מקרה שנראה אידיופתי מחייב מעקב — 35% מהם יפתחו חסרים הורמונליים נוספים בהמשך.",
+      "reason_he": "בין הסיבות ל-Central DI: טראומת ראש, גידול (ג'רמינומה, פינלומה, קרניופרינגיומה, LCH), הסננה, זיהום ואוטם.",
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "טראומת ראש, גידול (ג'רמינומה, פינלומה, קרניופרינגיומה, LCH)"
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson.di.definition",
+      "title_he": "DI — הגדרה מנגנונית",
+      "category": "criteria",
+      "domain": "endocrinology",
+      "conditions": [
+        { "type": "finding", "key": "חשד ל-DI", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "פגיעה בהפרשת ADH, ולכן היעדר ריכוז שתן מספק ואבדן מים משמעותי.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "אבדן המים הוא הסכנה, לא הפוליאוריה עצמה. ילד שאינו יכול לשתות באופן חופשי — תינוק, ילד לא-מודע, או ילד בצום לפני בדיקה — עלול להגיע להתייבשות מהירה.",
+      "recommended_workup_he": ["נתרן ואוסמולריות בסרום ובשתן במקביל", "מאזן נוזלים ומשקל", "הבטחת גישה חופשית לשתייה"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "פגיעה בהפרשת ADH ולכן היעדר ריכוז שתן מספק ואבדן מים משמעותי"
+    },
+    {
+      "rule_key": "nelson.di.central_causes",
+      "title_he": "Central DI — האטיולוגיות",
+      "category": "criteria",
+      "domain": "endocrinology",
+      "conditions": [
+        { "type": "finding", "key": "Central DI", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "אידיופתי — 10% מהמקרים, ומתוכם 35% יפתחו חסרים בהורמונים נוספים בהמשך. הפרעה גנטית בגן ל-AVP (הורשה AD). Wolfram Syndrome — DI, DM, אטרופיה אופטית וחירשות. טראומת ראש וגידולים — ג'רמינומה, פינלומה, קרניופרינגיומה, LCH. מומי מוח קונגניטליים, לרבות Optic Nerve Hypoplasia Syndrome ו-Empty Sella. הסננה, זיהום ואוטם.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "«אידיופתי» כאן אינו אבחנה סופית אלא אבחנה זמנית: שליש מהמקרים האלה מתגלים בהמשך כחלק מפגיעה היפופיזרית רחבה יותר. לכן נדרש מעקב ולא סגירת תיק.",
+      "recommended_workup_he": ["MRI מוח והיפופיזה", "מרקרי גידול תאי נבט", "בירור צירים היפופיזריים נוספים", "מעקב ארוך-טווח גם במקרה שנראה אידיופתי"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "אידיופתי – 10% (מתוכם 35% יפתחו חסרים בהורמונים נוספים בהמשך)"
+    },
+    {
+      "rule_key": "nelson.di.nephrogenic_genetic",
+      "title_he": "Nephrogenic DI גנטי — V2 ו-AQP2",
+      "category": "criteria",
+      "domain": "endocrinology",
+      "conditions": [
+        { "type": "finding", "key": "Nephrogenic DI", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "הפרעה גנטית — מוטציה ב-V2 בהורשה XL, או מוטציה ב-AQP2 בהורשה AR או AD.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ההורשה ה-XL של V2 מסבירה מדוע הצורה הקשה מופיעה בבנים. תינוק זכר עם היפר-נתרמיה חוזרת ופוליאוריה מחייב שלילת האבחנה הזו — היא מתייצגת עוד לפני שהילד יכול לבקש לשתות.",
+      "recommended_workup_he": ["נתרן ואוסמולריות חוזרים", "בירור גנטי — V2, AQP2", "אנמנזה משפחתית לפי דפוס XL"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "הפרעה גנטית (מוטציה ב-V2, הורשה XL, מוטציה ב-AQP2, הורשה AR או AD)"
+    },
+    {
+      "rule_key": "nelson.di.nephrogenic_electrolytes",
+      "title_he": "Nephrogenic DI מהפרעות אלקטרוליטים",
+      "category": "criteria",
+      "domain": "endocrinology",
+      "conditions": [
+        { "type": "finding", "key": "פוליאוריה עם שתן מדולל", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "היפו-קלמיה, וכן היפר-קלצמיה וקלציאוריה, גורמות ל-Nephrogenic DI.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "אלה הסיבות היחידות ברשימה שהן הפיכות במלואן. לכן אלקטרוליטים הם הבדיקה הראשונה בפוליאוריה — לפני כל בירור הורמונלי או גנטי.",
+      "recommended_workup_he": ["אשלגן, סידן וזרחן בסרום", "סידן בשתן", "בירור הסיבה להפרעה האלקטרוליטרית"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "היפו-קלמיה · היפר-קלצמיה, קלציאוריה"
+    },
+    {
+      "rule_key": "nelson.di.nephrogenic_drugs",
+      "title_he": "תרופות הגורמות ל-Nephrogenic DI",
+      "category": "criteria",
+      "domain": "endocrinology",
+      "conditions": [
+        { "type": "finding", "key": "פוליאוריה עם שתן מדולל", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "התרופות הגורמות ל-Nephrogenic DI: ליתיום, אמינוגליקוזידים, ציספלאטין, ריפאמפין, פוסקרנט, אמפוטריצין B ומתיצילין.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "כמעט כל הרשימה היא תרופות שילד מאושפז מקבל. לכן פוליאוריה במהלך אשפוז מחייבת סקירת תרופות לפני בירור אנדוקריני.",
+      "recommended_workup_he": ["סקירת גיליון התרופות", "רמת ליתיום כשרלוונטי", "תפקודי כליה"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "תרופות: ליתיום, אמינוגליקוזידים, ציספלאטין, ריפאמפין, פוסקרנט, אמפוטריצין B, מתיצילין"
+    },
+    {
+      "rule_key": "nelson.di.nephrogenic_renal_and_obstruction",
+      "title_he": "מחלות כליה וחסימה כגורם ל-Nephrogenic DI",
+      "category": "criteria",
+      "domain": "endocrinology",
+      "conditions": [
+        { "type": "finding", "key": "Nephrogenic DI", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "חסימה באורטר או באורטרה; מחלת כליה פוליציסטית, MCD, מחלת כליה כרונית או אקוטית, ומחלת כליה אינטרסטיציאלית; וכן שיוגרן ואנמיה חרמשית.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "חסימה היא הסיבה היחידה ברשימה שדורשת התערבות כירורגית, והיא ניתנת לזיהוי בהדמיה פשוטה. לכן US דרכי שתן מוקדם בפוליאוריה בלתי מוסברת.",
+      "recommended_workup_he": ["US דרכי שתן לשלילת חסימה", "תפקודי כליה ובדיקת שתן", "בירור אנמיה חרמשית באוכלוסייה רלוונטית"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "חסימה באורטר או באורטרה · מחלת כלייה פוליציסטית, MCD, מחלת כליה כרונית/אקוטית, מחלת כליה אינטרסטיציאלית"
+    },
+    {
+      "rule_key": "nelson.di.post_op_polyuric_phase",
+      "title_he": "שלב פוליאורי לאחר ניתוח או טראומה",
+      "category": "criteria",
+      "domain": "endocrinology",
+      "conditions": [
+        { "type": "finding", "key": "פוליאוריה לאחר ניתוח או טראומה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "קיים שלב פוליאורי לאחר ניתוח או טראומה, ב-12-24 השעות הראשונות.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "העיתוי הצר הוא מה שמאפשר להבדיל: פוליאוריה בחלון הזה צפויה וחולפת, ואילו פוליאוריה שנמשכת מעבר לו מחייבת בירור. אבחון DI בשעות הראשונות עלול להוביל לטיפול מיותר.",
+      "recommended_workup_he": ["מאזן נוזלים שעתי", "נתרן חוזר", "המתנה והערכה חוזרת לאחר 24 שעות לפני קביעת אבחנה"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "שלב פוליאורי לאחר ניתוח/טראומה (12-24 שעות ראשונות)"
+    },
+    {
+      "rule_key": "nelson.di.primary_polydipsia",
+      "title_he": "Primary Polydipsia — פסיכוגנית ודיפסוגנית",
+      "category": "criteria",
+      "domain": "endocrinology",
+      "conditions": [
+        { "type": "finding", "key": "פולידיפסיה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "פסיכוגנית — בסכיזופרניה וב-OCD; דווקא בגלל השתייה הקיצונית והירידה באוסמולריות יש הפסקת הפרשת ADH. הפרעה דיפסוגנית — פגיעה בצמא, על רקע גרנולומה, TB, טראומת ראש, דה-מייאליניזציה, או תרופות: ליתיום וקרבמזפין. האוסמולליות תהיה נמוכה מ-100 mOsm.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ההפסקה בהפרשת ADH כאן היא תגובה תקינה ולא פגם — ולכן מבחן צימאון יראה תגובה. זה ההבדל מ-DI אמיתי, וגם הסיבה שאין לתת דסמופרסין לפני שהאבחנה ברורה: הוא עלול לגרום להיפו-נתרמיה מסכנת חיים.",
+      "recommended_workup_he": ["אוסמולריות שתן וסרום במקביל", "מבחן צימאון בהשגחה בלבד", "אנמנזה פסיכיאטרית וסקירת תרופות"],
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "פסיכוגנית (סכיזופרניה, OCD) – דווקא בגלל השתייה הקיצונית והירידה באוסמולריות יש הפסקת הפרשת ADH"
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson.di.wolfram_syndrome",
+      "anchor_finding_he": "DI בילד עם סוכרת",
+      "co_findings": ["אטרופיה אופטית", "חירשות"],
+      "implies_he": "Wolfram Syndrome — DI, DM, אטרופיה אופטית וחירשות",
+      "suspicion": "red",
+      "mechanism_he": "תסמונת נוירו-דגנרטיבית תורשתית הפוגעת בכמה מערכות במקביל.",
+      "action_he": "ילד עם סוכרת שמפתח פוליאוריה שאינה מוסברת בהיפרגליקמיה מחייב שלילת DI ובדיקת ראייה ושמיעה. שני האחרונים הם מה שהופך את הצירוף לאבחנה.",
+      "age_scope": "child",
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "Wolfram Syndrome (DI, DM, אטרופיה אופטית וחירשות)"
+    },
+    {
+      "assoc_key": "nelson.di.idiopathic_later_deficiencies",
+      "anchor_finding_he": "Central DI שסווג כאידיופתי",
+      "co_findings": ["היעדר ממצא בהדמיה ראשונית"],
+      "implies_he": "35% מהמקרים האידיופתיים יפתחו חסרים בהורמונים נוספים בהמשך",
+      "suspicion": "red",
+      "mechanism_he": "תהליך שעדיין אינו נראה בהדמיה — גידול קטן, הסננה או תהליך אוטו-אימוני — המתגלה רק עם התקדמותו.",
+      "action_he": "אין לסגור מעקב אחרי הדמיה תקינה אחת. נדרש מעקב תקופתי של הצירים ההיפופיזריים והדמיה חוזרת.",
+      "age_scope": "child",
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "אידיופתי – 10% (מתוכם 35% יפתחו חסרים בהורמונים נוספים בהמשך)"
+    },
+    {
+      "assoc_key": "nelson.di.optic_nerve_hypoplasia",
+      "anchor_finding_he": "DI בילוד או בתינוק",
+      "co_findings": ["Optic Nerve Hypoplasia", "Empty Sella", "מומי מוח קונגניטליים"],
+      "implies_he": "מום מוחי קונגניטלי כגורם ל-Central DI",
+      "suspicion": "red",
+      "mechanism_he": "פגם התפתחותי בקו האמצע הפוגע גם בעצב הראייה וגם בציר ההיפותלמוס-היפופיזה.",
+      "action_he": "בדיקת עיניים בכל תינוק עם DI מרכזי, ו-MRI מוח. ממצא בעצב הראייה מכוון למום מבני ולא לגידול.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson.אנדוקרינולוגיה.DI_SIADH",
+      "source_quote_he": "מומי מוח קונגניטליים, לרבות Optic Nerve Hypoplasia Syndrome, Empty Sella ועוד"
+    }
+  ],
+
+  "gaps_he": [
+    "שיוך «אוסמולליות תהיה נמוכה מ-100mOsm» לעמודת ה-Primary Polydipsia נקבע לפי המיקום בתא ולפי ההיגיון הקליני. מחייב אימות מול הספר.",
+    "המקור בתא זה עוסק ב-DI בלבד; אין בו תוכן על SIADH למרות ששם הנושא כולל אותו — ככל הנראה בתא אחר.",
+    "המקור אינו מציין ספי נתרן, אוסמולריות סרום או פרוטוקול מבחן צימאון, ולכן LabPattern נבנה רק סביב ה-100 mOsm.",
+    "המקור אינו מציין מינוני דסמופרסין או תיאזידים, ולכן אין כאן dosing_mentions.",
+    "התא ממזג שלוש עמודות; שורות שבהן השיוך לא היה חד-משמעי לא חולצו."
+  ],
+  "dosing_mentions_he": []
+}
