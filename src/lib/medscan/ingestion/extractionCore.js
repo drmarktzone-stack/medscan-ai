@@ -11,6 +11,7 @@
  */
 
 import { resolveAnalyte } from '../deterministic/analyteCatalog.js';
+import { EXTRACTION_SCHEMA, EXTRACTION_SYSTEM_PROMPT } from './extractionSchema.js';
 
 /** גודל קטע לחילוץ. גדול מדי → המודל מסכם; קטן מדי → מאבד הקשר. */
 export const CHUNK_CHARS = 6000;
