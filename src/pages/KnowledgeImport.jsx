@@ -12,6 +12,25 @@ import { parseJsLiteral } from "@/lib/medscan/ingestion/jsLiteral";
 import { estimateRun, runIngestion } from "@/lib/medscan/ingestion/runIngestion";
 import { saveBookToApp, loadBook, bookStats } from "@/lib/medscan/knowledge/bookStore";
 
+/**
+ * מקבץ שגיאות לפי הודעה.
+ *
+ * רשימה של מאות שגיאות זהות נראית כמו הרבה מידע ואינה מלמדת
+ * דבר. השאלה היחידה שחשובה היא אם מדובר בכשל אחד שחוזר
+ * על עצמו — שאז יש לתקן דבר אחד — או במגוון תקלות.
+ */
+function groupErrors(errors) {
+  const byMessage = new Map();
+  for (const e of errors ?? []) {
+    const message = String(e.error ?? 'שגיאה ללא הודעה').slice(0, 300);
+    if (!byMessage.has(message)) {
+      byMessage.set(message, { message, count: 0, sample: e.topic ?? e.entity ?? '—' });
+    }
+    byMessage.get(message).count += 1;
+  }
+  return [...byMessage.values()].sort((a, b) => b.count - a.count);
+}
+
 export default function KnowledgeImport() {
   const [book, setBook] = useState(null);
   const [summary, setSummary] = useState(null);
@@ -430,10 +449,26 @@ export default function KnowledgeImport() {
 
                 {result.errors?.length > 0 && (
                   <Section id="errors" icon={AlertTriangle} title="שגיאות" count={result.errors.length} tone="red">
-                    <ul className="space-y-1">
-                      {result.errors.slice(0, 40).map((e, i) => (
-                        <li key={i} className="text-[11px] text-red-800 leading-snug">
-                          {e.topic ?? e.entity}: {e.error}
+                    {/* מקובץ לפי הודעה: 947 שורות זהות אינן מלמדות כלום,
+                        ומסתירות את השאלה היחידה שחשובה: אחת או רבות? */}
+                    <p className="text-[10px] text-slate-500 mb-2">
+                      מקובץ לפי סוג השגיאה. סוג אחד שחוזר על עצמו = כשל שיטתי,
+                      לא תקלות נקודתיות.
+                    </p>
+                    <ul className="space-y-2">
+                      {groupErrors(result.errors).map((g, i) => (
+                        <li key={i} className="bg-white rounded-lg border border-red-200 p-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-[11px] text-red-800 leading-snug font-mono break-all">
+                              {g.message}
+                            </p>
+                            <span className="text-[10px] bg-red-600 text-white px-1.5 py-0.5 rounded shrink-0">
+                              ×{g.count}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-400 mt-1">
+                            למשל: {g.sample}
+                          </p>
                         </li>
                       ))}
                     </ul>
