@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
 import { extractBookSource, summarizeBook } from "@/lib/medscan/ingestion/bookParser";
+import { parseJsLiteral } from "@/lib/medscan/ingestion/jsLiteral";
 import { estimateRun, runIngestion } from "@/lib/medscan/ingestion/runIngestion";
 import { saveBookToApp, loadBook, bookStats } from "@/lib/medscan/knowledge/bookStore";
 
@@ -81,7 +82,7 @@ export default function KnowledgeImport() {
           ? "לא נמצא מבנה BOOK בקובץ. ודא שזה קובץ אפליקציית הטבלאות."
           : "מבנה BOOK בקובץ אינו שלם."
       );
-      const parsed = parseBookSource(source);
+      const parsed = parseJsLiteral(source);
       setBook(parsed);
       setSummary(summarizeBook(parsed));
     } catch (err) {
