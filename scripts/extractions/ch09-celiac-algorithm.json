@@ -1,0 +1,155 @@
+{
+  "chapter_title_he": "גסטרואנטרולוגיה",
+  "_provenance_he": "⚠ שוחזר ידנית מתא שסומן corrupt (פרק 9 › צליאק, 1360 תווים). התא ממזג שתי עמודות של אלגוריתם אבחנתי: עמודה אחת — ילד/מתבגר עם סימפטומים המחשידים ל-CD; עמודה שנייה — ילד/מתבגר א-סימפטומטי בקבוצת סיכון. השחזור נעשה לפי שרשור סמנטי של ענפי האלגוריתם. שורה אחת ('רמת 10> a-TTG מהנורמה') הוצגה במקור בסדר RTL הפוך ופורשה כ'פחות מפי-10' לפי השלמת הענף המקביל — סעיף זה מחייב אימות מול הספר.",
+
+  "topics": [],
+
+  "lab_patterns": [],
+
+  "red_flags": [],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson.celiac.dx_symptomatic_serology_first",
+      "title_he": "צליאק — ילד סימפטומטי: סרולוגיה תחילה",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "סימפטומים המחשידים לצליאק", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "בילד או מתבגר עם סימפטומים המחשידים ל-CD — ראשית יש לבדוק רמות anti-TTG (anti-TG2) IgA יחד עם רמות IgA. סרולוגיה שלילית — לא מדובר בצליאק. סרולוגיה חיובית — יש להפנות לגסטרואנטרולוג ילדים לצורך המשך בירור.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "רמות ה-IgA הכלליות נבדקות באותה נטילה ולא בדיעבד: חסר IgA הופך את ה-anti-TTG IgA לשלילי-שגוי, ולכן בדיקה בלעדיה אינה ניתנת לפירוש.",
+      "recommended_workup_he": ["anti-TTG (anti-TG2) IgA", "רמות IgA כלליות באותה נטילה", "הפניה לגסטרואנטרולוג ילדים בסרולוגיה חיובית"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.צליאק",
+      "source_quote_he": "ראשית יש לבדוק רמות anti-TTG (anti-TG2) IgA: יחד עם רמות IgA"
+    },
+    {
+      "rule_key": "nelson.celiac.dx_ttg_over_3x",
+      "title_he": "צליאק סימפטומטי — a-TTG מעל פי 3 מהנורמה",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "סימפטומים המחשידים לצליאק", "op": "present" },
+        { "type": "lab", "key": "a-TTG", "op": ">", "value": "3 פעמים הגבול העליון" }
+      ],
+      "logic": "all",
+      "conclusion_he": "ברמת a-TTG מעל פי 3 מהנורמה יש להשלים ביופסיה. Marsh 2/3 — אישוש אבחנה של CD. Marsh 0/1 — חשד לצליאק פוטנציאלי; יש לשקול FP של ה-TTG ו-FN של הביופסיה, או Potential CD.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "Marsh 0/1 אינו שולל: הוא מציב שלוש אפשרויות שונות — טעות סרולוגית, ביופסיה שהחמיצה, או צליאק פוטנציאלי אמיתי. ההכרעה ביניהן אינה נעשית בבדיקה בודדת.",
+      "recommended_workup_he": ["ביופסיה מהדואדנום", "דירוג Marsh", "מעקב חוזר במקרה של Marsh 0/1"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.צליאק",
+      "source_quote_he": "רמת פי>3 מהנורמה: יש להשלים ביופסיה: Marsh 2/3 – אישוש אבחנה של CD"
+    },
+    {
+      "rule_key": "nelson.celiac.dx_ttg_under_3x_ema",
+      "title_he": "צליאק סימפטומטי — a-TTG מתחת לפי 3 מהנורמה",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "סימפטומים המחשידים לצליאק", "op": "present" },
+        { "type": "lab", "key": "a-TTG", "op": "<", "value": "3 פעמים הגבול העליון" }
+      ],
+      "logic": "all",
+      "conclusion_he": "ברמת a-TTG פחות מפי 3 מהנורמה יש לבצע בדיקת EMA. EMA חיובי — ביצוע ביופסיה. EMA שלילי — חשד ל-FP של ה-a-TTG; יש להמשיך דיאטה רגילה ולחזור על סרולוגיה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ההנחיה להמשיך דיאטה רגילה היא חלק מהכלל ולא הערת אגב: הפסקת גלוטן לפני השלמת הבירור מאפסת את הסרולוגיה החוזרת ומונעת אבחנה.",
+      "recommended_workup_he": ["EMA", "ביופסיה ב-EMA חיובי", "המשך דיאטה רגילה וחזרה על סרולוגיה ב-EMA שלילי"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.צליאק",
+      "source_quote_he": "רמת a-TTG פחות מפי-3 מהנורמה: יש לבצע בדיקת EMA"
+    },
+    {
+      "rule_key": "nelson.celiac.dx_asymptomatic_hla_first",
+      "title_he": "צליאק — א-סימפטומטי בקבוצת סיכון: HLA תחילה",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "background", "key": "קבוצת סיכון לצליאק ללא סימפטומים", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "בילד או מתבגר א-סימפטומטי המצוי בקבוצת סיכון ל-CD — ראשית יש לבדוק HLA-DQ2/8. HLA-DQ לא אופייני — לא מדובר בצליאק ואין סיכון ל-CD. HLA-DQ2/8 אופייני — יש לבדוק רמות anti-TTG (anti-TG2) IgA ורמות IgA; a-TTG שלילי — לא צליאק.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "סדר הבדיקות הפוך מזה של הילד הסימפטומטי. ב-א-סימפטומטי ה-HLA משמש כשולל: היעדרו מסיר את הסיכון לצמיתות ומייתר מעקב סרולוגי חוזר לאורך שנים.",
+      "recommended_workup_he": ["HLA-DQ2/8 כבדיקה ראשונה", "anti-TTG IgA ורמות IgA רק אם ה-HLA אופייני"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.צליאק",
+      "source_quote_he": "ראשית יש לבדוק HLA-DQ2/8"
+    },
+    {
+      "rule_key": "nelson.celiac.dx_asymptomatic_ttg_over_10x",
+      "title_he": "צליאק א-סימפטומטי — a-TTG לפחות פי 10 מהנורמה",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "background", "key": "קבוצת סיכון לצליאק ללא סימפטומים", "op": "present" },
+        { "type": "lab", "key": "a-TTG", "op": ">", "value": "10 פעמים הגבול העליון" }
+      ],
+      "logic": "all",
+      "conclusion_he": "ברמת a-TTG לפחות פי 10 מהנורמה יש לבדוק EMA ו-HLA-DQ2/8. EMA חיובי ו-HLA אופייני — אישוש אבחנה של CD. EMA חיובי אך HLA לא-אופייני — יש לחשוד כי בדיקת ה-HLA היתה FN ולשקול ביופסיה. EMA שלילי אך HLA אופייני — השלמת ביופסיה. EMA שלילי וגם HLA לא-אופייני — ככל הנראה ה-TTG היה FP.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "זהו המסלול היחיד באלגוריתם שבו ניתן לאשש אבחנה ללא ביופסיה — ורק בהצטלבות של שלושה ממצאים עצמאיים. כל שילוב אחר מחזיר לביופסיה.",
+      "recommended_workup_he": ["EMA", "HLA-DQ2/8", "ביופסיה בכל שילוב שאינו EMA חיובי עם HLA אופייני"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.צליאק",
+      "source_quote_he": "רמת a-TTG לפחות פי 10 מהנורמה: יש לבדוק EMA ו-HLA-DQ2/8"
+    },
+    {
+      "rule_key": "nelson.celiac.dx_asymptomatic_ttg_under_10x",
+      "title_he": "צליאק א-סימפטומטי — a-TTG מתחת לפי 10 מהנורמה",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "background", "key": "קבוצת סיכון לצליאק ללא סימפטומים", "op": "present" },
+        { "type": "lab", "key": "a-TTG", "op": "<", "value": "10 פעמים הגבול העליון" }
+      ],
+      "logic": "all",
+      "conclusion_he": "ברמת a-TTG פחות מפי 10 מהנורמה יש להשלים ביופסיה. Marsh 2/3 — אישוש אבחנה של CD. Marsh 0/1 — חשד לצליאק פוטנציאלי; יש לשקול FP של ה-TTG ו-FN של הביופסיה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "בא-סימפטומטי הסף לוויתור על ביופסיה גבוה יותר מאשר בסימפטומטי (פי 10 לעומת פי 3), משום שהעדר קליניקה מוריד את ההסתברות המוקדמת.",
+      "recommended_workup_he": ["ביופסיה מהדואדנום", "דירוג Marsh"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.צליאק",
+      "source_quote_he": "רמת 10> a-TTG מהנורמה: יש להשלים ביופסיה"
+    },
+    {
+      "rule_key": "nelson.celiac.dx_biopsy_five_samples",
+      "title_he": "ביופסיה לצליאק — לפחות 5 דגימות מהדואדנום",
+      "category": "management",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "ביופסיה לבירור צליאק", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "בביופסיה יש לקחת לפחות 5 דגימות מהדואדנום באנדוסקופיה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "הפגיעה בצליאק מוקדית ולא אחידה. דגימה בודדת יכולה ליפול על רירית שמורה ולהחזיר Marsh 0 בילד חולה — וזהו בדיוק ה-FN שהאלגוריתם חוזר ומזכיר.",
+      "recommended_workup_he": ["אנדוסקופיה עם 5 דגימות דואדנום לפחות"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.צליאק",
+      "source_quote_he": "בביופסיה: יש לקחת לפחות 5 דגימות מהדואדנום באנדוסקופיה"
+    },
+    {
+      "rule_key": "nelson.celiac.dx_extended_workup_triggers",
+      "title_he": "צליאק — מתי לשקול המשך בירור למרות סרולוגיה שאינה מכריעה",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "חשד לצליאק עם סרולוגיה שאינה מכריעה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "יש לשקול המשך בירור אם הילד מתחת לגיל שנתיים, אם יש חסר IgA, או אם יש קליניקה קשה ואופיינית או מחלות נלוות. בכל מקרה יש לוודא חשיפה מספקת לגלוטן.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "שלושת המצבים האלה מייצרים שלילי-שגוי מסיבות שונות: מתחת לגיל שנתיים התגובה הסרולוגית עדיין אינה בשלה, בחסר IgA הבדיקה מודדת נוגדן שאינו קיים, ובקליניקה קשה מחיר ההחמצה גבוה. חשיפה לא-מספקת לגלוטן מאפסת את הסרולוגיה ללא קשר למחלה.",
+      "recommended_workup_he": ["וידוא חשיפה מספקת לגלוטן לפני כל פירוש של סרולוגיה", "בדיקת IgA כללי", "שקילת בדיקות מבוססות-IgG בחסר IgA", "הפניה לגסטרואנטרולוג ילדים"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.צליאק",
+      "source_quote_he": "יש לשקול המשך בירור אם הילד מתחת לגיל שנתיים: אם יש חסר IgA: אם יש קלניקה קשה ואופיינית או מחלות-נלוות. יש לוודא חשיפה מספקת לגלוטן"
+    }
+  ],
+
+  "associations": [],
+
+  "gaps_he": [
+    "השורה 'רמת 10> a-TTG מהנורמה' הוצגה בסדר RTL הפוך; פורשה כ'פחות מפי-10' לפי השלמת הענף המקביל (≥פי 10). מחייב אימות מול הספר.",
+    "המקור אינו מגדיר מיהי 'קבוצת הסיכון' לצליאק בילד א-סימפטומטי — הרשימה אינה מופיעה בתא זה.",
+    "המקור אינו מציין ערכי סף מספריים מוחלטים ל-a-TTG אלא רק כפולות של הגבול העליון, ולכן לא נוצרו LabPatterns מספריים.",
+    "התא ממזג שתי עמודות; שורות שבהן השיוך לא היה חד-משמעי לא חולצו."
+  ],
+  "dosing_mentions_he": []
+}
