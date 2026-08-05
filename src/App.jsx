@@ -25,6 +25,7 @@ import Differential from '@/pages/Differential';
 import KnowledgeAdmin from '@/pages/KnowledgeAdmin';
 import KnowledgeImport from '@/pages/KnowledgeImport';
 import NelsonBook from '@/pages/NelsonBook';
+import VerifyKnowledge from '@/pages/VerifyKnowledge';
 import History from '@/pages/History';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import Evaluation from '@/pages/Evaluation';
@@ -68,6 +69,7 @@ const AuthenticatedApp = () => {
           <Route path="/knowledge-admin" element={<KnowledgeAdmin />} />
           <Route path="/knowledge-import" element={<KnowledgeImport />} />
           <Route path="/book" element={<NelsonBook />} />
+          <Route path="/verify" element={<VerifyKnowledge />} />
           <Route path="/history" element={<History />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/evaluation" element={<Evaluation />} />
