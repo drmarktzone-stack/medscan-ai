@@ -99,7 +99,7 @@ export function extractBookSource(html) {
  * השיוך הזה הוא מה שיהפוך ל-`source_anchor`, והוא מה שמאפשר לרופא/ה
  * לחזור למקור ולבדוק.
  */
-export function bookToChunks(book, { minChars = 40 } = {}) {
+export function bookToChunks(book, { minChars = 40, includeParagraphs = false } = {}) {
   const chunks = [];
   const chapters = book?.chapters ?? [];
 
@@ -140,7 +140,14 @@ export function bookToChunks(book, { minChars = 40 } = {}) {
               });
             });
           });
-        } else {
+        } else if (includeParagraphs) {
+          // ⚠ כבוי כברירת מחדל. בלוקי הפסקאות במקור הם שאריות
+          // טקסט משובש מחילוץ ה-PDF: רסיסי משפטים משתי עמודות
+          // שנתפרו. הם 4.5M מתוך 5.5M — כלומר 80% מהנפח ו-0% מהערך.
+          //
+          // הספר עצמו (buildChapterRecords) כבר מחריג אותם, ומסלול החילוץ
+          // המשיך לכלול אותם — אי-התאמה שהנפיחה הרצה מ-~200 קריאות
+          // ל-1,001, רובן על טקסט שאסור לחלץ ממנו מלכתחילה.
           const text = clean(block.v);
           if (text.length < minChars) return;
           chunks.push({
