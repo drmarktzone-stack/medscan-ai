@@ -5,7 +5,6 @@ import { runEcgEngine, buildEcgEvidenceBlock } from "./ecgEngine";
 import { runRadiologyEngine, buildRadiologyEvidenceBlock } from "./radiologyEngine";
 import { runSkinEngine, buildSkinEvidenceBlock } from "./skinEngine";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
-import { runGroundedVisionInterpretation } from "./medscan/engines/visionGrounded";
 import { guardVisionNarrative } from "./medscan/engines/visionNarrativeGuard";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
@@ -161,24 +160,10 @@ ${langDirective}`,
   const engine = engineResult && !engineResult.abstain ? engineResult : null;
   const engineStructured = engine?.structured || null;
 
-  // ---------- Grounded interpretation (רץ במקביל לשלב 2) ----------
-  // שכבת הפרשנות המעוגנת אינה משנה את הפלט הקיים — היא נוספת לידו.
-  // הקריאה הוויזואלית נשארת תצפית; הפרשנות שלה עוברת FACT BLOCK מלא.
-  // כישלון כאן לעולם אינו מפיל את הפייפלין — אבל גם אינו נבלע בשקט.
-  const groundedPromise = engine
-    ? runGroundedVisionInterpretation({
-        modality: analysisType,
-        engineResult: engine,
-        patient,
-        clinicalContext,
-      }).catch((e) => ({
-        unavailable: true,
-        error: String(e?.message ?? e),
-        note_he:
-          'שכבת הפרשנות המעוגנת לא הושלמה. הקריאה הוויזואלית מוצגת, ' +
-          'אך היא לא עוגנה מול מאגר הידע המאומת בהרצה זו.',
-      }))
-    : Promise.resolve(null);
+  // שכבת הפרשנות המעוגנת (visionGrounded) אינה נקראת מכאן במכוון:
+  // עמודי ה-Vision מריצים אותה בעצמם אחרי שהפענוח הוצג, כדי שהמשתמש
+  // לא ימתין לה וכדי שכישלון שלה לא יפיל את הפענוח. קריאה נוספת מכאן
+  // היתה מכפילה קריאת LLM שלמה ללא תועלת.
 
   const measurements = Array.isArray(extractMatchResult.measurements)
     ? extractMatchResult.measurements.filter((m) => m.parameter)
