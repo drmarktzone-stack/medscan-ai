@@ -54,7 +54,6 @@ export async function runDiagnosisPipeline({
   onStage,
   language = "he",
   pediatric = false,
-  patient = {},
 }) {
   const outputLang = langNames[language] || "Hebrew";
   const langDirective = `\n## Output Language\nALL text in your response (titles, reasoning, summary, analysis, guideline, finding labels) MUST be written in ${outputLang}. This is critical — the user selected ${outputLang} as their language.`;
