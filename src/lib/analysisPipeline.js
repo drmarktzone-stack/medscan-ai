@@ -392,8 +392,6 @@ ${langDirective}`,
     }
   }
 
-  const groundedInterpretation = await groundedPromise;
-
   // ---------- Persist the analysis ----------
   // נשמר הנוסח שהרופא/ה רואה — אחרי ניטרול מספרים חסרי-מקור.
   // אחרת הרישומה הרפואית תכיל מספר שמעולם לא הוצג.
@@ -418,8 +416,7 @@ ${langDirective}`,
     ecgInterpretation: analysisType === "ecg" ? engine : null,
     structuredInterpretation: engine,
     analysisId: analysisRecord.id,
-    // שתי התוספות משכבת האנטי-הזיה:
-    groundedInterpretation,   // פרשנות מעוגנת לצד הקריאה — לא במקומה
-    numericIntegrity,         // אילו מספרים בניתוח עוקבים לתצפית — ואילו לא
+    // אילו מספרים בניתוח עוקבים לתצפית — ואילו לא.
+    numericIntegrity,
   };
 }
