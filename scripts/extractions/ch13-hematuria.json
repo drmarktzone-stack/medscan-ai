@@ -1,0 +1,174 @@
+{
+  "chapter_title_he": "נפרולוגיה",
+  "_provenance_he": "⚠ שוחזר ידנית מתא שסומן corrupt (פרק 13 › המטוריה, 686 תווים). התא ממזג חמש עמודות: מחלות כלייה מבודדות · מחלות סיסטמיות · פגיעה טובו-אינטרסטיציאלית · פגיעה וסקולרית · פגיעה אנטומית. שגיאות כתיב במקור תוקנו: Nepropathy, Poliangiitis, Polyarthritis Nodosa, Goodposture, glumerulopathy.",
+
+  "topics": [
+    {
+      "topic_key": "nelson.נפרולוגיה.המטוריה",
+      "topic_title_he": "המטוריה",
+      "topic_title_en": "Hematuria",
+      "summary_he": "האבחנה המבדלת של המטוריה בילדים, בחמש קבוצות לפי מיקום הפגיעה: מחלות כלייה מבודדות, מחלות סיסטמיות, פגיעה טובו-אינטרסטיציאלית, פגיעה וסקולרית, ופגיעה אנטומית. החלוקה לפי מיקום היא שקובעת את מסלול הבירור.",
+      "keywords": ["המטוריה", "IgA Nephropathy", "Alport", "Thin GBM", "Post-Streptococcal GN", "HUS", "HSP", "Nutcracker", "Wilms", "RPGN"],
+      "age_scope": "child",
+      "source_quote_he": "מחלות כלייה מבודדות · מחלות סיסטמיות · פגיעה טובו-אינטרסטיציאלית · פגיעה וסקולרית · פגיעה אנטומית"
+    }
+  ],
+
+  "lab_patterns": [],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson.hematuria.rpgn",
+      "label_he": "RPGN — גלומרולונפריטיס מתקדמת במהירות",
+      "trigger": { "findings": ["RPGN", "המטוריה עם ירידה מהירה בתפקוד כלייתי", "Anti-GBM disease", "Goodpasture"], "logic": "any" },
+      "severity": "critical",
+      "action_he": "הפניה דחופה לנפרולוג ילדים. RPGN ו-Anti-GBM הן אבחנות שבהן חלון הטיפול נמדד בימים, ואיחור מוביל לאבדן תפקוד כלייתי בלתי הפיך.",
+      "reason_he": "RPGN ו-Anti-GBM disease מופיעות ברשימת מחלות הכלייה המבודדות הגורמות להמטוריה.",
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "RPGN · Anti-GBM disease"
+    },
+    {
+      "flag_key": "nelson.hematuria.tumor",
+      "label_he": "המטוריה עם מסה בטנית — חשד לגידול",
+      "trigger": { "findings": ["מסה בטנית", "המטוריה עם מסה", "Wilms", "גידול כלייתי"], "logic": "any" },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "הדמיה דחופה. גידולים, ובראשם Wilms, מופיעים ברשימת הפגיעות האנטומיות הגורמות להמטוריה. מסה בטנית בילד אינה נבדקת בהמתנה.",
+      "reason_he": "פגיעה אנטומית: הידרונפרוזיס, כלייה פוליציסטית, וגידולים (Wilms ועוד).",
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "פגיעה אנטומית · הידרונפרוזיס · כלייה פוליציסטית · גידולים (Wilms ועוד)"
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson.hematuria.isolated_renal",
+      "title_he": "מחלות כלייה מבודדות",
+      "category": "criteria",
+      "domain": "nephrology",
+      "conditions": [
+        { "type": "finding", "key": "המטוריה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "IgA Nephropathy (Berger's), Alport Syndrome, Thin GBM Nephropathy, Post-Infectious GN (post-Streptococcal), Membranous Nephropathy, Membrano-Proliferative GN (MPGN), RPGN, FSGS, ו-Anti-GBM disease.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "הקבוצה נעה משתי אבחנות שפירות יחסית — Thin GBM ו-IgA — ועד RPGN ו-Anti-GBM שבהן חלון הטיפול קצר. אותה המטוריה מיקרוסקופית יכולה להיות כל אחת מהן, ולכן קצב השינוי בתפקוד הכלייתי הוא מה שמפריד.",
+      "recommended_workup_he": ["קריאטינין ומעקב אחר קצב השינוי", "משטח שתן — גלילים אריתרוציטריים ומורפולוגיה", "C3 ו-C4", "ANA, ANCA, Anti-GBM", "בדיקת שמיעה ואנמנזה משפחתית — Alport"],
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "IgA Nephropathy (Berger's) · Alport Syndrome · Thin GBM Nepropathy · Post-Infectious GN (post-Streptococcal) · Membranous Nephropathy · Membrano-Proliferative GN (MPGN) · RPGN · FSGS · Anti-GBM disease"
+    },
+    {
+      "rule_key": "nelson.hematuria.systemic",
+      "title_he": "מחלות סיסטמיות הגורמות להמטוריה",
+      "category": "criteria",
+      "domain": "nephrology",
+      "conditions": [
+        { "type": "finding", "key": "המטוריה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "SLE, HSP, Granulomatosis with Polyangiitis (Wegener), Microscopic Polyangiitis, Polyarteritis Nodosa, Goodpasture Syndrome, HUS, Sickle cell glomerulopathy, ו-HIV.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "HSP היא השכיחה ביותר בקבוצה בילדים, והמטוריה בה עשויה להופיע שבועות אחרי הפריחה — כלומר אחרי שהאבחנה כבר נשכחה. HUS מחייבת בדיקת ספירה ומשטח דם, לא רק שתן.",
+      "recommended_workup_he": ["ספירת דם ומשטח — HUS", "ANA, ANCA", "אנמנזה של פריחה בשבועות שקדמו — HSP", "בירור אנמיה חרמשית באוכלוסייה רלוונטית"],
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "SLE · HSP · Granulomatosis with Polyangiitis (Wegener) · Microscopic Poliangiitis · Polyarthritis Nodosa · Goodposture Syndrome · HUS · Sickle cell glumerulopathy · HIV"
+    },
+    {
+      "rule_key": "nelson.hematuria.tubulointerstitial",
+      "title_he": "פגיעה טובו-אינטרסטיציאלית",
+      "category": "criteria",
+      "domain": "nephrology",
+      "conditions": [
+        { "type": "finding", "key": "המטוריה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "Pyelonephritis, Interstitial Nephritis, ו-ATN.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "Interstitial Nephritis היא לרוב תרופתית, ולכן זו הקבוצה היחידה כאן שסקירת תרופות עשויה לפתור. פיילונפריטיס מאובחנת בתרבית שתן — בדיקה זמינה שיש לקחת לפני בירור נפרולוגי רחב.",
+      "recommended_workup_he": ["תרבית שתן", "סקירת תרופות", "אאוזינופילים בשתן ובדם", "קריאטינין"],
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "פגיעה טובו-אינטרסטיציאלית · Pyelonephritis · Interstitial Nephritis · ATN"
+    },
+    {
+      "rule_key": "nelson.hematuria.vascular",
+      "title_he": "פגיעה וסקולרית — כולל Nutcracker",
+      "category": "criteria",
+      "domain": "nephrology",
+      "conditions": [
+        { "type": "finding", "key": "המטוריה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "תרומבוזיס עורקי או ורידי, מלפורמציות וסקולריות, ו-Nutcracker Syndrome — מעיכת הווריד הרנאלי בין האאורטה ל-SMA.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "Nutcracker היא אבחנה שאינה נראית בבדיקות שתן או בדם — היא דורשת הדמיה עם הדגמה וסקולרית. בילד רזה עם המטוריה בלתי מוסברת וכל הבירור תקין, זו האבחנה שנשכחת.",
+      "recommended_workup_he": ["דופלר כלי דם כלייתיים", "CT או MR אנגיוגרפיה בחשד ל-Nutcracker", "בירור נטייה לקרישיות בתרומבוזיס"],
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "פגיעה וסקולרית · Arterial/Venous Thrombosis · Vascular malformations · Nutcracker Syndrome (מחיצת העורק הרנאלי בין האאורטה וה-SMA)"
+    },
+    {
+      "rule_key": "nelson.hematuria.anatomic",
+      "title_he": "פגיעה אנטומית",
+      "category": "criteria",
+      "domain": "nephrology",
+      "conditions": [
+        { "type": "finding", "key": "המטוריה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "הידרונפרוזיס, כלייה פוליציסטית, וגידולים — Wilms ועוד.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "זו הקבוצה היחידה שנפתרת ב-US בטן פשוט, והיא כוללת את האבחנה המסוכנת ביותר ברשימה. לכן US הוא בדיקה מוקדמת בהמטוריה ולא בדיקה משלימה.",
+      "recommended_workup_he": ["US כליות ודרכי שתן", "בדיקה גופנית לאיתור מסה בטנית", "הפניה אונקולוגית בחשד לגידול"],
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "פגיעה אנטומית · הידרונפרוזיס · כלייה פוליציסטית · גידולים (Wilms ועוד)"
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson.hematuria.alport_hearing",
+      "anchor_finding_he": "המטוריה מתמשכת בילד עם ירידה בשמיעה",
+      "co_findings": ["אנמנזה משפחתית של מחלת כליה", "ירידה בשמיעה סנסו-נוירלית"],
+      "implies_he": "Alport Syndrome",
+      "suspicion": "red",
+      "mechanism_he": "פגם בקולגן מסוג IV הפוגע גם בממברנה הבזלית הגלומרולרית וגם בקוכליאה.",
+      "action_he": "בדיקת שמיעה ואנמנזה משפחתית הן שתי פעולות ללא עלות שמפרידות בין Alport ל-Thin GBM — שתי אבחנות עם אותה תמונה בשתן ופרוגנוזה הפוכה.",
+      "age_scope": "child",
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "Alport Syndrome · Thin GBM Nepropathy"
+    },
+    {
+      "assoc_key": "nelson.hematuria.hus_triad",
+      "anchor_finding_he": "המטוריה עם אנמיה וטרומבוציטופניה",
+      "co_findings": ["שלשול דמי", "ירידה בתפקוד כלייתי", "סכיסטוציטים במשטח"],
+      "implies_he": "HUS",
+      "suspicion": "red",
+      "mechanism_he": "מיקרואנגיופתיה תרומבוטית הפוגעת בכליה ובכדוריות האדומות במקביל.",
+      "action_he": "ספירת דם ומשטח הם מה שהופך המטוריה ל-HUS. בלעדיהם האבחנה מתפספסת, והיא מחייבת אשפוז ומעקב צמוד.",
+      "age_scope": "child",
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "HUS"
+    },
+    {
+      "assoc_key": "nelson.hematuria.nutcracker_thin_child",
+      "anchor_finding_he": "המטוריה בלתי מוסברת עם בירור תקין",
+      "co_findings": ["כאב מותני שמאלי", "מבנה גוף רזה"],
+      "implies_he": "Nutcracker Syndrome — מעיכת הווריד הרנאלי בין האאורטה ל-SMA",
+      "suspicion": "yellow",
+      "mechanism_he": "לחץ מכני על הווריד הרנאלי גורם לגודש ולדימום לתוך מערכת האיסוף.",
+      "action_he": "אבחנה שאינה מתגלה בשום בדיקת מעבדה. כשכל הבירור תקין וההמטוריה נמשכת, יש לבקש הדמיה וסקולרית במפורש.",
+      "age_scope": "child",
+      "source_anchor": "nelson.נפרולוגיה.המטוריה",
+      "source_quote_he": "Nutcracker Syndrome (מחיצת העורק הרנאלי בין האאורטה וה-SMA)"
+    }
+  ],
+
+  "gaps_he": [
+    "המקור אינו מבחין בין המטוריה מקרוסקופית למיקרוסקופית, ואינו מציין ספי אריתרוציטים.",
+    "המקור אינו מציין אלגוריתם בירור או סדר בדיקות.",
+    "המקור כותב «מחיצת העורק הרנאלי בין האאורטה וה-SMA» ב-Nutcracker. המבנה הנמעך בתסמונת זו הוא הווריד הרנאלי ולא העורק — נוסח כאן כווריד, וזהו תיקון שלי שמחייב אימות מול הספר.",
+    "שגיאות כתיב תוקנו: Nepropathy → Nephropathy, Poliangiitis → Polyangiitis, Polyarthritis Nodosa → Polyarteritis Nodosa, Goodposture → Goodpasture, glumerulopathy → glomerulopathy.",
+    "התא ממזג חמש עמודות; שורות שבהן השיוך לא היה חד-משמעי לא חולצו."
+  ],
+  "dosing_mentions_he": []
+}
