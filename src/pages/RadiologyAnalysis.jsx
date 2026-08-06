@@ -170,6 +170,7 @@ export default function RadiologyAnalysis() {
               analysisId={result.analysisId}
               analysisType="radiology"
               structuredInterpretation={result.structuredInterpretation}
+              numericIntegrity={result.numericIntegrity}
             />
           </div>
         )}
