@@ -407,27 +407,34 @@ ${langDirective}`,
     }
   }
 
+  const groundedInterpretation = await groundedPromise;
+
   // ---------- Persist the analysis ----------
+  // נשמר הנוסח שהרופא/ה רואה — אחרי ניטרול מספרים חסרי-מקור.
+  // אחרת הרישומה הרפואית תכיל מספר שמעולם לא הוצג.
   const analysisRecord = await base44.entities.Analysis.create({
     type: analysisType,
     image_url: file_url,
-    result: diagnosis.analysis,
+    result: guardedDiagnosis.analysis,
     severity: finalSeverity,
-    summary: diagnosis.summary,
+    summary: guardedDiagnosis.summary,
   });
 
   return {
-    summary: diagnosis.summary,
+    summary: guardedDiagnosis.summary,
     severity: finalSeverity,
-    analysis: diagnosis.analysis,
+    analysis: guardedDiagnosis.analysis,
     matchedCases: enrichedMatches,
     imageUrl: file_url,
     findings,
     uncertainty,
-    guideline: diagnosis.guideline,
+    guideline: guardedDiagnosis.guideline,
     measurements,
     ecgInterpretation: analysisType === "ecg" ? engine : null,
     structuredInterpretation: engine,
     analysisId: analysisRecord.id,
+    // שתי התוספות משכבת האנטי-הזיה:
+    groundedInterpretation,   // פרשנות מעוגנת לצד הקריאה — לא במקומה
+    numericIntegrity,         // אילו מספרים בניתוח עוקבים לתצפית — ואילו לא
   };
 }
