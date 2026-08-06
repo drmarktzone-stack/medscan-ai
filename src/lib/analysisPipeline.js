@@ -352,6 +352,22 @@ ${langDirective}`,
     model: DIAGNOSIS_MODEL,
   });
 
+  // ---------- numericGuard על הנרטיב ----------
+  // שלב 2 קורא תמונה ולכן אינו יכול לעבור דרך groundedInvoke.
+  // מה שכן ניתן — וחיוני — הוא לוודא שכל מספר בניתוח עוקב
+  // למשהו שנצפה בפועל. ראה visionNarrativeGuard.js — ובפרט את מגבלת
+  // הבדיקה: היא מאמתת עקיבות, לא נכונות.
+  const guarded = guardVisionNarrative({
+    diagnosis,
+    measurements,
+    engineStructured,
+    clinicalContext,
+    matchedCasesText,
+    redFlags,
+  });
+  const guardedDiagnosis = guarded.diagnosis;
+  const numericIntegrity = guarded.integrity;
+
   // ---------- Validate & clamp findings (normalized 0-100) ----------
   const defaultLabel = defaultFindingLabels[language] || defaultFindingLabels.he;
   const rawFindings = Array.isArray(diagnosis.findings) ? diagnosis.findings : [];
