@@ -15,8 +15,13 @@
 import { extractNumbers, formatNumber } from './factBlock.js';
 
 /**
- * מספרים שמותר להשתמש בהם תמיד: ספירה, סדר, ביטויים שגורים.
+ * מספרים שמותר להשתמש בהם בפרוזה רגילה: ספירה, סדר, ביטויים שגורים.
  * שמור בכוונה מצומצם. כל הרחבה כאן היא הרחבה של משטח-ההזיה.
+ *
+ * ⚠ היתר זה **אינו חל בהקשר קריטי** (מינון, קצב, סף).
+ * הגרסה הראשונה בדקה את הרשימה לפני סיווג ההקשר, ולכן
+ * «2 מ"ג/ק"ג» עבר תמיד בלי שום מקור. זה היה חור אמיתי: ספרה
+ * בודדת היא בדיוק המינון הכי סביר — ולכן הכי מסוכן להמציא.
  */
 const UNIVERSALLY_ALLOWED = new Set(['0', '1', '2', '3', '100']);
 
@@ -102,9 +107,12 @@ export function collectProseStrings(node, path = '', out = []) {
  * @returns {{ok: boolean, violations: object[], blocked: object[], checkedCount: number}}
  */
 export function numericGuard(output, factBlock, opts = {}) {
-  const allowed = new Set(factBlock?.allowedNumbers ?? []);
-  for (const n of UNIVERSALLY_ALLOWED) allowed.add(n);
-  for (const n of opts.extraAllowed ?? []) allowed.add(formatNumber(Number(n)));
+  // שתי רמות היתר, וההפרדה ביניהן היא עיקר הבדיקה:
+  //   sourced  — מה שבאמת מופיע ב-FACT BLOCK. היחיד שקביל בהקשר קריטי.
+  //   lenient  — sourced + מספרי ספירה שגורים, לפרוזה בלבד.
+  const sourced = new Set(factBlock?.allowedNumbers ?? []);
+  for (const n of opts.extraAllowed ?? []) sourced.add(formatNumber(Number(n)));
+  const lenient = new Set([...sourced, ...UNIVERSALLY_ALLOWED]);
 
   const violations = [];
   let checkedCount = 0;
@@ -115,16 +123,21 @@ export function numericGuard(output, factBlock, opts = {}) {
     while ((m = re.exec(text)) !== null) {
       const canonical = formatNumber(Number(m[0].replace(/,/g, '')));
       checkedCount += 1;
-      if (allowed.has(canonical)) continue;
 
+      // ההקשר נקבע לפני ההיתר — במכוון. בהקשר של מינון
+      // או קצב, גם «2» חייב מקור.
       const context = contextAround(text, m.index, m[0].length);
+      const severity = classifySeverity(context);
+      const permitted = severity === 'block' ? sourced : lenient;
+      if (permitted.has(canonical)) continue;
+
       violations.push({
         code: 'unsourced_number',
         number: canonical,
         raw: m[0],
         path,
         context: context.trim(),
-        severity: classifySeverity(context),
+        severity,
         message_he:
           `המספר ${m[0]} מופיע בפלט אך אינו מופיע ב-FACT BLOCK ` +
           `(לא עובדה מאומתת, לא ערך מחושב, ולא מדידת מטופל).`,
@@ -142,13 +155,18 @@ export function numericGuard(output, factBlock, opts = {}) {
  * מאשר להסתיר מידע קליני שימושי, ובלבד שהמספר לא יוצג כעובדה.
  */
 export function redactUnsourcedNumbers(text, factBlock, opts = {}) {
-  const allowed = new Set(factBlock?.allowedNumbers ?? []);
-  for (const n of UNIVERSALLY_ALLOWED) allowed.add(n);
-  for (const n of opts.extraAllowed ?? []) allowed.add(formatNumber(Number(n)));
+  const sourced = new Set(factBlock?.allowedNumbers ?? []);
+  for (const n of opts.extraAllowed ?? []) sourced.add(formatNumber(Number(n)));
+  const lenient = new Set([...sourced, ...UNIVERSALLY_ALLOWED]);
 
-  return String(text).replace(/\d[\d,]*(?:\.\d+)?/g, (raw) => {
+  const src = String(text);
+  return src.replace(/\d[\d,]*(?:\.\d+)?/g, (raw, offset) => {
     const canonical = formatNumber(Number(raw.replace(/,/g, '')));
-    return allowed.has(canonical) ? raw : '[מספר הוסר — ללא מקור מאומת]';
+    // אותה הפרדה כמו ב-numericGuard: בהקשר קריטי אין היתר גורף.
+    // בלעדיה, «2 מ"ג/ק"ג» היה שורד מהניטור ונשאר בטקסט.
+    const context = contextAround(src, offset, raw.length);
+    const permitted = classifySeverity(context) === 'block' ? sourced : lenient;
+    return permitted.has(canonical) ? raw : '[מספר הוסר — ללא מקור מאומת]';
   });
 }
 
