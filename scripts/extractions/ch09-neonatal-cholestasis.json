@@ -1,0 +1,161 @@
+{
+  "chapter_title_he": "גסטרואנטרולוגיה",
+  "_provenance_he": "⚠ שוחזר ידנית מתא שסומן corrupt (פרק 9 › כבד וכולסטזיס, 791 תווים). התא ממזג ארבע עמודות של אתיולוגיות: זיהומים · מחלות מטבוליות · סינדרומים כולסטטיים תוך-כבדיים · מחלות חוץ-כבדיות, ולצידן נזק טוקסי והפרעות גנטיות. במקור «A1AT deficieny» — נכתב deficiency.",
+
+  "topics": [
+    {
+      "topic_key": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "topic_title_he": "כבד וכולסטזיס",
+      "topic_title_en": "Liver and cholestasis",
+      "summary_he": "האבחנה המבדלת של כולסטזיס ביילוד, בשש קבוצות: זיהומים, מחלות מטבוליות, סינדרומים כולסטטיים תוך-כבדיים, מחלות חוץ-כבדיות, נזק טוקסי, והפרעות גנטיות או כרומוזומליות. ההפרדה בין תוך-כבדי לחוץ-כבדי היא ההכרעה המרכזית.",
+      "keywords": ["כולסטזיס", "Biliary Atresia", "Alagille", "PFIC", "A1AT", "גלקטוזמיה", "טירוזינמיה", "GALD", "Choledochal Cyst", "TPN"],
+      "age_scope": "neonate",
+      "source_quote_he": "זיהומים · מחלות מטבוליות · סינדרומים כולסטטיים תוך-כבדיים"
+    }
+  ],
+
+  "lab_patterns": [],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson.cholestasis.extrahepatic_obstruction",
+      "label_he": "כולסטזיס ביילוד — יש לשלול חסימה חוץ-כבדית",
+      "trigger": { "findings": ["כולסטזיס ביילוד", "צהבת ישירה בילוד", "צואה אכולית", "Biliary Atresia"], "logic": "any" },
+      "age_min_days": 0,
+      "age_max_days": 120,
+      "severity": "critical",
+      "action_he": "יש לשלול Biliary Atresia והפרעות מכאניות של דרכי המרה, לרבות Choledochal Cyst, בהקדם. אלה האבחנות היחידות ברשימה שהפתרון שלהן כירורגי, ובהן העיתוי הוא חלק מהטיפול.",
+      "reason_he": "מחלות חוץ-כבדיות: Biliary Atresia, Sclerosing Cholangitis, הפרעות מכאניות של דרכי המרה לרבות Choledochal Cyst, ופגיעה בדרכי מרה על סוגיה.",
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "מחלות חוץ-כבדיות · Biliary Atresia · Sclerosing Cholangitis · הפרעות מכאניות של דרכי המרה לרבות Choledochal Cyst"
+    },
+    {
+      "flag_key": "nelson.cholestasis.sepsis_uti",
+      "label_he": "כולסטזיס ביילוד — ספסיס ו-UTI ברשימה הראשונה",
+      "trigger": { "findings": ["כולסטזיס ביילוד", "צהבת ישירה בילוד"], "logic": "any" },
+      "age_min_days": 0,
+      "age_max_days": 90,
+      "severity": "critical",
+      "action_he": "יש לקחת תרבית דם ותרבית שתן בכל יילוד עם כולסטזיס. ספסיס ו-UTI פותחים את רשימת האתיולוגיות, והם ברי-טיפול מיידי.",
+      "reason_he": "ספסיס ו-UTI מופיעים ראשונים בקבוצת הזיהומים כגורם לכולסטזיס ביילוד.",
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "זיהומים · ספסיס ו-UTI"
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson.cholestasis.infectious_causes",
+      "title_he": "זיהומים כגורם לכולסטזיס",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "כולסטזיס ביילוד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "ספסיס ו-UTI. הפטיטיס ויראלית: Hepatitides A-E, CMV, EBV, רובלה, HHV6/7, HSV, וריצלה, אנטרווירוס וקוקסאקי, פארבווירוס B19, אדנווירוס ו-HIV. וכן טוקסופלסמה, סיפיליס וליסטריה.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ספסיס ו-UTI פותחים את הרשימה משום שהם ברי-טיפול מיידי, ומשום שכולסטזיס עשוי להיות הביטוי הראשון שלהם ביילוד — לפני חום או סימנים מכוונים.",
+      "recommended_workup_he": ["תרבית דם ותרבית שתן", "סרולוגיה ל-TORCH", "PCR ל-CMV ול-HSV", "VDRL"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "ספסיס ו-UTI · הפטיטיס וירלית: Hepatitides A-E וכן CMV/EBV, רובלה, HHV6/7, HSV, וריצלה, אנטרווירוס וקוקסאקי, פארבווירוס B19, אדנווירוס, HIV · טוקסופלסמה, סיפיליס, ליסטריה"
+    },
+    {
+      "rule_key": "nelson.cholestasis.metabolic_causes",
+      "title_he": "מחלות מטבוליות כגורם לכולסטזיס",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "כולסטזיס ביילוד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "הפרעות חלבונים — טירוזינמיה. הפרעות שומנים — Niemann-Pick C, Wolman, גושה. הפרעות פחמימות — גלקטוזמיה, פרוקטוזמיה. וכן חסר A1AT, CF, פאן-היפופיטואיטריזם ותת-תריסיות מבודדת, מחלת ווילסון, GALD, הפרעות בגליקוזילציה (CDG), והפרעות מיטוכונדריאליות.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "גלקטוזמיה היא הדחופה ביותר בקבוצה: היא ניתנת לעצירה מיידית בהפסקת לקטוז, והעיכוב עולה בחיים. תת-תריסיות ופאן-היפופיטואיטריזם בולטים אף הם — הם מטופלים בקלות ומאובחנים בבדיקה פשוטה.",
+      "recommended_workup_he": ["סוכרים מחזרים בשתן וגלקטוז-1-פוספט — גלקטוזמיה", "TSH ו-T4", "רמת A1AT ופנוטיפ", "סוקצינילאצטון — טירוזינמיה", "מבחן זיעה"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "חלבונים: טריוזינמיה · שומנים: Niemann-Pick C, Wolman, גושה · פחמימות: גלקטוזמיה, פרוקטוזמיה · A1AT deficieny · CF · פאן-היפופיטואיטריזם ותת-תריסיות מבודדת · ווילסון · GALD"
+    },
+    {
+      "rule_key": "nelson.cholestasis.intrahepatic_syndromes",
+      "title_he": "סינדרומים כולסטטיים תוך-כבדיים",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "כולסטזיס תוך-כבדי", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "Idiopathic Neonatal Hepatitis, Alagille Syndrome, PFIC, הפרעות בביוסינתזה של מלחי מרה, ונוספים.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "Idiopathic Neonatal Hepatitis היא אבחנה שבשלילה — היא נקבעת רק אחרי שכל השאר נשלל, ולכן היא אינה נקודת עצירה אלא נקודת המשך מעקב.",
+      "recommended_workup_he": ["הערכת מבנה דרכי מרה", "בירור Alagille — ממצאים לבביים, חוליות פרפר, פנים אופייניות", "GGT — נמוך בחלק מסוגי ה-PFIC", "ביופסיית כבד לפי הצורך"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "סינדרומים כולסטטיים תוך-כבדיים · Idiopathic Neonatal Hepatitis · Alagille Syndrome · PFIC · הפרעות בביוסינתזה של מלחי מרה"
+    },
+    {
+      "rule_key": "nelson.cholestasis.toxic_and_genetic",
+      "title_he": "נזק טוקסי והפרעות גנטיות",
+      "category": "criteria",
+      "domain": "gastroenterology",
+      "conditions": [
+        { "type": "finding", "key": "כולסטזיס ביילוד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "נזק טוקסי: TPN, תרופות, ושוק או היפו-פרפוזיה. הפרעות גנטיות או כרומוזומליות שונות, ובהן טריזומיה 21 וטריזומיה 18.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "TPN הוא הגורם השכיח ביותר בפגייה, והוא גם ההפיך ביותר — אך הוא נעשה אבחנה רק אחרי ששוללים את השאר. שוק והיפו-פרפוזיה מזכירים שכולסטזיס עשוי להיות תוצאה של אירוע המודינמי ולא של מחלת כבד.",
+      "recommended_workup_he": ["סקירת משך ה-TPN וההרכב", "סקירת תרופות", "בירור אירוע היפוקסי-איסכמי", "קריוטיפ בנוכחות דיסמורפיזם"],
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "נזק טוקסי · TPN · תרופות · שוק, היפו-פרפוזיה · הפרעות גנטיות או כרומוזומליות שונות · טריזומיה 21, טריזומיה 18"
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson.cholestasis.galactosemia_sepsis",
+      "anchor_finding_he": "כולסטזיס ביילוד עם ספסיס",
+      "co_findings": ["גלקטוזמיה", "היפוגליקמיה", "האכלה בלקטוז"],
+      "implies_he": "שתי אבחנות שמופיעות יחד ומחייבות טיפול מיידי בשתיהן",
+      "suspicion": "red",
+      "mechanism_he": "המקור מונה גם ספסיס וגם גלקטוזמיה כגורמים לכולסטזיס; שניהם ברי-התערבות מיידית.",
+      "action_he": "ספסיס אינו מייתר בירור מטבולי. יש לקחת תרביות ובמקביל להעריך גלקטוזמיה — הפסקת לקטוז היא התערבות מיידית וזולה.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "ספסיס ו-UTI · פחמימות: גלקטוזמיה, פרוקטוזמיה"
+    },
+    {
+      "assoc_key": "nelson.cholestasis.endocrine_causes",
+      "anchor_finding_he": "כולסטזיס ביילוד",
+      "co_findings": ["פאן-היפופיטואיטריזם", "תת-תריסיות מבודדת", "היפוגליקמיה", "מיקרופניס"],
+      "implies_he": "סיבה אנדוקרינית לכולסטזיס — ברת-טיפול ומאובחנת בבדיקה פשוטה",
+      "suspicion": "red",
+      "mechanism_he": "חסר הורמונלי היפופיזרי או תריסי פוגע בזרימת המרה.",
+      "action_he": "TSH ו-T4 הם בדיקה זולה ומהירה שיש לקחת בכל כולסטזיס ילודי. הצירוף עם היפוגליקמיה או מיקרופניס מחזק — ראה גם nelson.gh.prolonged_cholestatic_jaundice.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "פאן-היפופיטואיטריזם ותת-תריסיות מבודדת"
+    },
+    {
+      "assoc_key": "nelson.cholestasis.tpn_in_preterm",
+      "anchor_finding_he": "כולסטזיס בפג המקבל TPN",
+      "co_findings": ["TPN ממושך", "היעדר האכלה אנטרלית"],
+      "implies_he": "נזק טוקסי מ-TPN — אך אבחנה שבשלילה בלבד",
+      "suspicion": "yellow",
+      "mechanism_he": "המקור מונה TPN ראשון ברשימת הנזק הטוקסי; המנגנון אינו מפורט בתא.",
+      "action_he": "זהו ההסבר הקל ביותר בפגייה, ולכן גם הקל ביותר לאמץ מוקדם מדי. אין לייחס כולסטזיס ל-TPN לפני ששוללים Biliary Atresia — שם העיתוי קריטי.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson.גסטרואנטרולוגיה.כבד_וכולסטזיס",
+      "source_quote_he": "נזק טוקסי · TPN"
+    }
+  ],
+
+  "gaps_he": [
+    "המקור אינו מציין את גיל החתך לניתוח Kasai ב-Biliary Atresia, ואינו מציין שהעיתוי קריטי. הדחיפות שנוסחה כאן נגזרת מכך שאלה האבחנות היחידות ברשימה שהפתרון שלהן כירורגי — לא מאמירה מפורשת במקור.",
+    "המקור אינו מציין ספי בילירובין ישיר להגדרת כולסטזיס.",
+    "המקור אינו מציין אלגוריתם בירור או סדר בדיקות — רק רשימת אתיולוגיות.",
+    "«A1AT deficieny» במקור — נכתב deficiency. «טריוזינמיה» — טירוזינמיה.",
+    "GALD מופיע ללא הסבר; ראשי התיבות לא פוענחו במקור.",
+    "התא ממזג ארבע עמודות; שורות שבהן השיוך לא היה חד-משמעי לא חולצו."
+  ],
+  "dosing_mentions_he": []
+}
