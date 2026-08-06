@@ -164,6 +164,7 @@ export default function SkinAnalysis() {
               analysisId={result.analysisId}
               analysisType="skin"
               structuredInterpretation={result.structuredInterpretation}
+              numericIntegrity={result.numericIntegrity}
             />
           </div>
         )}
