@@ -18,30 +18,59 @@
  * חומר שניתן לבדוק — עם ציטוט לכל טענה.
  */
 
-import { EXTRACTION_SCHEMA, EXTRACTION_SYSTEM_PROMPT } from './extractionSchema.js';
 import { createInvokeLLM, createKbRecord } from '../llmAdapter.js';
 
 export {
   CHUNK_CHARS, detectSeams, chunkText, validateExtraction,
 } from './extractionCore.js';
 
-import { detectSeams, validateExtraction } from './extractionCore.js';
+// ⚠ extractFromChunk חייב להיות כאן. הוא נשכח בריפוטור שהעביר אותו
+// ל-extractionCore, ו-ingestChunk קרא לשם לא-מוגדר. זה בדיוק הכשל
+// שהפיל 947 מתוך 1001 חילוצים בהרצה הקודמת — והוא אינו נתפס
+// בבדיקת ייבוא: שם לא-מוגדר בתוך גוף פונקציה נכשל רק בזמן הקריאה.
+import { detectSeams, validateExtraction, extractFromChunk } from './extractionCore.js';
+
+/** שדה המפתח הטבעי של כל ישות — בו נעשה הזיהוי לצורך upsert. */
+export const NATURAL_KEY = {
+  KnowledgeTopic: 'topic_key',
+  LabPattern: 'pattern_key',
+  RedFlag: 'flag_key',
+  ClinicalRule: 'rule_key',
+  Association: 'assoc_key',
+};
 
 /**
  * שומר חילוץ מאומת-מבנית ל-KB. הכל כטיוטה.
- * @returns {Promise<{saved: object, failed: object[]}>}
+ *
+ * ## למה יש כאן existingKeys
+ * הגרסה הראשונה קראה ל-create בלי לבדוק קיום. הרצה חוזרת —
+ * אחרי עצירה, אחרי שגיאה, או פשוט פעמיים — יצרה רשומות כפולות.
+ * כפילות ב-KB אינה מטרד קוסמטי: היא מגיעה ל-FACT BLOCK פעמיים
+ * ונקראת כשני מקורות עצמאיים שמסכימים זה עם זה.
+ *
+ * @param {object} kept
+ * @param {Set<string>} [existingKeys] מפתחות קיימות ב-KB, בצורה "Entity:key"
+ * @returns {Promise<{saved: object, skipped: object[], failed: object[]}>}
  */
-export async function saveExtraction(kept) {
+export async function saveExtraction(kept, existingKeys = null) {
   const saved = { topics: 0, lab_patterns: 0, red_flags: 0, clinical_rules: 0, associations: 0 };
   const failed = [];
+  const skipped = [];
 
   const save = async (entity, rows, counterKey, mapFn) => {
+    const keyField = NATURAL_KEY[entity];
     for (const row of rows) {
+      const key = row[keyField];
+      if (existingKeys?.has(`${entity}:${key}`)) {
+        skipped.push({ entity, key, why_he: 'רשומה עם מפתח זה כבר קיימת — לא נוצרה כפילות.' });
+        continue;
+      }
       try {
         await createKbRecord(entity, mapFn(row));
+        existingKeys?.add(`${entity}:${key}`); // מונע כפילות גם בתוך אותה הרצה
         saved[counterKey] += 1;
       } catch (e) {
-        failed.push({ entity, key: row.topic_key ?? row.pattern_key ?? row.flag_key ?? row.rule_key ?? row.assoc_key, error: String(e?.message ?? e) });
+        failed.push({ entity, key, error: String(e?.message ?? e) });
       }
     }
   };
@@ -114,7 +143,7 @@ export async function saveExtraction(kept) {
     review_note_he: note(a),
   }));
 
-  return { saved, failed };
+  return { saved, skipped, failed };
 }
 
 /**
