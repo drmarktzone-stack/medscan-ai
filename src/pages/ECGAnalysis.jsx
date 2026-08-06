@@ -207,6 +207,7 @@ export default function ECGAnalysis() {
               structuredInterpretation={result.structuredInterpretation}
               analysisId={result.analysisId}
               analysisType="ecg"
+              numericIntegrity={result.numericIntegrity}
             />
           </div>
         )}
