@@ -1,0 +1,168 @@
+{
+  "chapter_title_he": "ראומטולוגיה",
+  "_provenance_he": "⚠ שוחזר ידנית מתא שסומן corrupt (פרק 15 › SLE, 921 תווים). התא עוסק ב-Drug-Induced Lupus וממזג שתי עמודות: מימין רשימת התרופות המחולקת לקבוצות, ומשמאל אפידמיולוגיה · קליניקה · מעבדה · טיפול. שמות התרופות מופיעים במקור עם שגיאות כתיב (Dilitiazem, Amidarone, Hydrochlorohiazide, Chloropromazine, Sulfasazlazine, Isoniazide); הם נכתבו כאן באיות התקני, משום ששם תרופה שגוי בכלי קליני מסוכן יותר מהיעדרו. האיות המקורי מתועד ב-review_note.",
+
+  "topics": [
+    {
+      "topic_key": "nelson.ראומטולוגיה.SLE",
+      "topic_title_he": "SLE",
+      "topic_title_en": "Systemic lupus erythematosus",
+      "summary_he": "Drug-Induced Lupus (DIL) — התמונה הקלינית והמעבדתית המבדילה אותו מ-SLE ראשוני, ורשימת התרופות המחוללות לפי קבוצות. ההבדלים המרכזיים: יחס מגדרי שווה, הפטיטיס שכיחה יחסית, היעדר מעורבות כליות ומוח, Anti-Histone חיובי כמעט תמיד, והפיכות מלאה לאחר הפסקת התרופה.",
+      "keywords": ["SLE", "DIL", "Drug-Induced Lupus", "Anti-Histone", "ANA", "Procainamide", "Hydralazine", "אנטי-קונבולסנטיות", "anti-TNF", "סרוזיטיס"],
+      "age_scope": "all",
+      "source_quote_he": "אפידמיולוגיה: תרופות אופייניות:"
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson.dil.anti_histone",
+      "title_he": "Anti-Histone חיובי — ספציפי ל-Drug-Induced Lupus",
+      "components": [
+        { "analyte": "Anti-Histone", "direction": "present", "note_he": "כמעט 100% ב-DIL" },
+        { "analyte": "ANA", "direction": "present", "note_he": "בדרך כלל טרם הופעת הסימפטומים" }
+      ],
+      "min_components": 1,
+      "direction_he": "Drug-Induced Lupus ולא SLE ראשוני",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "Anti-Histone הוא ספציפי: כמעט 100% ב-DIL, ואילו ב-SLE ראשוני נמוך מאוד. זהו המדד היחיד בתא שמפריד בין שתי האבחנות, ולכן הוא מה שקובע אם מפסיקים תרופה או מתחילים טיפול ממושך.",
+      "confirm_with_he": ["סקירת כל התרופות שהילד נוטל", "ANA", "תפקודי כבד — הפטיטיס שכיחה יחסית ב-DIL", "בדיקת מעורבות כליות למרות שאינה צפויה"],
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "Anti-Histone – ספציפי (כמעט 100% ב-DI אך ב-SLE נמוך מאד)"
+    }
+  ],
+
+  "red_flags": [],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson.dil.clinical_picture",
+      "title_he": "Drug-Induced Lupus — התמונה הקלינית",
+      "category": "criteria",
+      "domain": "rheumatology",
+      "conditions": [
+        { "type": "finding", "key": "סימפטומים לופוסיים תחת טיפול תרופתי", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "סימפטומים המופיעים תחת טיפול תרופתי וחולפים שבועות לאחר הפסקתו: חום, עייפות ותחושת חולי; הפטיטיס — נדירה ב-SLE אך שכיחה יחסית ב-DIL; ארתרלגיה ומיאלגיה; סרוזיטיס; ופריחה. בדרך כלל אין מעורבות איברים כמו כליות או מוח.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "היעדר מעורבות כליות ומוח הוא מה שמאפשר להימנע מטיפול אימונוסופרסיבי — ההתערבות היחידה הנדרשת היא הפסקת התרופה. לכן זיהוי ה-DIL אינו ניואנס אקדמי אלא ההבדל בין הפסקת תרופה לבין שנות טיפול.",
+      "recommended_workup_he": ["סקירה מלאה של התרופות, כולל כאלה שנלקחות זמן רב", "תפקודי כבד", "Anti-Histone ו-ANA", "הערכת מעורבות כליות — היעדרה תומך ב-DIL"],
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "סימפטומים המופיעים תחת טיפול תרופתי (וחולפים שבועות לאחר הפסקה)"
+    },
+    {
+      "rule_key": "nelson.dil.equal_sex_ratio",
+      "title_he": "DIL — יחס מגדרי שווה, בשונה מ-SLE",
+      "category": "criteria",
+      "domain": "rheumatology",
+      "conditions": [
+        { "type": "finding", "key": "חשד ל-Drug-Induced Lupus", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "ב-Drug-Induced Lupus בנים = בנות.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "SLE ראשוני שכיח בהרבה בבנות. תמונה לופוסית בבן מעלה יחסית את ההסתברות ל-DIL — וזהו רמז אנמנסטי זמין שאינו דורש שום בדיקה.",
+      "recommended_workup_he": ["סקירת תרופות מוקפדת במיוחד בבן עם תמונה לופוסית"],
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "בנים = בנות"
+    },
+    {
+      "rule_key": "nelson.dil.ana_precedes_symptoms",
+      "title_he": "ANA חיובי מקדים את הסימפטומים",
+      "category": "criteria",
+      "domain": "rheumatology",
+      "conditions": [
+        { "type": "lab", "key": "ANA", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "ANA חיובי מופיע בדרך כלל טרם הופעת הסימפטומים — אך יכול להופיע במקביל ללקיחת התרופה ללא סימפטומים כלל.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "המשמעות המעשית הפוכה לאינטואיציה: ANA חיובי בילד הנוטל אחת מהתרופות ברשימה אינו מחייב הפסקה בהיעדר סימפטומים. הפסקת תרופה יעילה בגלל בדיקה חיובית בלבד עלולה להזיק יותר מהתועלת.",
+      "recommended_workup_he": ["הערכה קלינית לפני החלטה על הפסקת תרופה בגלל ANA חיובי", "מעקב סימפטומים"],
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "ANA חיובי – בד\"כ טרם הופעת סימפטומים (אך יכול להפיע במקביל ללקיחת התרופה ללא סימפטומים)"
+    },
+    {
+      "rule_key": "nelson.dil.reversible_but_slow",
+      "title_he": "DIL הפיך — אך ההחלמה עלולה להימשך חודשים עד שנים",
+      "category": "management",
+      "domain": "rheumatology",
+      "conditions": [
+        { "type": "finding", "key": "Drug-Induced Lupus", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "המצב הפיך לאחר הפסקת התרופה, אך ייתכנו חודשים עד שנים עד להחלמה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "פער העיתוי הוא המלכודת: הסימפטומים חולפים תוך שבועות, אך ההחלמה המלאה — כולל הסרולוגיה — עשויה להימשך שנים. המשך חיוביות סרולוגית אינו סימן לכישלון ואינו מצדיק התחלת טיפול אימונוסופרסיבי.",
+      "recommended_workup_he": ["הפסקת התרופה החשודה", "מעקב קליני וסרולוגי לאורך זמן", "הימנעות מהתחלת טיפול אימונוסופרסיבי על סמך סרולוגיה מתמשכת בלבד"],
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "המצב הפיך לאחר הפסקת תרופה, אך ייתכנו חודשים-שנים עד להחלמה"
+    },
+    {
+      "rule_key": "nelson.dil.causative_drugs",
+      "title_he": "התרופות המחוללות Drug-Induced Lupus",
+      "category": "criteria",
+      "domain": "rheumatology",
+      "conditions": [
+        { "type": "finding", "key": "חשד ל-Drug-Induced Lupus", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "אנטי-אריתמיות: Procainamide, Quinidine, Amiodarone. מורידי לחץ דם ומשתנים: Diltiazem, Hydralazine, חסמי ACE, חסמי-β, Hydrochlorothiazide. אנטי-תיירואיד: PTU. אנטי-פסיכוטיות: Chlorpromazine, Lithium. אנטי-קונבולסנטיות: Carbamazepine, Ethosuximide, Phenytoin, Valproate. אנטיביוטיקות: Isoniazid, Nitrofurantoin, Rifampin, Tetracycline, Penicillin. אנטי-ראומטיות: Sulfasalazine, anti-TNF. וכן סטטינים. Minocycline מופיע אף הוא ברשימה — שיוך הקבוצה שלו בתא אינו חד-משמעי.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "הרשימה כוללת תרופות שכיחות מאוד בילדים — אנטי-קונבולסנטיות, אנטיביוטיקות ו-anti-TNF. לכן שאלת התרופות אינה שאלה משלימה אלא חלק מהבירור הראשוני של כל תמונה לופוסית.",
+      "recommended_workup_he": ["סקירת כל התרופות מול הרשימה", "בדיקת משך הנטילה — DIL מופיע לרוב לאחר טיפול ממושך", "Anti-Histone"],
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "אנטי-קונבולסנטיות: Phenytoin, Carbamazepine, Ethosuximide, Valproate"
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson.dil.hepatitis_distinguishes",
+      "anchor_finding_he": "הפטיטיס בילד עם תמונה לופוסית",
+      "co_findings": ["חום", "ארתרלגיה", "סרוזיטיס", "פריחה"],
+      "implies_he": "Drug-Induced Lupus — הפטיטיס נדירה ב-SLE ראשוני אך שכיחה יחסית ב-DIL",
+      "suspicion": "yellow",
+      "mechanism_he": "המקור מציין את ההבדל בשכיחות במפורש; המנגנון אינו מפורט בתא.",
+      "action_he": "מעורבות כבדית בתמונה לופוסית מסיטה את האבחנה לכיוון DIL. יש לסקור תרופות לפני שמתחילים בירור SLE מלא.",
+      "age_scope": "all",
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "הפטיטיס – נדירה ב-SLE אך שכיחה יחסית ב-DIL"
+    },
+    {
+      "assoc_key": "nelson.dil.no_renal_or_cns",
+      "anchor_finding_he": "תמונה לופוסית ללא מעורבות כליות או מוח",
+      "co_findings": ["טיפול תרופתי ממושך", "Anti-Histone חיובי"],
+      "implies_he": "Drug-Induced Lupus — בדרך כלל אין מעורבות איברים כמו כליות או מוח",
+      "suspicion": "yellow",
+      "mechanism_he": "היעדר מעורבות איברי מטרה מרכזיים הוא מאפיין מבחין של DIL לעומת SLE ראשוני.",
+      "action_he": "היעדר מעורבות כלייתית או מוחית תומך ב-DIL ומאפשר להימנע מאימונוסופרסיה. הוא אינו פוטר מבדיקת שתן ותפקודי כליה — ההיעדר צריך להיות מתועד, לא מונח.",
+      "age_scope": "all",
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "בד\"כ אין מעורבות איברים כמו כליות או מוח"
+    },
+    {
+      "assoc_key": "nelson.dil.symptoms_resolve_off_drug",
+      "anchor_finding_he": "סימפטומים לופוסיים החולפים שבועות לאחר הפסקת תרופה",
+      "co_findings": ["חום", "עייפות", "תחושת חולי", "מיאלגיה"],
+      "implies_he": "Drug-Induced Lupus — הקשר הזמני לתרופה הוא הראיה החזקה ביותר",
+      "suspicion": "yellow",
+      "mechanism_he": "הופעה תחת טיפול והיעלמות לאחר הפסקה הם הגדרת התסמונת.",
+      "action_he": "יש לתעד את מועד תחילת התרופה מול מועד הופעת הסימפטומים. הקשר הזמני הזה שווה יותר מכל בדיקה — והוא זמין באנמנזה בלבד.",
+      "age_scope": "all",
+      "source_anchor": "nelson.ראומטולוגיה.SLE",
+      "source_quote_he": "סימפטומים המופיעים תחת טיפול תרופתי (וחולפים שבועות לאחר הפסקה)"
+    }
+  ],
+
+  "gaps_he": [
+    "שמות התרופות מופיעים במקור עם שגיאות כתיב: Dilitiazem · Amidarone · Hydrochlorohiazide · Chloropromazine · Sulfasazlazine · Isoniazide. נכתבו כאן באיות התקני. יש לאמת את הרשימה מול הספר.",
+    "Minocycline מופיע בתא בסמוך לקבוצת מורידי לחץ הדם, אך קלינית הוא אנטיביוטיקה. שיוך הקבוצה לא הוכרע ומצוין ככזה.",
+    "המקור כותב «DI» ולא «DIL» בסעיף ה-Anti-Histone; פורש כאותה ישות.",
+    "המקור אינו מציין מינונים, משך טיפול מינימלי עד להופעת DIL, או שיעורי היארעות לכל תרופה.",
+    "רוב התא עוסק ב-DIL; הקריטריונים והטיפול ב-SLE ראשוני אינם כאן — ככל הנראה בתאים אחרים באותו נושא.",
+    "התא ממזג שתי עמודות; שורות שבהן השיוך לא היה חד-משמעי לא חולצו."
+  ],
+  "dosing_mentions_he": []
+}
