@@ -282,6 +282,10 @@ const CATALOG = [
   { key: 'urine_citrate', he: 'ציטראט בשתן', en: 'Urine citrate', syn: ['ציטראט', 'citrate'], unit: 'mg/24h', cat: 'urine' },
   { key: 'urine_cystine', he: 'ציסטין בשתן', en: 'Urine cystine', syn: ['ציסטין', 'cystine'], unit: 'mg/24h', cat: 'urine' },
   { key: 'urine_volume_24h', he: 'נפח שתן 24 שעות', en: '24h urine volume', syn: ['נפח שתן'], unit: 'mL/24h', cat: 'urine' },
+  // נדרשים לזיהוי תסמונת פנקוני (nelson.נפרולוגיה.מחלות_טובולריות):
+  // הצירוף גליקוזוריה + פרוטאינוריה + פוספטוריה הוא הדפוס המאבחן.
+  { key: 'urine_phosphate', he: 'פוספט בשתן', en: 'Urine phosphate', syn: ['פוספטוריה', 'phosphate urine'], unit: 'mg/24h', cat: 'urine' },
+  { key: 'urine_amino_acids', he: 'חומצות אמינו בשתן', en: 'Urine amino acids', syn: ['אמינו-אצידוריה', 'aminoaciduria'], type: RESULT_TYPES.TEXT, cat: 'urine' },
 
   /* ── נוזל שדרה ─────────────────────────────────────────────────────── */
   { key: 'csf_wbc', he: 'לויקוציטים ב-CSF', en: 'CSF WBC', syn: ['CSF WBC', 'פלאוציטוזיס'], unit: '/µL', cat: 'csf' },
