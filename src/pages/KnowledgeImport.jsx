@@ -373,18 +373,51 @@ export default function KnowledgeImport() {
               <p className="text-xs text-red-700">{result.fatal}</p>
             ) : (
               <>
-                <div className="grid grid-cols-3 gap-2 text-center">
+                {/* שתי סיבות הדילוג מוצגות בנפרד: אחת אומרת "כבר יש לנו"
+                    והשנייה אומרת "הטקסט משובש ולא ניתן לחילוץ". מספר מאוחד
+                    הסתיר את ההבדל — והשנייה היא חור אמיתי בכיסוי. */}
+                <div className="grid grid-cols-4 gap-2 text-center">
                   {[
                     ["חולצו", result.done, "text-emerald-700 bg-emerald-50"],
-                    ["דולגו", result.skipped + result.seam_blocked, "text-slate-600 bg-slate-50"],
+                    ["כבר קיים", result.skipped, "text-slate-600 bg-slate-50"],
+                    ["טקסט משובש", result.seam_blocked, "text-amber-700 bg-amber-50"],
                     ["נכשלו", result.failed, "text-red-700 bg-red-50"],
                   ].map(([l, n, cls]) => (
                     <div key={l} className={`rounded-lg py-2 ${cls}`}>
                       <div className="text-base font-bold">{n}</div>
-                      <div className="text-[10px]">{l}</div>
+                      <div className="text-[10px] leading-tight">{l}</div>
                     </div>
                   ))}
                 </div>
+
+                {/* כיסוי שלא הושג — מוצג במפורש. נושא שדולג נראה
+                    כמו נושא שטופל, וזו הטעות המסוכנת יותר. */}
+                {result.skipped_topics?.length > 0 && (
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5">
+                    <p className="text-xs text-slate-800 font-semibold">
+                      {result.skipped_topics.length} נושאים לא חולצו — כבר קיימים ב-KB
+                    </p>
+                    <p className="text-[10px] text-slate-600 mt-1 leading-relaxed">
+                      הדילוג הוא על הנושא השלם. אם הנושא נוצר ידנית מתא בודד,
+                      שאר התוכן שלו <strong>לא חולץ</strong>. כדי להשלים אותו יש
+                      למחוק את הנושא ולהריץ שוב.
+                    </p>
+                    <details className="mt-1.5">
+                      <summary className="text-[10px] text-slate-700 cursor-pointer underline">הצג רשימה</summary>
+                      <ul className="mt-1 space-y-0.5">
+                        {result.skipped_topics.map((k) => (
+                          <li key={k} className="text-[10px] text-slate-600 font-mono">{k}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  </div>
+                )}
+
+                {result.duplicates_prevented?.length > 0 && (
+                  <p className="text-[10px] text-slate-600">
+                    {result.duplicates_prevented.length} רשומות לא נשמרו שוב — מפתח זהה כבר קיים.
+                  </p>
+                )}
 
                 {dryRun ? (
                   <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5 leading-relaxed">
