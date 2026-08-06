@@ -161,6 +161,25 @@ ${langDirective}`,
   const engine = engineResult && !engineResult.abstain ? engineResult : null;
   const engineStructured = engine?.structured || null;
 
+  // ---------- Grounded interpretation (רץ במקביל לשלב 2) ----------
+  // שכבת הפרשנות המעוגנת אינה משנה את הפלט הקיים — היא נוספת לידו.
+  // הקריאה הוויזואלית נשארת תצפית; הפרשנות שלה עוברת FACT BLOCK מלא.
+  // כישלון כאן לעולם אינו מפיל את הפייפלין — אבל גם אינו נבלע בשקט.
+  const groundedPromise = engine
+    ? runGroundedVisionInterpretation({
+        modality: analysisType,
+        engineResult: engine,
+        patient,
+        clinicalContext,
+      }).catch((e) => ({
+        unavailable: true,
+        error: String(e?.message ?? e),
+        note_he:
+          'שכבת הפרשנות המעוגנת לא הושלמה. הקריאה הוויזואלית מוצגת, ' +
+          'אך היא לא עוגנה מול מאגר הידע המאומת בהרצה זו.',
+      }))
+    : Promise.resolve(null);
+
   const measurements = Array.isArray(extractMatchResult.measurements)
     ? extractMatchResult.measurements.filter((m) => m.parameter)
     : [];
