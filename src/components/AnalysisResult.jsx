@@ -7,6 +7,7 @@ import ECGInterpretationCard from "@/components/ECGInterpretationCard";
 import RadiologyInterpretationCard from "@/components/RadiologyInterpretationCard";
 import SkinInterpretationCard from "@/components/SkinInterpretationCard";
 import UncertaintyWarning from "@/components/UncertaintyWarning";
+import NumericIntegrityNotice from "@/components/NumericIntegrityNotice";
 import EmergencyTriageBanner from "@/components/EmergencyTriageBanner";
 import FeedbackButtons from "@/components/FeedbackButtons";
 import PrintableReport from "@/components/PrintableReport";
@@ -20,7 +21,7 @@ function confidenceStyle(conf) {
   return "text-slate-500 bg-slate-50 border-slate-200";
 }
 
-export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty, guideline, analysisId, analysisType, ecgInterpretation, structuredInterpretation }) {
+export default function AnalysisResult({ result, severity, summary, matchedCases, imageUrl, findings, uncertainty, guideline, analysisId, analysisType, ecgInterpretation, structuredInterpretation, numericIntegrity }) {
   const structured = structuredInterpretation || ecgInterpretation;
   const { t, dir } = useI18n();
   const printRef = useRef(null);
@@ -55,6 +56,10 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
         {uncertainty && uncertainty.level !== "low" && (
           <UncertaintyWarning level={uncertainty.level} reason={uncertainty.reason} />
         )}
+
+        {/* בדיקת המספרים מוצגת לפני הניתוח ולא אחריו: אם מספר נוטרל,
+            צריך לדעת זאת לפני שקוראים את הטקסט, לא אחרי. */}
+        <NumericIntegrityNotice integrity={numericIntegrity} />
 
         {summary && (
           <div className="bg-primary/5 border border-primary/15 rounded-xl p-4">
