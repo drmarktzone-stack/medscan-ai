@@ -5,6 +5,8 @@ import { runEcgEngine, buildEcgEvidenceBlock } from "./ecgEngine";
 import { runRadiologyEngine, buildRadiologyEvidenceBlock } from "./radiologyEngine";
 import { runSkinEngine, buildSkinEvidenceBlock } from "./skinEngine";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
+import { runGroundedVisionInterpretation } from "./medscan/engines/visionGrounded";
+import { guardVisionNarrative } from "./medscan/engines/visionNarrativeGuard";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -53,6 +55,7 @@ export async function runDiagnosisPipeline({
   onStage,
   language = "he",
   pediatric = false,
+  patient = {},
 }) {
   const outputLang = langNames[language] || "Hebrew";
   const langDirective = `\n## Output Language\nALL text in your response (titles, reasoning, summary, analysis, guideline, finding labels) MUST be written in ${outputLang}. This is critical — the user selected ${outputLang} as their language.`;
