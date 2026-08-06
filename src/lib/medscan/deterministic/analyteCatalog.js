@@ -183,6 +183,9 @@ const CATALOG = [
   { key: 'ana', he: 'ANA', en: 'Antinuclear antibody', syn: ['ANA', 'נוגדנים אנטי-גרעיניים'], type: RESULT_TYPES.TITER, cat: 'immunology' },
   { key: 'anti_dsdna', he: 'Anti-dsDNA', en: 'Anti-dsDNA', syn: ['dsDNA'], unit: 'IU/mL', cat: 'immunology' },
   { key: 'rf', he: 'גורם ראומטי', en: 'Rheumatoid factor', syn: ['RF', 'ראומטויד'], unit: 'IU/mL', cat: 'immunology' },
+  // נדרש להבחנה בין Drug-Induced Lupus ל-SLE ראשוני — המדד היחיד
+  // שמפריד ביניהם (nelson.ראומטולוגיה.SLE).
+  { key: 'anti_histone', he: 'Anti-Histone', en: 'Anti-histone antibody', syn: ['נוגדני היסטון', 'antihistone'], type: RESULT_TYPES.TITER, cat: 'immunology' },
   { key: 'anti_ccp', he: 'Anti-CCP', en: 'Anti-CCP', syn: ['CCP'], unit: 'U/mL', cat: 'immunology' },
   { key: 'anca', he: 'ANCA', en: 'ANCA', syn: ['pANCA', 'cANCA'], type: RESULT_TYPES.QUALITATIVE, cat: 'immunology' },
   { key: 'c3', he: 'משלים C3', en: 'Complement C3', syn: ['C3'], unit: 'mg/dL', cat: 'immunology' },
