@@ -56,6 +56,7 @@ export async function runDiagnosisPipeline({
   pediatric = false,
   patientAgeYears,
   patientSex,
+  patientRef,
 }) {
   const outputLang = langNames[language] || "Hebrew";
   const langDirective = `\n## Output Language\nALL text in your response (titles, reasoning, summary, analysis, guideline, finding labels) MUST be written in ${outputLang}. This is critical — the user selected ${outputLang} as their language.`;
@@ -404,6 +405,10 @@ ${langDirective}`,
     result: guardedDiagnosis.analysis,
     severity: finalSeverity,
     summary: guardedDiagnosis.summary,
+    structured_json: engine
+      ? JSON.stringify({ structured: engine.structured, confidence: engine.confidence, warnings: engine.warnings })
+      : undefined,
+    patient_ref: patientRef || undefined,
   });
 
   return {
