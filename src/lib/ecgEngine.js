@@ -36,6 +36,7 @@
 
 import { ECG_FULL_RULES } from "./ecgRules";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
+import { flagEcgNormals } from "./ecgNormals";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -141,7 +142,7 @@ ${CRITICAL_RULE_OUT.map((c) => `- ${c.key}: ${c.label} — ${c.look_for}`).join(
 /**
  * Build the full ECG interpretation system prompt.
  */
-export function buildEcgSystemPrompt({ clinicalContext, language = "he", pediatric = false } = {}) {
+export function buildEcgSystemPrompt({ clinicalContext, language = "he", pediatric = false, ageNote = "" } = {}) {
   const outputLang = langNames[language] || "Hebrew";
   const pediatricNote = pediatric
     ? "\n## מצב ילדים (Pediatric) פעיל\nהחל נורמות תלויות-גיל: דופק גבוה יותר תקין, מרווחים קצרים יותר, היפוך T ילדי (juvenile T-wave) בהובלות ימניות כתקין, וקריטריוני היפרטרופיה מותאמי-גיל.\n"
@@ -152,7 +153,7 @@ export function buildEcgSystemPrompt({ clinicalContext, language = "he", pediatr
 מסלול ההולכה: צומת SA → עליות (גל P) → צומת AV (השהיית מקטע PR) → צרור His / מערכת Purkinje → חדרים (קומפלקס QRS) → רה-פולריזציה חדרית (מקטע ST וגל T).
 גיאומטריית הובלות: 12 הובלות סטנדרטיות — גפיים (I, II, III, aVR, aVL, aVF) וחזה (V1–V6). כל הובלה משקיפה על טריטוריה מוגדרת.
 
-${pediatricNote}${clinicalContext ? `## הקשר קליני של המטופל\n${clinicalContext}\n(שקלל את ההקשר, אך אל תיתן לו לגבור על מה שנראה בתרשים.)\n` : ""}
+${pediatricNote}${ageNote ? ageNote + "\n\n" : ""}${clinicalContext ? `## הקשר קליני של המטופל\n${clinicalContext}\n(שקלל את ההקשר, אך אל תיתן לו לגבור על מה שנראה בתרשים.)\n` : ""}
 ${ECG_METHODOLOGY}
 
 ${ECG_FULL_RULES}
@@ -602,12 +603,15 @@ export async function runEcgEngine({
   fileUrls,
   clinicalContext,
   language = "he",
+  pediatric = false,
+  ageYears,
   sex,
   invokeLLM,
   onStage,
   model = DIAGNOSIS_MODEL,
 }) {
-  const systemPrompt = buildEcgSystemPrompt({ clinicalContext, language });
+  const normalsPre = flagEcgNormals({}, { ageYears, sex });
+  const systemPrompt = buildEcgSystemPrompt({ clinicalContext, language, pediatric, ageNote: normalsPre?.promptNote || "" });
 
   // ---- Pass 1: primary structured interpretation ----
   onStage?.("interpreting");
@@ -705,6 +709,14 @@ export async function runEcgEngine({
     finalUrgency = critical.forcedUrgency;
   }
   warnings.push(...critical.warnings);
+
+  // Age/sex normal-range flags (deterministic screening).
+  const normPost = flagEcgNormals(structured, { ageYears, sex });
+  if (normPost) {
+    warnings.push(...normPost.warnings);
+    structured.age_normal_flags = normPost.flags;
+    structured.age_band = normPost.band?.label_he || null;
+  }
 
   structured.clinical_urgency = finalUrgency;
 
