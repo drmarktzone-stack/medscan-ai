@@ -160,6 +160,16 @@ export default function ECGInterpretationCard({ interpretation }) {
               {iv.qtc_status && (
                 <p className="text-[10px] text-slate-500 mt-1.5">סטטוס QTc: <span className="font-semibold">{iv.qtc_status}</span> (מחושב בקוד)</p>
               )}
+              {(st.st_deviations || []).length > 0 && (
+                <div className="mt-2">
+                  <p className="text-[10px] text-slate-400 mb-1">סטיות ST מדודות (מ"מ)</p>
+                  <div className="flex flex-wrap gap-1">
+                    {st.st_deviations.map((d, i) => (
+                      <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${/elev|הגבה/i.test(d.direction || "") ? "bg-red-50 text-red-600 border-red-200" : "bg-slate-50 text-slate-600 border-slate-200"}`}>{d.lead}: {d.mm}מ"מ {d.direction || ""}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </Section>
 
             <Section icon={Activity} title="5. היפרטרופיה והגדלה">
