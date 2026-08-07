@@ -16,6 +16,7 @@ import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import Home from '@/pages/Home';
 import ECGAnalysis from '@/pages/ECGAnalysis';
+import ECGComparison from '@/pages/ECGComparison';
 import SkinAnalysis from '@/pages/SkinAnalysis';
 import RadiologyAnalysis from '@/pages/RadiologyAnalysis';
 import LabInterpreter from '@/pages/LabInterpreter';
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/ecg" element={<ECGAnalysis />} />
+          <Route path="/ecg-compare" element={<ECGComparison />} />
           <Route path="/skin" element={<SkinAnalysis />} />
           <Route path="/radiology" element={<RadiologyAnalysis />} />
           <Route path="/labs" element={<LabInterpreter />} />
