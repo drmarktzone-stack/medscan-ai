@@ -139,6 +139,14 @@ const CRITICAL_RULE_OUT_PROMPT = `## שלב חובה — שלילת דפוסים
 הדפוסים לבדיקה (pattern_key — מה לחפש):
 ${CRITICAL_RULE_OUT.map((c) => `- ${c.key}: ${c.label} — ${c.look_for}`).join("\n")}`;
 
+const GRID_MEASUREMENT_PROMPT = `## מדידה מהרשת (Calibration-aware) — חובה כשניתן
+מדוד מרווחים ע"י ספירת משבצות קטנות מול רשת ה-ECG, לא בהערכת-עין:
+- הצהר ב-technical_check את speed_mm_s (סטנדרט 25) ו-calibration_mm_mv (סטנדרט 10) לפי פולס הכיול.
+- ב-grid_measurements החזר את מספר המשבצות הקטנות (רוחב) עבור pr_boxes, qrs_boxes, qt_boxes, rr_boxes. משבצת קטנה = 1 מ"מ (ב-25 מ"מ/ש = 40ms).
+- אם אינך יכול לספור בוודאות — השאר ריק, אל תנחש.
+- מדוד סטיית ST בכל הובלה רלוונטית ב-מ"מ מקו הבסיס בנקודת J, והחזר ב-st_deviations: {lead, mm, direction (elevation/depression)}.
+המערכת תמיר משבצות→ms לפי מהירות הנייר ותצליב מול הצהרותיך — הערכים המדודים מהרשת הם הקובעים.`;
+
 /**
  * Build the full ECG interpretation system prompt.
  */
@@ -159,6 +167,8 @@ ${ECG_METHODOLOGY}
 ${ECG_FULL_RULES}
 
 ${ANTI_HALLUCINATION_LAWS}
+
+${GRID_MEASUREMENT_PROMPT}
 
 ${CRITICAL_RULE_OUT_PROMPT}
 
@@ -189,6 +199,7 @@ export function buildEcgEvidenceBlock(engineResult) {
 - **ציר חשמלי:** ${st.axis?.degrees ?? "?"}° (${st.axis?.interpretation || "—"})
 - **מרווחים:** PR ${iv.pr_ms ?? "?"}ms | QRS ${iv.qrs_ms ?? "?"}ms | QT ${iv.qt_ms ?? "?"}ms | RR ${iv.rr_ms ?? "?"}ms | QTc(Bazett) ${iv.qtc_bazett_ms ?? "?"}ms | QTc(Fridericia) ${iv.qtc_fridericia_ms ?? "?"}ms — ${iv.qtc_status || "—"}
 - **מורפולוגיה:** ST: ${morph.st_segment || "—"} | T: ${morph.t_waves || "—"} | Q: ${morph.q_waves || "—"}
+- **סטיות ST מדודות (מ"מ):** ${(st.st_deviations || []).map((d) => `${d.lead} ${d.direction || ""} ${d.mm}`).join(", ") || "—"}
 - **היפרטרופיה/הגדלה:** LVH ${hyp.lvh_present ? "כן" : "לא"} | RVH ${hyp.rvh_present ? "כן" : "לא"} | עליות: ${hyp.atrial_enlargement || "—"}
 - **ממצאים עיקריים:** ${(st.primary_findings || []).join("; ") || "—"}
 - **ראיות תומכות (לכל ממצא):**\n${ev || "  —"}
@@ -258,6 +269,31 @@ export const ECG_STRUCTURED_SCHEMA = {
         qtc_status: { type: "string", description: "Short / Normal / Borderline / Prolonged" },
       },
       required: ["pr_ms", "qrs_ms", "qt_ms", "rr_ms"],
+    },
+
+    grid_measurements: {
+      type: "object",
+      description: "מדידה מהרשת — מספר משבצות קטנות (רוחב). המערכת תמיר ל-ms לפי מהירות הנייר.",
+      properties: {
+        pr_boxes: { type: "number" },
+        qrs_boxes: { type: "number" },
+        qt_boxes: { type: "number" },
+        rr_boxes: { type: "number" },
+      },
+    },
+
+    st_deviations: {
+      type: "array",
+      description: "סטיית ST לפי הובלה, במ\"מ מקו הבסיס בנקודת J",
+      items: {
+        type: "object",
+        properties: {
+          lead: { type: "string" },
+          mm: { type: "number" },
+          direction: { type: "string", description: "elevation / depression" },
+        },
+        required: ["lead", "mm"],
+      },
     },
 
     wave_and_segment_morphology: {
@@ -493,6 +529,52 @@ export function reconcileEcg(structured, { sex } = {}) {
   };
 }
 
+/**
+ * Calibration-aware grid measurement: convert the model's small-box counts into
+ * ms using the declared paper speed, and OVERRIDE the stated interval values
+ * with the measured ones. This anchors intervals to the grid instead of an
+ * eyeballed guess — the model cannot state QRS=90ms while counting 4 boxes.
+ */
+export function applyGridMeasurements(structured) {
+  const s = structured || {};
+  const tc = s.technical_check || {};
+  const speed = isNum(tc.speed_mm_s) && tc.speed_mm_s > 0 ? tc.speed_mm_s : 25;
+  const msPerBox = 1000 / speed; // 1 small box = 1 mm
+  const gm = s.grid_measurements || {};
+  const iv = { ...(s.intervals || {}) };
+  const warnings = [];
+  let used = false;
+  const map = [["pr_boxes", "pr_ms", "PR"], ["qrs_boxes", "qrs_ms", "QRS"], ["qt_boxes", "qt_ms", "QT"], ["rr_boxes", "rr_ms", "RR"]];
+  for (const [bk, mk, label] of map) {
+    if (isNum(gm[bk]) && gm[bk] > 0) {
+      const gridMs = Math.round(gm[bk] * msPerBox);
+      used = true;
+      const stated = iv[mk];
+      if (isNum(stated) && Math.abs(gridMs - stated) > Math.max(20, stated * 0.12)) {
+        warnings.push(`מדידת רשת: ${label}=${gm[bk]} משבצות×${Math.round(msPerBox)}ms=${gridMs}ms, אך הוצהר ${stated}ms — אומץ הערך המדוד מהרשת.`);
+      }
+      iv[mk] = gridMs;
+    }
+  }
+  return { intervals: iv, warnings, used, speed };
+}
+
+/** Consistency: measured ST elevation ≥2mm in ≥2 leads but no STEMI flagged → warn. */
+function checkStConsistency(structured) {
+  const s = structured || {};
+  const gainRaw = s.technical_check?.calibration_mm_mv;
+  const gain = isNum(gainRaw) && gainRaw > 0 ? gainRaw : 10;
+  const st = Array.isArray(s.st_deviations) ? s.st_deviations : [];
+  const elevated = st.filter((d) => /elev|הגבה/i.test(d?.direction || "") && isNum(d?.mm) && (d.mm * 10 / gain) >= 2);
+  const crit = new Set((s.critical_rule_out || []).filter((x) => x.status === "met").map((x) => x.pattern_key));
+  const stemiMet = [...crit].some((k) => k.startsWith("stemi") || k === "left_main_lad" || k === "de_winter" || k === "hyperacute_t");
+  const warns = [];
+  if (elevated.length >= 2 && !stemiMet) {
+    warns.push(`מדידת רשת: הגבהת ST ≥2מ"מ ב-${elevated.map((d) => d.lead).join(", ")} אך לא סומן STEMI/שווה-ערך — יש לשקול שנית.`);
+  }
+  return warns;
+}
+
 /* ==========================================================================
  *  4. SELF-CONSISTENCY + ADVERSARIAL VERIFICATION
  * ========================================================================== */
@@ -639,7 +721,10 @@ export async function runEcgEngine({
     };
   }
 
-  // ---- Deterministic reconciliation ----
+  // ---- Grid (calibration-aware) measurement override, then reconciliation ----
+  const grid = applyGridMeasurements(pass1);
+  if (grid.used) pass1.intervals = grid.intervals;
+  const stWarns = checkStConsistency(pass1);
   const recon = reconcileEcg(pass1, { sex });
   let structured = recon.corrected;
 
@@ -680,7 +765,7 @@ export async function runEcgEngine({
 
   // ---- Fuse into a final confidence + uncertainty verdict ----
   let confidence = baseConfidence - recon.confidencePenalty;
-  const warnings = [...recon.discrepancies, ...recon.contradictions];
+  const warnings = [...recon.discrepancies, ...recon.contradictions, ...grid.warnings, ...stWarns];
 
   if (consistencyAgree === false) {
     confidence -= 20;
