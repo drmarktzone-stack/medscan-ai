@@ -28,6 +28,7 @@ export default function ECGAnalysis() {
   const [kbCount, setKbCount] = useState(0);
   const [clinicalContext, setClinicalContext] = useState("");
   const [pediatric, setPediatric] = useState(false);
+  const [patientMeta, setPatientMeta] = useState({});
 
   const updateUploadedUrls = (urls) => {
     setUploadedUrls(urls);
@@ -86,6 +87,8 @@ export default function ECGAnalysis() {
         clinicalContext,
         language: lang,
         pediatric,
+        patientAgeYears: patientMeta.age ? Number(patientMeta.age) : undefined,
+        patientSex: patientMeta.sex || undefined,
         matchingInstructions: `1. בחן את התרשים בצורה שיטתית: קצב, רגולריות, גלי P, מרווח PR, קומפלקס QRS, מקטע ST, גלי T, מקטע QT, ציר חשמלי.
 2. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
 3. שים לב במיוחד למצבים מסכני חיים: STEMI, VT, VF, חסמים מלאים, היפרקלמיה.
@@ -162,7 +165,7 @@ export default function ECGAnalysis() {
 
         {(files.length > 0 || uploadedUrls.length > 0) && !result && (
           <>
-            <ClinicalContextForm onChange={setClinicalContext} />
+            <ClinicalContextForm onChange={setClinicalContext} onMeta={setPatientMeta} />
             <PediatricToggle value={pediatric} onChange={setPediatric} />
             <Button
               onClick={handleAnalyze}
