@@ -89,6 +89,7 @@ export default function ECGAnalysis() {
         pediatric,
         patientAgeYears: patientMeta.age ? Number(patientMeta.age) : undefined,
         patientSex: patientMeta.sex || undefined,
+        patientRef: patientMeta.patient_ref || undefined,
         matchingInstructions: `1. בחן את התרשים בצורה שיטתית: קצב, רגולריות, גלי P, מרווח PR, קומפלקס QRS, מקטע ST, גלי T, מקטע QT, ציר חשמלי.
 2. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
 3. שים לב במיוחד למצבים מסכני חיים: STEMI, VT, VF, חסמים מלאים, היפרקלמיה.
