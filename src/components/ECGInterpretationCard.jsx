@@ -4,6 +4,9 @@ import {
   Activity, ListChecks, Stethoscope, FileText,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CRITICAL_RULE_OUT } from "@/lib/ecgEngine";
+
+const CRIT_LABEL = Object.fromEntries(CRITICAL_RULE_OUT.map((c) => [c.key, c.label]));
 
 /**
  * ECG structured dashboard (per engine spec Part 3).
@@ -224,6 +227,41 @@ export default function ECGInterpretationCard({ interpretation }) {
                 <AlertTriangle className="w-3.5 h-3.5" /> דרגת דחיפות: {urg.label}
               </p>
             </div>
+
+            {(() => {
+              const cro = st.critical_rule_out || [];
+              const met = cro.filter((x) => x.status === "met");
+              const indet = cro.filter((x) => x.status === "indeterminate");
+              const notMet = cro.filter((x) => x.status === "not_met").length;
+              if (cro.length === 0) return null;
+              return (
+                <Section icon={ShieldAlert} title="שלילת דפוסים מסכני-חיים">
+                  {met.length > 0 && (
+                    <div className="mb-2 bg-red-600 text-white rounded-lg p-2.5">
+                      <p className="text-[11px] font-bold mb-1">🚨 זוהו ({met.length})</p>
+                      <ul className="space-y-1">
+                        {met.map((x, i) => (
+                          <li key={i} className="text-[11px]">• {CRIT_LABEL[x.pattern_key] || x.pattern_key}{x.evidence ? ` — ${x.evidence}` : ""}{x.leads ? ` [${x.leads}]` : ""}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {indet.length > 0 && (
+                    <div className="mb-2 bg-amber-50 border border-amber-200 rounded-lg p-2.5">
+                      <p className="text-[11px] font-bold text-amber-800 mb-1">לא ניתן לשלול ({indet.length})</p>
+                      <div className="flex flex-wrap gap-1">
+                        {indet.map((x, i) => (
+                          <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-white text-amber-700 border border-amber-200">{CRIT_LABEL[x.pattern_key] || x.pattern_key}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {met.length === 0 && indet.length === 0 && (
+                    <p className="text-[11px] text-emerald-600">✓ כל {notMet} הדפוסים המסכני-חיים נשללו.</p>
+                  )}
+                </Section>
+              );
+            })()}
 
             {st.differential_diagnoses && st.differential_diagnoses.length > 0 ? (
               <Section icon={Stethoscope} title="אבחנות מבדלות">
