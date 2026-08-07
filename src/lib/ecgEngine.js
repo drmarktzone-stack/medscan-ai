@@ -94,6 +94,50 @@ const ANTI_HALLUCINATION_LAWS = `## חוקי-ברזל נגד הזיות (קרי�
 6. **כייל ביטחון.** confidence משקף כמה הראיה חד-משמעית. תמונה חלקית/קריאות ירודה → confidence נמוך, לא אבחנה נחרצת.
 7. **אל תשתמש בידע חיצוני/אינטרנט** — הסתמך אך ורק על מה שנראה בתמונה ועל הכללים שסופקו.`;
 
+/* ==========================================================================
+ *  CRITICAL RULE-OUT — the killers & the commonly-missed (high-recall safety)
+ *  Every read must explicitly mark each of these met / not_met / indeterminate.
+ * ========================================================================== */
+export const CRITICAL_RULE_OUT = [
+  { key: "stemi_anterior", label: "STEMI קדמי", level: "emergency", look_for: "ST elevation V1–V4" },
+  { key: "stemi_inferior", label: "STEMI תחתון", level: "emergency", look_for: "ST elevation II, III, aVF (בדוק חדר ימני/אחורי נלווים)" },
+  { key: "stemi_lateral", label: "STEMI צידי", level: "emergency", look_for: "ST elevation I, aVL, V5–V6" },
+  { key: "stemi_posterior", label: "STEMI אחורי", level: "emergency", look_for: "ST depression V1–V3 + R גבוה + T זקוף (תמונת ראי)" },
+  { key: "stemi_rv", label: "אוטם חדר ימני", level: "emergency", look_for: "ST elevation V4R — בדוק תמיד באוטם תחתון" },
+  { key: "left_main_lad", label: "חסימת גזע ראשי / LAD פרוקסימלי", level: "emergency", look_for: "ST elevation aVR > V1 + ST depression נרחב" },
+  { key: "de_winter", label: "De Winter (STEMI-equivalent)", level: "emergency", look_for: "ST depression up-sloping V1–V6 + T גבוה סימטרי" },
+  { key: "wellens", label: "Wellens (חסימה קריטית LAD)", level: "emergency", look_for: "T דו-פאזי או שלילי עמוק V2–V3, לרוב לאחר כאב שחלף" },
+  { key: "hyperacute_t", label: "Hyperacute T (אוטם מוקדם מאוד)", level: "emergency", look_for: "T גבוה-רחב-סימטרי בטריטוריה" },
+  { key: "sgarbossa", label: "Sgarbossa חיובי (אוטם ב-LBBB/קוצב)", level: "emergency", look_for: "concordant STE ≥1mm, או STD ≥1mm ב-V1–V3, או discordant STE ≥5mm" },
+  { key: "vt", label: "טכיקרדיה חדרית (VT)", level: "emergency", look_for: "QRS רחב מהיר, AV dissociation, capture/fusion beats" },
+  { key: "vf", label: "פרפור חדרים (VF)", level: "emergency", look_for: "פעילות כאוטית ללא QRS מזוהה" },
+  { key: "complete_av_block", label: "חסם AV מלא (דרגה 3)", level: "emergency", look_for: "AV dissociation — P ו-QRS עצמאיים" },
+  { key: "mobitz_ii", label: "חסם AV Mobitz II", level: "urgent", look_for: "PR קבוע ואז P נעדר פתאום, QRS לרוב רחב" },
+  { key: "hyperkalemia", label: "היפרקלמיה חמורה", level: "emergency", look_for: "T מחודד → QRS מתרחב → P נעלם → sine wave" },
+  { key: "long_qt", label: "QT מוארך מסוכן (סיכון Torsades)", level: "emergency", look_for: "QTc מוארך משמעותית (>500ms)" },
+  { key: "torsades", label: "Torsades de Pointes", level: "emergency", look_for: "VT פולימורפי עם סיבוב ציר, על רקע QT מוארך" },
+  { key: "brugada", label: "תסמונת Brugada (Type 1)", level: "emergency", look_for: "coved ST elevation ≥2mm ב-V1–V2 + T שלילי" },
+  { key: "wpw", label: "WPW / פרה-אקסיטציה", level: "urgent", look_for: "PR קצר + delta wave + QRS רחב" },
+];
+
+const CRITICAL_LEVEL = Object.fromEntries(CRITICAL_RULE_OUT.map((c) => [c.key, c.level]));
+const CRITICAL_LABEL = Object.fromEntries(CRITICAL_RULE_OUT.map((c) => [c.key, c.label]));
+
+const CRITICAL_RULE_OUT_PROMPT = `## שלב חובה — שלילת דפוסים מסכני-חיים (Critical Rule-Out)
+זהו מנגנון הבטיחות למניעת החמצה. עבור **כל** דפוס ברשימה החזר ב-critical_rule_out סטטוס:
+- **met** — הדפוס מתקיים (יש ראיה).
+- **not_met** — נשלל בוודאות מהתרשים.
+- **indeterminate** — לא ניתן לאשש ולא לשלול בוודאות מהתרשים.
+
+חוקים:
+1. חובה להעריך את כל הדפוסים — אל תשמיט אף אחד.
+2. **העדף indeterminate על not_met כשאינך בטוח** (במיוחד באיכות תרשים ירודה או הובלה חסרה). not_met = שלילה ודאית בלבד.
+3. לכל met/indeterminate ציין evidence וההובלות הרלוונטיות.
+4. כל דפוס שסומן met חייב להופיע גם ב-primary_findings ולהעלות את clinical_urgency בהתאם.
+
+הדפוסים לבדיקה (pattern_key — מה לחפש):
+${CRITICAL_RULE_OUT.map((c) => `- ${c.key}: ${c.label} — ${c.look_for}`).join("\n")}`;
+
 /**
  * Build the full ECG interpretation system prompt.
  */
@@ -114,6 +158,8 @@ ${ECG_METHODOLOGY}
 ${ECG_FULL_RULES}
 
 ${ANTI_HALLUCINATION_LAWS}
+
+${CRITICAL_RULE_OUT_PROMPT}
 
 ## פורמט פלט
 החזר אך ורק JSON התואם לסכמה שסופקה. כל שדה טקסט — כתוב ב-${outputLang}. שמות פתולוגיות רפואיות ניתן להשאיר גם באנגלית לצד התרגום.`;
@@ -148,6 +194,7 @@ export function buildEcgEvidenceBlock(engineResult) {
 - **אבחנות מבדלות:** ${(st.differential_diagnoses || []).join(", ") || "—"}
 - **דחיפות (מנוע, לאחר בקרה):** ${st.clinical_urgency || "—"}
 - **צעדי המשך מומלצים:** ${(st.recommended_next_steps || []).join(", ") || "—"}
+- **שלילת דפוסים מסכני-חיים:** ${(() => { const c = (st.critical_rule_out || []); const met = c.filter((x) => x.status === "met").map((x) => x.pattern_key); const ind = c.filter((x) => x.status === "indeterminate").map((x) => x.pattern_key); return `met: ${met.join(", ") || "אין"} | indeterminate: ${ind.join(", ") || "אין"}`; })()}
 - **ביטחון מכויל (לאחר הצלבה/בקרה נגדית):** ${engineResult.confidence}%
 ${warns.length ? `\n### ⚠️ אזהרות אנטי-הזיה — התייחס אליהן, אל תתעלם:\n${warns.map((w) => "- " + w).join("\n")}` : ""}
 
@@ -269,6 +316,21 @@ export const ECG_STRUCTURED_SCHEMA = {
       items: { type: "string" },
     },
 
+    critical_rule_out: {
+      type: "array",
+      description: "שלילת דפוסים מסכני-חיים — סטטוס לכל דפוס מהרשימה",
+      items: {
+        type: "object",
+        properties: {
+          pattern_key: { type: "string", description: "מפתח הדפוס מהרשימה (למשל stemi_inferior)" },
+          status: { type: "string", enum: ["met", "not_met", "indeterminate"] },
+          evidence: { type: "string", description: "הראיה מהתרשים (או מדוע לא ניתן להעריך)" },
+          leads: { type: "string", description: "ההובלות הרלוונטיות" },
+        },
+        required: ["pattern_key", "status"],
+      },
+    },
+
     confidence: { type: "number", description: "ביטחון כולל 0-100, מכויל למידת חד-משמעות הראיה" },
     reasoning: { type: "string", description: "נימוק תמציתי המקשר בין המדידות לאבחנה" },
   },
@@ -281,6 +343,7 @@ export const ECG_STRUCTURED_SCHEMA = {
     "wave_and_segment_morphology",
     "primary_findings",
     "clinical_urgency",
+    "critical_rule_out",
   ],
 };
 
@@ -481,6 +544,43 @@ function buildVerifierPrompt(structured, language) {
 כל טקסט ב-${outputLang}. החזר JSON לפי הסכמה.`;
 }
 
+/**
+ * Apply the critical rule-out results: a `met` life-threatening pattern forces
+ * urgency up and raises a loud warning; an `indeterminate` emergency-level
+ * pattern is surfaced so it is never silently dismissed.
+ */
+export function applyCriticalRuleOut(structured) {
+  const items = Array.isArray(structured?.critical_rule_out) ? structured.critical_rule_out : [];
+  const rank = { Normal: 0, Urgent: 1, Emergency: 2 };
+  const warnings = [];
+  const metCritical = [];
+  const indetEmergency = [];
+  let forced = "Normal";
+
+  for (const it of items) {
+    const level = CRITICAL_LEVEL[it?.pattern_key];
+    if (!level) continue;
+    const label = CRITICAL_LABEL[it.pattern_key] || it.pattern_key;
+    if (it.status === "met") {
+      metCritical.push(label);
+      const u = level === "emergency" ? "Emergency" : "Urgent";
+      if (rank[u] > rank[forced]) forced = u;
+      warnings.push(`🚨 דפוס מסכן-חיים זוהה — ${label}${it.evidence ? `: ${it.evidence}` : ""}${it.leads ? ` [${it.leads}]` : ""} — נדרשת הערכה דחופה.`);
+    } else if (it.status === "indeterminate" && level === "emergency") {
+      indetEmergency.push(label);
+    }
+  }
+  if (indetEmergency.length) {
+    warnings.push(`לא ניתן היה לשלול בוודאות דפוסים מסכני-חיים: ${indetEmergency.join("، ")} — שקול תרשים באיכות טובה יותר, השוואה ל-ECG קודם, והערכת מומחה.`);
+  }
+  return {
+    forcedUrgency: forced === "Normal" ? null : forced,
+    warnings,
+    metCritical,
+    indeterminateEmergency: indetEmergency.length > 0,
+  };
+}
+
 /* ==========================================================================
  *  5. ORCHESTRATOR — runEcgEngine
  * ========================================================================== */
@@ -598,12 +698,20 @@ export async function runEcgEngine({
     finalUrgency = verification.adjusted_urgency;
     warnings.push(`הבקרה הנגדית העלתה את דרגת הדחיפות ל-${finalUrgency}.`);
   }
+
+  // Critical rule-out escalation (a met killer forces urgency; indeterminate killers surface).
+  const critical = applyCriticalRuleOut(structured);
+  if (critical.forcedUrgency && rank[critical.forcedUrgency] > rank[finalUrgency]) {
+    finalUrgency = critical.forcedUrgency;
+  }
+  warnings.push(...critical.warnings);
+
   structured.clinical_urgency = finalUrgency;
 
   let uncertaintyLevel = null;
   if (confidence < 45 || consistencyAgree === false || (verification && verification.refuted)) {
     uncertaintyLevel = "high";
-  } else if (confidence < 65 || recon.hasIssues) {
+  } else if (confidence < 65 || recon.hasIssues || critical.indeterminateEmergency) {
     uncertaintyLevel = "medium";
   }
 
