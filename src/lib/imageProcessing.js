@@ -91,10 +91,21 @@ export function applyInvert(gray) {
  * הגברת רעש פראית באזורים אחידים (זה ה-"Contrast Limited").
  */
 export function applyCLAHE(gray, width, height, { tiles = 8, clipLimit = 3 } = {}) {
-  const tileW = Math.max(1, Math.floor(width / tiles));
-  const tileH = Math.max(1, Math.floor(height / tiles));
+  // ⚠ אריח קטן מדי שובר את CLAHE: עם מעט פיקסלים, גבול הגזירה
+  // מתנוון ל-1 וההיסטוגרמה נהרסת, מה שמייצר הבהרה פראית
+  // ועלול לשטוף ממצא עדין. מגבילים את מספר האריחים כך
+  // שכל אריח יהיה לפחות 32 פיקסלים בכל ציר.
+  const MIN_TILE = 32;
+  const maxTilesX = Math.max(1, Math.floor(width / MIN_TILE));
+  const maxTilesY = Math.max(1, Math.floor(height / MIN_TILE));
+  const tilesX = Math.max(1, Math.min(tiles, maxTilesX));
+  const tilesY = Math.max(1, Math.min(tiles, maxTilesY));
+
+  const tileW = Math.max(1, Math.floor(width / tilesX));
+  const tileH = Math.max(1, Math.floor(height / tilesY));
   const nx = Math.ceil(width / tileW);
   const ny = Math.ceil(height / tileH);
+
 
   // מפת מיפוי (LUT) לכל אריח.
   const maps = new Array(nx * ny);
@@ -117,8 +128,10 @@ export function applyCLAHE(gray, width, height, { tiles = 8, clipLimit = 3 } = {
       }
 
       // גזירה (clip) וחלוקה מחדש של העודף באופן אחיד.
+      // רצפה של 4 פיקסלים לתא — מתחתיה הגזירה מוחקת את צורת
+      // ההיסטוגרמה במקום להגביל אותה.
       if (clipLimit > 0 && count > 0) {
-        const limit = Math.max(1, Math.floor((clipLimit * count) / 256));
+        const limit = Math.max(4, Math.floor((clipLimit * count) / 256));
         let excess = 0;
         for (let v = 0; v < 256; v++) {
           if (hist[v] > limit) {
@@ -137,13 +150,26 @@ export function applyCLAHE(gray, width, height, { tiles = 8, clipLimit = 3 } = {
         }
       }
 
-      // CDF → LUT.
+      // CDF → LUT, עם נירול ל-cdf_min.
+      // ⚠ בלי חיסור cdf_min המיפוי מוסט כלפי מעלה — אריח כהה
+      // ואחיד ממופה כמעט כולו ללבן. זו הצורה התקנית.
       const lut = new Uint8ClampedArray(256);
-      let cum = 0;
-      const norm = count > 0 ? 255 / count : 0;
+      let total = 0;
+      for (let v = 0; v < 256; v++) total += hist[v];
+      let cdfMin = 0;
       for (let v = 0; v < 256; v++) {
-        cum += hist[v];
-        lut[v] = cum * norm;
+        if (hist[v] > 0) { cdfMin = hist[v]; break; }
+      }
+      const denom = total - cdfMin;
+      if (denom > 0) {
+        let cum = 0;
+        for (let v = 0; v < 256; v++) {
+          cum += hist[v];
+          lut[v] = ((cum - cdfMin) / denom) * 255;
+        }
+      } else {
+        // אריח אחיד לחלוטין — זהות, ולא מתיחה שתמציא ניגודיות יש מאין.
+        for (let v = 0; v < 256; v++) lut[v] = v;
       }
       maps[ty * nx + tx] = lut;
     }
