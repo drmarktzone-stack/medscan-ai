@@ -3,7 +3,7 @@ import { ChevronDown, User } from "lucide-react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useI18n } from "@/lib/i18n";
 
-export default function ClinicalContextForm({ onChange }) {
+export default function ClinicalContextForm({ onChange, onMeta }) {
   const { t } = useI18n();
   const [expanded, setExpanded] = useState(false);
   const [fields, setFields] = useState({
@@ -24,7 +24,8 @@ export default function ClinicalContextForm({ onChange }) {
     if (fields.history) parts.push(`${t("ctx.out_history")}: ${fields.history}`);
     if (fields.medications) parts.push(`${t("ctx.out_medications")}: ${fields.medications}`);
     onChange(parts.join("\n"));
-  }, [fields, onChange, t]);
+    onMeta?.({ age: fields.age, sex: fields.sex });
+  }, [fields, onChange, onMeta, t]);
 
   const update = (key, value) => setFields((prev) => ({ ...prev, [key]: value }));
   const filledCount = Object.values(fields).filter(Boolean).length;
