@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch, ListChecks, Database } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch, ListChecks, Database, GitCompare } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -12,6 +12,15 @@ const tools = [
     descKey: "home.ecg_desc",
     icon: Activity,
     path: "/ecg",
+    gradient: "from-blue-500 to-cyan-400",
+    bg: "bg-blue-50",
+    color: "#3b82f6",
+  },
+  {
+    titleKey: "השוואת א.ק.ג",
+    descKey: "השוואת תרשים חדש מול קודמים לזיהוי שינוי",
+    icon: GitCompare,
+    path: "/ecg-compare",
     gradient: "from-blue-500 to-cyan-400",
     bg: "bg-blue-50",
     color: "#3b82f6",
