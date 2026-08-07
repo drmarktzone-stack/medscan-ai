@@ -7,6 +7,7 @@ export default function ClinicalContextForm({ onChange, onMeta }) {
   const { t } = useI18n();
   const [expanded, setExpanded] = useState(false);
   const [fields, setFields] = useState({
+    patient_ref: "",
     age: "",
     sex: "",
     symptoms: "",
@@ -24,7 +25,7 @@ export default function ClinicalContextForm({ onChange, onMeta }) {
     if (fields.history) parts.push(`${t("ctx.out_history")}: ${fields.history}`);
     if (fields.medications) parts.push(`${t("ctx.out_medications")}: ${fields.medications}`);
     onChange(parts.join("\n"));
-    onMeta?.({ age: fields.age, sex: fields.sex });
+    onMeta?.({ age: fields.age, sex: fields.sex, patient_ref: fields.patient_ref });
   }, [fields, onChange, onMeta, t]);
 
   const update = (key, value) => setFields((prev) => ({ ...prev, [key]: value }));
@@ -50,6 +51,16 @@ export default function ClinicalContextForm({ onChange, onMeta }) {
 
       {expanded && (
         <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">מזהה מטופל (אופציונלי · לא נשלח ל-AI)</label>
+            <input
+              type="text"
+              value={fields.patient_ref}
+              onChange={(e) => update("patient_ref", e.target.value)}
+              placeholder="שם או מספר לזיהוי המטופל (להשוואת ECG)"
+              className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">{t("ctx.age")}</label>
