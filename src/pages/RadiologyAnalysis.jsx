@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ScanLine, Loader2, BookOpen, ShieldCheck } from "lucide-react";
+import React, { useState, useEffect, useMemo } from "react";
+import { ScanLine, Loader2, BookOpen, ShieldCheck, Contrast, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
@@ -13,6 +13,8 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
 import { useI18n } from "@/lib/i18n";
 import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RadiologyViewer from "@/components/RadiologyViewer";
 
 export default function RadiologyAnalysis() {
   const { t, lang } = useI18n();
@@ -26,6 +28,20 @@ export default function RadiologyAnalysis() {
   const [pediatric, setPediatric] = useState(false);
   const [grounded, setGrounded] = useState(null);
   const [groundedLoading, setGroundedLoading] = useState(false);
+
+  // מקור התמונה ללשונית הניגודית.
+  // מעדיפים blob מקומי על פני ה-URL המרוחק: הקנבס קורא פיקסלים
+  // (getImageData), ותמונה ממקור אחר עלולה להכתים אותו ולחסום את הקריאה.
+  const viewerSrc = useMemo(() => {
+    if (files.length > 0) return URL.createObjectURL(files[0]);
+    return result?.imageUrl || null;
+  }, [files, result]);
+
+  useEffect(() => {
+    if (files.length > 0 && viewerSrc?.startsWith("blob:")) {
+      return () => URL.revokeObjectURL(viewerSrc);
+    }
+  }, [viewerSrc, files]);
 
   useEffect(() => {
     base44.entities.RadiologyCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
@@ -157,22 +173,47 @@ export default function RadiologyAnalysis() {
         )}
 
         {result && (
-          <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-            <AnalysisResult
-              result={result.analysis}
-              severity={result.severity}
-              summary={result.summary}
-              matchedCases={result.matchedCases}
-              imageUrl={result.imageUrl}
-              findings={result.findings}
-              uncertainty={result.uncertainty}
-              guideline={result.guideline}
-              analysisId={result.analysisId}
-              analysisType="radiology"
-              structuredInterpretation={result.structuredInterpretation}
-              numericIntegrity={result.numericIntegrity}
-            />
-          </div>
+          <Tabs defaultValue="result" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="result" className="flex items-center gap-1.5 text-xs">
+                <FileText className="w-3.5 h-3.5" />
+                {t("viewer.tab_result")}
+              </TabsTrigger>
+              <TabsTrigger value="contrast" className="flex items-center gap-1.5 text-xs">
+                <Contrast className="w-3.5 h-3.5" />
+                {t("viewer.tab_contrast")}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="result" className="mt-0">
+              <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+                <AnalysisResult
+                  result={result.analysis}
+                  severity={result.severity}
+                  summary={result.summary}
+                  matchedCases={result.matchedCases}
+                  imageUrl={result.imageUrl}
+                  findings={result.findings}
+                  uncertainty={result.uncertainty}
+                  guideline={result.guideline}
+                  analysisId={result.analysisId}
+                  analysisType="radiology"
+                  structuredInterpretation={result.structuredInterpretation}
+                  numericIntegrity={result.numericIntegrity}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="contrast" className="mt-0">
+              <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+                {viewerSrc ? (
+                  <RadiologyViewer src={viewerSrc} />
+                ) : (
+                  <p className="text-sm text-slate-500">{t("viewer.load_error")}</p>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
         )}
 
         {groundedLoading && (
