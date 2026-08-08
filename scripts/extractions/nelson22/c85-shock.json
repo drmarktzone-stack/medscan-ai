@@ -1,0 +1,709 @@
+{
+  "chapter_title_he": "שוק",
+  "_provenance_he": "נלסון 22 (Elsevier, 2025), פרק 85 — Shock (Scott L. Weiss, Pierre Tissières, Mark J. Peters), עמודים מודפסים 600-611. חולץ מטקסט verbatim של ה-PDF המקורי דרך scripts/nelsonExtract.py, שקורא את מספר העמוד המודפס מהכותרת הרצה ואינו מחשב אותו מהיסט — האופסט בין עמוד PDF לעמוד מודפס אינו קבוע בספר. ⚠ הציטוטים בשדות source_quote_he הם באנגלית ובמכוון: זהו הנוסח שניתן לאמת מול הספר. תרגום היה מוסיף שכבת פרשנות בין הטענה למקור.",
+
+  "topics": [
+    {
+      "topic_key": "nelson22.c85.shock",
+      "topic_title_he": "שוק בילדים",
+      "topic_title_en": "Shock",
+      "chapter_number": 85,
+      "chapter_title_he": "רפואת חירום, טיפול נמרץ והרדמה",
+      "page_start": 600,
+      "page_end": 611,
+      "summary_he": "הפרק מגדיר שוק כאי-ספיקה חדה ומסכנת חיים של מערכת הדם, שבה אספקת החמצן והחומרים המזינים אינה עונה על דרישות האיברים החיוניים. הנקודה הקלינית החדה ביותר בפרק, והיא חוזרת בו שלוש פעמים בניסוחים שונים, היא שהשוק קיים לפני שלחץ הדם יורד: ילדים — ובמיוחד תינוקות וילדי גן — יכולים לשמר לחץ דם תקין לגיל עד השלבים המאוחרים. לחץ דם תקין אינו שולל שוק, ולחץ דם נמוך מסמן שוק לא-מפוצה עם סיכון לנזק בלתי-הפיך. הפרק ממיין חמישה סוגי שוק — היפו-וולמי, קרדיוגני, חסימתי, תפוצתי ודיסוציאטיבי — ומדגיש שבשוק ספטי הם מתערבבים. הוא מציג את קריטריוני Phoenix (2024) לאבחון ספסיס ושוק ספטי בילדים, את חבילת השעה הראשונה של Surviving Sepsis Campaign 2020, ואת ההבחנה בין «שוק קר» ל«שוק חם» ואת מגבלותיה.",
+      "keywords": [
+        "שוק",
+        "שוק ספטי",
+        "ספסיס",
+        "Phoenix Sepsis Score",
+        "שוק היפו-וולמי",
+        "שוק קרדיוגני",
+        "שוק חסימתי",
+        "שוק תפוצתי",
+        "שוק דיסוציאטיבי",
+        "שוק נוירוגני",
+        "MODS",
+        "לקטט",
+        "מילוי קפילרי",
+        "Surviving Sepsis Campaign",
+        "Beck triad",
+        "shock index"
+      ],
+      "age_scope": "child",
+      "source_quote_he": "Shock is an acute, life-threatening process of cardiovascular insufficiency characterized by inadequate delivery of oxygen and nutrients (e.g., glucose) by the circulatory system to meet the metabolic demands of vital organs that results in cellular dysfunction and injury. … It is important to recognize that the shock state can be present before the onset of hypotension, especially in children."
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson22.c85.hyperlactatemia",
+      "title_he": "לקטט מוגבר בשוק",
+      "components": [
+        { "analyte": "לקטט עורקי", "direction": "high" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, לקטט עורקי בערך שסומן במקור כמדאיג ומעלה קשור בתוצאה גרועה יותר; הסף המספרי המדויק מופיע בציטוט המקור. המקור מציין במפורש שהסף האופטימלי טרם הוגדר. הרמה הגבוהה משקפת מעבר למטבוליזם אנאירובי, כלומר אספקת חמצן שאינה מספיקה לדרישה — והיא סמן לכל סוגי השוק, לא רק לספטי.",
+      "suspicion": "red",
+      "action_he": "לפי המקור, בילדים עם שוק ספטי, עלייה בלקטט ורידי ועורקי במיון קשורה בסיכון לתפקוד לקוי של איברים, ואם היא קיימת בעת הקבלה לטיפול נמרץ ילדים — בסיכון גבוה יותר למוות. מדידת לקטט היא אחת מששת הפעולות בחבילת השעה הראשונה. ⚠ בשוק דיסוציאטיבי הלקטט המוגבר מלווה דווקא ברוויון ורידי מרכזי גבוה, מה שמעיד על ניצול חמצן לקוי ולא על אספקה לקויה — ולכן לקטט לבדו אינו מבחין בין הסוגים.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "In children with septic shock, elevations in both venous and arterial blood lactate levels in the emergency department (ED) are associated with risk of organ dysfunction when measured in the ED and are associated with higher risk of death if elevated at the time of PICU admission. Although the optimal cutoff remains to be defined, arterial lactate ≥2 mmol/L is worrisome and associated with worse outcome."
+    },
+    {
+      "pattern_key": "nelson22.c85.svo2_extraction",
+      "title_he": "רוויון חמצן ורידי מרכזי — הפרדה בין אספקה לקויה לניצול לקוי",
+      "components": [
+        { "analyte": "רוויון חמצן ורידי מרכזי", "direction": "abnormal" },
+        { "analyte": "לקטט", "direction": "high" }
+      ],
+      "min_components": 2,
+      "direction_he": "לפי המקור, אספקת החמצן עולה בדרך כלל על הצריכה פי שלושה, יחס מיצוי החמצן הוא כ-25%, והרוויון הוורידי המרכזי התקין הוא כ-75%. ערך נמוך מסמן מיצוי מוגבר, כלומר ירידה באספקה יחסית לצריכה. ⚠ ההפך הוא הממצא המבחין: בשוק דיסוציאטיבי הלקטט גבוה אך הרוויון הוורידי גבוה מהתקין, משום שהחמצן מגיע לרקמה ואינו מנוצל. הספים המספריים מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "action_he": "המדידה נעשית בדרך כלל מצנתר בצומת הווריד הנבוב העליון והעלייה הימנית, ולכן היא זמינה רק לאחר הכנסת גישה ורידית מרכזית. לפי המקור, גישה מרכזית נשקלת כשהשוק נמשך למרות טיפול נוזלים, וזו אחת מהתועלות שלה. הצירוף של לקטט גבוה עם רוויון ורידי גבוה מפנה לבירור של סיבה דיסוציאטיבית — הרעלת פחמן חד-חמצני, מתמוגלובינמיה, ציאניד, אנמיה קשה או חסר תיאמין.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Oxygen delivery normally exceeds oxygen consumption by threefold. The oxygen extraction ratio is approximately 25%, thus producing a normal central venous oxygen saturation (Svo2) of approximately 75% … Svo2 values <70% reflect an increased oxygen extraction ratio and document a decrease in oxygen delivery relative to consumption. … Notably, in dissociative shock, hyperlactatemia is often accompanied by an elevated Svo2 >80–85%, which reflects a state of impaired oxygen use despite adequate tissue perfusion."
+    },
+    {
+      "pattern_key": "nelson22.c85.pco2_gap",
+      "title_he": "פער pCO2 ורידי-עורקי כסמן מוקדם",
+      "components": [
+        { "analyte": "פער pCO2 ורידי-עורקי", "direction": "high" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, פער מוגבר בין pCO2 ורידי לעורקי עשוי לסמן מצב שוק מוקדם. הסף המספרי מופיע בציטוט המקור.",
+      "suspicion": "yellow",
+      "action_he": "זהו סמן שמופיע מבדיקת גזים שנעשית ממילא בהערכת שוק. ערכו בכך שהוא עשוי להצביע על שוק בשלב שבו לחץ הדם עדיין תקין — כלומר בדיוק בחלון שבו המקור מזהיר מפני החמצה.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "A blood gas analysis may be helpful to assess the degree of respiratory dysfunction, and an elevated venous to arterial Pco2 gap ≥5 mm Hg (≥0.67 KPa) may signify an early shock state."
+    },
+    {
+      "pattern_key": "nelson22.c85.hyperferritinemia_sepsis",
+      "title_he": "היפרפריטינמיה בשוק ספטי",
+      "components": [
+        { "analyte": "פריטין", "direction": "high" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, קיימת תת-קבוצה אימונופנוטיפית של שוק ספטי המתייצגת עם היפרפריטינמיה. רמות הפריטין הגבוהות מנבאות לעיתים קרובות פרוגנוזה גרועה וצורך באשפוז ביחידה לטיפול נמרץ. הספים המספריים — ובכללם סף שונה למסגרת עתירת-משאבים ולמסגרת דלת-משאבים — מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "action_he": "לפי המקור, יש לקבוע רמות פריטין בכל החולים עם שוק ספטי. בנוכחות היפרפריטינמיה יש לבצע בדיקות ל-HLH ול-MAS, ובכללן פיברינוגן, טריגליצרידים, ספירת דם, רצפטור מסיס ל-IL-2, תאי NK ובדיקה גנטית ייעודית. המקור מציין שההיפרפריטינמיה עשויה לנבוע מ-HLH גנטי ראשוני (בדרך כלל מתחת לגיל שנתיים) או, לעיתים קרובות יותר, מ-HLH משני שהופעל על ידי גורם זיהומי או מ-MAS על רקע מחלה אוטו-אימונית.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "In addition to the traditional description of septic shock, a subgroup immunophenotype presents with hyperferritinemia. Ferritin levels >3,000 mg/mL often predict a poor prognosis and the need for intensive care unit (ICU) admission. Hyperferritinemic septic shock may be due to familial primary genetic hemophagocytic lymphohistiocytosis (HLH) (usually age <2 years) or, more often, secondary HLH initiated by an infectious agent or macrophage activation syndrome (MAS)."
+    }
+  ],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson22.c85.shock_before_hypotension",
+      "label_he": "סימני שוק בלחץ דם תקין — שוק מפוצה",
+      "trigger": {
+        "findings": [
+          "טכיקרדיה",
+          "שינוי במצב ההכרה",
+          "טכיפנאה",
+          "זמן מילוי קפילרי חריג",
+          "דופק היקפי מוחלש",
+          "אוליגוריה",
+          "חמצת",
+          "לקטט מוגבר"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, מצב השוק יכול להיות קיים לפני הופעת תת לחץ הדם, במיוחד בילדים, ולכן יש לזהות סימנים מוקדמים של פגיעה במחזור הדם. לחץ דם תקין לגיל אינו שולל שוק — ילדים, ובמיוחד תינוקות וילדים בגיל הגן, יכולים לשמר לחץ דם תקין עד השלבים המאוחרים. המקור מציין במפורש שתת לחץ דם אינו קריטריון לאבחנת שוק. יש להתחיל טיפול על סמך הסימנים המוקדמים ולא להמתין לירידת לחץ הדם.",
+      "reason_he": "לפי המקור, כאשר תת לחץ דם קיים, הילד הגיע למצב של שוק לא-מפוצה ונמצא בסיכון לנזק בלתי-הפיך לאיברים ולמוות ללא טיפול מיידי. המקור מציין שתפיסה שגויה משמעותית היא ששוק מתרחש רק עם לחץ דם נמוך.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "It is important to recognize that the shock state can be present before the onset of hypotension, especially in children … children—especially infants and preschool-age children—with compensated shock may be able to maintain a normal blood pressure (BP) for age until the later phases of shock. When hypotension is present, the child has reached a state of uncompensated shock and is at risk of irreversible organ damage and death without immediate treatment. … A significant misconception is that shock occurs only with low BP. Hypotension is often a late finding, especially in infants and young children, and is not a criterion for the diagnosis of shock."
+    },
+    {
+      "flag_key": "nelson22.c85.neurogenic_bradycardia",
+      "label_he": "שוק נוירוגני — היעדר טכיקרדיה או ברדיקרדיה",
+      "trigger": {
+        "findings": [
+          "חבלת ראש קשה",
+          "פגיעה בעמוד שדרה צווארי",
+          "תת לחץ דם ללא טכיקרדיה",
+          "ברדיקרדיה עם תת לחץ דם"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, שוק נוירוגני נגרם מהפרעה פתאומית בגירוי הסימפתטי לשריר החלק של כלי הדם, בדרך כלל בחבלת ראש קשה או בפגיעה בעמוד השדרה הצווארי. בשונה מסוגי שוק אחרים, פעילות הוואגוס הבלתי-מנוגדת גורמת באופן קלאסי לברדיקרדיה, או לפחות להיעדר תגובת הטכיקרדיה הרגילה לתת לחץ דם. ⚠ המשמעות המעשית: היעדר טכיקרדיה בילד פגוע אינו סימן מרגיע. הוא עשוי להיות הסימן עצמו.",
+      "reason_he": "לפי המקור, בשוק נוירוגני ייתכן שהטכיקרדיה תיעדר או שתופיע ברדיקרדיה ממש. בדומה לשוק תפוצתי, ייתכנו סימני הרחבת כלי דם, אף שבשלב המיידי החולה עשוי להיות קר בפריפריה עם מילוי קפילרי מושהה.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Neurogenic shock is a type of distributive shock caused by a sudden disruption of sympathetic nerve stimulation to the vascular smooth muscle leading to a profound decrease in vasomotor tone, typically with severe traumatic brain or cervical spine injury. Unlike other types of shock, the unopposed vagal activity classically results in bradycardia, or at least absence of the usual tachycardic response to hypotension."
+    },
+    {
+      "flag_key": "nelson22.c85.septic_shock_first_hour",
+      "label_he": "חשד לשוק ספטי — חבילת השעה הראשונה",
+      "trigger": {
+        "findings": [
+          "חום או תת-חום עם סימני שוק",
+          "זיהום ידוע או חשוד עם סימני שוק",
+          "חשד לספסיס",
+          "בקטרמיה",
+          "מנינגיטיס",
+          "פנאומוניה עם סימני תת-זילוח"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, ניהול שוק ספטי צריך לעקוב אחר הנחיות Surviving Sepsis Campaign 2020, הממליצות על שש פעולות בשעה הראשונה שלאחר זיהוי השוק: (1) השגת גישה ורידית או תוך-גרמית, (2) לקיחת תרבית דם, (3) התחלת אנטיביוטיקה אמפירית רחבת-טווח, (4) מדידת לקטט, (5) מתן נוזלים, (6) התחלת תרופות ואזואקטיביות אם השוק נמשך. לפי המקור, מתן מוקדם של אנטיביוטיקה המכוונת למחוללים הסבירים ביותר קשור בתמותה מופחתת ובפתרון מהיר יותר של תפקוד לקוי של איברים. ⚠ נפחי הנוזלים והמינונים אינם בכלל הזה — ראה dosing_mentions_he.",
+      "reason_he": "לפי המקור, שוק ספטי הוא תפקוד לקוי מסכן-חיים של מערכת הדם בחולים עם זיהום חשוד או מאושש, ומקנה סיכון גבוה לתמותה בילדים בהשוואה לזיהום לא-מסובך או לספסיס ללא שוק.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "These guidelines recommend six initial management steps in the first hour after shock recognition, including obtaining IV/IO access, collecting a blood culture, administering empiric broad-spectrum antibiotics, measuring lactate, providing volume resuscitation, and initiating vasoactive medication if shock persists despite fluid therapy. Early administration of antibiotics targeted to the most likely pathogens for each patient has been associated with reduced mortality and more rapid resolution of organ dysfunction."
+    },
+    {
+      "flag_key": "nelson22.c85.ductal_dependent_neonate",
+      "label_he": "שוק ביילוד — נגע לב תלוי-דוקטוס",
+      "trigger": {
+        "findings": [
+          "שוק ביילוד",
+          "הפרש זילוח בין גפיים עליונות לתחתונות",
+          "הפרש לחץ דם בין גפיים עליונות לתחתונות",
+          "שוק בתינוק מתחת לשלושה שבועות",
+          "היצרות אב העורקים",
+          "תסמונת לב שמאלי היפופלסטי"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 90,
+      "severity": "critical",
+      "action_he": "לפי המקור, ביילודים או תינוקות צעירים — בדרך כלל מתחת לגיל שניים עד שלושה שבועות — עם שוק שנגרם ממחלת לב מולדת תלוית-דוקטוס, יש להתחיל עירוי פרוסטגלנדין כדי לשמר תפוקת לב סיסטמית תוך כדי הכנה להעברה למרכז מומחיות ילדים. ⚠ המינון אינו בכלל הזה — ראה dosing_mentions_he. המקור מציין גם שדוקטוס שנסגר ולא זוהה הוא אחת הסיבות שיש לשקול בשוק עמיד.",
+      "reason_he": "לפי המקור, שוק חסימתי נובע מכל נגע היוצר מכשול מכני לזרימת הדם מהחדר, ובכללם נגעי לב שמאליים תלויי-דוקטוס: תסמונת לב שמאלי היפופלסטי, היצרות אב העורקים, קשת אאורטלית קטועה והיצרות קריטית של המסתם האאורטלי. נגעים חסימתיים של הלב השמאלי עשויים להתייצג ביילודים עם זילוח שונה בגפיים העליונות והתחתונות.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Obstructive shock stems from any lesion that creates a mechanical impediment to ventricular blood outflow, which includes pericardial tamponade, tension pneumothorax, pulmonary embolism, and ductal-dependent left-sided heart lesions … Left-heart obstructive lesions may present in newborns with discrepant perfusion of the upper and lower extremities. … For neonates or young infants (typically <2-3 weeks of age) with shock caused by ductal-dependent congenital heart disease, a prostaglandin infusion should be started to maintain systemic cardiac output while preparing to transfer to a pediatric specialty center."
+    },
+    {
+      "flag_key": "nelson22.c85.obstructive_relief",
+      "label_he": "שוק חסימתי — חסימה מכנית שיש לשחרר",
+      "trigger": {
+        "findings": [
+          "ורידי צוואר תפוחים",
+          "קולות לב עמומים",
+          "פולסוס פרדוקסוס",
+          "קולות נשימה א-סימטריים",
+          "מצוקה נשימתית עם היפוקסיה וירידה בכניסת אוויר",
+          "לחץ דופק צר עם מילוי קפילרי מושהה"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, בשוק חסימתי נדרשת לעיתים קרובות פעולה לשחרור נקודת החסימה המכנית: ניקור בית החזה בפנאומוטורקס בלחץ, ניקור קרום הלב בטמפונדה, ומתן תרופות פיברינוליטיות סיסטמיות בתסחיף ריאתי. ⚠ ההתייצצות החדה עלולה להתקדם במהירות לדום לב. פיצוי על ידי עלייה בקצב הלב ובעכבה מספק תמיכה זמנית בלבד, והוא ייכשל ללא שחרור החסימה.",
+      "reason_he": "לפי המקור, טמפונדה של קרום הלב כוללת את שלישיית Beck — תת לחץ דם, ורידי צוואר תפוחים וקולות לב עמומים. שוק חסימתי מפנאומוטורקס בלחץ כולל בדרך כלל סימני מצוקה נשימתית, היפוקסיה וירידה בכניסת האוויר. תסחיף ריאתי מסוג saddle מתייצג לעיתים קרובות בדום לב פתאומי.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "The acute presentation may quickly progress to cardiac arrest. Obstructive shock due to tension pneumothorax typically includes signs of respiratory distress, hypoxia, and diminished breath sounds. Pericardial tamponade includes Beck's triad of hypotension, jugular vein distention, and muffled heart sounds. A saddle pulmonary embolism often presents with a sudden cardiac arrest. … In obstructive shock, action is often needed to relieve the point of mechanical obstruction."
+    },
+    {
+      "flag_key": "nelson22.c85.etomidate_septic_shock",
+      "label_he": "אטומידאט בשוק ספטי — המקור ממליץ נגד",
+      "trigger": {
+        "findings": [
+          "צנרור בשוק ספטי",
+          "בחירת חומר הרדמה לצנרור בילד בשוק"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "warning",
+      "action_he": "לפי המקור, מספר מחקרים דיווחו על תוצאות שליליות לאחר צנרור עם אטומידאט, והנחיות שוק ספטי בילדים ממליצות נגד השימוש בו בחולים אלה. מבין חומרי ההרדמה הזמינים לצנרור, קטמין מועדף בדרך כלל בשל השפעותיו ההמודינמיות הנוחות, שבדרך כלל מגבירות את תפוקת הלב ואת לחץ הדם. ⚠ נקודה נוספת מהמקור: המעבר מהנשמה בלחץ שלילי ללחץ חיובי מפחית החזר ורידי בחולה שכבר היפו-וולמי ועלול לגרום לקריסה — יש להחזיק נוזלים זמינים ותרופות ואזואקטיביות מוכנות למתן בזמן המעבר.",
+      "reason_he": "לפי המקור, הנשמה בלחץ חיובי תפחית את ההחזר הוורידי בחולה שכבר היפו-וולמי, מה שעלול לזרז קריסה קרדיו-וסקולרית.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Positive pressure ventilation will decrease venous return in a patient who is already hypovolemic, which could precipitate cardiovascular collapse. It is therefore prudent to have fluid boluses readily available and vasoactive agents started or immediately ready to administer during this transition. Of the sedative agents available for intubation, ketamine is generally preferred because of its favorable hemodynamic effects … As several studies have reported adverse outcomes after intubation with etomidate, pediatric septic shock guidelines recommend against using etomidate in these patients."
+    },
+    {
+      "flag_key": "nelson22.c85.fluid_overload_stop",
+      "label_he": "סימני עומס נוזלים — הפסקת בולוסים ומעבר לוואזואקטיבי",
+      "trigger": {
+        "findings": [
+          "חרחורים בריאות",
+          "קצב דהירה",
+          "הגדלת כבד",
+          "היעדר שיפור המודינמי לאחר בולוס נוזלים"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, לא כל הילדים עם שוק ימשיכו להשתפר עם החייאת נפח חוזרת — ובמיוחד אלה עם שוק קרדיוגני ודיסוציאטיבי, אנמיה קשה או תת-תזונה. לפני חזרה על בולוס יש לקבוע אם החולה הגיב באופן המודינמי רצוי לבולוס הקודם, ולוודא שלא התפתחו סימני עומס נוזלים — חרחורים, קצב דהירה או הגדלת כבד. בילדים עם עדות לעומס נוזלים, נפח תוך-כלי מספק, או היעדר שיפור המודינמי, יש להעביר את ההחייאה מנפח לתרופות ואזואקטיביות.",
+      "reason_he": "לפי המקור, בשוק קרדיוגני מתן נוזלים עודף עלול להחמיר עומס נפח ולפגוע נוספות בתפקוד הלב. אולטרסאונד ליד המיטה עשוי לסייע בזיהוי היפו-וולמיה מתמשכת ובניבוי התגובה להמשך החייאת נפח.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Importantly, not all children with shock will continue to improve with repeated volume resuscitation, particularly those with cardiogenic and dissociative shock, severe anemia, or malnutrition. Before repeating a fluid bolus, the clinician should determine if the patient responded in a hemodynamically desirable way after the prior fluid bolus and ensure that signs of fluid overload, such as rales, gallop rhythm, or hepatomegaly, have not developed."
+    },
+    {
+      "flag_key": "nelson22.c85.no_icu_no_hypotension_fluid",
+      "label_he": "מסגרת ללא טיפול נמרץ וללא תת לחץ דם — בולוס נוזלים מזיק",
+      "trigger": {
+        "findings": [
+          "שוק ספטי במסגרת ללא גישה לטיפול נמרץ",
+          "זילוח לקוי ללא תת לחץ דם במסגרת דלת-משאבים"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "⚠ זהו היפוך של ההנחיה הרגילה. לפי המקור, במערכות בריאות ללא זמינות של טיפול נמרץ, טיפול בבולוס נוזלים היה קשור בסיכון מוגבר לתמותה במחקר FEAST כאשר תת לחץ דם לא היה קיים, ולכן ניהול הנוזלים צריך להתמקד בהתחלת נוזלי אחזקה בלבד במסגרות אלה. האלגוריתם המצוטט קובע במפורש: אין לתת בולוס נוזלים אלא אם יש סימני התייבשות עם איבודים מתמשכים.",
+      "reason_he": "לפי המקור, החבילה עצמה מציינת שיש להשמיט את בולוס הנוזלים כאשר (א) קיים עומס נוזלים, או (ב) מדובר במסגרת דלת-משאבים ללא תת לחץ דם.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "However, in healthcare systems with no availability to access intensive care, fluid bolus therapy was associated with increased risk of mortality in the FEAST clinical trial when hypotension was not present, and thus fluid management should focus on starting maintenance fluids only in these settings. … Note: Fluid bolus should be omitted from bundle if a) fluid overload is present or b) it is a low-resource setting without hypotension."
+    },
+    {
+      "flag_key": "nelson22.c85.refractory_shock",
+      "label_he": "שוק עמיד לנוזלים ולקטכולאמינים",
+      "trigger": {
+        "findings": [
+          "שוק נמשך למרות החייאת נפח ותמיכה ואזואקטיבית",
+          "לקטט עולה לאחר שש שעות החייאה",
+          "צורך גבוה בתמיכה ואזואקטיבית",
+          "תפקוד לקוי של שריר הלב בשוק"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, ילדים אלה נמצאים בסיכון מוגבר לתפקוד לקוי של מספר מערכות ולמוות. נדרשות ארבע פעולות: (1) הערכה לסיבות אטיפיות והפיכות — תת-פעילות בלוטת התריס, יתר לחץ תוך-בטני, טמפונדה, פנאומוטורקס, דוקטוס שנסגר ולא זוהה, דימום בלתי-נשלט, אנפילקסיס וצורך בסילוק מקור זיהומי; (2) תרופה ואזואקטיבית קו-שני; (3) קורטיקוסטרואידים במינון סטרס; (4) שקילת ECMO. ⚠ המינונים אינם בכלל הזה — ראה dosing_mentions_he.",
+      "reason_he": "לפי המקור, הסיכון גבוה במיוחד כאשר הצורך בתמיכה ואזואקטיבית גבוה, כאשר הלקטט חוצה סף מסוים או עולה לאחר שש שעות החייאה, ו/או כאשר קיים תפקוד לקוי של שריר הלב. הסף המספרי מופיע בציטוט המקור.",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "If shock persists despite volume resuscitation and vasoactive support with an initial catecholaminergic agent, such as epinephrine, the child has fluid-refractory and catecholamine-resistant shock. Such children have an increased risk for MODS and death, especially if requirement for vasoactive support is high, blood lactate exceeds 8 mmol/L (or is rising after 6 hours of resuscitation), and/or myocardial dysfunction is present."
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson22.c85.shock_types",
+      "title_he": "חמשת סוגי השוק — מיון ומנגנון",
+      "category": "criteria",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "סימני שוק", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, מערכות המיון מגדירות בדרך כלל חמישה סוגי שוק. שוק היפו-וולמי — הסיבה השכיחה ביותר לשוק בילדים בעולם — נגרם לרוב מאיבודי נוזלים חדים מִשלשול, הקאות או דימום; שוק דימומי הוא מקרה מיוחד שלו. שוק קרדיוגני מופיע בחולים עם מחלת לב מולדת, לפני או אחרי ניתוח, או עם קרדיומיופתיות מולדות או נרכשות, ובכללן מיוקרדיטיס חד ותסמונת דלקתית רב-מערכתית בילדים (MIS-C). שוק חסימתי נובע מכל נגע היוצר מכשול מכני לזרימת הדם מהחדר — טמפונדה, פנאומוטורקס בלחץ, תסחיף ריאתי ונגעים שמאליים תלויי-דוקטוס. שוק תפוצתי נגרם מהרחבת כלי דם בלתי-מתאימה, הצטברות דם בכלי הדם ההיקפיים, דליפת פלזמה למרווח הבין-תאי דרך מחסום אנדותליאלי פגוע, ומעקף מיקרו-וסקולרי; הגורמים השכיחים בילדים הם ספסיס, אנפילקסיס ומנת יתר של תרופות. שוק דיסוציאטיבי הוא קטגוריה מיוחדת שבה אספקת החמצן לתא או ניצולו פגומים קשות למרות זילוח רקמתי שמור או גבוה מהתקין — אנמיה קשה, מתמוגלובינמיה, הרעלת פחמן חד-חמצני או חסר תיאמין.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "המיון אינו אקדמי: הוא קובע את הטיפול. שוק היפו-וולמי דורש נפח, שוק קרדיוגני דורש זהירות בנפח ואינוטרופ, שוק חסימתי דורש שחרור מכני, ושוק דיסוציאטיבי דורש נוגדן ספציפי — נוזלים לא יעזרו בו. ⚠ אבל המקור מדגיש שקיימת חפיפה משמעותית בין הקבוצות, במיוחד בשוק ספטי, ולכן המיון הוא נקודת פתיחה ולא מסקנה.",
+      "recommended_workup_he": [
+        "אנמנזה: חבלה או דימום, חשיפה לתרופות או חומרים, תסמיני זיהום או איבודי נוזלים",
+        "בדיקה גופנית: סימנים חיוניים, מצב הכרה, טמפרטורת גפיים, דפקים, מילוי קפילרי, פריחה",
+        "אולטרסאונד ליד המיטה להערכת נפח, תפקוד לב וסיבה חסימתית",
+        "בירור מעבדתי ראשוני — ראה כלל nelson22.c85.laboratory_workup"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Shock classification systems generally define five major types of shock: hypovolemic, cardiogenic, obstructive, distributive, and dissociative. Hypovolemic shock, the most common cause of shock in children worldwide, is most frequently caused by acute fluid losses resulting from diarrhea, vomiting, or hemorrhage. … Dissociative shock is a special category of shock in which cellular oxygen delivery or utilization is severely impaired despite sustained or supranormal tissue perfusion."
+    },
+    {
+      "rule_key": "nelson22.c85.phoenix_sepsis_criteria",
+      "title_he": "קריטריוני Phoenix לספסיס ולשוק ספטי בילדים",
+      "category": "criteria",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "זיהום חשוד או מאושש", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, ספסיס בילדים מוגדר תפעולית כציון Phoenix Sepsis Score של שתי נקודות לפחות, ממודל מרובע-מערכות הכולל קריטריונים לתפקוד לקוי נשימתי, נוירולוגי, קרישתי וקרדיו-וסקולרי. שוק ספטי מחייב נקודה אחת לפחות בתת-הציון הקרדיו-וסקולרי. ⚠ הציון עצמו הוא חישוב דטרמיניסטי: הוא מורכב מספים לפי מערכת ולפי קבוצת גיל, והוא אינו מחושב כאן. המקור מציין שהציון ניתן לחישוב גם בהיעדר חלק מהמשתנים, ושמשתנים שלא נמדדו אינם תורמים נקודות. הקריטריונים אינם חלים על אשפוזי לידה, על יילודים שגילם ההתעברותי מתחת ל-37 שבועות, או על בני 18 ומעלה.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "שתי נקודות מעשיות. ראשונה: הציון מכיל תת-ציון קרדיו-וסקולרי מבוסס-גיל ללחץ עורקי ממוצע — כלומר הוא כבר מגלם את העובדה שסף תת לחץ הדם משתנה עם הגיל, וזו בדיוק הנקודה שבה טעות שכיחה. שנייה: ההגדרה מאפשרת לקבוע שוק ספטי גם ללא לקטט וללא תרופות ואזואקטיביות, על סמך לחץ הדם בלבד — כלומר היא ישימה במיון לפני שכל הבדיקות חוזרות.",
+      "recommended_workup_he": [
+        "הערכת ארבע המערכות: נשימתית, קרדיו-וסקולרית, קרישתית ונוירולוגית",
+        "לחץ עורקי ממוצע מדוד, מועדף על פני מחושב",
+        "לקטט עורקי או ורידי",
+        "ספירת טסיות, INR, D-dimer, פיברינוגן",
+        "Glasgow Coma Scale ותגובת אישונים"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Sepsis in children is operationalized as a Phoenix Sepsis Score of at least 2 points from a composite four-organ system model that includes criteria for respiratory, neurologic, coagulation, and cardiovascular dysfunction, with septic shock requiring at least 1 point in the cardiovascular subscore. … Sepsis: Suspected infection and Phoenix Sepsis Score ≥2 points. Septic shock: Sepsis with ≥1 cardiovascular point(s)."
+    },
+    {
+      "rule_key": "nelson22.c85.perfusion_signs",
+      "title_he": "סימני ירידה בזילוח לפי מערכת ולפי דרגה",
+      "category": "criteria",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "חשד לירידה בזילוח", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, השוק עשוי להתייצג בתחילה רק כטכיקרדיה, עם או בלי טכיפנאה. ההתקדמות מובילה לירידה בתפוקת השתן, זילוח היקפי ירוד, מצוקה או אי-ספיקה נשימתית, שינוי במצב ההכרה ולחץ דם נמוך. המקור מציג מדרג בשלוש דרגות: בדרגה הראשונה — מילוי קפילרי מושהה, עלייה בקצב הלב וירידה בנפח השתן. בדרגה השנייה — אי-שקט, אדישות וחרדה, עלייה בהנשמה, חמצת מטבולית מפוצה, ירידה בתנועתיות המעי, אוליגוריה, גפיים קרות ודפקים היקפיים מוחלשים. בדרגה השלישית — אגיטציה, בלבול, טשטוש וקומה, חמצת מטבולית לא-מפוצה, אילאוס, אוליגוריה או אנוריה, גפיים כחלחלות וקרות, ודפקים מרכזיים בלבד עם ירידת לחץ דם.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "המדרג הזה הוא הכלי שמאפשר לזהות את השוק בדרגה הראשונה, כשלחץ הדם עדיין תקין. שים לב מה נמצא בדרגה הראשונה בטבלה של המקור: מילוי קפילרי מושהה, קצב לב מוגבר ונפח שתן מופחת — שלושה סימנים שאינם דורשים מכשור. ירידת לחץ הדם מופיעה רק בדרגה השלישית.",
+      "recommended_workup_he": [
+        "הערכת מצב הכרה",
+        "קצב נשימה ותבנית הנשמה",
+        "טמפרטורת גפיים, צבע, מילוי קפילרי",
+        "דפקים היקפיים ומרכזיים",
+        "תפוקת שתן ומשקל סגולי",
+        "מאזן חומצה-בסיס"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Shock may initially manifest as only tachycardia, with or without tachypnea. Progression leads to decreased urine output, poor peripheral perfusion, respiratory distress or failure, alteration of mental status, and low BP. … Kidney: ↓ Urine volume | Oliguria (<0.5 mL/kg/hr) | Oliguria/anuria. Skin: Delayed capillary refill | Cool extremities | Mottled, cyanotic, cold extremities."
+    },
+    {
+      "rule_key": "nelson22.c85.initial_management",
+      "title_he": "ניהול ראשוני של שוק — עקרונות כלליים",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק מזוהה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, לאחר הזיהוי נדרשים מאמצים מיידיים להשבת אספקת החמצן על ידי תמיכה במחזור הדם, ובמקביל זיהוי והיפוך הסיבה. זה כולל: הבטחת נתיב אוויר פתוח ונשימה מספקת; מתן חמצן משלים אם קיימת היפוקסמיה; הקמת גישה כלי-דמית; הרחבת נפח הדם במחזור; תמיכה ואזואקטיבית בעת הצורך; והערכה חוזרת תכופה של התגובה. הגישה הכלי-דמית צריכה להיקבע בדקות הראשונות, באופן אידיאלי בשני צנתרים היקפיים בקוטר גדול. אם גישה היקפית לא הושגה תוך חמש דקות — יש להקים גישה תוך-גרמית. גישה מרכזית נשקלת בחולים עם גישה היקפית לא-יציבה, שוק עמיד לנוזלים, או צורך בתרופות ואזואקטיביות או בתמיסות מרוכזות. ⚠ המקור מציין במפורש שהמשך החייאה דרך גישה היקפית או תוך-גרמית, כולל התחלת תרופות ואזואקטיביות, בטוח ומתאים כאשר גישה מרכזית אינה זמינה מיידית.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ההערה האחרונה היא החשובה מעשית: היא מסירה את התירוץ הנפוץ לעיכוב בהתחלת ואזופרסורים — ההמתנה לגישה מרכזית. המקור אומר במפורש שאפשר להתחיל בהיקפי או תוך-גרמי בריכוזים מדוללים. גם מגבלת חמש הדקות לגישה היקפית לפני מעבר לתוך-גרמי היא סף החלטה מפורש, לא שיקול דעת.",
+      "recommended_workup_he": [
+        "שני צנתרים היקפיים בקוטר גדול",
+        "גישה תוך-גרמית אם לא הושגה גישה היקפית תוך חמש דקות",
+        "חמצן משלים בהיפוקסמיה",
+        "הערכה חוזרת תכופה של התגובה לטיפול",
+        "שקילת צנתר עורקי בשוק עמיד לנוזלים"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Vascular access should be established within the first few minutes of shock recognition, ideally with at least two large-bore peripheral intravenous (IV) catheters. If peripheral IV access is not successful within 5 minutes, intraosseous (IO) access should be established until more definitive access is secured. … Notably, placement of a central venous or arterial catheter requires specialized skills that may not be immediately available, in which case continued resuscitation through peripheral IV or IO access, including initiation of vasoactive medications, is safe and appropriate."
+    },
+    {
+      "rule_key": "nelson22.c85.fluid_strategy",
+      "title_he": "אסטרטגיית נוזלים — סוג, קצב ומדדי תגובה",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק הדורש החייאת נפח", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, ההחייאה מתבצעת בבולוסים הניתנים בדחיפה מהירה או במערכת עירוי מהיר; הנפחים והקצבים מופיעים בציטוט המקור ובשדה dosing_mentions_he. הבולוסים מכוילים לשיפור במדדים המודינמיים: ירידה בקצב הלב, עלייה בלחץ הדם, נורמליזציה של מילוי קפילרי, עוצמת דופק היקפי וטמפרטורת גפיים, שיפור בתפוקת השתן, וירידה בלקטט. באשר לסוג הנוזל — המקור קובע שרוב המחקרים לא הראו יתרון ברור לקולואידים על פני קריסטלואידים, ושקולואידים סינתטיים (עמילן הידרוקסיאתילי, ג'לטין) אינם מומלצים בשל סיכון לפגיעה כלייתית ולהפרעת קרישה. ההנחיות ממליצות להתחיל בקריסטלואידים. ⚠ שני חריגים מפורשים: בשוק דימומי ובשוק דיסוציאטיבי על רקע אנמיה קשה, עירוי מוצרי דם מוקדם מועדף. ⚠ בילודים נדרשת זהירות נוספת בהחייאת נוזלים, שכן הסבילות מוגבלת בשל היענות חדרית מופחתת בבסיס.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "המקור מציג את בחירת הקריסטלואיד כשאלה פתוחה: סליין 0.9% לעומת נוזלים מאוזנים. הוא מציין שהחייאה בנפח גבוה בסליין גורמת לעיתים קרובות לחמצת מטבולית היפרכלורמית, ושנתונים גוברים מקשרים נוזלים מאוזנים לפחות פגיעה כלייתית ותמותה — אבל גם שמחקרי ילדים הניבו תוצאות סותרות. המסקנה המפורשת של המקור: שניהם מתאימים להחייאה ראשונית. זו אינה המלצה חד-משמעית, ואין להציג אותה ככזו.",
+      "recommended_workup_he": [
+        "הערכה מחדש לאחר כל בולוס — קצב לב, לחץ דם, מילוי קפילרי, דופק, טמפרטורת גפיים",
+        "בדיקת סימני עומס נוזלים לפני חזרה על בולוס",
+        "אולטרסאונד ליד המיטה לניבוי תגובה להמשך נוזלים",
+        "מגמת לקטט",
+        "עדיפות למוצרי דם בשוק דימומי ובאנמיה קשה"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Volume resuscitation with fluid bolus therapy in aliquots of 10-20 mL/kg pushed over 5-10 minutes is currently recommended for most types of shock and in most settings in children. … Fluid boluses totaling up to 60 mL/kg may be needed in the first hour of resuscitation, with volumes exceeding 200 mL/kg over several hours. … Consequently, pending further data from ongoing studies, either 0.9% saline or balanced/buffered crystalloids are appropriate for initial volume resuscitation. … Exceptions include children with hemorrhagic shock and dissociative shock resulting from severe anemia for whom early blood product transfusion is preferred."
+    },
+    {
+      "rule_key": "nelson22.c85.vasoactive_selection",
+      "title_he": "בחירת התרופה הוואזואקטיבית לפי סוג השוק",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק עמיד לנוזלים", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, תרופות ואזואקטיביות מותחלות בילדים עם שוק עמיד לנוזלים, עם שקילה מוקדמת של אינוטרופים כאשר קיים תפקוד לקוי של שריר הלב, ושל ואזופרסורים כאשר קיימת ואזופלגיה. הבחירה תלוית-מנגנון: (1) בשוק ספטי עמיד לנוזלים — אפינפרין הוא הטיפול הוואזואקטיבי המועדף בקו ראשון, ולפי המקור שני מחקרים אקראיים הראו שהוא יעיל יותר מדופמין בהפחתת תמותה. (2) בשוק קרדיוגני — אפינפרין הוא הסוכן הוואזואקטיבי הראשוני המומלץ, בהיותו גם אינוטרופ חזק. (3) במצב של התנגדות כלי-דמית סיסטמית נמוכה — שוק תפוצתי, ספטי או נוירוגני — נוראפינפרין מועדף כקו ראשון. ⚠ המינונים אינם בכלל הזה — ראה dosing_mentions_he.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ההבחנה בין אפינפרין לנוראפינפרין אינה תלויה באבחנה («ספסיס») אלא במצב ההמודינמי: תפקוד שריר לב לקוי מול התנגדות נמוכה. וזו בדיוק ההבחנה שהמקור מזהיר מפני הקושי לבצע: הוא כותב שקשה להבדיל בין «שוק חם» ל«שוק קר» על סמך סימנים קליניים בלבד. המסקנה המעשית — הערכה חוזרת ותגובה לטיפול הן שקובעות, לא הקטגוריזציה הראשונית.",
+      "recommended_workup_he": [
+        "הערכת תפקוד שריר הלב — אולטרסאונד ליד המיטה כשזמין",
+        "הערכת התנגדות כלי-דמית סיסטמית לפי טמפרטורת גפיים, מילוי קפילרי ולחץ דופק",
+        "התחלה בגישה היקפית או תוך-גרמית בריכוז מדולל אם אין גישה מרכזית",
+        "כיול חוזר לפי התגובה"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "For children with septic shock, two randomized trials have demonstrated that epinephrine as first-line vasoactive therapy is more effective at reducing mortality than dopamine. As such, epinephrine is the preferred first-line vasoactive therapy for fluid-refractory septic shock. Epinephrine is also a potent inotrope and is the recommended initial vasoactive agent in children with cardiogenic shock. However, in children with a low-SVR state, as may be seen with distributive, septic, or neurogenic shock, norepinephrine should be preferentially prescribed as the first-line vasoactive therapy."
+    },
+    {
+      "rule_key": "nelson22.c85.cold_vs_warm_shock",
+      "title_he": "שוק קר מול שוק חם — ומגבלת ההבחנה",
+      "category": "criteria",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק ספטי", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, תינוקות וילדים צעירים מתייצגים לרוב עם «שוק קר», שבו בולטים מאפייני שוק היפו-וולמי וקרדיוגני: טכיקרדיה, מילוי קפילרי מושהה, גפיים קרות, דפקים היקפיים מוחלשים ולחץ דופק מוקטן. ילדים גדולים ומתבגרים, ובמיוחד אלה עם ספסיס מצנתרים ורידיים מרכזיים קבועים, מתייצגים לרוב עם «שוק חם» הדומה לשוק תפוצתי: טכיקרדיה, מילוי קפילרי מהיר, גפיים חמות, דפקים היקפיים חזקים ולחץ דופק מוגדל. ⚠ שתי הסתייגויות מפורשות במקור: הראשונה — הפתוביולוגיה של הספסיס יכולה להשתנות עם הזמן ועם הטיפול, כך ש«שוק חם» עשוי לעבור ל«שוק קר» ולהפך. השנייה — ייתכן שקשה להבחין במדויק בין השניים באמצעות סימנים קליניים בלבד.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ההבחנה חשובה כי היא מכוונת את בחירת התרופה — אינוטרופ בקר, ואזופרסור בחם. אבל המקור מסייג אותה פעמיים, ולכן אין לבנות עליה החלטה חד-פעמית. המסקנה שהמקור מגיע אליה במפורש: הערכה חוזרת תכופה ותגובה לטיפול הן שקובעות את הכיול.",
+      "recommended_workup_he": [
+        "טמפרטורת גפיים ומילוי קפילרי",
+        "עוצמת דפקים היקפיים ולחץ דופק",
+        "הערכה חוזרת לאחר כל שינוי בטיפול",
+        "הערכת תפקוד לב כשזמינה"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Infants and young children most commonly present with \"cold shock,\" with features of hypovolemic and cardiogenic shock predominating … Older children and adolescents, especially those with sepsis from indwelling central venous catheters, more commonly present with \"warm shock\" … However, the pathobiology of sepsis can evolve over time and with treatment in children, such that \"warm shock\" may shift to \"cold shock\" or vice versa. … Notably, it may be difficult to accurately differentiate between \"warm\" (low SVR) from \"cold\" (high SVR) shock using only clinical signs."
+    },
+    {
+      "rule_key": "nelson22.c85.laboratory_workup",
+      "title_he": "בירור מעבדתי בשוק",
+      "category": "workup",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק מזוהה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, האבחנה הראשונית של שוק יכולה וצריכה להתבסס על נתונים קליניים מהאנמנזה ומהבדיקה הגופנית, אך ההערכה הכוללת צריכה לכלול גם בדיקות מעבדה מוקדמות לסינון של לקטט מוגבר, חמצת והפרעות אלקטרוליטים ובכללן היפוגליקמיה והיפוקלצמיה. יש לחפש גם עדות מעבדתית לתפקוד לקוי של מספר מערכות: ספירת דם מלאה, תפקודי כליה, תפקודי כבד, ופרופיל קרישה הכולל פיברינוגן ו-D-dimer. ספירת נויטרופילים מוגברת עם ריבוי צורות בלתי-בשלות, וכן CRP ופרוקלציטונין מוגברים, עשויים להופיע בזיהום. בשוק ספטי יש לקחת לפחות תרבית דם אחת. ⚠ יש לקבוע רמות פריטין בכל החולים עם שוק ספטי.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "שתי הבדיקות שנוטים לדלג עליהן הן דווקא אלה שהמקור מדגיש כניתנות לתיקון מיידי: גלוקוז וסידן מיונן — שתיהן נמדדות ליד המיטה, ושתיהן, לפי המקור, עלולות לזרז או להחמיר שוק. הבדיקה השלישית היא פריטין, שהמקור מורה לקחת בכל שוק ספטי ולא רק בחשד ל-HLH.",
+      "recommended_workup_he": [
+        "לקטט",
+        "גזים ומאזן חומצה-בסיס",
+        "גלוקוז וסידן מיונן ליד המיטה",
+        "ספירת דם מלאה",
+        "תפקודי כליה וכבד",
+        "פרופיל קרישה כולל פיברינוגן ו-D-dimer",
+        "פריטין בכל שוק ספטי",
+        "תרבית דם אחת לפחות בשוק ספטי"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "the overall evaluation of shock should also include early laboratory testing to screen for hyperlactatemia (as a sign of increased anaerobic metabolism), acidemia, and electrolyte disturbances, including hypoglycemia and hypocalcemia. … For septic shock, at least one blood culture should be collected along with other cultures as supported by the history and physical. Ferritin levels should be determined in all patients with septic shock."
+    },
+    {
+      "rule_key": "nelson22.c85.reversal_targets",
+      "title_he": "יעדים להיפוך השוק",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק בטיפול", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, סימנים קליניים להחייאה מוצלחת כוללים ירידה בקצב הלב ובקצב הנשימה, עלייה בלחץ הדם, שיפור בתפוקת השתן, נורמליזציה של מצב ההכרה, קיצור זמן המילוי הקפילרי, חמימות הגפיים הדיסטליות ושיפור בדפקים ההיקפיים. מדידות מעבדה סדרתיות צריכות לכוון לעלייה ברוויון החמצן הוורידי המרכזי ולמגמת ירידה בלקטט, כעדות למיצוי חמצן מוגבר ולאספקה מספקת. ⚠ הספים המספריים — תפוקת שתן, רוויון ורידי, ערך הלקטט וחלון הזמן, ומדד הלב — מופיעים בציטוט המקור. המקור מציין ש-pH ובסיס-דפיציט עשויים לשמש כתחליפים מעבדתיים לזילוח, אך שהם מושפעים מהיפרכלורמיה שלאחר החייאת נוזלים או משינויים בהנשמה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "היעדים האלה הם מה שמונע את שתי הטעויות ההופכיות: הפסקת החייאה מוקדמת מדי, והמשכה מעבר לנקודה שבה היא כבר מזיקה. שים לב שהמקור מסייג את ה-pH ואת הבסיס-דפיציט במפורש — הם משתפרים או מחמירים מסיבות שאינן קשורות לזילוח, ולכן אינם יעד עצמאי.",
+      "recommended_workup_he": [
+        "מגמת קצב לב, קצב נשימה ולחץ דם",
+        "תפוקת שתן",
+        "מצב הכרה, מילוי קפילרי, טמפרטורת גפיים, דפקים",
+        "לקטט סדרתי",
+        "רוויון חמצן ורידי מרכזי כשזמין",
+        "אולטרסאונד סדרתי ליד המיטה"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Clinical signs of successful resuscitation include a decrease in HR and respiratory rate, increase in BP, improved urine output to >0.5 mL/kg/hr, normalization of mental status, decreased capillary refill time, warmth of distal extremities, and improved peripheral pulses. Serial laboratory measurements should aim for a rise in Svo2 to >70% and a decreasing trend in blood lactate levels … In one observational study of septic shock in children, normalization of blood lactate to <2 mmol/L within 4 hours was associated with reduced organ dysfunction."
+    },
+    {
+      "rule_key": "nelson22.c85.cardiogenic_management",
+      "title_he": "שוק קרדיוגני — ניהול ייעודי",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק קרדיוגני", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, בילדים עם שוק קרדיוגני על רקע מחלת לב מולדת, קרדיומיופתיה, מיוקרדיטיס, MIS-C או סיבות אחרות, יש להפוך את הירידה בכיווץ שריר הלב בטיפול מוקדם באינוטרופים — אפינפרין, דופמין, דובוטמין או מילרינון. החייאת נפח עדינה לאופטימיזציה של הטעינה המוקדמת עשויה לסייע, אך מתן נוזלים עודף עלול להחמיר את עומס הנפח ולפגוע נוספות בתפקוד הלב. המקור מציין שגם כאשר תפוקת הלב מספקת בתמיכת אינוטרופים, עשויה להימשך התנגדות כלי-דמית גבוהה עם זילוח היקפי ירוד וחמצת — ולכן אינודילטורים כמו מילרינון עשויים לשפר את התפקוד הסיסטולי ולהפחית התנגדות ללא עלייה משמעותית בקצב הלב, בתוספת יתרון של שיפור ההרפיה הדיאסטולית. ⚠ המינונים אינם בכלל הזה — ראה dosing_mentions_he.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "«החייאת נפח עדינה» היא הביטוי שנושא כאן את המשקל. שוק קרדיוגני הוא המצב שבו הרפלקס הרגיל — בולוס נוסף — מחמיר. הסימנים שמורים להפסיק הם אותם סימני עומס: חרחורים, קצב דהירה, הגדלת כבד.",
+      "recommended_workup_he": [
+        "הערכת תפקוד לב באקו או באולטרסאונד ליד המיטה",
+        "ניטור סימני עומס נוזלים לפני כל בולוס",
+        "שקילת אינודילטור בהתנגדות גבוהה עם תפוקה מספקת",
+        "בירור סיבה — מיוקרדיטיס, MIS-C, הפרעת קצב, מחלת לב מולדת"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "For children with cardiogenic shock due to congenital heart disease, cardiomyopathies, myocarditis, MIS-C, or other causes, decreased myocardial contractility must be reversed by early treatment with inotropes, such as epinephrine, dopamine, dobutamine, or milrinone. Gentle volume resuscitation to optimize preload may also be helpful, but excessive fluid administration can worsen volume overload and further compromise heart function."
+    },
+    {
+      "rule_key": "nelson22.c85.steroids_refractory",
+      "title_he": "קורטיקוסטרואידים במינון סטרס בשוק ספטי",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק ספטי עמיד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, קורטיקוסטרואידים במינון סטרס מותווים בחולים עם שוק ספטי שיש להם אי-ספיקת אדרנל מוחלטת — כמו בהיפרפלזיה מולדת של האדרנל, שוק ספטי עם פורפורה, טיפול סטרואידי קודם למחלה כרונית, או תת-פעילות של יותרת המוח. המקור מציין שחלק מהילדים עם שוק ספטי עשויים לפתח גם אי-ספיקה קורטיקוסטרואידית הקשורה למחלה קריטית, עם תגובה אדרנלית בלתי-מספקת לסטרס חמור. הידרוקורטיזון במינון סטרס מומלץ למי שיש להם גורמי סיכון לאי-ספיקת אדרנל מוחלטת, וניתן לשקול אותו בילדים עם שוק עמיד לנוזלים ולקטכולאמינים ללא סיבה הפיכה — ⚠ המקור מנסח זאת כהמתנה לנתונים נוספים ממחקרים מתמשכים, ואלגוריתם ה-SSC המצוטט מציין במפורש שהידרוקורטיזון «עשוי להביא תועלת או נזק». אין להציג זאת כהמלצה חד-משמעית. ⚠ המינון אינו בכלל הזה — ראה dosing_mentions_he.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "יש כאן שני מצבים שונים שקל לערבב. באי-ספיקת אדרנל מוחלטת — קבוצה שניתן לזהות מהאנמנזה — הסטרואיד מותווה. בשוק עמיד ללא סיבה הפיכה הוא בגדר שקילה, וההנחיה עצמה מסייגת אותו כעשוי להזיק. השאלה האנמנסטית שמפרידה ביניהם היא קצרה: פורפורה, טיפול סטרואידי קודם, או הפרעה ידועה של יותרת המוח או האדרנל.",
+      "recommended_workup_he": [
+        "אנמנזה של טיפול סטרואידי קודם למחלה כרונית",
+        "בדיקה לפורפורה",
+        "אנמנזה של הפרעה ידועה ביותרת המוח או באדרנל",
+        "הערכה לסיבות הפיכות אחרות של שוק עמיד לפני מתן"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Stress-dose corticosteroids are indicated for patients with septic shock who have absolute adrenal insufficiency, such as that caused by congenital adrenal hyperplasia, septic shock with purpura, prior steroid therapy for chronic illness, or hypopituitarism. … Stress doses of hydrocortisone (50-100 mg per m2 per day) are recommended for those with risk factors for absolute adrenal insufficiency … and can be considered for children with fluid-refractory, catecholamine-resistant shock without a reversible etiology pending further data from ongoing clinical trials. … **Hydrocortisone may produce benefit or harm."
+    },
+    {
+      "rule_key": "nelson22.c85.oxygen_and_intubation",
+      "title_he": "חמצן, נתיב אוויר וצנרור בשוק",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "שוק עם מצוקה נשימתית או ירידה בהכרה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, יש לתת חמצן משלים לתיקון היפוקסמיה; הסף המספרי מופיע בציטוט המקור. ⚠ המקור מסייג את מתן החמצן האוניברסלי: הוא כמעט חסר תועלת כאשר רוויון ההמוגלובין כבר מעל הסף, וחלק מהמחקרים מצביעים על נזק מהיפראוקסיה. חריג מפורש — מתן חמצן בריכוז גבוה צפוי להועיל בחולים עם אנמיה קשה או שוק דיסוציאטיבי. כאשר נדרש חמצן, מסכת non-rebreather ב-100% מספקת את הכמות הגבוהה ביותר בדרך לא-פולשנית. התוויות לצנרור והנשמה כוללות אי-ספיקה נשימתית היפוקסמית או היפרקרבית חדה, או המשך אי-ספיקת מחזור, שבה הפחתת הדרישה המטבולית באמצעות הרגעה ותמיכה נשימתית עשויה לסייע.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "החריג הוא הנקודה: בשוק דיסוציאטיבי — הרעלת פחמן חד-חמצני, מתמוגלובינמיה, אנמיה קשה — הרוויון הנמדד עלול להיראות תקין בעוד שאספקת החמצן לרקמה קרסה. שם דווקא כן נותנים חמצן בריכוז מרבי. בכל שאר המצבים, חמצן מעבר לסף אינו משפר ועלול להזיק.",
+      "recommended_workup_he": [
+        "ניטור רוויון רציף",
+        "הערכת עבודת הנשימה ומצב ההכרה",
+        "הכנת נוזלים ותרופות ואזואקטיביות לפני צנרור",
+        "העדפת קטמין להרגעה בצנרור",
+        "הימנעות מאטומידאט בשוק ספטי"
+      ],
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Supplemental oxygen should be provided to correct hypoxemia if Spo2 is <92–94%. Although universal supplemental oxygen administration can, in theory, augment tissue oxygen delivery by increasing oxygen content of the blood, this approach is of little benefit if the oxyhemoglobin saturation is >92–94%, and some studies suggest harm from hyperoxia. However, universal administration of high fraction of inspired oxygen is likely to be beneficial for patients with severe anemia or dissociative shock."
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson22.c85.cold_shock_infant",
+      "anchor_finding_he": "תינוק או ילד צעיר עם חום, טכיקרדיה וגפיים קרות",
+      "co_findings": [
+        "מילוי קפילרי מושהה",
+        "דפקים היקפיים מוחלשים",
+        "לחץ דופק מוקטן",
+        "זיהום ידוע או חשוד"
+      ],
+      "implies_he": "שוק ספטי מסוג «קר» — עם מאפייני שוק היפו-וולמי וקרדיוגני",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, בילדים צעירים יותר שוק ספטי מתייצג לעיתים קרובות עם תפוקת לב נמוכה והתנגדות כלי-דמית סיסטמית גבוהה, שבהם מאפייני השוק הקרדיוגני וההיפו-וולמי בולטים.",
+      "action_he": "הצירוף הזה נוטה להיקרא כ«ילד עם חום שנראה לא טוב» ולא כשוק, משום שלחץ הדם תקין. לפי המקור זהו בדיוק החלון שבו יש להתחיל את חבילת השעה הראשונה. עדיפות לשיפור כיווץ שריר הלב עם אינוטרופ, ולא לוואזופרסור.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "In younger children, septic shock often presents with low cardiac output and high SVR in which features of cardiogenic and hypovolemic shock predominate. … Infants and young children most commonly present with \"cold shock,\" with features of hypovolemic and cardiogenic shock predominating, including tachycardia, delayed capillary refill, cool extremities, diminished peripheral pulses, and decreased pulse pressure."
+    },
+    {
+      "assoc_key": "nelson22.c85.warm_shock_catheter",
+      "anchor_finding_he": "מתבגר עם צנתר ורידי מרכזי קבוע, חום וגפיים חמות",
+      "co_findings": [
+        "מילוי קפילרי מהיר",
+        "דפקים חזקים",
+        "לחץ דופק מוגדל",
+        "תת לחץ דם דיאסטולי"
+      ],
+      "implies_he": "שוק ספטי מסוג «חם» — שוק תפוצתי עם התנגדות כלי-דמית נמוכה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, בשוק תפוצתי אובדן ויסות טונוס כלי הדם נובע בין היתר מייצור עודף של תחמוצת החנקן, שינוי בטונוס הסימפתטי והפאראסימפתטי, ורמות מופחתות או תגובתיות מופחתת לוואזופרסין, לקטכולאמינים אנדוגניים ולקורטיזול.",
+      "action_he": "⚠ גפיים חמות ודפקים חזקים בילד עם חום עלולים להיראות מרגיעים. לפי המקור זו התייצגות של שוק תפוצתי. הצנתר המרכזי הוא הרמז האנמנסטי — יש לחשוד בו כמקור ולשקול הסרתו כחלק מהשליטה במקור הזיהומי, שהמקור מונה כאחת הסיבות ההפיכות בשוק עמיד. נוראפינפרין הוא הקו הראשון במצב של התנגדות נמוכה.",
+      "age_scope": "adolescent",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Older children and adolescents, especially those with sepsis from indwelling central venous catheters, more commonly present with \"warm shock\" that resembles distributive shock, including tachycardia, flash capillary refill, warm extremities, bounding peripheral pulses, and increased pulse pressure."
+    },
+    {
+      "assoc_key": "nelson22.c85.becks_triad",
+      "anchor_finding_he": "תת לחץ דם עם ורידי צוואר תפוחים וקולות לב עמומים",
+      "co_findings": [
+        "פולסוס פרדוקסוס",
+        "טכיקרדיה",
+        "לחץ דופק צר",
+        "מילוי קפילרי מושהה"
+      ],
+      "implies_he": "טמפונדה של קרום הלב — שוק חסימתי",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, שוק חסימתי מתבטא בעלייה חדה בהתנגדות הכלי-דמית בתגובה לירידה פתאומית בתפוקת הלב, במצב הדומה להיפו-וולמיה תפקודית.",
+      "action_he": "לפי המקור זוהי שלישיית Beck, וההתייצגות החדה עלולה להתקדם במהירות לדום לב. הפעולה היא ניקור קרום הלב — כלומר שחרור מכני, ולא נוזלים או ואזופרסורים. אולטרסאונד לב ליד המיטה עשוי להדגים נוזל פריקרדיאלי ולתמוך באבחנה. ⚠ פולסוס פרדוקסוס מופיע גם באסתמה ובתסחיף אוויר, ולכן אינו ספציפי לבדו.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Pericardial tamponade includes Beck's triad of hypotension, jugular vein distention, and muffled heart sounds. … Cardiac and lung POCUS may also provide important diagnostic information about the etiology of shock, such as the presence of pericardial fluid to support tamponade, pneumothorax, or dilated right ventricle to support pulmonary embolus."
+    },
+    {
+      "assoc_key": "nelson22.c85.differential_extremity_perfusion",
+      "anchor_finding_he": "הפרש זילוח או לחץ דם בין גפיים עליונות לתחתונות ביילוד",
+      "co_findings": [
+        "שוק ביילוד",
+        "מחלת לב מולדת",
+        "גיל מתחת לשלושה שבועות"
+      ],
+      "implies_he": "נגע חסימתי של הלב השמאלי — תלוי-דוקטוס",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, נגעים חסימתיים שמאליים יוצרים מכשול מכני לזרימת הדם מהחדר; זרימת הדם לגוף התחתון תלויה בדוקטוס הפתוח, ולכן סגירתו מייצרת את ההפרש.",
+      "action_he": "לפי המקור, זהו הממצא המכוון לנגע תלוי-דוקטוס ביילוד, והפעולה היא התחלת עירוי פרוסטגלנדין תוך הכנה להעברה למרכז מומחיות. ⚠ טבלת סוגי השוק שבמקור מציינת «הפרש משמעותי בין לחץ הדם בגפיים העליונות והתחתונות» כמאפיין הופעה של שוק קרדיוגני בתינוקות — כלומר מדובר בממצא שנבדק, לא בממצא שמופיע מעצמו. יש למדוד לחץ דם בארבע גפיים.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Left-heart obstructive lesions may present in newborns with discrepant perfusion of the upper and lower extremities. … Significant gradient between upper and lower extremity blood pressures … Infants: ductal-dependent lesions, tachydysrhythmias."
+    },
+    {
+      "assoc_key": "nelson22.c85.shock_index",
+      "anchor_finding_he": "מדד שוק מוגבר באופן מתמשך",
+      "co_findings": [
+        "טכיקרדיה",
+        "לחץ דם סיסטולי יורד",
+        "איבוד דם",
+        "דיכוי לבבי"
+      ],
+      "implies_he": "תפקוד לקוי של החדר השמאלי — וסיכון מוגבר לתמותה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, מדד השוק הוא היחס בין קצב הלב ללחץ הדם הסיסטולי. הטווח התקין וסף החריגה מופיעים בציטוט המקור.",
+      "action_he": "⚠ זהו מדד מחושב, ולכן הוא שייך לקוד דטרמיניסטי ולא לפרשנות. ערכו בכך שהוא לוכד את הצירוף של טכיקרדיה מפצה עם לחץ דם שעדיין נראה תקין — בדיוק המצב שבו כל אחד מהשניים לבדו אינו מדאיג. לפי המקור, עלייה מתמשכת שלו קשורה בתמותה מוגברת.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Shock index: Heart rate/systolic blood pressure. Normal = 0.5-0.7. A persistent elevation of the shock index (>1.0) indicates impaired left ventricular function (as a result of blood loss or cardiac depression) and is associated with increased mortality."
+    },
+    {
+      "assoc_key": "nelson22.c85.paradoxical_bradycardia_hemorrhage",
+      "anchor_finding_he": "ברדיקרדיה בחולה עם דימום חמור או מחלת לב ידועה",
+      "co_findings": [
+        "איבוד דם משמעותי",
+        "מחלת לב קיימת",
+        "שונות מופחתת בקצב הלב"
+      ],
+      "implies_he": "ברדיקרדיה פרדוקסלית — סימן מטעה בשוק",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, קצב הלב בשוק בדרך כלל מוגבר, אך ברדיקרדיה פרדוקסלית עשויה להופיע בחולים עם מחלת לב קיימת ובדימום חמור.",
+      "action_he": "⚠ זהו החריג השני להנחה ש«שוק פירושו טכיקרדיה» — לצד שוק נוירוגני. בשני המצבים היעדר הטכיקרדיה אינו שולל שוק אלא מסמן קבוצה בסיכון. לפי המקור, שונות מופחתת בקצב הלב קשורה בתוצאות גרועות.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Heart rate: Usually elevated. However, paradoxical bradycardia can be seen in patients with preexisting cardiac disease and severe hemorrhage. Heart rate variability is associated with poor outcomes."
+    },
+    {
+      "assoc_key": "nelson22.c85.pulse_pressure_early",
+      "anchor_finding_he": "לחץ דופק מוגדל בשלב מוקדם, ולאחריו הצטמצמות",
+      "co_findings": [
+        "לחץ דם דיאסטולי עולה ואז יורד",
+        "לחץ דם סיסטולי תקין",
+        "טכיקרדיה"
+      ],
+      "implies_he": "מעבר משוק מפוצה ללא-מפוצה — לפני ירידת הלחץ הסיסטולי",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, לחץ הדופק קשור לנפח הפעימה ולקשיחות אבי העורקים; הלחץ הדיאסטולי מתאם עם כיווץ העורקיקים ועשוי לעלות מוקדם בשוק ולרדת כאשר הפיצוי הקרדיו-וסקולרי נכשל.",
+      "action_he": "⚠ הנקודה המעשית: לפי המקור לחץ הדופק משתנה לפני שהלחץ הסיסטולי יורד. כלומר מדידה שמתועדת ממילא מכילה סימן מוקדם יותר מזה שמחפשים. הלחץ הסיסטולי עצמו עלול אף לעלות מעט בשלב מוקדם, כאשר כיווץ שריר הלב מתגבר — ולכן קריאה בודדת שנראית תקינה או משופרת אינה מרגיעה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Systolic blood pressure: May actually increase slightly when cardiac contractility increases in early shock and then fall as shock advances. Diastolic blood pressure: Correlates with arteriolar vasoconstriction and may rise early in shock and then fall when cardiovascular compensation fails. Pulse pressure: Defined as systolic minus diastolic pressure and related to stroke volume and the rigidity of the aorta. Increases early in shock and decreases before systolic pressure decreases."
+    },
+    {
+      "assoc_key": "nelson22.c85.paradoxical_polyuria",
+      "anchor_finding_he": "תפוקת שתן תקינה או מוגברת בספסיס מוקדם",
+      "co_findings": [
+        "ספסיס מוקדם",
+        "סימני שוק אחרים",
+        "לקטט מוגבר"
+      ],
+      "implies_he": "פוליאוריה פרדוקסלית — אינה עדות להידרציה מספקת",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, הכליה מקבלת כ-20% מתפוקת הלב; תפוקת לב נמוכה מפחיתה את קצב הסינון ומפנה את זרימת הדם הכלייתית מהקורטקס למדולה, ומכאן האוליגוריה. הפוליאוריה בשלב מוקדם של ספסיס עלולה להתפרש בטעות כהידרציה נאותה.",
+      "action_he": "⚠ תפוקת שתן היא אחד ממדדי התגובה שהמקור מונה, ולכן דווקא כאן ההטעיה מסוכנת: תפוקה תקינה בספסיס מוקדם אינה מוכיחה זילוח מספק. יש להעריך אותה יחד עם הלקטט, המילוי הקפילרי, טמפרטורת הגפיים ומצב ההכרה, ולא לבדה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c85.shock",
+      "source_quote_he": "Renal: Because the kidney receives 20% of cardiac output, low cardiac output reduces the glomerular filtration rate and redistributes renal blood flow from the renal cortex toward the renal medulla, thereby leading to oliguria. Paradoxical polyuria in early sepsis may be confused with adequate hydration."
+    }
+  ],
+
+  "gaps_he": [
+    "⚠ **הפער החשוב ביותר בקובץ הזה.** הפרק מבוסס על Surviving Sepsis Campaign 2020. קיימת גרסה עדכנית יותר — SSC-2026 (PMID 41870559) — שאינה נגישה לי (paywall) ולא נקראה. אין לכתוב אותה מהזיכרון. כל התוכן כאן מסומן במפורש כ-SSC 2020, וכל רשומה שתיגזר ממנו חייבת להישאר draft_needs_verification עד להשוואה מול הגרסה החדשה. שינויים אפשריים בין הגרסאות — נפחי נוזלים, בחירת ואזופרסור, מקום הסטרואידים — נוגעים ישירות לרשומות nelson22.c85.fluid_strategy, nelson22.c85.vasoactive_selection ו-nelson22.c85.steroids_refractory.",
+    "⚠ **Phoenix Sepsis Score אינו מיוצג כאן כציון.** הכלל nelson22.c85.phoenix_sepsis_criteria מתאר את המבנה וההגדרה בלבד. הציון עצמו הוא חישוב דטרמיניסטי מלא — ארבע מערכות, ספים לפי גיל ללחץ עורקי ממוצע, ספי לקטט, ספירת טסיות, INR, D-dimer, פיברינוגן ו-GCS. לפי כללי הפרויקט, ציון מחושב שייך לקוד דטרמיניסטי ולא לרשומת ידע ולא ל-LLM. **נדרש מודול ניקוד ייעודי**, עם בדיקות, לפני שהציון ישמש בפלט קליני. הטבלה המלאה קיימת בטקסט שחולץ (טבלה 85.2, עמוד מודפס 603).",
+    "⚠ מדד השוק (shock index) הוא חישוב — קצב לב חלקי לחץ דם סיסטולי. הוא מתועד באסוציאציה nelson22.c85.shock_index אך אינו מחושב. גם הוא שייך לקוד דטרמיניסטי.",
+    "⚠ כל הנפחים והמינונים הוסרו מגוף הכללים ונשמרו בציטוטי המקור וב-dosing_mentions_he בלבד: נפחי בולוס נוזלים, ספי הנפח המצטבר, מינוני כל תשע התרופות הוואזואקטיביות בטבלה 85.7, מינון ההידרוקורטיזון, סף עירוי כדוריות אדומות, ויחס מוצרי הדם בשוק דימומי. הם נקראים כמינונים לוולידטור ול-numericGuard, והם שייכים ל-DoseRecord בנתיב מאומת.",
+    "⚠ טבלה 85.7 (Vasoactive Medications to Treat Shock) מכילה תשע תרופות עם טווחי מינון, השפעות והערות. היא לא הומרה לרשומות. זהו מועמד ישיר ל-DoseRecord, ודורש אישור רופא/ה לפני יצירה.",
+    "⚠ טבלה 85.3 (אבחנה מבדלת של SIRS) מכילה רשימה ארוכה של סיבות זיהומיות ולא-זיהומיות בשבע קטגוריות. היא לא הומרה לפריטי ידע נפרדים ומצדיקה חילוץ עצמאי — היא רלוונטית ישירות לאבחנה מבדלת של ילד עם חום וסימני שוק.",
+    "⚠ טבלה 85.5 (ניהול ספסיס היפרפריטינמי) מפרטת בירור ותכשירים ספציפיים — IVIG, מתילפרדניזון, אנקינרה, פלזמפרזיס. לא נגזרה ממנה המלצת טיפול, ולא הומרה לכלל. היא דורשת ידע מומחה ואישור לפני שימוש.",
+    "⚠ המקור מציין ש-ECMO היא אופציית הצלה בשוק ספטי עמיד עם שיעורי הישרדות מדווחים. השיעורים המספריים נשמרו בציטוט בלבד. ההחלטה על ECMO אינה החלטה של כלי תמיכה בהחלטות ואינה מיוצגת כאן ככלל.",
+    "⚠ הפרק מפנה לפרקים אחרים בנלסון שלא חולצו: פרק 483 (מחלת לב מולדת), 491.1 (שוק קרדיוגני), 73.7 (מאזן חומצה-בסיס), 556.2 (HLH), 207 (MAS). טענות התלויות בהם אינן מיוצגות כאן.",
+    "⚠ המקור אינו נוקב בסף החום המפעיל את מסלול הספסיס, ואינו עוסק בהערכת חום ללא מוקד. אלה נמצאים בפרקים 219-222, שחולצו בנפרד ויש לטעון אותם לפני שהקישור בין חום לשוק ספטי יהיה שלם.",
+    "⚠ ערכי לחץ דם תקינים לגיל אינם בפרק. הטבלה של Phoenix מספקת ספי לחץ עורקי ממוצע לפי שש קבוצות גיל — אך אלה ספי תפקוד לקוי, לא טווחי נורמה. אין להסיק מהם נורמה.",
+    "⚠ הפרק אינו עוסק באנפילקסיס כנושא עצמאי (מוזכר כגורם לשוק תפוצתי בלבד), ולא בהחייאה לאחר דום לב — ראה פרק 79 שחולץ בנפרד."
+  ],
+
+  "dosing_mentions_he": [
+    "⚠ בולוס נוזלים: המקור נוקב בנפח למנה ובמשך המתן, בנפח המצטבר בשעה הראשונה, ובנפח שמעבר לו לאורך מספר שעות. בנוסף, אלגוריתם ה-SSC נוקב בסף נפח שמעליו יש לשקול אפינפרין או נוראפינפרין. כל אלה נשמרו בציטוטי המקור בלבד. המקור מציין במפורש שהנפח במ\"ל/ק\"ג יש לחשב לפי משקל גוף אידיאלי.",
+    "⚠ תשע תרופות ואזואקטיביות עם טווחי מינון (טבלה 85.7, עמוד מודפס 610): אפינפרין, נוראפינפרין, דופמין, דובוטמין, פנילאפרין, ואזופרסין, אנגיוטנסין II, מתילן בלו, מילרינון ופרוסטגלנדין E1. הטווחים לא הוכנסו לאף כלל. הטבלה כוללת גם ספים שמעליהם משתנה אופי ההשפעה (למשל אפינפרין ההופך מווזודילטור לווזוקונסטריקטור, ודופמין הגורם לכיווץ היקפי משמעותי) — אלה ספים קליניים מכריעים ויש לקרוא אותם מהמקור.",
+    "⚠ הידרוקורטיזון במינון סטרס: המקור נוקב במינון לפי שטח גוף ליום. נשמר בציטוט בלבד.",
+    "⚠ עירוי כדוריות אדומות: המקור מציין יעד המוגלובין לילדים שנותרים לא-יציבים המודינמית, ויחס מוצרי דם בשוק דימומי לפי הנחיות ATLS. שניהם בציטוט בלבד.",
+    "⚠ יעדי החייאה מספריים: תפוקת שתן, רוויון חמצן ורידי מרכזי, ערך לקטט וחלון זמן לנורמליזציה, ומדד לב. אלה יעדים ולא מינונים, אך הם ספים מספריים ולכן נשמרו בציטוט ולא בגוף הכללים.",
+    "⚠ סף רוויון החמצן למתן חמצן משלים, וסף פער ה-pCO2 הוורידי-עורקי — בציטוטים בלבד.",
+    "⚠ פרוסטגלנדין E1 ביילוד עם נגע תלוי-דוקטוס: המינון מופיע בטבלה 85.7 ולא בכלל. המקור מציין גם סיכון לדום נשימה כתופעת לוואי — שיקול שמשפיע על ההחלטה להעביר עם ליווי מיומן."
+  ]
+}
