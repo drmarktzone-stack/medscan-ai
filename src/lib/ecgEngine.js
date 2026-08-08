@@ -37,6 +37,7 @@
 import { ECG_FULL_RULES } from "./ecgRules";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { flagEcgNormals } from "./ecgNormals";
+import { assessEcgQuality, decideGate, deterministicLeadReversalCheck } from "./ecgQualityGate";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -691,7 +692,29 @@ export async function runEcgEngine({
   invokeLLM,
   onStage,
   model = DIAGNOSIS_MODEL,
+  qualityGate = true,
 }) {
+  // ---- Pass 0: image-quality / artifact gate (anti-hallucination) ----
+  // Refuse to interpret a non-ECG / unreadable / severely-degraded image before
+  // the model can invent findings. Fail-open if the quality call itself fails.
+  let qualityResult = null;
+  if (qualityGate && invokeLLM && Array.isArray(fileUrls) && fileUrls.length) {
+    onStage?.("quality_check");
+    qualityResult = await assessEcgQuality({ fileUrls, language, invokeLLM, model: FAST_MODEL });
+    const gate = decideGate(qualityResult);
+    if (!gate.pass) {
+      return {
+        abstain: true,
+        is_ecg: qualityResult?.is_ecg !== false,
+        interpretable: false,
+        abstain_reason: gate.abstain_reason_he,
+        quality: qualityResult,
+        technical_check: null,
+        structured: null,
+      };
+    }
+  }
+
   const normalsPre = flagEcgNormals({}, { ageYears, sex });
   const systemPrompt = buildEcgSystemPrompt({ clinicalContext, language, pediatric, ageNote: normalsPre?.promptNote || "" });
 
@@ -767,6 +790,17 @@ export async function runEcgEngine({
   let confidence = baseConfidence - recon.confidencePenalty;
   const warnings = [...recon.discrepancies, ...recon.contradictions, ...grid.warnings, ...stWarns];
 
+  // ---- Lead-reversal safety (deterministic footprint + quality-pass suspicion) ----
+  const leadRev = deterministicLeadReversalCheck(structured);
+  if (leadRev.suspected) {
+    confidence -= 15;
+    warnings.push("חשד להיפוך לידים: " + leadRev.reason_he);
+  }
+  if (qualityResult?.lead_reversal_suspected) {
+    confidence -= 10;
+    warnings.push("בקר האיכות סימן חשד להיפוך אלקטרודות — ודא הצבה תקינה לפני אימוץ ממצאים.");
+  }
+
   if (consistencyAgree === false) {
     confidence -= 20;
     warnings.push("שתי קריאות עצמאיות של המנוע הגיעו לממצאים שונים — הימנע מהסתמכות חד-משמעית.");
@@ -816,6 +850,7 @@ export async function runEcgEngine({
     abstain: false,
     structured,
     reconciliation: recon,
+    quality: qualityResult,
     scrutiny: needsScrutiny
       ? { secondRead, verification, consistencyAgree }
       : null,
