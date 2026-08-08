@@ -5,11 +5,9 @@ import {
   ChevronDown, ChevronUp, ShieldCheck, Trash2, BookUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
-import {
-  KB_ENTITY_NAMES, listKbEntity, loadKbStatus, createKbRecord,
+import { listKbEntity, loadKbStatus, createKbRecord,
   verifyKbRecord, flagKbRecord, deleteKbRecord, currentUser,
 } from "@/lib/medscan/llmAdapter";
 import { seedToEntityRows, SEED_COUNT, SEED_PROVENANCE } from "@/lib/medscan/deterministic/referenceRangeSeed";

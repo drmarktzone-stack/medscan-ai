@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Trash2, AlertTriangle, Loader2, User, Globe } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const languages = [
   { code: "he", label: "עברית" },
