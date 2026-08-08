@@ -16,7 +16,7 @@
 
 ## סדר בנייה: 1→2→3→4
 
-### פיצ'ר 1 — שער איכות/ארטיפקט (Quality Gate)
+### ✅ פיצ'ר 1 — שער איכות/ארטיפקט (Quality Gate) — בוצע (checkpoint dbd24b3)
 קובץ חדש `src/lib/ecgQualityGate.js`. שתי שכבות: (א) קריאת-איכות LLM ב-`FAST_MODEL` עם סכמה ל**איכות בלבד** (is_ecg, is_interpretable, quality_score 0-100, calibration_visible, issues[baseline_wander/emg_noise/ac_interference/clipping/lead_missing/tracing_cut_off/low_contrast/skew/calibration_unknown/possible_lead_reversal], recommended_action_he). (ב) בדיקות דטרמיניסטיות: חשד להיפוך יד ימין/שמאל (P+QRS שליליים ב-I עם חיוביים ב-aVR). `decideGate()` → אם is_ecg=false / לא-קריא / quality_score<QUALITY_MIN(45) / lead_reversal → **abstain** באותה צורת-abstain קיימת. השקה בתחילת `runEcgEngine` לפני Pass 1 (`qualityGate=true`). אחרי Pass 1 — `deterministicLeadReversalCheck(structured)` → אזהרה+הורדת confidence. Checkpoint: `ecg: quality & artifact gate`.
 
 ### פיצ'ר 2 — ייצוא דו״ח PDF
