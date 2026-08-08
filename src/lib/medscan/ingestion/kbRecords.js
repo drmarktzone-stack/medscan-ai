@@ -186,6 +186,10 @@ export function toKbRecords(kept) {
  * ⚠ אין טעם להשוות את כל השדות: שכבת האחסון מוסיפה שדות משלה
  * ומנרמלת ערכי null. מה שנבדק הוא מה שאסור שישתנה בשקט —
  * המפתח, העוגן, סטטוס האימות, והטקסט הקליני שנושא את המשמעות.
+ *
+ * הנימוק הקליני (reason_he, clinical_reasoning_he, mechanism_he)
+ * נכנס לרשימה אחרי שסטיית טקסט שלו עברה בשקט: הוא מה שרופא/ה
+ * קורא/ת כדי להחליט אם לחתום, ולכן שינוי בו משנה את ההחלטה.
  */
 export const VERIFY_FIELDS = {
   KnowledgeTopic: [
@@ -196,6 +200,7 @@ export const VERIFY_FIELDS = {
   LabPattern: [
     'pattern_key', 'title_he', 'direction_he', 'suspicion',
     'source_anchor', 'verification_status', 'min_components',
+    'clinical_reasoning_he',
   ],
   RedFlag: [
     'flag_key', 'label_he', 'action_he', 'severity',
@@ -203,13 +208,16 @@ export const VERIFY_FIELDS = {
     // חלון הגיל קובע למי הדגל נורה. השמטה שלו מרחיבה
     // אותו לכל הגילאים — שינוי בטיחותי שקט.
     'age_min_days', 'age_max_days',
+    'reason_he',
   ],
   ClinicalRule: [
     'rule_key', 'title_he', 'conclusion_he', 'suspicion',
     'source_anchor', 'verification_status', 'logic',
+    'clinical_reasoning_he',
   ],
   Association: [
     'assoc_key', 'anchor_finding_he', 'implies_he', 'suspicion',
     'source_anchor', 'verification_status', 'age_scope',
+    'mechanism_he', 'action_he',
   ],
 };
