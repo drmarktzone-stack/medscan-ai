@@ -33,11 +33,13 @@ function section(t) { console.log(`\n${t}`); }
 
 /* ── נתוני עזר ───────────────────────────────────────────────────────── */
 
+// ⚠ הציטוטים כאן אינם מקוצרים במכוון: הוולידטור דוחה ציטוט
+// קצר מ-10 תווים, ובצדק — ציטוט של מילה אחת אינו בר-בדיקה.
 const TOPIC = {
   topic_key: 'nelson22.c85.septic_shock',
   topic_title_he: 'שוק ספטי',
   summary_he: 'סיכום בדיקה',
-  source_quote_he: 'ציטוט מהמקור',
+  source_quote_he: 'ציטוט מלא מהמקור לצורך הבדיקה',
   page_start: 601,
 };
 
@@ -48,7 +50,7 @@ const RULE = {
   conclusion_he: 'מסקנה',
   suspicion: 'yellow',
   source_anchor: 'nelson22.c85.septic_shock',
-  source_quote_he: 'ציטוט',
+  source_quote_he: 'ציטוט מלא מהמקור עבור הכלל',
 };
 
 const FLAG = {
@@ -58,7 +60,7 @@ const FLAG = {
   severity: 'critical',
   action_he: 'פעולה נדרשת',
   source_anchor: 'nelson22.c85.septic_shock',
-  source_quote_he: 'ציטוט',
+  source_quote_he: 'ציטוט מלא מהמקור עבור הדגל',
 };
 
 const extraction = (over = {}) => ({
@@ -272,7 +274,44 @@ await testAsync('נושאים נכתבים לפני מה שמפנה אליהם',
 test('summarize מפיק סיכום קריא', () => {
   const p = planIngestion({ extraction: extraction() });
   const lines = summarize(p);
-  assert(lines.some((l) => l.includes('נשמרים לאחר אימות: 3')));
+  assert(lines.some((l) => l.includes('נשמרים לאחר אימות: 3')), lines.join(' | '));
+});
+
+/* ════════════════════════════════════════════════════════════════════════
+ * עוגן בר-אימות
+ * ═══════════════════════════════════════════════════════════════════════ */
+section('עוגן בר-אימות — נלסון 22 מול הספרון');
+
+test('עוגן נלסון 22 אינו מתריע', () => {
+  const p = planIngestion({ extraction: extraction() });
+  const w = p.problems.filter((x) => x.kind === 'topic' && x.severity === 'warn');
+  assertEq(w.length, 0, `עוגן תקין התריע: ${JSON.stringify(w)}`);
+});
+
+test('עוגן לספרון מתריע שאינו בר-אימות', () => {
+  // זו הסיבה ש-877 רשומות נתקעו כטיוטה: אי אפשר לבדוק
+  // מול מקור עוגן שאין בו פרק ולא עמוד.
+  const p = planIngestion({
+    extraction: extraction({
+      topics: [{ ...TOPIC, topic_key: 'nelson.נוירולוגיה.שבץ' }],
+      clinical_rules: [{ ...RULE, source_anchor: 'nelson.נוירולוגיה.שבץ' }],
+      red_flags: [{ ...FLAG, source_anchor: 'nelson.נוירולוגיה.שבץ' }],
+    }),
+  });
+  const w = p.problems.find((x) => x.kind === 'topic' && x.severity === 'warn');
+  assert(w, 'עוגן לספרון לא התריע');
+  assert(w.why_he.includes('verified'), 'האזהרה אינה מסבירה את המשמעות');
+});
+
+test('עוגן בפורמט זר מתריע', () => {
+  const p = planIngestion({
+    extraction: extraction({
+      topics: [{ ...TOPIC, topic_key: 'random_key' }],
+      clinical_rules: [{ ...RULE, source_anchor: 'random_key' }],
+      red_flags: [{ ...FLAG, source_anchor: 'random_key' }],
+    }),
+  });
+  assert(p.problems.some((x) => x.kind === 'topic' && x.severity === 'warn'));
 });
 
 console.log(`\n${'─'.repeat(60)}`);
