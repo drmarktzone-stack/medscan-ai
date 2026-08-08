@@ -1,0 +1,513 @@
+{
+  "chapter_title_he": "מצבי חירום קרדיו-נשימתיים והחייאה בילדים",
+  "_provenance_he": "נלסון 22 (Elsevier, 2025), פרק 79 — Pediatric Cardiorespiratory Emergencies and Resuscitation (Ryan W. Morgan, Alexis A. Topjian), עמודים מודפסים 552-570. חולץ מטקסט verbatim של ה-PDF דרך scripts/nelsonExtract.py. ⚠ הפרק נשען על הנחיות AHA 2020 (PALS/BLS) המצוטטות בו במפורש. ⚠ זהו הפרק עתיר-המינונים ביותר שחולץ: הוא מכיל שלוש טבלאות תרופות. **אף מינון לא הוכנס לגוף הכללים.** ⚠ הציטוטים באנגלית במכוון.",
+
+  "topics": [
+    {
+      "topic_key": "nelson22.c79.resuscitation",
+      "topic_title_he": "מצבי חירום קרדיו-נשימתיים והחייאה בילדים",
+      "topic_title_en": "Pediatric Cardiorespiratory Emergencies and Resuscitation",
+      "chapter_number": 79,
+      "chapter_title_he": "רפואת חירום, טיפול נמרץ והרדמה",
+      "page_start": 552,
+      "page_end": 570,
+      "summary_he": "הפרק בונה גישה שיטתית לילד במצב חירום — הערכה כללית, ראשונית, שניונית ושלישונית — ומדגיש עיקרון אחד שחוזר בכל שלביו: אם מזוהה בעיה מסכנת חיים, ההתקדמות בהערכה נעצרת וההתערבות המצילה קודמת. הנקודה הקלינית המרכזית היא שבילדים, בשונה ממבוגרים, **הגורם המזרז הנפוץ ביותר לאי-יציבות לבבית הוא אי-ספיקה נשימתית** — ולכן זיהוי מהיר שלה והשבת חמצון והנשמה הם העדיפות הראשונה בהחייאה. הפרק מפרט את זיהוי דום הלב, את מרכיבי ההחייאה האיכותית, את הטיפול בגוף זר בנתיב האוויר לפי גיל, את הסיבות ההפיכות, ואת ההפרכה של האמירה שהחייאה ממושכת חסרת תוחלת.",
+      "keywords": [
+        "החייאה",
+        "דום לב",
+        "CPR",
+        "BLS",
+        "PALS",
+        "ABCDE",
+        "אי-ספיקה נשימתית",
+        "גוף זר בנתיב אוויר",
+        "דפיברילציה",
+        "ברדיקרדיה",
+        "Hs and Ts",
+        "ECMO",
+        "ECPR",
+        "קפנוגרפיה"
+      ],
+      "age_scope": "child",
+      "source_quote_he": "The most common precipitating event for cardiac instability in infants and children is respiratory failure (the inability to adequately oxygenate or ventilate). Therefore rapid assessment for respiratory failure and immediate restoration of adequate ventilation and oxygenation remain the first priorities in the resuscitation of a child. … If at any point during these assessments the provider identifies a life-threatening problem, progression through the systematic assessment is paused and targeted lifesaving interventions are prioritized."
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson22.c79.etco2_cpr_quality",
+      "title_he": "קפנוגרפיה כמדד לאיכות ההחייאה",
+      "components": [
+        { "analyte": "פחמן דו-חמצני בסוף הנשיפה", "direction": "low" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, איכות ההחייאה ניתנת להערכה גם על ידי ניטור התגובה הפיזיולוגית של החולה. פחמן דו-חמצני בסוף הנשיפה, המשקף זרימת דם ריאתית, יכול לשמש כמדד להתאמת עיסויי החזה. לחץ דם דיאסטולי, הנמדד דרך קו עורקי, משמש כתחליף ללחץ הזילוח הכלילי, ולכן ערכיו מתואמים עם הסיכוי לחזרת מחזור ספונטני.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ שני המדדים האלה הופכים את ההחייאה ממדידה של פעולה למדידה של תוצאה: הם אומרים אם העיסויים **מייצרים זרימה**, ולא רק אם הם מבוצעים בקצב הנכון. ⚠ המקור מסייג במפורש: שני הכלים ניתנים לשימוש במהלך ההחייאה **על ידי מטפלים שהוכשרו כראוי בדקויות פרשנותם** — כלומר אינם מדד גולמי שכל אחד יכול לקרוא. קפנוגרפיה גלית משמשת גם לאישור ולניטור מיקום הטובוס.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "CPR quality can also be gauged by monitoring the patient's physiologic response to resuscitation. End-tidal carbon dioxide, which reflects pulmonary blood flow, can be an indicator of the adequacy of chest compressions. Diastolic blood pressure, measured via an arterial line, is used as a surrogate of coronary perfusion pressure, and values are therefore correlated with the likelihood of ROSC. Either of these tools can be used during CPR by practitioners appropriately trained in the nuances of their interpretation."
+    },
+    {
+      "pattern_key": "nelson22.c79.shock_labs",
+      "title_he": "בירור מעבדתי בילד בשוק",
+      "components": [
+        { "analyte": "לקטט", "direction": "high" },
+        { "analyte": "תפקודי כליה", "direction": "abnormal" },
+        { "analyte": "תפקודי כבד", "direction": "abnormal" },
+        { "analyte": "תפקודי קרישה", "direction": "abnormal" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, ההערכה המעבדתית בילד בשוק צריכה לכלול בדיקות תפקוד כליה וכבד; מאזן חומצה-בסיס, כולל נוכחות חמצת לקטית, היפוקסמיה ו/או היפרקפניה; ועדות להפרעת קרישה או לקרישה תוך-כלית מפושטת — כדי להעריך סימני תפקוד לקוי של איברי הקצה ואת התגובה לטיפול.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ המקור מדגיש שהמעבדה אינה עומדת לבדה: **הערכת הזילוח ההיקפי, מצב ההכרה ותפוקת השתן חשובים אף הם לניטור.** שלושת אלה זמינים ליד המיטה ומיידית, בעוד שהמעבדה מגיעה באיחור — ולכן הם מה שמנחה את הדקות הראשונות.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Laboratory assessment should include studies of renal and liver function; acid-base balance, including the presence of lactic acidosis, hypoxemia, and/or hypercapnia; and evidence of coagulopathy or disseminated intravascular coagulation to assess for signs of end-organ dysfunction and response to treatment. Assessment of peripheral perfusion, mental status, and urine output are also important to monitor."
+    }
+  ],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson22.c79.respiratory_failure_first",
+      "label_he": "אי-ספיקה נשימתית — הגורם המזרז הנפוץ ביותר לדום לב בילדים",
+      "trigger": {
+        "findings": [
+          "מצוקה נשימתית בילד",
+          "עבודת נשימה מוגברת",
+          "קולות נשימה חריגים",
+          "נחירה או סטרידור",
+          "דום נשימה",
+          "נשימות אגונליות"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, **הגורם המזרז הנפוץ ביותר לאי-יציבות לבבית בתינוקות ובילדים הוא אי-ספיקה נשימתית** — חוסר היכולת לחמצן או להנשים כראוי. ולכן הערכה מהירה לאי-ספיקה נשימתית והשבה מיידית של הנשמה וחמצון נותרות **העדיפויות הראשונות** בהחייאת ילד. יש להעריך תחילה אם נתיב האוויר פתוח וניתן לתחזוקה: לחפש תנועות נשימה בחזה ובבטן, להאזין לקולות נשימה, ולחוש את תנועת האוויר בפה ובאף. ⚠ **זיהוי הילד עם מצוקה נשימתית או אי-ספיקה נשימתית מתקרבת, ומתן טיפול מתאים, הוא האמצעי הנפוץ והמעשי ביותר למניעת דום לב מחוץ לבית החולים בילדים.**",
+      "reason_he": "לפי המקור, רוב מקרי דום הלב מחוץ לבית החולים בילדים הם בעלי אטיולוגיה נשימתית בבסיסם. בילדים מאושפזים, דום הלב נובע לרוב מהתקדמות או החמרה של תהליך מחלה נשימתי, לבבי או נוירו-שרירי, ורוב מקרי דום הלב התוך-בית-חולייתיים מתרחשים על רקע אי-ספיקה נשימתית מתקדמת או שוק.",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "The most common precipitating event for cardiac instability in infants and children is respiratory failure (the inability to adequately oxygenate or ventilate). Therefore rapid assessment for respiratory failure and immediate restoration of adequate ventilation and oxygenation remain the first priorities in the resuscitation of a child. … Recognition of the child with respiratory distress or impending respiratory failure and delivery of appropriate care, as outlined earlier, is the most common and practical means of preventing pediatric OHCA."
+    },
+    {
+      "flag_key": "nelson22.c79.pulse_check_uncertainty",
+      "label_he": "ספק בקיום דופק — יש להתחיל החייאה",
+      "trigger": {
+        "findings": [
+          "ילד חסר תגובה",
+          "היעדר נשימה או נשימות אגונליות",
+          "חיוורון או כחלון עם חוסר תגובה",
+          "ספק בנוכחות דופק"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "⚠ לפי המקור, **גם מטפלים מנוסים טועים בשיעור גבוה יחסית כשהם נדרשים לקבוע נוכחות או היעדר דופק בילד.** לכן מצילים לא-מקצועיים צריכים להתחיל החייאה מיידית בכל חולה ללא סימני חיים. אנשי צוות רפואי רשאים למשש דופק לפרק זמן מוגבל, **אך צריכים לבצע החייאה אלא אם הדופק נחוש בוודאות**. ⚠ המשמעות המעשית: ספק פועל לטובת התחלת ההחייאה, לא לטובת המתנה. פרק הזמן המרבי למישוש מופיע בציטוט המקור.",
+      "reason_he": "לפי המקור, דום לב מזוהה מההערכה הכללית ומהסקר הראשוני, בממצאים של ילד חיוור או כחול, חסר תגובה, ללא נשימה וללא דופק. ⚠ המקור מדגיש שדום לב בילדים הוא **תהליך בר-התערבות שבו תוצאות טובות שכיחות** — זיהוי מוקדם וטיפול מהיר בהחייאה איכותית עשויים להציל חיים.",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Even experienced providers have a relatively high error rate when asked to determine presence or absence of pulse in a child. Therefore lay rescuers should begin CPR immediately for any patient without signs of life. Healthcare providers can palpate for a pulse for up to 10 seconds but should provide CPR unless a pulse is definitively felt. … Prehospital and hospital providers should understand that pediatric cardiac arrest is an intervenable process for which favorable outcomes are common."
+    },
+    {
+      "flag_key": "nelson22.c79.bradycardia_with_compromise",
+      "label_he": "ברדיקרדיה עם פגיעה קרדיו-נשימתית — טופלה כדום לב",
+      "trigger": {
+        "findings": [
+          "ברדיקרדיה עם שינוי במצב ההכרה",
+          "ברדיקרדיה עם תת לחץ דם",
+          "ברדיקרדיה עם סימני שוק",
+          "ברדיקרדיה שאינה נפתרת עם הנשמה וחמצון"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "⚠ לפי המקור, **חשוב שמטפלים בילדים יזהו שברדיקרדיה עם פגיעה קרדיו-נשימתית שאינה נפתרת במהירות בהנשמה ובחמצון צריכה להיות מטופלת בהחייאה.** כלומר: ילד עם דופק — אך ברדיקרדי ופגוע — מקבל עיסויי חזה. זו אחת הנקודות שבהן ההנחיה בילדים שונה מזו במבוגרים. ⚠ המקור מציין שרוב קצבי דום הלב בילדים הם «לא-ניתנים להלם»: אסיסטולה, פעילות חשמלית חסרת דופק, או ברדיקרדיה עם פגיעה קרדיו-נשימתית.",
+      "reason_he": "לפי המקור, במסגרת תמיכת חיים מתקדמת, הפרעות קצב ממוינות בצורה השימושית ביותר לפי קצב הלב הנצפה — ברדיקרדיה או טכיקרדיה — ולפי נוכחות פגיעה קרדיו-נשימתית: שינוי במצב ההכרה, תת לחץ דם, או סימני שוק.",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Most pediatric cardiac arrest rhythms are \"nonshockable\" (i.e., asystole, pulseless electrical activity [PEA], or bradycardia with cardiopulmonary compromise). It is important pediatric providers recognize that bradycardia with cardiopulmonary compromise that does not swiftly resolve with ventilation and oxygenation should be treated with CPR. … In the advanced life support setting, arrhythmias are most usefully classified according to the observed heart rate (i.e., bradycardia or tachycardia) and the presence of cardiopulmonary compromise (e.g., altered mental status, hypotension, signs of shock)."
+    },
+    {
+      "flag_key": "nelson22.c79.foreign_body_aspiration",
+      "label_he": "חשד לשאיפת גוף זר",
+      "trigger": {
+        "findings": [
+          "הופעה פתאומית של חנק",
+          "סטרידור פתאומי",
+          "צפצופים פתאומיים",
+          "אירוע חנק בילד מתחת לגיל חמש"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "⚠ לפי המקור, **כל ילד בהקשר מתאים עם הופעה פתאומית של חנק, סטרידור או צפצופים צריך להיחשב כמי ששאף גוף זר עד שיוכח אחרת**; אנמנזה התואמת שאיפה נחשבת אבחנתית. ⚠ **הטכניקה תלוית-גיל**: בתינוקות בהכרה — סדרת מכות גב ולאחריה דחיפות חזה, ולאחר כל מחזור בדיקה חזותית של הפה. בילדים מעל גיל שנה בהכרה — סדרת דחיפות בטן. ⚠ **אין לבצע שאיבה עיוורת או טאטוא עיוור באצבע** — הדבר עלול לדחוף את הגוף הזר עמוק יותר; הוצאה באצבע רק אם הגוף הזר **נראה** ובהישג יד. ילד בהכרה עם חשד לחסימה חלקית צריך להיות מורשה להשתעל ספונטנית עד שהשיעול אינו יעיל עוד, המצוקה והסטרידור מחמירים, או שהוא מאבד הכרה. ⚠ אם הילד מאבד הכרה — יש להשכיבו על גבו, להתחיל הנשמות, ולהתחיל עיסויים אם אין דופק; יש לבדוק את נתיב האוויר לגוף זר **בזמן ההנשמות**.",
+      "reason_he": "לפי המקור, ילדים מתחת לגיל חמש רגישים במיוחד לשאיפת גוף זר ולחנק. **נוזלים הם הגורם השכיח ביותר לחנק בתינוקות**, בעוד שחפצים קטנים ומזון — ענבים, אגוזים, נקניקיות, ממתקים — הם המקור השכיח ביותר בפעוטות ובילדים גדולים יותר. ⚠ המקור מציין במפורש שהאנמנזה הקלאסית **אינה תמיד קיימת** בכל המקרים.",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Any child in the proper setting with the sudden onset of choking, stridor, or wheezing should be considered to have a foreign body aspiration until proven otherwise. Unfortunately, this classic history is not always present in all cases of foreign body aspiration. … Blind suctioning or finger sweeps of the mouth are not recommended. … For conscious infants, providers should administer five back blows and then five chest thrusts. … For conscious children older than 1 year, providers should give a series of five abdominal thrusts (Heimlich maneuver). … Do not blindly sweep for objects if they are not visible, as this can push the object farther into the airway."
+    },
+    {
+      "flag_key": "nelson22.c79.shock_without_hypotension",
+      "label_he": "שוק ללא תת לחץ דם — ואף עם יתר לחץ דם",
+      "trigger": {
+        "findings": [
+          "טכיקרדיה עם זילוח לקוי",
+          "שינוי במצב ההכרה עם לחץ דם תקין",
+          "ירידה בתפוקת השתן",
+          "זילוח היקפי לקוי"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "⚠ לפי המקור, **אבחנת שוק אינה מחייבת נוכחות של תת לחץ דם. חשוב שמטפלים יזהו ששוק עשוי להתרחש עם יתר לחץ דם, עם לחץ דם תקין או עם תת לחץ דם.** בשוק מפוצה מוקדם לחץ הדם נשמר, ואספקת החמצן נשמרת ברובה באמצעות מנגנוני פיצוי — טכיקרדיה, עלייה בהתנגדות הכלי-דמית הסיסטמית, או עלייה בכיווץ שריר הלב. כשמנגנוני הפיצוי כושלים או אינם מספיקים, החולה מתקדם לשוק לא-מפוצה, המוגדר על ידי תת לחץ דם ותפקוד לקוי של איברים. ⚠ אם השוק אינו מזוהה ומטופל במהירות, הוא עלול להתקדם לתפקוד לקוי רב-מערכתי, לדום לב ולמוות. ⚠ הנפחים והספים אינם בדגל זה — ראה dosing_mentions_he.",
+      "reason_he": "לפי המקור, שוק מתרחש כשאספקת החמצן והחומרים המזינים לרקמות אינה מספיקה לענות על הדרישות המטבוליות. ההגדרה אינה כוללת לחץ דם. ⚠ יתר לחץ דם מוזכר במקור במפורש כמצב שבו שוק עשוי להתקיים — נקודה שקל להחמיץ לחלוטין.",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "A diagnosis of shock does not require the presence of hypotension. It is important for providers to recognize that shock can occur with hypertension, normotension, or hypotension. In early compensated shock, blood pressure is maintained, and oxygen delivery is mostly preserved through compensatory mechanisms such as tachycardia, increased systemic vascular resistance, or increased cardiac contractility. When compensatory mechanisms fail or are inadequate, the patient progresses to decompensated shock, which is defined by hypotension and organ dysfunction."
+    },
+    {
+      "flag_key": "nelson22.c79.reversible_causes",
+      "label_he": "סיבות הפיכות של דום לב — Hs and Ts",
+      "trigger": {
+        "findings": [
+          "דום לב ללא סיבה ברורה",
+          "החייאה ללא חזרת מחזור ספונטני",
+          "פעילות חשמלית חסרת דופק"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, **בנוסף למתן החייאה איכותית, היפוך הסיבה הבסיסית של דום הלב הוא קריטי** להשבת מחזור ספונטני ולשמירתו. הערכה ממוקדת של האטיולוגיות הסבירות לפי האנמנזה, גורמי הסיכון, הבדיקה הגופנית וממצאים אחרים חושפת לעיתים קרובות סיבה בת-טיפול. בנוסף, יש להתייחס באופן שיטתי לסיבות השכיחות והניתנות לתיקון. האלגוריתם מונה: היפו-וולמיה, היפוקסיה, יוני מימן (חמצת), היפוגליקמיה, היפו- או היפרקלמיה, היפותרמיה, פנאומוטורקס בלחץ, טמפונדה לבבית, רעלים, פקקת ריאתית, ופקקת כלילית. ⚠ **היפוגליקמיה נמנית ברשימה והיא נבדקת ליד המיטה בשניות** — זו הבדיקה שהכי קל לדלג עליה.",
+      "reason_he": "לפי המקור, דום לב בילדים עשוי להתרחש בשל אירוע ברור ומוגדר — כמו טביעה — בשל התקדמות תהליכי מחלה בסיסיים, או מסיבות שאינן ברורות לצוות ההחייאה בזמן האירוע.",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "In addition to providing high-quality CPR, reversing the underlying cause of cardiac arrest is critical in order to restore and maintain spontaneous circulation. … Additionally, providers should systematically address common and correctable causes of cardiac arrest (e.g., the \"Hs and Ts\"). … Reversible causes: Hypovolemia; Hypoxia; Hydrogen ion (acidosis); Hypoglycemia; Hypo-/hyperkalemia; Hypothermia; Tension pneumothorax; Tamponade, cardiac; Toxins; Thrombosis, pulmonary; Thrombosis, coronary."
+    },
+    {
+      "flag_key": "nelson22.c79.cpr_duration_myth",
+      "label_he": "משך ההחייאה כשיקול להפסקה — טענה שהופרכה",
+      "trigger": {
+        "findings": [
+          "החייאה ממושכת",
+          "שקילת הפסקת מאמצי החייאה"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "warning",
+      "action_he": "⚠ לפי המקור, **הטענות הקודמות שלפיהן החייאה מעבר לפרק זמן מסוים חסרת תוחלת — הופרכו.** במחקר רישום גדול אחד, חלק ניכר מהילדים שקיבלו החייאה ממושכת מאוד בדום לב תוך-בית-חולייתי שרדו עד השחרור מבית החולים; פרקי הזמן והשיעורים מופיעים בציטוט המקור. ⚠ **לכן החלטות על חוסר תוחלת ועל מתי להפסיק מאמצי החייאה צריכות להביא בחשבון גורמי חולה, יעדי טיפול, אטיולוגיית הדום ומאפייניו, ושורה של גורמים נוספים — ולא את משך ההחייאה לבדו.**",
+      "reason_he": "לפי המקור, ילדים המקבלים החייאה ממושכת אכן סובלים מתוצאות גרועות יותר מאלה הזקוקים להחייאה קצרה. ⚠ אך זו טענה סטטיסטית על קבוצות, ולא סף החלטה לפרט — וזו בדיוק ההבחנה שהמקור מבהיר.",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Unsurprisingly, children who receive prolonged CPR have worse outcomes than those who require brief CPR. However, previous assertions that CPR >20 minutes in duration was futile have been disproven. More than 15% of children who received >35 minutes of CPR for IHCA survived to hospital discharge in one large registry study. Therefore decisions regarding futility and when to cease resuscitation efforts should take into account patient factors, goals of care, arrest etiology and characteristics, and a host of other factors, rather than CPR duration alone."
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson22.c79.systematic_assessment",
+      "title_he": "ההערכה השיטתית — כללית, ראשונית, שניונית ושלישונית",
+      "category": "workup",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "ילד במצב חירום", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, התגובה הראשונה למצב חירום בילדים מכל סיבה היא **הערכה כללית מהירה ושיטתית של הזירה ושל הילד**, לזיהוי איומים מיידיים על הילד, על המטפלים ועל אחרים. אם מזוהה מצב חירום — יש להפעיל את מערכת החירום מיידית. לאחר מכן ממשיכים בהערכה ראשונית, שניונית ושלישונית, ככל שמצב הילד, בטיחות הזירה והמשאבים מאפשרים. ⚠ **אם בכל שלב מזוהה בעיה מסכנת חיים — ההתקדמות בהערכה נעצרת וההתערבויות המצילות ממוקדות ומקבלות עדיפות.** הערכות והתערבויות נוספות נדחות עד שמטפלים נוספים מגיעים לסייע, או עד שהמצב מסכן החיים טופל או יוצב בהצלחה. ההערכה הראשונית עוקבת אחר המבנה ABCDE שבתוכנית ה-PALS: נתיב אוויר, נשימה, מחזור, מוגבלות וחשיפה.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "המקור מסביר במפורש למה הגישה המובנית קיימת: היא **מארגנת מצב שאחרת עלול להיות מבלבל או כאוטי, ומבטיחה שרכיבי מפתח של ההערכה והטיפול לא יושמטו.** ⚠ הסקר הראשון הוא של הזירה, לא של הילד: האם המציל או הילד בסכנה מיידית — אש, חשמל במתח גבוה. **המציל אמור להמשיך רק אם תנאי הבטיחות התמלאו, כדי שלא יסכן את עצמו.** זהו סדר שקל לדלג עליו תחת לחץ.",
+      "recommended_workup_he": [
+        "סקר בטיחות הזירה לפני כל מגע",
+        "סקר חזותי מהיר: מראה כללי, נשימה, מחזור",
+        "הפעלת מערכת החירום",
+        "הערכה ראשונית לפי ABCDE",
+        "סימנים חיוניים ורוויון כשזמין",
+        "עצירת ההערכה בכל ממצא מסכן חיים"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "The first response to a pediatric emergency of any cause is a rapid and systematic general assessment of the scene and the child to identify immediate threats to the child, care providers, and others. … This standardized approach organizes what might otherwise be a confusing or chaotic situation and ensures that key elements of assessment and treatment are not omitted. … The American Heart Association (AHA), in its Pediatric Advanced Life Support (PALS) curriculum, supports the structured format of airway, breathing, circulation, disability, exposure (ABCDE)."
+    },
+    {
+      "rule_key": "nelson22.c79.age_specific_vitals",
+      "title_he": "ערכי סימנים חיוניים תלויי גיל והגדרת תת לחץ דם",
+      "category": "criteria",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "פירוש סימנים חיוניים בילד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "⚠ לפי המקור, **נתוני הבדיקה והסימנים החיוניים ניתנים לפירוש רק אם למטפל יש הבנה יסודית של הערכים התקינים.** בילדים, קצב הנשימה, קצב הלב ולחץ הדם התקינים הם **תלויי גיל**. המקור מציין במפורש שהטווחים האלה **קשים לזכירה, במיוחד כשמשתמשים בהם לעיתים רחוקות, ולכן מטפלים צריכים לשמור על גישה זמינה אליהם.** ⚠ תת לחץ דם מוגדר כלחץ דם מתחת לאחוזון החמישי לגיל, והמקור נותן ארבעה ספים לארבע קבוצות גיל — כאשר סף אחד מהם הוא **נוסחה תלוית-גיל ולא ערך קבוע**. הערכים והנוסחה מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ ההודאה של המקור שהטווחים קשים לזכירה היא הצדקה ישירה לכך שהם יהיו נגישים בכלי ולא בזיכרון. ⚠ אבל שים לב: **סף לחץ הדם בגילאי שנה עד עשר הוא נוסחה — 70 ועוד פעמיים הגיל בשנים. זהו חישוב, ולכן הוא שייך לקוד דטרמיניסטי ולא לפרשנות.** טעות בו משנה את סיווג הילד משוק מפוצה ללא-מפוצה או להפך. ⚠ שים לב גם שהסף ליילוד עד 28 יום שונה מזה של תינוק מגיל חודש — שתי קבוצות שנוטים לאחד.",
+      "recommended_workup_he": [
+        "גישה זמינה לטבלת ערכים תקינים לפי גיל",
+        "חישוב סף לחץ הדם לפי הנוסחה בגילאי שנה עד עשר",
+        "מדידת קצב לב, קצב נשימה ולחץ דם בכל הערכה ראשונית",
+        "רוויון חמצן כשזמין"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "The exam and vital sign data can be interpreted only if the provider has a thorough understanding of normal values. In pediatrics, normal respiratory rate, heart rate, and blood pressure have age-specific norms. These ranges can be difficult to remember, especially if used infrequently, and providers should therefore maintain ready access to these normal ranges. Hypotension is defined as blood pressure less than the fifth percentile for age. This is considered a systolic blood pressure of <60 mm Hg for neonates up to 28 days, <70 mm Hg for infants from 1 month to 1 year, <70+ (age in years ×2) mm Hg for children 1-10 years, and <90 mm Hg for children older than 10 years of age."
+    },
+    {
+      "rule_key": "nelson22.c79.bls_sequence",
+      "title_he": "רצף תמיכת חיים בסיסית לפי מספר המצילים ולפי גיל",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "דום לב בילד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, עם זיהוי דום הלב יש להתחיל החייאה עם **גם עיסויי חזה וגם הנשמות הצלה**. ⚠ **מציל יחיד שהיה עד לקריסה פתאומית צריך להפעיל את מערכת החירום ולהביא דפיברילטור אוטומטי או ידני, אם זמין מיידית, לפני התחלת העיסויים** — משום שלרבים מהילדים האלה יש קצב הניתן להלם. ⚠ **אך מציל יחיד המטפל בילד בדום לב ללא קריסה פתאומית שנצפתה — צריך להתחיל החייאה מיידית**, במחזורים של עיסויים והנשמות למשך פרק זמן מינימלי לפני הפעלת המערכת. כששני מצילים או יותר נוכחים, אחד אחראי להפעלת המערכת ולהבאת המכשיר בעוד האחר מתחיל החייאה. ⚠ **יחס העיסויים להנשמות תלוי בגיל ובמספר המצילים**: יחס אחד לתינוק ולילד טרום-התבגרותי כששני מצילים נוכחים, ויחס אחר למתבגרים **ללא קשר למספר המצילים**. היחסים ופרקי הזמן מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ ההבחנה בין «קריסה פתאומית שנצפתה» לבין כל שאר המקרים היא נקודת ההחלטה הקריטית והיא מנוגדת לאינטואיציה: **במקרה הראשון מביאים דפיברילטור לפני שמתחילים לעסות; בשני מתחילים לעסות מיד.** ההיגיון הוא הסתברותי — קריסה פתאומית שנצפתה בילד מרמזת על קצב הניתן להלם, ואילו רוב דומי הלב בילדים הם נשימתיים ולא-ניתנים להלם.",
+      "recommended_workup_he": [
+        "וידוא בטיחות הזירה",
+        "בדיקת תגובתיות וקריאה לעזרה",
+        "הפעלת מערכת החירום",
+        "הבאת דפיברילטור מיידית בקריסה פתאומית שנצפתה",
+        "התחלת עיסויים מיידית בכל מקרה אחר",
+        "הצמדת מדבקות דפיברילטור לחזה חשוף ללא קשר לקצב הראשוני"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Single rescuers who witness a sudden collapse should activate the emergency response system and retrieve an automated electronic defibrillator (AED) or defibrillator, if immediately available, before starting compressions, as many of these children have shockable rhythms. For single rescuers treating children in cardiac arrest without a witnessed sudden collapse, CPR should begin immediately with cycles of 30 compressions followed by two rescuer breaths for at least 2 minutes. … When both rescuers are providing CPR for an infant or prepubescent child, cycles of 15 compressions followed by two ventilations should be provided. Adolescents should receive cycles of 30 compressions and two ventilations regardless of the number of rescuers."
+    },
+    {
+      "rule_key": "nelson22.c79.high_quality_cpr",
+      "title_he": "מרכיבי החייאה איכותית",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "החייאה מתבצעת", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, מטרת ההחייאה היא לספק זרימת דם ואספקת חמצן זמניות במהלך דום הלב, והחייאה איכותית העומדת ביעדים ובמדדים מבוססים ממטבת את הזרימה ונקשרת בתוצאות טובות יותר. **המרכיבים: מיקום ידיים מיטבי, קצב עיסוי מתאים, עומק עיסוי מספק, אפשור חזרה מלאה של החזה, מזעור הפסקות, וקצב הנשמה מתאים.** ⚠ מיקום הידיים תלוי-גיל ותלוי-מספר-מצילים: בתינוקות מתחת לגיל שנה ומציל יחיד — שתי אצבעות או שתי אגודלים מתחת לקו הפטמות; בשני מצילים — טכניקת שתי אגודלים עם הקפת החזה, אלא אם המציל אינו יכול פיזית להקיף. בילדים מעל גיל שנה — עקב יד אחת או שתי ידיים על החצי התחתון של עצם החזה. ⚠ **יש להיזהר מלחיצה על ה-xiphoid ועל הצלעות.** כשאפשר, יש להניח לוח מתחת לגב הילד ולהעביר את מיטת בית החולים ל«מצב החייאה». ⚠ הקצב, העומק והיחסים המספריים מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ שני המרכיבים שנוטים להיות מוזנחים הם ההפוכים לאינטואיציה: **החזרה המלאה של החזה** — המקור מסביר שהיא נדרשת כדי לאפשר החזר ורידי ללב, כלומר ההרפיה חשובה כמו הלחיצה; ו**הימנעות מהנשמת יתר** — המקור קובע שהנשמה עודפת מעלה לחץ תוך-חזי ומפחיתה החזר ורידי. שניהם פוגעים בזרימה שההחייאה נועדה לייצר. ⚠ מכשירי ניטור איכות החייאה נמצאים כיום בשימוש נרחב ומודדים את המדדים האלה בזמן אמת.",
+      "recommended_workup_he": [
+        "מיקום ידיים לפי גיל ולפי מספר מצילים",
+        "לוח מתחת לגב ומצב החייאה במיטה",
+        "ניטור קצב ועומק במכשיר כשזמין",
+        "החלפת מבצע העיסויים בתדירות קבועה או מוקדם יותר בעייפות",
+        "מזעור הפסקות בעיסויים",
+        "הימנעות מהנשמת יתר"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Components of high-quality CPR include optimal hand positioning, appropriate chest compression rate, adequate chest compression depth, allowing for full chest recoil, minimization of interruptions, and appropriate ventilation rate. … Chest compressions should be provided at a rate of 100-120 compressions per minute. The goal chest compression depth for infants and children is at least one-third the anterior-posterior diameter of the chest, which is approximately 4 cm (1.5 inches) in infants and 5 cm (2 inches) in children. … Rescuers should avoid leaning and allow the chest to fully recoil after each compression in order to facilitate venous return to the heart."
+    },
+    {
+      "rule_key": "nelson22.c79.als_ventilation_and_epi",
+      "title_he": "תמיכת חיים מתקדמת — הנשמה, אפינפרין ובדיקות קצב",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "החייאה מתקדמת בילד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, **ההנשמה היא מרכיב מפתח בהחייאת ילדים משום שלרוב החולים יש אי-ספיקה נשימתית נלווית.** בילדים ללא נתיב אוויר מתקדם, העיסויים נעצרים כדי לאפשר הנשמה במסכה לפי יחסי העיסוי-הנשמה. **בילדים עם נתיב אוויר מתקדם, ההנשמות ניתנות א-סינכרונית — כלומר בלי להפסיק את העיסויים** — בקצב מוגדר. ⚠ **יש להימנע מהנשמת יתר, שעלולה להעלות לחץ תוך-חזי ולהפחית החזר ורידי ללב.** אפינפרין ניתן במהלך ההחייאה כדי להעלות את ההתנגדות הכלי-דמית הסיסטמית ואת לחץ הזילוח הכלילי, במטרה להשיב מחזור ספונטני. הוא ניתן תוך-ורידית או תוך-גרמית, ואם אין גישה — ניתן דרך הטובוס. ⚠ **המנה הראשונה צריכה להינתן בתוך פרק זמן מוגדר מתחילת דום הלב, ולחזור במרווחים קבועים עד לחזרת מחזור ספונטני.** בדיקות דופק וקצב מבוצעות במרווחים קבועים אך **אינן צריכות להימשך מעבר לזמן מוגבל**. ⚠ הקצבים, פרקי הזמן והמינונים מופיעים בציטוט המקור וב-dosing_mentions_he.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "המעבר לנתיב אוויר מתקדם משנה את מבנה ההחייאה כולה: מהפסקות מתוזמנות להנשמה, לעיסויים רציפים עם הנשמות א-סינכרוניות. ⚠ זו נקודה שבה צוות שלא ביצע את המעבר ממשיך להפסיק עיסויים ללא צורך — כלומר מפחית את הזרימה שההחייאה מייצרת. ⚠ ההנחיה שבדיקת קצב לא תימשך מעבר לזמן מוגבל היא אותו עיקרון: כל שנייה של הפסקה היא שנייה ללא זרימה.",
+      "recommended_workup_he": [
+        "הנשמה בשקית-מסכה וחמצן",
+        "חיבור מוניטור או דפיברילטור",
+        "גישה ורידית או תוך-גרמית",
+        "אפינפרין בהקדם ולפי המרווח",
+        "שקילת נתיב אוויר מתקדם וקפנוגרפיה",
+        "בדיקות קצב במרווחים קבועים ובזמן מוגבל",
+        "טיפול בסיבות ההפיכות"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Ventilation is a key component of pediatric CPR because most patients have concomitant respiratory failure. … For children with an advanced airway at the time of arrest, ventilations should be provided asynchronously (i.e., without interrupting chest compressions) at a rate of 20-30 breaths/minute. Providers should avoid overventilation during CPR, as this may increase intrathoracic pressure and decrease venous return to the heart. … The first dose of epinephrine should be given within 5 minutes of the onset of cardiac arrest and repeated every 3-5 minutes until return of spontaneous circulation (ROSC) is achieved. Pulse and rhythm checks should be performed approximately every 2 minutes but should not last more than 10 seconds."
+    },
+    {
+      "rule_key": "nelson22.c79.defibrillation",
+      "title_he": "דפיברילציה ותרופות אנטי-אריתמיות",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "פרפור חדרים או טכיקרדיה חדרית ללא דופק", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, בילדים עם פרפור חדרים או טכיקרדיה חדרית ללא דופק, **דפיברילציה דחופה מותווית**. ⚠ **יש להצמיד מדבקות דפיברילטור לחזה החשוף במהלך ההחייאה ללא קשר לקצב הראשוני, משום שקצבים אלה עלולים להתפתח מאוחר יותר במהלך הדום.** מצילים לא-מקצועיים צריכים לעקוב אחר ההוראות הקוליות של המכשיר האוטומטי. ⚠ **באופן אידיאלי, מכשיר אוטומטי המשמש ילדים מתחת לגיל שמונה צריך לספק מנה מבוגרת מוחלשת או להיות מתוכנן לילדים; אם אף אחת מהאפשרויות אינה זמינה — יש להשתמש במכשיר מבוגרים סטנדרטי.** יש לחדש את ההחייאה מיד לאחר כל ניסיון דפיברילציה, עם הערכות קצב וניסיונות נוספים במרווחים קבועים כל עוד הקצב נמשך. אמיודרון או לידוקאין יכולים להינתן כאנטי-אריתמי בקצב עמיד להלם. ⚠ **אנרגיות ההלם והמינונים אינם בכלל הזה — ראה dosing_mentions_he.**",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ שתי הנקודות המעשיות: ראשונה — **הצמדת המדבקות אינה מותנית בקצב הראשוני.** קצב שאינו ניתן להלם בתחילה עלול להפוך לכזה, וההצמדה המוקדמת חוסכת דקות. שנייה — **מכשיר מבוגרים עדיף על היעדר מכשיר** בילד מתחת לגיל שמונה. שתי ההנחיות מסירות היסוס שגורם לעיכוב. ⚠ המקור מציין שקצבים הניתנים להלם מהווים חלק קטן יחסית מדומי הלב בילדים — אך שהם עלולים להופיע כקצב משני מאוחר יותר.",
+      "recommended_workup_he": [
+        "הצמדת מדבקות לחזה חשוף בכל דום לב",
+        "העדפת מכשיר ייעודי לילדים או מנה מוחלשת מתחת לגיל שמונה",
+        "שימוש במכשיר מבוגרים אם אין חלופה",
+        "חידוש עיסויים מיד לאחר כל הלם",
+        "הערכות קצב במרווחים קבועים",
+        "שקילת אמיודרון או לידוקאין בקצב עמיד"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Defibrillator pads should be applied to the bare chest during CPR regardless of initial rhythm, as these rhythms can develop later during cardiac arrest. … Ideally, the AED used for children <8 years of age should deliver an attenuated adult dose or should be designed for children; if neither of these options is available, a standard adult AED should be used. … An initial defibrillation should be provided at a dose of 2 J/kg with subsequent dosing per the PALS algorithm. CPR should be promptly resumed after each defibrillation attempt."
+    },
+    {
+      "rule_key": "nelson22.c79.shock_types_and_initial_management",
+      "title_he": "סוגי השוק וניהול ראשוני בהקשר החייאתי",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "ילד בשוק", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, השוק מתואר לפי הפתופיזיולוגיה הבסיסית, **המכתיבה את התגובה הטיפולית המתאימה**. שוק היפו-וולמי הוא הנפוץ ביותר בילדים בעולם, בדרך כלל בקשר לאיבודי נוזלים משלשול קשה; שוק דימומי הוא סוג ייעודי שלו לאחר חבלה. שוק תפוצתי נובע מהרחבה פתולוגית של כלי הדם ומלווה לעיתים קרובות בהיפו-וולמיה תוך-כלית יחסית עקב דליפה קפילרית ו«מרווח שלישי»; הגורמים השכיחים הם ספסיס, אנפילקסיס וכוויות. שוק קרדיוגני נובע מתפקוד לקוי של שריר הלב — מיוקרדיטיס, קרדיומיופתיה ומחלת לב מולדת, לעיתים קרובות לאחר ניתוח. ⚠ **ספסיס קשה ושוק ספטי מלווים לעיתים קרובות בתפקוד לקוי של שריר הלב, ולכן ילדים עם שוק ספטי מגלים תכופות מרכיבים של שוק היפו-וולמי, תפוצתי וקרדיוגני יחד.** שוק חסימתי מתרחש כשתפוקת הלב מופחתת בשל חסימת זרימה — טמפונדה, פנאומוטורקס בלחץ או תסחיף ריאתי מסיבי. שוק דיסוציאטיבי מתבטא במצב לב ונפח תקינים אך אספקת חמצן לקויה. ⚠ **הנפחים והספים אינם בכלל הזה — ראה dosing_mentions_he.**",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ המשפט על השוק הספטי הוא המסקנה המעשית: **המיון אינו קטגורי אלא מרכיבי**, ולכן ניהול שמכוון רק לרכיב אחד יכשל. ⚠ המקור נותן גם רצף החלטה ברור: אם השוק נמשך, אם ניכר עומס נוזלים, או אם יש חשד לתפקוד לקוי של שריר הלב — יש להתחיל עירויים ואזואקטיביים. במסגרת בית חולים, שוק תלוי-קטכולאמינים צריך להוביל לשקילת צנתר ורידי מרכזי לגישה יציבה וקו עורקי לניטור לחץ דם רציף. ⚠ הטיפול המפורט בכל סוג נמצא בפרק 85 שנטען בנפרד.",
+      "recommended_workup_he": [
+        "הערכה לפי הסקר הראשוני, השניוני והשלישוני",
+        "זיהוי הרכיב הפתופיזיולוגי השולט",
+        "ניטור סימני עומס נפח במהלך מתן הנוזלים",
+        "מעבר לוואזואקטיבי בשוק נמשך או בעומס",
+        "שקילת גישה מרכזית וקו עורקי בשוק תלוי-קטכולאמינים",
+        "ניטור זילוח היקפי, מצב הכרה ותפוקת שתן"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Shock is also often described according to the underlying pathophysiology, which dictates the appropriate therapeutic response. … Severe sepsis and septic shock are often accompanied by myocardial dysfunction, and children with septic shock thus frequently manifest components of hypovolemic, distributive, and cardiogenic shock. … Initial resuscitation should include the administration of crystalloid fluids in 10-20 mL/kg aliquots up to 60 mL/kg in the first hour if hypotension is present while paying close attention for signs of volume overload."
+    },
+    {
+      "rule_key": "nelson22.c79.arrest_prevention",
+      "title_he": "מניעת דום לב — בקהילה ובבית החולים",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "ילד בסיכון להידרדרות", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, דום לב מחוץ לבית החולים נובע ממגוון סיבות: מוות בעריסה, טביעה, שאיפת גוף זר, הרעלה או מנת יתר, וחבלה. דום לב פתאומי מהפרעות קצב או ממחלת לב אכן מתרחש — בדרך כלל במתבגרים ובבעלי מחלת לב מולדת קיימת — ויש לזהותו ולטפל בו מיידית, **אך לרוב מקרי דום הלב מחוץ לבית החולים בילדים יש אטיולוגיה נשימתית בבסיס**. אמצעי מניעה — השכבת תינוקות על הגב להפחתת הסיכון למוות בעריסה, השגחה על ילדים ליד מקווי מים, וצמצום הגישה למזונות בסיכון גבוה לחנק — **מפחיתים מהותית את שכיחות דום הלב**. ⚠ בילדים מאושפזים, דום הלב נובע לרוב מהתקדמות מחלה נשימתית, לבבית או נוירו-שרירית, ורובם מתרחשים על רקע אי-ספיקה נשימתית מתקדמת או שוק. **זיהוי חולים מידרדרים, העברה למסגרות מנוטרות, והפעלת טיפולים מכוונים ותומכים הם אמצעים יעילים למניעה** — או להבטחה שאם הדום מתרחש, הטיפול יינתן במסגרת מצוידת ומוכנה.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ הנקודה שחוזרת כאן בשלישית: **הכל מוביל בחזרה לזיהוי מוקדם של הידרדרות נשימתית.** האמצעי היעיל ביותר למניעת דום לב בילד אינו ציוד החייאה אלא זיהוי הילד עם המצוקה הנשימתית שעה קודם. ⚠ הרשימה הקהילתית — השכבה על הגב, השגחה ליד מים, מזונות חנק — היא הדרכה שניתנת במרפאה, ולא ברפואת חירום.",
+      "recommended_workup_he": [
+        "זיהוי הידרדרות נשימתית מוקדמת",
+        "העברה למסגרת מנוטרת בעת הצורך",
+        "הדרכת הורים: השכבה על הגב, השגחה ליד מים, מזונות חנק",
+        "זיהוי מוקדם של הפרעות קצב במתבגרים ובבעלי מחלת לב מולדת"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Sudden cardiac arrest due to arrhythmias or cardiac disease do occur (usually in adolescents and those with preexisting congenital heart disease) and should be recognized and promptly treated, but most pediatric OHCAs have an underlying respiratory etiology. Preventive measures such as \"back to sleep\" for infants to lower the risk of SIDS, child supervision around bodies of water, and minimizing access to high-risk choking foods substantially decrease the incidence of cardiac arrest. … Most pediatric in-hospital cardiac arrests (IHCAs) occur in the setting of progressive respiratory failure or shock."
+    },
+    {
+      "rule_key": "nelson22.c79.ecmo_ecpr",
+      "title_he": "ECMO ו-ECPR — הבחנה בין וורידי-וורידי לוורידי-עורקי",
+      "category": "management",
+      "domain": "critical_care",
+      "conditions": [
+        { "type": "finding", "key": "אי-ספיקה לבבית או נשימתית עמידה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, ECMO היא צורה מותאמת של מעקף לב-ריאה שניתן להפעילה בילדים עם אי-ספיקה לבבית או נשימתית קשה. הדם מוסר מווריד מרכזי גדול, מועבר בצנרת למחמצן לחילוף גזים, ומוחזר לגוף דרך וריד או דרך עורק. ⚠ **ההבחנה מכתיבה את ההתוויה: ECMO וורידי-וורידי משמש בדרך כלל בחולים עם אי-ספיקה נשימתית עמידה הזקוקים לחילוף גזים אך ממשיכים להסתמך על תפקוד הלב שלהם לתפוקת לב. ECMO וורידי-עורקי משמש בחולים עם שוק או אי-ספיקה לבבית, עם או בלי אי-ספיקה נשימתית נלווית.**",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ההבחנה אינה טכנית: היא שאלה על מה כושל. אם הלב עובד והריאות לא — הצורה הוורידית מספיקה. אם הלב כושל — נדרשת התמיכה העורקית. ⚠ החלטה על ECMO אינה החלטה של כלי תמיכה בהחלטות; הרשומה הזו נועדה להבנת ההקשר ולא להמלצה.",
+      "recommended_workup_he": [
+        "הבחנה בין כשל נשימתי מבודד לבין כשל לבבי",
+        "התייעצות עם מרכז המבצע ECMO",
+        "המשך החייאה איכותית תוך כדי ההערכה"
+      ],
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Extracorporeal membrane oxygenation (ECMO) is a modified form of cardiopulmonary bypass that can be employed in children with severe cardiac or respiratory failure. Blood is removed from a large central vein, carried through tubing to an oxygenator for gas exchange, and then returned to the body via either a vein (venovenous or VV-ECMO) or an artery (venoarterial or VA-ECMO). VV-ECMO is typically used in patients with refractory respiratory failure who require ECMO for gas exchange but continue to rely on their native cardiac function for cardiac output. VA-ECMO is used for patients with shock or cardiac failure."
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson22.c79.choking_agents_by_age",
+      "anchor_finding_he": "אירוע חנק פתאומי לפי גיל",
+      "co_findings": [
+        "תינוק שניזון בנוזלים",
+        "פעוט שאכל ענבים או אגוזים",
+        "סטרידור פתאומי",
+        "צפצופים פתאומיים"
+      ],
+      "implies_he": "הגורם הסביר לגוף הזר שונה מהותית לפי הגיל",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, נוזלים הם הגורם השכיח ביותר לחנק בתינוקות, בעוד שחפצים קטנים ומזון — ענבים, אגוזים, נקניקיות, ממתקים — הם המקור השכיח ביותר לגופים זרים בנתיבי האוויר של פעוטות וילדים גדולים יותר.",
+      "action_he": "⚠ ההשלכה כפולה. **אבחנתית**: אנמנזה של האכלה בנוזלים בתינוק היא הקשר תואם לשאיפה, גם אם לא נצפה אירוע חנק. **מונעת**: המקור מונה במפורש צמצום גישה למזונות בסיכון גבוה לחנק כאמצעי המפחית מהותית את שכיחות דום הלב — כלומר זו הדרכה שניתנת במרפאה לפי הגיל. ⚠ הטכניקה לשחרור החסימה תלוית-גיל אף היא — ראה הדגל nelson22.c79.foreign_body_aspiration.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Children under 5 years of age are particularly susceptible to foreign body aspiration and choking. Liquids are the most common cause of choking in infants, whereas small objects and food (e.g., grapes, nuts, hot dogs, candy) are the most common source of foreign bodies in the airways of toddlers and older children."
+    },
+    {
+      "assoc_key": "nelson22.c79.sudden_collapse_shockable",
+      "anchor_finding_he": "קריסה פתאומית שנצפתה בילד או במתבגר",
+      "co_findings": [
+        "מחלת לב מולדת ידועה",
+        "גיל התבגרות",
+        "היעדר מחלה נשימתית קודמת"
+      ],
+      "implies_he": "סבירות גבוהה יותר לקצב הניתן להלם",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, מציל יחיד שהיה עד לקריסה פתאומית צריך להביא דפיברילטור לפני התחלת העיסויים, **משום שלרבים מהילדים האלה יש קצבים הניתנים להלם**. דום לב פתאומי מהפרעות קצב או ממחלת לב מתרחש בדרך כלל במתבגרים ובבעלי מחלת לב מולדת קיימת.",
+      "action_he": "⚠ זהו הקישור שהופך את סדר הפעולות. בכל שאר המקרים — התחלת עיסויים מיידית; כאן — הבאת המכשיר קודם, אם הוא זמין מיידית. שני המשתנים שמנבאים: **קריסה פתאומית שנצפתה**, ו**גיל או מחלת לב רקע**. ⚠ בשני המקרים המדבקות מוצמדות בכל מקרה במהלך ההחייאה, משום שקצב הניתן להלם עלול להתפתח מאוחר יותר.",
+      "age_scope": "adolescent",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "Single rescuers who witness a sudden collapse should activate the emergency response system and retrieve an automated electronic defibrillator (AED) or defibrillator, if immediately available, before starting compressions, as many of these children have shockable rhythms. … Sudden cardiac arrest due to arrhythmias or cardiac disease do occur (usually in adolescents and those with preexisting congenital heart disease)."
+    },
+    {
+      "assoc_key": "nelson22.c79.abnormal_airway_sounds",
+      "anchor_finding_he": "קולות נשימה חריגים בילד",
+      "co_findings": [
+        "נחירה",
+        "סטרידור",
+        "עבודת נשימה מוגברת",
+        "היעדר תנועת אוויר בפה ובאף"
+      ],
+      "implies_he": "נתיב אוויר שאינו פתוח — הפעולה הראשונה לפני כל השאר",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, נתיב אוויר פתוח הוא נתיב לא-חסום המאפשר נשימה תקינה ללא רעש וללא מאמץ. נתיב אוויר בר-תחזוקה הוא כזה שכבר פתוח או שניתן לפתוח אותו בתמרון פשוט.",
+      "action_he": "⚠ ההגדרה עצמה היא כלי האבחון: **רעש או מאמץ פירושם שהנתיב אינו פתוח.** להערכה יש להסתכל על תנועות הנשימה בחזה ובבטן, להאזין לקולות, ולחוש את תנועת האוויר בפה ובאף — שלושה חושים, לא אחד. ⚠ ההבחנה בין «פתוח» ל«בר-תחזוקה» קובעת אם נדרש תמרון פשוט או התערבות מתקדמת, וזו ההחלטה הראשונה ברצף ה-ABCDE.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "A patent airway is unobstructed, allowing normal respiration without noise or effort. A maintainable airway is one that is either already patent or can be made patent with a simple maneuver. To assess airway patency, the provider should look for breathing movements in the child's chest and abdomen, listen for breath sounds, and feel for the movement of air at the child's mouth and nose. Abnormal breathing sounds (e.g., snoring or stridor), increased work of breathing…"
+    },
+    {
+      "assoc_key": "nelson22.c79.unresponsive_sequence",
+      "anchor_finding_he": "ילד חסר תגובה",
+      "co_findings": [
+        "היעדר תגובה לקול",
+        "נשימה לא-יעילה",
+        "נשימות אגונליות",
+        "היעדר נשימה"
+      ],
+      "implies_he": "רצף החלטה חד: הנשמת הצלה או החייאה מלאה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, אם ילד נמצא חסר תגובה או הופך לחסר תגובה במהלך ההערכה, יש לגרות אותו ולהעריך את תגובתו לקול. אם אין תגובה — יש להעריך נשימה.",
+      "action_he": "⚠ נקודת ההסתעפות היא חדה ולעיתים קרובות מוחמצת: **אם הילד נושם אך באופן לא-יעיל — מתחילים הנשמת הצלה בלבד. אם אינו נושם או שיש לו נשימות אגונליות — מתחילים החייאה מלאה.** ⚠ הנשימות האגונליות הן המלכודת: הן נראות כמו נשימה ואינן נשימה. המקור מסווג אותן במפורש יחד עם היעדר נשימה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c79.resuscitation",
+      "source_quote_he": "If a child is found unresponsive or becomes unresponsive during the provider's assessment, the provider should stimulate the patient and assess the patient's response to voice. If there is no response, the provider should assess for breathing. If the child is breathing but ineffectively, rescue breathing should be started. If the child is not breathing or has agonal respirations, the provider should initiate cardiopulmonary resuscitation (CPR) and follow Basic Life Support (BLS) pediatric cardiac arrest algorithms."
+    }
+  ],
+
+  "gaps_he": [
+    "⚠ **זהו הפרק עתיר-המינונים ביותר שחולץ, ואף מינון לא הוכנס לכללים.** שלוש טבלאות תרופות לא הומרו: טבלה 79.5 (תרופות להחייאה), טבלה 79.7 (תרופות לשמירת תפוקת לב וליציבות לאחר דום), וטבלה נוספת של תרופות עם טווחי מינון. **כולן מועמדות ל-DoseRecord ודורשות אישור רופא/ה.** ראה dosing_mentions_he.",
+    "⚠ **טבלה 79.1 (ערכי סימנים חיוניים תקינים לפי גיל) לא הומרה ל-ReferenceRange.** זהו החוסר המשמעותי ביותר מהפרק: המקור עצמו כותב שהערכים קשים לזכירה ושיש לשמור עליהם נגישים. **הם המשאב שהכלי אמור לספק.** הטבלה קיימת בטקסט שחולץ (עמוד מודפס 555).",
+    "⚠ **נוסחת סף תת לחץ הדם לגילאי שנה עד עשר היא חישוב** — היא מתועדת בכלל nelson22.c79.age_specific_vitals אך אינה מחושבת. **חישוב שייך לקוד דטרמיניסטי.** נדרש מודול עם בדיקות לפני שהסיווג ישמש בפלט קליני.",
+    "⚠ **אלגוריתמי ה-BLS וה-PALS (איורים 79.1, 79.2, 79.16) לא הומרו.** אלה עצי החלטה מלאים, והם שייכים לקוד דטרמיניסטי. הטקסט שחולץ מכיל את תוכן האלגוריתם בצורה מפוזרת בלבד.",
+    "⚠ **סולם Glasgow Coma Scale וקומפוננטות הפתיחה, התגובה המילולית והמוטורית מופיעים בטקסט שחולץ (עמוד מודפס 555) ולא הומרו.** זהו ציון מחושב ולכן שייך לקוד דטרמיניסטי. הוא נדרש גם לציון Phoenix שנטען מפרק 85.",
+    "⚠ **טבלה 79.6 (Hs and Ts) חולצה כרשימה בדגל אדום בלבד** ולא כפריטי ידע נפרדים עם הקשר קליני ותוכנית טיפול לכל סיבה. הטבלה המלאה במקור כוללת «מצבים קליניים שכיחים» ו«טיפול» לכל אחד — מבנה שמתאים לחילוץ מובנה.",
+    "⚠ **מרבית הפרק לא חולץ.** לא חולצו: סעיף ההערכה השניונית והשלישונית, ניהול חסימת נתיב אוויר מסיבות אחרות מגוף זר, פרק ההפרעות קצב המלא (ברדיקרדיה, טכיקרדיה צרה ורחבה), פרק הפרוצדורות (גישה תוך-גרמית, צנרור, ניקור חזה, ניקור קרום הלב), והפרוצדורות הלא-כלי-דמיות. הפרק מקיף כ-19 עמודים מודפסים והחילוץ הזה מכסה את גרעין ההחייאה בלבד.",
+    "⚠ **מדדי איכות ההחייאה — קצב, עומק, יחסים ותדירויות — נשמרו בציטוטים בלבד ולא בגוף הכללים**, כמינונים לוולידטור ול-numericGuard. זה כולל את קצב העיסויים, עומק העיסוי בתינוק ובילד, יחסי עיסוי-הנשמה, קצב ההנשמה בנתיב אוויר מתקדם, ותדירות בדיקות הקצב.",
+    "⚠ אנרגיות ההלם לדפיברילציה — ראשון, שני, ובאים אחריו כולל תקרה — נשמרו בציטוט בלבד.",
+    "⚠ הפרק מפנה לפרקים שלא חולצו: 85 (שוק — חולץ בנפרד), 423 (מוות בעריסה), 78 (טריאז' של ילד חולה). טענות התלויות בהם אינן מיוצגות כאן.",
+    "⚠ **הפרק נשען על הנחיות AHA 2020.** הנחיות החייאה מתעדכנות במחזוריות. **יש לאמת מול הגרסה העדכנית לפני שימוש קליני**, ובפרט מול הנחיות מקומיות ישראליות אם קיימות.",
+    "⚠ הפרק אינו עוסק בטיפול לאחר דום לב (post-arrest care) מעבר להפניה לרשימת תיוג באלגוריתם, ואינו עוסק בניהול טמפרטורה ממוקד או בפרוגנוזה נוירולוגית. אלה נושאים סמוכים שאינם בו.",
+    "⚠ המקור אינו נותן קריטריונים להפסקת החייאה — הוא במפורש דוחה קריטריון של משך ומפנה לשיקול רב-גורמי. **אין להשלים קריטריון שאינו במקור.**"
+  ],
+
+  "dosing_mentions_he": [
+    "⚠ **אפינפרין בדום לב**: המקור נוקב במינון תוך-ורידי או תוך-גרמי לפי משקל, בריכוז התמיסה ובנפח למ\"ל לק\"ג, במינון המרבי, במרווח החזרה, ובמינון שונה ובריכוז שונה למתן דרך הטובוס. **כל אלה נשמרו בציטוטי המקור בלבד.** ⚠ ההבחנה בין המינון התוך-ורידי לתוך-טובוסי היא פי עשרה — טעות בה מסוכנת.",
+    "⚠ **אמיודרון**: מינון בולוס לפי משקל במהלך דום לב, עם מספר מרבי של מנות חוזרות בקצב עמיד. בציטוט בלבד.",
+    "⚠ **לידוקאין**: מינון העמסה התחלתי לפי משקל. בציטוט בלבד.",
+    "⚠ **אנרגיות דפיברילציה**: המקור נוקב באנרגיה להלם ראשון, לשני, ולבאים אחריו — כולל תקרה עליונה ומנת מבוגר. בציטוט בלבד.",
+    "⚠ **בולוס נוזלים בשוק**: נפח למנה ונפח מצטבר בשעה הראשונה, מותנה בנוכחות תת לחץ דם. בציטוט בלבד.",
+    "⚠ **מדדי איכות החייאה**: קצב העיסויים, עומק העיסוי כשבר מקוטר החזה ובערך מוחלט לתינוק ולילד, עומק למתבגר, יחסי עיסוי-הנשמה לפי גיל ומספר מצילים, קצב ההנשמה בנתיב אוויר מתקדם, תדירות החלפת מבצע העיסויים, ומרווח בדיקות הקצב. כולם ספים מספריים המכריעים ביצוע ולכן נשמרו בציטוטים.",
+    "⚠ **ספי לחץ דם לפי גיל**: ארבעה ספים לארבע קבוצות גיל, שאחד מהם נוסחה. בציטוט הכלל בלבד. **זהו מועמד ל-ReferenceRange ולמודול חישוב.**",
+    "⚠ **טבלה 79.5 (תרופות החייאה) וטבלה 79.7 (תרופות לשמירת תפוקת לב וליציבות לאחר דום)** מכילות רשימות תרופות עם מינונים והערות. **הן לא הומרו לרשומות ודורשות אישור רופא/ה לפני יצירת DoseRecord.**",
+    "⚠ פרק הזמן למתן מנת האפינפרין הראשונה מתחילת דום הלב, ומשך המרבי לבדיקת דופק — שניהם ספי זמן קריטיים ונשמרו בציטוטים."
+  ]
+}
