@@ -16,6 +16,7 @@
 import { verifyDiagnosis } from "./verify";
 import { DIAGNOSIS_MODEL } from "./aiConfig";
 import { RADIOLOGY_CRITICAL_PROMPT, applyRadiologyCritical } from "./radiologyCritical";
+import { evaluateMeasurements } from "./radiologyMeasurements";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -58,6 +59,9 @@ ${SEARCH_PATTERNS}
 ${ANTI_HALLUCINATION}
 
 ${RADIOLOGY_CRITICAL_PROMPT}
+
+## מדידות (אם האנטומיה הרלוונטית מצולמת)
+דווח measurements כמערך של { key, value } עם המפתחות הסטנדרטיים. **אל תשווה לנורמה בעצמך — המערכת משווה לפי גיל בקוד.** מפתחות: cardiothoracic_ratio (יחס), appendix_diameter_us, pylorus_muscle_thickness, pylorus_channel_length, spleen_length_us (ס"מ), retropharyngeal_soft_tissue, retrotracheal_soft_tissue, bladder_wall_thickness_full, neonatal_frontal_horn, neonatal_third_ventricle (מ"מ אלא אם צוין אחרת). דווח גם patient_age_months אם ניתן להעריך מההקשר (נדרש לנורמות תלויות-גיל).
 
 ## פלט
 החזר אך ורק JSON התואם לסכמה. טקסט חופשי ב-${outputLang}; מונחים רפואיים ניתן להשאיר גם באנגלית.`;
@@ -119,6 +123,20 @@ export const RADIOLOGY_SCHEMA = {
     clinical_urgency: { type: "string", enum: ["Normal", "Urgent", "Emergency"] },
     critical_red_flags: { type: "array", items: { type: "string" } },
     recommended_next_steps: { type: "array", items: { type: "string" } },
+    patient_age_months: { type: "number", description: "גיל משוער בחודשים (לנורמות תלויות-גיל)" },
+    measurements: {
+      type: "array",
+      description: "מדידות שחולצו; המערכת משווה לנורמה בקוד",
+      items: {
+        type: "object",
+        properties: {
+          key: { type: "string" },
+          value: { type: "number" },
+          unit: { type: "string" },
+        },
+        required: ["key", "value"],
+      },
+    },
     critical_rule_out: {
       type: "array",
       description: "שלילת דפוסים מסכני-חיים — לכל דפוס: met / indeterminate / not_met",
@@ -232,6 +250,16 @@ export async function runRadiologyEngine({
     pass1.clinical_urgency = radCrit.forcedUrgency;
   }
 
+  // ---- Deterministic measurement evaluation vs textbook norms (Caffey/OHSU) ----
+  const measurementEval = evaluateMeasurements(pass1.measurements || [], { ageMonths: pass1.patient_age_months });
+  for (const me of measurementEval) {
+    if (me.verdict === "above_normal" || me.verdict === "below_normal") {
+      warnings.push(
+        `${me.label_he}: ${me.value}${me.unit} — ${me.verdict === "above_normal" ? "מעל" : "מתחת ל"}נורמה לגיל (תקין ${me.normal[0] ?? ""}–${me.normal[1] ?? ""}${me.unit}${me.age_band ? ", " + me.age_band : ""}).${me.note_he ? " " + me.note_he : ""}`
+      );
+    }
+  }
+
   const urgent = pass1.clinical_urgency === "Urgent" || pass1.clinical_urgency === "Emergency";
   const needsScrutiny = urgent || confidence < 60 || cons.warnings.length > 0;
 
@@ -261,7 +289,7 @@ export async function runRadiologyEngine({
   if (confidence < 45 || (verification && verification.refuted)) uncertaintyLevel = "high";
   else if (confidence < 65 || cons.warnings.length) uncertaintyLevel = "medium";
 
-  return { abstain: false, structured: pass1, warnings, confidence, uncertaintyLevel, verification };
+  return { abstain: false, structured: pass1, warnings, confidence, uncertaintyLevel, verification, measurement_eval: measurementEval };
 }
 
 function st0(st) {
