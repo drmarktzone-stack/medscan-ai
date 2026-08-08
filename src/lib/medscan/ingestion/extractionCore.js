@@ -183,9 +183,17 @@ export async function extractFromChunk({ text, chapterHint = null, invokeLLM }) 
  * מסננות את מה שניתן לפסול בקוד, כדי שזמן הבדיקה האנושי יילך
  * למה שבאמת דורש שיקול דעת.
  */
-export function validateExtraction(extraction) {
+export function validateExtraction(extraction, { knownTopicKeys = null } = {}) {
   const problems = [];
-  const topicKeys = new Set((extraction?.topics ?? []).map((t) => t.topic_key));
+
+  // ⚠ עוגן תקף הוא עוגן שהנושא שלו קיים — באותה אצווה **או**
+  // כבר ב-KB. הגרסה הקודמת הכירה רק את האצווה, ולכן טעינה
+  // מצטברת נשברה בשקט: קובץ שטוען כללים לנושא שנטען קודם
+  // ראה את כל כלליו נזרקים, עם נימוק שנשמע נכון.
+  const topicKeys = new Set([
+    ...(extraction?.topics ?? []).map((t) => t.topic_key),
+    ...(knownTopicKeys ?? []),
+  ]);
 
   const checkAnchor = (item, kind, key) => {
     if (!item.source_anchor) {
@@ -194,8 +202,9 @@ export function validateExtraction(extraction) {
     }
     if (!topicKeys.has(item.source_anchor)) {
       problems.push({
-        kind, key, severity: 'drop',
-        why_he: `העוגן "${item.source_anchor}" אינו אחד מהנושאים שחולצו`,
+        kind, key, severity: 'drop', code: 'dangling_anchor',
+        anchor: item.source_anchor,
+        why_he: `העוגן "${item.source_anchor}" אינו מצביע על נושא קיים — לא באצווה זו ולא ב-KB`,
       });
       return false;
     }
