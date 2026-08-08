@@ -93,7 +93,7 @@ export default function ECGComparison() {
       const res = await runEcgComparison({
         newItem: toItem(newA),
         priorItems: priors.map(toItem),
-        invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
+        invokeLLM: invokeComparison,
         language: "he",
       });
       setResult(res);
