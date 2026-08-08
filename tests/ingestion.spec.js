@@ -106,7 +106,8 @@ test('כל רשומה נכנסת כטיוטה, בלי יוצא מן הכלל', (
 
 test('ציטוט המקור נשמר ב-review_note_he', () => {
   const recs = toKbRecords({ topics: [TOPIC], clinical_rules: [], red_flags: [], associations: [], lab_patterns: [] });
-  assert(recs.KnowledgeTopic[0].review_note_he.includes('ציטוט מהמקור'));
+  assert(recs.KnowledgeTopic[0].review_note_he.includes(TOPIC.source_quote_he),
+    recs.KnowledgeTopic[0].review_note_he);
 });
 
 test('פריט ללא ציטוט מסומן במפורש ולא נראה כמעוגן', () => {
