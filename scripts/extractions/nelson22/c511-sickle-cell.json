@@ -1,0 +1,596 @@
+{
+  "chapter_title_he": "המוגלובינופתיות — אנמיה חרמשית",
+  "_provenance_he": "נלסון 22 (Elsevier, 2025), פרק 511 — Hemoglobinopathies, החלק העוסק באנמיה חרמשית (Clinical Manifestations and Treatment of Sickle Cell Anemia, Other Sickle Cell Syndromes, Anticipatory Guidance), עמודים מודפסים 2966-2980. חולץ מטקסט verbatim של ה-PDF דרך scripts/nelsonExtract.py. ⚠ הפרק ארוך ומכסה גם תלסמיות והמוגלובינים אחרים — החילוץ הזה מוגבל לאנמיה חרמשית ולתסמונות החרמשיות, ומשלים את פרק 536 (היפוספלניזם) שנטען קודם. ⚠ הציטוטים באנגלית במכוון.",
+
+  "topics": [
+    {
+      "topic_key": "nelson22.c511.sickle_cell_disease",
+      "topic_title_he": "אנמיה חרמשית ותסמונות חרמשיות",
+      "topic_title_en": "Sickle Cell Disease",
+      "chapter_number": 511,
+      "chapter_title_he": "מחלות הדם",
+      "page_start": 2966,
+      "page_end": 2980,
+      "summary_he": "הפרק מכסה את המחלה שבה כמעט כל סיבוך חד הוא מצב חירום. ההגדרה הגנטית חדה: HbS נובע משינוי בסיס בודד בגן בטא-גלובין; אנמיה חרמשית היא המצב ההומוזיגוטי, ואילו «מחלה חרמשית» כוללת גם הטרוזיגוטים מורכבים. הנקודה הקלינית שחוזרת בפרק יותר מכל אחרת: **חום בילד עם אנמיה חרמשית הוא מצב חירום רפואי**, משום שתפקוד הטחול נפגע כבר מגיל שישה חודשים ורוב הילדים אספלניים תפקודית עד גיל חמש. הפרק מפרט את הסיבוכים החדים — משבר אפלסטי, הסגר טחולי, תסמונת חזה חדה, שבץ, פריאפיזם וכאב ואזו-אוקלוזיבי — ואת אמצעי המניעה: פרופילקסיס בפניצילין, חיסונים, דופלר טרנס-קרניאלי שנתי, והידרוקסיאוריאה לכל הילדים מגיל תשעה חודשים.",
+      "keywords": [
+        "אנמיה חרמשית",
+        "HbSS",
+        "מחלה חרמשית",
+        "תסמונת חזה חדה",
+        "הסגר טחולי",
+        "משבר אפלסטי",
+        "פרווווירוס B19",
+        "שבץ",
+        "דופלר טרנס-קרניאלי",
+        "TCD",
+        "הידרוקסיאוריאה",
+        "פריאפיזם",
+        "דקטיליטיס",
+        "אספלניה תפקודית",
+        "עומס ברזל"
+      ],
+      "age_scope": "child",
+      "source_quote_he": "Hemoglobin S (HbS) is the result of a single base-pair change, thymine for adenine, at the 6th codon of the β-globin gene. … Sickle cell anemia (HbSS), homozygous HbSS, occurs when both β-globin alleles have the sickle cell pathogenic variant (βs). Sickle cell disease refers not only to patients with sickle cell anemia but also to compound heterozygotes where one β-globin allele includes the sickle cell pathogenic variant and the second β-globin allele includes a gene pathogenic variant other than the sickle cell pathogenic variant, such as HbC, β-thalassemia, HbD, and HbOArab."
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson22.c511.reticulocytopenia_fever",
+      "title_he": "רטיקולוציטופניה עם חום באנמיה חרמשית",
+      "components": [
+        { "analyte": "רטיקולוציטים", "direction": "low" },
+        { "analyte": "המוגלובין", "direction": "low" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, זיהום ב-parvovirus B19 גורם לאפלזיה זמנית של השורה האדומה, המגבילה את ייצור הרטיקולוציטים וגורמת לאנמיה עמוקה. ⚠ **כל ילד עם מחלה חרמשית, חום ורטיקולוציטופניה צריך להיחשב כנגוע ב-parvovirus B19 עד שיוכח אחרת.** ⚠ אך רטיקולוציטופניה **אינה תנאי** לאבחנה — רטיקולוציטוזיס וכדוריות אדומות מגורענות מוגברות עשויות להופיע בשלב ההחלמה.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "האסימטריה הזו היא העיקר: הממצא מחייב את האבחנה, אך היעדרו אינו שולל אותה — הכול תלוי בשלב שבו נתפס החולה. לפי המקור, בדיקת PCR ל-parvovirus B19 עדיפה על טיטרים של IgM ו-IgG. ⚠ המקור מונה חמישה סיבוכים נלווים לזיהום החד: כאב, הסגר טחולי, תסמונת חזה חדה, גלומרולונפריטיס, ארתרופתיה ושבץ — כלומר משבר אפלסטי אינו אירוע מבודד. ⚠ החולים מדבקים, ונדרשים אמצעי בידוד למניעת התפשטות נוזוקומיאלית ולמניעת חשיפה של מטפלות בהיריון.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Human parvovirus B19 infection poses a unique threat for patients with sickle cell disease because this infection results in temporary red cell aplasia, limiting the production of reticulocytes and causing profound anemia. Any child with sickle cell disease, fever, and reticulocytopenia should be presumed to have parvovirus B19 infection until proven otherwise. However, reticulocytopenia is not a requirement for the diagnosis of a recent parvovirus B19 infection because reticulocytosis and increased nucleated RBCs may be seen in the recovery phase. Diagnostic testing for the presence of human parvovirus B19 with polymerase chain reaction (PCR) testing is superior to using immunoglobulin M (IgM) and IgG titers."
+    },
+    {
+      "pattern_key": "nelson22.c511.hb_drop_from_baseline",
+      "title_he": "ירידת המוגלובין מהערך הבסיסי של החולה",
+      "components": [
+        { "analyte": "המוגלובין", "direction": "low" },
+        { "analyte": "טסיות", "direction": "low" },
+        { "analyte": "תאי דם לבנים", "direction": "low" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, ההערכה בילד עם מחלה חרמשית נעשית **ביחס לערך הבסיסי של אותו חולה** ולא ביחס לנורמה כללית. הסגר טחולי חד קשור בהגדלה מהירה של הטחול הגורמת לכאב בטני בצד שמאל ולירידה בהמוגלובין מהערך הבסיסי; ההסגר עלול להוביל לסימני היפו-וולמיה ולאנמיה עמוקה. ⚠ ייתכן גם ירידה בספירת הלבנות ובטסיות. ⚠ הערכים הבסיסיים משתנים מהותית לפי הפנוטיפ — טבלה 511.1 שבמקור נותנת טווח שונה לכל אחת מהתסמונות. הערכים המספריים מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ זו הנקודה שבה שימוש בטווח נורמה כללי מייצר טעות מסוכנת: המוגלובין שנראה «נמוך אך יציב» עשוי להיות ירידה חדה עבור ילד שהבסיס שלו גבוה יותר, ולהיפך. **הערך הבסיסי של החולה חייב להיות מתועד ונגיש.** לפי המקור, הערך הבסיסי תלוי בפנוטיפ ההמוגלובין, והוא נקבע לאחר גיל חמש. ההבחנה הזו רלוונטית גם לתסמונת חזה חדה, שבה אחד הקריטריונים למתן דם הוא ירידת המוגלובין ביחס לבסיס.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Splenic sequestration is associated with rapid spleen enlargement causing left-sided abdominal pain and Hb decline from the patient's baseline. Sequestration may lead to signs of hypovolemia as a result of the trapping of blood in the spleen and profound anemia, with total Hb falling below 3 g/dL. A decrease in WBC and platelet count may also be present. … FS SCD-SS 6-11 g/dL … FSC SCD-SC 10-15 g/dL … S HPFH 12-14 g/dL"
+    },
+    {
+      "pattern_key": "nelson22.c511.iron_overload_assessment",
+      "title_he": "הערכת עומס ברזל בחולה מקבל עירויים",
+      "components": [
+        { "analyte": "פריטין", "direction": "high" },
+        { "analyte": "MRI כבד", "direction": "abnormal" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, מאגרי ברזל עודפים מתפתחים לאחר נפח מצטבר מסוים של עירויי כדוריות אדומות, שהוא בסדר גודל של כעשרה עירויים; הערך המספרי מופיע בציטוט המקור. ⚠ **פריטין בסרום הוא השיטה הנפוצה והפחות פולשנית — אך למדידותיו מגבלות משמעותיות**: הוא עולה בדלקת חדה, והמתאם שלו לעודף ברזל באיברים ספציפיים, כמו הלב והבלוטות האנדוקריניות, ירוד. MRI של הכבד הוכח כגישה היעילה ביותר להערכת מאגרי הברזל.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "⚠ המגבלה הראשונה של הפריטין היא הרלוונטית ביותר בפועל: הוא עולה בדלקת חדה — כלומר בדיוק במצבים שבהם ילד עם מחלה חרמשית נבדק, שהם משבר כאב, זיהום או תסמונת חזה חדה. פריטין שנלקח באירוע חד אינו משקף מאגרי ברזל. לפי המקור, רצפי MRI ייעודיים משמשים להערכת ברזל בלב ובכבד והם מדויקים יותר מפריטין. ⚠ ביופסיית כבד לבדה אינה מעריכה במדויק את הברזל הכולל בגוף, משום שההשקעה בכבד אינה הומוגנית ואינה מתואמת תמיד לרמות בלב ובאיברים אחרים.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Excessive iron stores develop after 100 mL/kg of RBC transfusion, or about 10 transfusions. … The most common and least invasive method of estimating total body iron involves serum ferritin levels. Ferritin measurements have significant limitations in their ability to estimate iron stores for several reasons, including, but not limited to, elevation during acute inflammation and poor correlation with excessive iron in specific organs, such as the heart and endocrine glands. MRI of the liver has proved to the most effective approach for assessment of iron stores."
+    },
+    {
+      "pattern_key": "nelson22.c511.febrile_risk_markers",
+      "title_he": "סמני מעבדה לסיכון מוגבר בילד חרמשי עם חום",
+      "components": [
+        { "analyte": "תאי דם לבנים מתוקנים", "direction": "abnormal" },
+        { "analyte": "טסיות", "direction": "low" },
+        { "analyte": "המוגלובין", "direction": "low" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, קיימים גורמים קליניים ומעבדתיים הקשורים בסיכון מוגבר לסיבוכים חדים בילדים קודחים עם מחלה חרמשית: ספירת לבנות מתוקנת מעל סף עליון או מתחת לסף תחתון, ספירת טסיות מתחת לסף, ורמת המוגלובין מתחת לסף. ⚠ הספים המספריים מופיעים בציטוט המקור. הרשימה כוללת גם פרמטרים לא-מעבדתיים — ראה הדגל nelson22.c511.fever_emergency.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ שים לב שספירת הלבנות מסוכנת **בשני הקצוות** — גבוהה מדי או נמוכה מדי — ושהיא «מתוקנת», כלומר לאחר ניכוי הכדוריות האדומות המגורענות. חישוב לא-מתוקן בילד חרמשי, שבו הגירעון שכיח, ייתן ערך מנופח. הפרמטרים האלה משמשים להחלטה בין אשפוז לבין טיפול אמבולטורי לאחר מתן אנטיביוטיקה, ולכן טעות בהם משנה את הפעולה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Clinical Factors Associated with Increased Risk of Acute Complications in Febrile Children with Sickle Cell Disease: Seriously ill appearance; Hypotension: systolic blood pressure <70 mm Hg at 1 yr of age or <70 mm Hg + 2 × age (yr) for older children; Poor perfusion: capillary refill time >4 sec; Temperature >40.0°C (104°F); Hypoxia; Corrected white blood cell count >30,000/mm3 or <5,000/mm3; Platelet count <100,000/mm3; History of pneumococcal sepsis; Severe pain; Dehydration; Presence of acute chest syndrome; Hemoglobin level <5.0 g/dL; No prophylactic antibiotics; Not immunized."
+    }
+  ],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson22.c511.fever_emergency",
+      "label_he": "חום בילד עם אנמיה חרמשית — מצב חירום רפואי",
+      "trigger": {
+        "findings": [
+          "חום בילד עם אנמיה חרמשית",
+          "חום בילד עם מחלה חרמשית",
+          "חום בילד עם HbSC או HbS-בטא-תלסמיה"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, **חום בילד עם אנמיה חרמשית הוא מצב חירום רפואי** המחייב הערכה רפואית מהירה ומתן אנטיביוטיקה, בשל הסיכון המוגבר לזיהום חיידקי חמור ולשיעור תמותה גבוה בעקבותיו. הטיפול נע מאשפוז לטיפול תוך-ורידי ועד מתן צפלוספורין מדור שלישי במיון או במרפאה בחולים ללא גורמי סיכון מבוססים לבקטרמיה סמויה. ⚠ המקור מציין שמאחר שהזמן הממוצע לתרבית דם חיובית בילדים אלה קצר, אשפוז ל-24 שעות הוא כנראה האסטרטגיה הזהירה ביותר לילדים ולמשפחות המתגוררים מחוץ לעיר או שזוהו כבסיכון גבוה למעקב לקוי. ⚠ **תצפית לאחר מתן האנטיביוטיקה חשובה**: ילדים המטופלים בצפטריאקסון עלולים לפתח המוליזה חיסונית קשה, מהירה ומסכנת חיים.",
+      "reason_he": "לפי המקור, כבר מגיל שישה חודשים תינוקות עם אנמיה חרמשית מפתחים תפקוד חיסוני לקוי בשל תפקוד טחולי לקוי. עד גיל חמש, רוב הילדים עם אנמיה חרמשית סובלים מאספלניה תפקודית מלאה. **ללא קשר לגיל**, כל החולים עם אנמיה חרמשית נמצאים בסיכון מוגבר לזיהום ולמוות מזיהום חיידקי — במיוחד מחיידקים בעלי קפסולה כמו Streptococcus pneumoniae, Haemophilus influenzae type b ו-Neisseria meningitidis, וכן Salmonella.",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Fever in a child with sickle cell anemia is a medical emergency, requiring prompt medical evaluation and delivery of antibiotics because of the increased risk of serious bacterial infection and subsequent high mortality rate. As early as 6 months of age, infants with sickle cell anemia develop abnormal immune function because of splenic dysfunction. By 5 years of age, most children with sickle cell anemia have complete functional asplenia. Regardless of age, all patients with sickle cell anemia are at increased risk of infection and death from bacterial infection. … Observation after antibiotic administration is important because children treated with ceftriaxone can develop severe, rapid, and life-threatening immune hemolysis."
+    },
+    {
+      "flag_key": "nelson22.c511.splenic_sequestration",
+      "label_he": "הסגר טחולי חד — סיבוך מסכן חיים",
+      "trigger": {
+        "findings": [
+          "כאב בטני בצד שמאל בילד חרמשי",
+          "הגדלה מהירה של הטחול",
+          "ירידה חדה בהמוגלובין מהבסיס",
+          "סימני היפו-וולמיה בילד חרמשי",
+          "חיוורון פתאומי בתינוק עם מחלה חרמשית"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 35,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, הטיפול כולל התערבות מוקדמת ושמירה על יציבות המודינמית בעזרת נוזל איזוטוני או עירויים. עירויי כדוריות אדומות זהירים מומלצים לטיפול בהסגר ובאנמיה הנובעת ממנו: העירוי עוצר את לכידת הכדוריות בטחול ומאפשר שחרור של תאי החולה שנלכדו, ולעיתים קרובות מעלה את ההמוגלובין מעל ערכו הבסיסי. ⚠ **מכאן הסכנה ההפוכה**: עירוי המביא את ההמוגלובין מעל סף מסוים עלול להעמיד את החולה בסיכון לתסמונת היפר-ויסקוזיות, משום שכדוריות עשויות להשתחרר מהטחול לאחר העירוי. **מטרת העירוי היא מניעת היפו-וולמיה, לא תיקון האנמיה.** ⚠ הנפחים והספים מופיעים בציטוט המקור ובשדה dosing_mentions_he.",
+      "reason_he": "לפי המקור, ההסגר מתרחש בעיקר בתינוקות ובילדים צעירים עם אנמיה חרמשית; הוא עלול להתרחש כבר בשבועות הראשונים לחיים אך שכיח יותר בטווח גיל מוגדר. ⚠ חולים עם התסמונות SC ו-S-בטא-פלוס-תלסמיה עלולים לחוות אירועי הסגר טחולי **לאורך כל גיל ההתבגרות והבגרות**. ההסגר עשוי להיות ספונטני או מופעל על ידי חום, בקטרמיה או זיהום נגיפי. אירועים חוזרים שכיחים, ורובם מתפתחים בתוך זמן קצר מהאירוע הקודם.",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Acute splenic sequestration is a life-threatening complication occurring primarily in infants and young children with sickle cell anemia. … Sequestration can occur as early as 5 weeks of age but most often occurs in children between ages 6 months and 2 years. Patients with the SC and Sβ+-thalassemia types of sickle cell disease can have acute splenic sequestration events throughout adolescence and adulthood. … A reasonable approach is to provide only 5 mL/kg of RBCs and/or a posttransfusion Hb target of 8 g/dL, keeping in mind that the goal of transfusion is to prevent hypovolemia. Blood transfusion that results in Hb levels >10 g/dL may put the patient at risk for hyperviscosity syndrome."
+    },
+    {
+      "flag_key": "nelson22.c511.acute_chest_syndrome",
+      "label_he": "תסמונת חזה חדה",
+      "trigger": {
+        "findings": [
+          "צפיפות חדשה בצילום חזה בילד חרמשי",
+          "חום עם מצוקה נשימתית בילד חרמשי",
+          "היפוקסיה בילד חרמשי",
+          "שיעול או כאב בחזה בילד חרמשי",
+          "משבר כאב המטופל באופיואידים"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, תסמונת חזה חדה היא סיבוך ריאתי מסכן חיים, המוגדר כצפיפות רדיולוגית חדשה בצילום חזה. ⚠ **גם בהיעדר תסמינים נשימתיים, ילדים צעירים מאוד עם חום צריכים לקבל צילום חזה** לזיהוי תסמונת מתפתחת, משום שבדיקה קלינית לבדה אינה מספיקה לזיהוי צפיפות רדיולוגית חדשה. הניהול רב-אופני: אנטיביוטיקה מיידית בכל האירועים — לפחות מקרוליד וצפלוספורין מדור שלישי — בשל החפיפה הקלינית עם פנאומוניה; חמצן בהיפוקסיה; מרחיבי סמפונות וקורטיקוסטרואידים בחולי אסתמה; ספירומטריה מעודדת; ובקרת כאב ונוזלים מיטבית. ⚠ **עירוי דם, פשוט או חילופי, הוא השיטה היחידה לעצור אירוע מתקדם במהירות.** ⚠ המקור קובע במפורש: **בשום מקרה אין להגביל מתן אופיואידים כדי למנוע את התסמונת** — יש לנקוט אמצעים אחרים.",
+      "reason_he": "לפי המקור, מחלת ריאות בילדים עם מחלה חרמשית היא הסיבה השנייה בשכיחותה לאשפוז והיא קשורה בתמותה משמעותית. לרוב החולים אין סיבה יחידה מזוהה; זיהום הוא האטיולוגיה המוכרת ביותר אך רק בחלק מהאירועים תרבית חיובית, והמחוללים החיידקיים השכיחים הם S. pneumoniae, Mycoplasma pneumoniae ו-Chlamydia. **האירוע השכיח ביותר שקודם לתסמונת הוא משבר כאב הדורש טיפול אופיואידי סיסטמי.** תסחיפי שומן מבשר עצם שעבר אוטם מעורבים אף הם, והם עלולים להיות מסכני חיים.",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "ACS refers to a life-threatening pulmonary complication of sickle cell disease defined as a new radiodensity on chest radiography. … Even in the absence of respiratory symptoms, very young children with fever should receive a chest radiograph to identify evolving ACS because clinical examination alone is insufficient to identify patients with a new radiographic density. … However, under no circumstance should opioid administration be limited to prevent ACS; rather, other measures must be taken to prevent ACS from developing. … Blood transfusion therapy using either simple or exchange (manual or automated) transfusion is the only method to abort a rapidly progressing ACS episode."
+    },
+    {
+      "flag_key": "nelson22.c511.acute_neuro_deficit",
+      "label_he": "חסר נוירולוגי מוקדי חד בילד עם מחלה חרמשית",
+      "trigger": {
+        "findings": [
+          "חסר נוירולוגי מוקדי בילד חרמשי",
+          "פרכוס בילד חרמשי",
+          "שינוי במצב ההכרה בילד חרמשי",
+          "כאב ראש חד בילד חרמשי"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, נדרשת הערכה נוירולוגית ילדית מיידית והתייעצות עם המטולוג ילדים. ⚠ **בנוסף: מתן חמצן לשמירה על רוויון מעל סף מסוים, ועירוי דם בתוך שעתיים מההתייצגות**, במטרה להעלות את ההמוגלובין עד לתקרה מוגדרת. עירוי פשוט בזמן הוא האסטרטגיה היעילה ביותר להגדלת תכולת החמצן בדם, במיוחד כשעירוי חילופי אינו זמין מיידית. ⚠ **חריגה ניכרת מהתקרה מגבילה את אספקת החמצן למוח בשל היפר-ויסקוזיות.** לאחר מכן מומלץ טיפול מהיר בעירוי חילופי להורדת אחוז ה-HbS מתחת לסף. יש לבצע CT ראש בהקדם לשלילת דימום, ואם זמין — MRI מוח עם דימות מפושט להבחנה בין אוטם איסכמי לבין PRES. ⚠ הספים המספריים מופיעים בציטוט המקור.",
+      "reason_he": "לפי המקור, שבץ גלוי מוגדר תפקודית כחסר נוירולוגי מוקדי הנמשך מעל 24 שעות ו/או דימות מוח חריג המצביע על אוטם מוחי. ⚠ **ההתייצגות של PRES או של פקקת ורידית מרכזית עלולה לחקות שבץ אך דורשת מהלך טיפול שונה** — ולשניהם הניהול המיטבי לא הוגדר במחלה חרמשית, ולכן נדרשת התייעצות כפולה. תסמונת תסחיף שומן היא סיבוך מתקדם במהירות ופוטנציאלית קטלני הכולל כאב, מצוקה נשימתית, שינוי במצב הכרה וכשל רב-מערכתי.",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "For patients presenting with acute focal neurologic deficit, a prompt pediatric neurologic evaluation and consultation with a pediatric hematologist is recommended. In addition, oxygen administration to keep oxygen saturation (So2) >96% and blood transfusion within 2 hours of presentation, with a goal of increasing Hb to a maximum of 10 g/dL, is warranted. … However, greatly exceeding this posttransfusion Hb limits oxygen delivery to the brain as a result of hyperviscosity. … Subsequently, prompt treatment with an exchange transfusion is recommended, either manually or with automated erythrocytapheresis, to reduce the HbS percentage to <30%."
+    },
+    {
+      "flag_key": "nelson22.c511.priapism",
+      "label_he": "פריאפיזם ממושך בילד או מתבגר עם מחלה חרמשית",
+      "trigger": {
+        "findings": [
+          "זקפה כואבת ולא-רצויה ממושכת",
+          "אירועי זקפה קצרים חוזרים בצרורות",
+          "פריאפיזם בילד עם מחלה חרמשית"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 1095,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, אירוע ממושך החוצה סף זמן מוגדר צריך להיות מטופל בשאיבת דם מגופי המערה ולאחריה שטיפה באפינפרין מדולל, כדי להשיג ירידת נפיחות מיידית ומתמשכת. **נדרשת התייעצות אורולוגית ליזום ההליך**, עם קלט מתאים מהמטולוג. ⚠ עירוי דם, פשוט או חילופי, הוצע לטיפול חד — אך המקור מציין שרק ראיות מוגבלות תומכות בו כניהול ראשוני. אם לא מושגת תועלת מהניהול הניתוחי, יש לשקול עירוי; אך **ירידת הנפיחות עלולה שלא להתרחש עד 24 שעות — הרבה יותר מאשר בשאיבה אורולוגית — ועירוי לפריאפיזם נקשר באירועים נוירולוגיים חדים.**",
+      "reason_he": "לפי המקור, פריאפיזם משפיע על זכרים מכל הגנוטיפים החרמשיים אך שכיח במיוחד באנמיה חרמשית. גיל האירוע הראשון הממוצע וההסתברות האקטוארית מופיעים בציטוט המקור; ⚠ פריאפיזם דווח בילדים צעירים מאוד. הוא מופיע בשני דפוסים: ממושך, או «מגמגם» — אירועים קצרים החולפים ספונטנית אך עלולים להופיע בצרורות ולבשר אירוע ממושך. הוא מייצג מצב זרימה נמוכה הנגרם מקיפאון ורידי. ⚠ **אירועים ממושכים חוזרים קשורים בהפרעה בתפקוד הזקפה.**",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Priapism, defined as an unwanted painful erection of the penis, affects males of all sickle genotypes but most frequently affects males with sickle cell anemia. The mean age of first episode is 15 years, although priapism has been reported in children as young as 3 years. … Priapism occurs in two patterns: prolonged, lasting >4 hours, or stuttering, with brief episodes that resolve spontaneously but may occur in clusters and herald a prolonged event. … A prolonged episode lasting >4 hours should be treated by aspiration of blood from the corpora cavernosa, followed by irrigation with dilute epinephrine."
+    },
+    {
+      "flag_key": "nelson22.c511.osteomyelitis_vs_voc",
+      "label_he": "כאב שלד עם חום — הבחנה בין אוטם לאוסטאומיאליטיס",
+      "trigger": {
+        "findings": [
+          "כאב עצם בילד חרמשי",
+          "נפיחות מקומית עם חום נמוך",
+          "דקטיליטיס חד-צדדי",
+          "בקטרמיה מסלמונלה או סטפילוקוק בילד חרמשי"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, **ההבחנה בין אוסטאומיאליטיס למשבר ואזו-אוקלוזיבי קשה לעיתים קרובות**: סימנים ותסמינים קליניים עשויים להתאים לשניהם — חום נמוך, כאב, נפיחות של האזור המעורב, ספירת לבנות גבוהה ו-CRP מוגבר קיימים בשניהם. תרביות דם, נוזל ורקמה מסייעות כשהן חיוביות. MRI עשוי להועיל לאיתור אזור לשאיבת נוזל לתרבית. ⚠ **בסופו של דבר תידרש שאיבה עם או בלי ביופסיה ותרבית כדי להבחין בין שני התהליכים.** ⚠ ההשלכה הטיפולית גדולה: דקטיליטיס דורש שיכוך כאב, ואילו אוסטאומיאליטיס דורש שבועות של אנטיביוטיקה תוך-ורידית. ⚠ בהתרחש בקטרמיה מסלמונלה או מ-S. aureus, יש לשקול בכובד ראש בירור לאוסטאומיאליטיס ב-MRI.",
+      "reason_he": "לפי המקור, גם Salmonella וגם S. aureus גורמים לאוסטאומיאליטיס בילדים עם מחלה חרמשית, ולעיתים קרובות **בדיאפיזה של עצמות ארוכות** — בניגוד לילדים ללא אנמיה חרמשית, שבהם האוסטאומיאליטיס במטאפיזה. ⚠ דקטיליטיס — תסמונת יד-רגל — הוא לעיתים קרובות הביטוי הראשון של כאב בתינוקות ובילדים צעירים עם אנמיה חרמשית. הוא מופיע בדרך כלל בנפיחות סימטרית של הידיים ו/או הרגליים; **דקטיליטיס חד-צדדי עלול להתבלבל עם אוסטאומיאליטיס**.",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Unilateral dactylitis can be confused with osteomyelitis, and careful evaluation to distinguish the two is important because treatment differs significantly. Dactylitis requires palliation with pain medications, whereas osteomyelitis requires at least 4-6 weeks of IV antibiotics. … Both Salmonella spp. and S. aureus cause osteomyelitis in children with sickle cell disease, often involving the diaphysis of long bones (in contrast to children without sickle cell anemia, in whom osteomyelitis is in the metaphyseal region of the bone). Differentiating osteomyelitis from a vasoocclusive crisis is often difficult."
+    },
+    {
+      "flag_key": "nelson22.c511.opioid_myths",
+      "label_he": "מניעת אופיואידים בכאב חרמשי — מיתוס שהמקור דוחה",
+      "trigger": {
+        "findings": [
+          "כאב ואזו-אוקלוזיבי בילד",
+          "החלטה על שיכוך כאב בילד חרמשי",
+          "חשש מתלות באופיואידים בילד חרמשי"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "warning",
+      "action_he": "⚠ לפי המקור, **התפיסה שיש לנהל את כל אירועי הכאב בילדים ללא אופיואידים חסרת בסיס וגורמת לסבל בלתי-מוצדק לחולה.** תלות באופיואידים בילדים עם מחלה חרמשית **נדירה, ולעולם אין להשתמש בה כסיבה למנוע תרופות כאב.** המקור מפריך שני מיתוסים נוספים: עירוי דם במהלך אירוע כאב קיים **אינו** מפחית את עוצמתו או את משכו; והידרציה תוך-ורידית אגרסיבית **אינה** משככת או מונעת כאב, והיא מתאימה רק כשהחולה מיובש או אינו מסוגל לשתות בשל הכאב. ⚠ עם זאת, חולים עם אירועי כאב מרובים הדורשים אשפוז בתוך שנה, או אירועים הדורשים אשפוז ממושך, צריכים לעבור הערכה לתחלואה נלווית ולגורמי עקה סביבתיים.",
+      "reason_he": "לפי המקור, בהיעדר כל פרמטר מעבדתי או קליני אובייקטיבי אמין הקשור בכאב, **אמון בין החולה לרופא/ה המטפל/ת הוא בעל חשיבות עליונה** לניהול קליני מוצלח. המדד היחיד לדרגת הכאב הוא החולה עצמו. יש להשתמש בסולם כאב עקבי ומתוקף להערכה, אף שלעיתים נדרשות צורות הערכה אחרות. תוכניות כאב מותאמות אישית מספקות מידע חשוב להערכה ולטיפול המתייחס להעדפות החולה.",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Several myths have been propagated regarding the treatment of pain in sickle cell disease. The concept that all painful episodes in children should be managed without opioids is without foundation and results in unwarranted suffering on the part of the patient. Blood transfusion therapy during an existing painful episode does not decrease the intensity or duration of the painful episode. Aggressive IV hydration does not relieve or prevent pain and is appropriate when the patient is dehydrated or unable to drink as a result of the severe pain. Opioid dependency in children with sickle cell disease is rare and should never be used as a reason to withhold pain medication."
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson22.c511.newborn_screening",
+      "title_he": "סקר יילודים ואישוש האבחנה",
+      "category": "workup",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "תוצאת סקר יילודים חריגה להמוגלובין", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, תוכניות סקר יילודים מזהות יילודים עם המחלה ומספקות אבחנה והפניה מהירות לצורך הדרכה מקדימה ולהתחלת פרופילקסיס בפניצילין לפני גיל ארבעה חודשים. הבדיקות הנפוצות הן מיקוד איזואלקטרי וכרומטוגרפיה נוזלית בביצועים גבוהים. ⚠ **מומלץ שלב מאשש: כל החולים עם סקר ראשוני חריג נבדקים שוב בביקור הקליני הראשון**, מה שמסייע לתת דין וחשבון על טעויות מנהליות בטיפול בדגימה. בנוסף מומלצת ספירת דם וקביעת פנוטיפ המוגלובין **לשני ההורים**, כדי לאפשר ייעוץ גנטי ולאפיין טוב יותר את הגנוטיפ בצאצא. ⚠ בסקר, ההמוגלובין בכמות הגדולה ביותר מדווח ראשון ואחריו האחרים בסדר יורד. ⚠ **תוצאת AFS משמעה שהיילוד קיבל עירוי לפני הדגימה או שחלה טעות** — לא ניתן לקבוע אבחנה, ויש להתחיל פרופילקסיס בפניצילין עד לקביעה סופית.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ המקור מציין במפורש ש**טעויות לא-מכוונות אכן מתרחשות** בתוכניות סקר, ושהטעות השכיחה ביותר שזוהתה היא יילודים שהפנוטיפ הראשוני שלהם HbFS אך הפנוטיפ האמיתי הוא HbS-בטא-פלוס-תלסמיה. קביעת פנוטיפ מדויק חשובה לייעוץ גנטי. ⚠ נקודה אתית שהמקור מדגיש: אם ההורים נבדקים לנשאות, יש למסור גילוי מלא לכל הורה **בנפרד ובפרטיות**, ובנסיבות מסוימות עלולה להתגלות שאלת האבהות — ולכן הנוהג המקובל הוא תמיד לבקש רשות לבדיקה הגנטית ולדווח את התוצאות לכל הורה בנפרד.",
+      "recommended_workup_he": [
+        "אישוש בבדיקה חוזרת בביקור הקליני הראשון",
+        "ספירת דם וקביעת פנוטיפ המוגלובין לשני ההורים",
+        "בדיקה גנטית לבטא-גלובין כשההורים אינם זמינים",
+        "התחלת פרופילקסיס בפניצילין לפני האבחנה הסופית בתוצאה מעורפלת",
+        "בדיקה לדלציות בטא-גלובין בילד עם HbF גבוה מתמשך ללא המוליזה"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Such programs identify newborns with the disease and provide prompt diagnosis and referral to providers with expertise in sickle cell disease for anticipatory guidance and the initiation of penicillin prophylaxis before 4 months of age. … A confirmatory step is recommended, with all patients who have initial abnormal screens being retested during the first clinical visit, which helps to account for potential administrative errors in specimen handling. … Unintended mistakes do occur in state newborn screening programs. Newborns who have the initial phenotype of HbFS but whose final true phenotype is HbSβ+-thalassemia have been described as one of the more common errors identified in newborn screening hemoglobinopathy programs."
+    },
+    {
+      "rule_key": "nelson22.c511.tcd_screening",
+      "title_he": "סקר דופלר טרנס-קרניאלי למניעת שבץ ראשוני",
+      "category": "workup",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "ילד עם HbSS או HbS-בטא-אפס-תלסמיה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, מניעה ראשונית של שבץ גלוי מושגת בסקר דופלר טרנס-קרניאלי המעריך את מהירות זרימת הדם בחלק הסופי של עורק התרדמה הפנימי ובחלק הפרוקסימלי של עורק המוח האמצעי. **ילדים עם HbSS או HbS-בטא-אפס-תלסמיה צריכים לעבור סקר שנתי החל מגיל שנתיים ועד גיל 16.** ⚠ הבדיקה מתבצעת בצורה מיטבית כשהילד ער בשקט ובמצב בריאותי רגיל; **המדידות עלולות להיות גבוהות או נמוכות באופן כוזב במצבי אנמיה חדה, הרגעה, כאב, חום, או מיד לאחר עירוי דם.** ילדים עם בדיקה חריגה צריכים להתחיל טיפול עירויים כרוני לשמירת רמות HbS מתחת לסף, מה שמפחית מהותית את שיעור השבצים הגלויים. ⚠ **קיימות שתי שיטות מדידה — הדמייתית ולא-הדמייתית — והערכים שהן נותנות שונים זה מזה.** הספים המספריים לשתיהן מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ **פער השיטות הוא הפרט שקובע בפועל.** המחקר שביסס את הספים השתמש בשיטה הלא-הדמייתית, ואילו רוב רדיולוגי הילדים בפועל משתמשים בשיטה ההדמייתית — שנותנת ערכים נמוכים יותר. המקור אומר במפורש שהתאמה כלפי מטה של סף העירוי מתאימה למרכזים המשתמשים בשיטה ההדמייתית, אך **שגודל הסף בשיטה ההדמייתית לא הוכרע**, ושחלק מהמומחים ממליצים להשתמש באותם ספים ללא קשר לשיטה. כלומר: יש לדעת באיזו שיטה המרכז המקומי משתמש ולפי אילו ספים הוא פועל. ⚠ פרט נוסף: ערך בודד מעל סף גבוה יותר מדאיג ואינו דורש חזרה לפני המלצה על התערבות, בעוד שערך בטווח הביניים מחייב חזרה.",
+      "recommended_workup_he": [
+        "סקר TCD שנתי מגיל שנתיים עד 16 ב-HbSS וב-HbS-בטא-אפס",
+        "ביצוע כשהילד ער בשקט ובמצב בריאותי רגיל",
+        "הימנעות מביצוע באנמיה חדה, בכאב, בחום או מיד לאחר עירוי",
+        "בירור באיזו שיטה — הדמייתית או לא — המרכז משתמש",
+        "חזרה על בדיקה חריגה בטווח הביניים",
+        "MRA לזיהוי וסקולופתיה מוחית לצורך ניהול ארוך-טווח"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Children with sickle cell anemia with an elevated time-averaged mean maximum (TAMM) blood flow velocity ≥200 cm/sec (abnormal study) are at increased risk for a cerebrovascular event. A repeat study should be performed within a week to confirm the result. However, a single value ≥220 cm/sec is concerning and does not require repeating before recommending an intervention. A TAMM measurement of <200 but ≥170 cm/sec represents a conditional threshold. … When compared to each other, the imaging technique produces values that are 10–15% below those of the nonimaging technique. … Children with HbSS or HbSβ0-thalassemia should be screened annually with TCD starting at age 2 years. … Screening should occur annually from ages 2-16 years."
+    },
+    {
+      "rule_key": "nelson22.c511.hydroxyurea",
+      "title_he": "הידרוקסיאוריאה — התוויה, גיל התחלה ומגבלות",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "ילד עם אנמיה חרמשית", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, **ההמלצה הנוכחית היא שכל הילדים עם אנמיה חרמשית יקבלו הצעה להידרוקסיאוריאה החל מגיל תשעה חודשים.** התרופה מוכחת כיעילה בהפחתת תדירות אירועי הכאב החדים; במבוגרים היא מפחיתה מהותית את שיעור האשפוזים לכאב ואת שיעור תסמונת החזה החדה והעירויים. בילדים היא בטוחה ונסבלת היטב, והרעילות העיקרית מוגבלת לדיכוי מוח עצם החוזר לאחור עם הפסקת התרופה. תינוקות המטופלים בה חווים פחות אירועי כאב, דקטיליטיס ותסמונת חזה חדה, מאושפזים בתדירות נמוכה יותר, ו**אינם חווים שיעורים מוגברים של בקטרמיה או זיהום חמור**. ⚠ **מגבלה מפורשת: הידרוקסיאוריאה לבדה נחותה מטיפול עירויים למניעה שניונית של שבץ** בחולים שאין להם התוויות נגד לעירויים מתמשכים; המחקר שבדק זאת הופסק מוקדם בשל שיעור שבץ מוגבר בזרוע ההידרוקסיאוריאה. ⚠ **השגת ההשפעה הטיפולית עשויה לדרוש חודשים, ולכן התחלה לשיכוך תסמינים קצר-טווח אינה מיטבית.** ⚠ המינונים אינם בכלל הזה — ראה dosing_mentions_he.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ שתי הנקודות המעשיות: ראשונה — הרעילות ארוכת-הטווח בילדים צעירים מאוד **טרם הוכחה**, אך כל הראיות עד כה מצביעות על כך שהתועלת עולה בהרבה על הסיכון; ולכן ילדים צעירים מאוד המתחילים טיפול דורשים הורים מיודעים היטב וטיפול רפואי על ידי המטולוג ילדים, או לכל הפחות ניהול משותף עם רופא/ה בעל/ת מומחיות בתרופות מדכאות חיסון. שנייה — המקור ממליץ להציג את הרעיון להורים בשנה הראשונה לחיים, לספק ספרות המתארת גם יתרונות וגם חסרונות, ולחנך את ההורים על התחלת התרופה **בילדים א-סימפטומטיים כטיפול מונע** — כלומר לא להמתין לסיבוך.",
+      "recommended_workup_he": [
+        "הצגת האפשרות להורים בשנה הראשונה לחיים",
+        "התחלה מגיל תשעה חודשים בכל ילד עם אנמיה חרמשית",
+        "ניטור לדיכוי מוח עצם",
+        "ניהול על ידי המטולוג ילדים או בניהול משותף",
+        "אי-הסתמכות עליה כתחליף לעירויים במניעה שניונית של שבץ"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Current recommendations are that all children with sickle cell anemia should be offered hydroxyurea beginning at 9 months of age. … Infants treated with hydroxyurea do not experience increased rates of bacteremia or serious infection. … The trial assessing the efficacy of hydroxyurea as an alternative to transfusions to prevent a second stroke was terminated early after the data safety and monitoring process found an increased stroke rate in the hydroxyurea arm compared to the transfusion arm. Hydroxyurea alone is inferior to transfusion therapy for secondary stroke prevention in patients who do not have contraindications to ongoing transfusions. … Achievement of the therapeutic effect of hydroxyurea can require several months, and for this reason, initiating hydroxyurea to address short-term symptom relief is not optimal."
+    },
+    {
+      "rule_key": "nelson22.c511.penicillin_prophylaxis",
+      "title_he": "פרופילקסיס בפניצילין וחיסונים",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "ילד עם אנמיה חרמשית", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, ילדים עם אנמיה חרמשית צריכים לקבל פניצילין VK פומי מונע **עד גיל חמש שנים לפחות**. ⚠ **אין הנחיות מבוססות לפרופילקסיס מעבר לגיל חמש** — חלק מהקלינאים ממשיכים וחלק ממליצים להפסיק. ⚠ **יש להמשיך מעבר לגיל חמש בילדים עם היסטוריה של זיהום פנאומוקוקלי**, בשל הסיכון המוגבר להישנות. חלופה לילדים אלרגיים לפניצילין היא אריתרומיצין אתילסוקצינט. בנוסף לפרופילקסיס, מומלצים בחום חיסוני הילדות השגרתיים וכן חיסון שפעת שנתי. ⚠ ילדים עם מחלה חרמשית מפתחים אספלניה תפקודית ולכן דורשים גם חיסונים נוספים נגד חיידקים בעלי קפסולה — פנאומוקוקליים ומנינגוקוקליים. ⚠ המינונים אינם בכלל הזה — ראה dosing_mentions_he. ⚠ לוח החיסונים בישראל שונה מזה שבמקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "לפי המקור, ההדרכה המקדימה צריכה לכלול שלושה מסרים שחוזרים בכל ביקור: היצמדות לפניצילין וללוח החיסונים; **פנייה לטיפול רפואי מיידי בכל מחלת חום**; ומישוש נכון של הטחול. ⚠ המקור מציין במפורש שגילוי מוקדם של הסגר טחולי חד הוכח כמפחית תמותה — ולכן חינוך ההורים אינו הדרכה כללית אלא התערבות מצילת חיים. ⚠ פרט נוסף שקל להחמיץ: ילדים עם HbS-HPFH שהפנוטיפ שלהם אושש **אינם זקוקים לפרופילקסיס בפניצילין או להידרוקסיאוריאה** — מהלכם הקליני קל בהרבה.",
+      "recommended_workup_he": [
+        "פניצילין VK פומי מונע עד גיל חמש לפחות",
+        "המשך מעבר לגיל חמש לאחר זיהום פנאומוקוקלי",
+        "אריתרומיצין אתילסוקצינט באלרגיה לפניצילין",
+        "חיסוני ילדות שגרתיים וחיסון שפעת שנתי",
+        "חיסונים נוספים נגד פנאומוקוק ומנינגוקוק",
+        "התאמה ללוח החיסונים הישראלי"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Children with sickle cell anemia should receive prophylactic oral penicillin VK until at least 5 years of age (125 mg twice daily up to age 3 years, then 250 mg twice daily thereafter). No established guidelines exist for penicillin prophylaxis beyond 5 years of age; some clinicians continue penicillin prophylaxis, and others recommend discontinuation. Penicillin prophylaxis should be continued beyond 5 years in children with a history of pneumococcal infection because of the increased risk of a recurrent infection. An alternative for children who are allergic to penicillin is erythromycin ethylsuccinate."
+    },
+    {
+      "rule_key": "nelson22.c511.spleen_palpation_education",
+      "title_he": "לימוד ההורים למשש את הטחול",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "ילד עם מחלה חרמשית במעקב", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, ספלנומגליה היא סיבוך שכיח של מחלה חרמשית, והסגר טחולי עלול להיות מסכן חיים. **יש ללמד את ההורים ואת המטפלים העיקריים כיצד למשש את הטחול כדי לקבוע אם הוא גדל — כבר בביקור הראשון, עם חיזוק בביקורים הבאים. ההורים גם צריכים להדגים את המישוש בפני איש הצוות.** לפי המקור, גילוי מוקדם של הסגר טחולי חד הוכח כמפחית תמותה.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "זו אחת ההתערבויות הבודדות בפרק שהמקור מייחס לה ישירות הפחתת תמותה, והיא אינה תרופה או פרוצדורה אלא **מיומנות שמלמדים את ההורה**. הדרישה שההורה **ידגים** את המישוש — ולא רק ישמע הסבר — היא הפרט שהופך את זה מהדרכה לאימות. שים לב שהמקור מציין גם ששכיחות ההסגר ירדה מהותית עם זיהוי מוקדם בסקר יילודים ועם שיפור בחינוך ההורים; השיעורים מופיעים בציטוט המקור.",
+      "recommended_workup_he": [
+        "הדגמת מישוש טחול להורים בביקור הראשון",
+        "בקשה מההורה להדגים את המישוש בחזרה",
+        "חיזוק בכל ביקור מעקב",
+        "הנחיה לפנות מיידית בהגדלה או בחיוורון"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Splenomegaly is a common complication of sickle cell disease, and splenic sequestration can be life threatening. Parents and primary caregivers should be taught how to palpate the spleen to determine if the spleen is enlarging starting at the first visit, with reinforcement at subsequent visits. Parents should also demonstrate spleen palpation to the provider. … In addition, early detection of acute splenic sequestration has been shown to decrease mortality."
+    },
+    {
+      "rule_key": "nelson22.c511.transfusion_strategy",
+      "title_he": "אסטרטגיית עירויים — התוויות, שיטות והתאמת אנטיגנים",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "שקילת עירוי בילד עם מחלה חרמשית", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, עירויים קצרי-טווח משמשים למניעת התקדמות של סיבוכים חדים — תסמונת חזה חדה, משבר אפלסטי, הסגר טחולי ושבץ חד — וכן למניעת תסמונת חזה הקשורה בניתוח. ⚠ **עירויים אינם מומלצים לאירועי כאב חדים לא-מסובכים.** יש לבחור נפחים בשיקול דעת כדי להימנע מרמות המוגלובין גבוהות ומהיפר-ויסקוזיות. עירויים כרוניים משמשים למניעת שבץ ראשוני בחולים עם TCD חריג או ממצא MRI, למניעת שבץ חוזר, ולמניעת תסמונת חזה חוזרת. ⚠ **חולים עם מחלה חרמשית נמצאים בסיכון מוגבר לפתח נוגדנים לאנטיגנים נדירים של הכדורית האדומה כבר לאחר עירוי בודד.** בנוסף להצלבה סטנדרטית לקבוצות הדם הראשיות, יש לבצע התאמה מורחבת לאנטיגנים C, E ו-Kell. ⚠ **יש לבצע פנוטיפ או גנוטיפ מלא של אנטיגני הכדורית האדומה בכל החולים לפני העירוי, כשאפשר.**",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ בחירת השיטה אינה טכנית בלבד. לפי המקור: **עירוי חילופי, ידני או אוטומטי, עדיף בחולים עם תסמינים נוירולוגיים חדשים**. אריתרוציטאפרזיס אוטומטי הוא השיטה המועדפת לעירויים כרוניים, משום שהמאזן הנקי של הברזל מזערי — אך הוא דורש מומחיות טכנית, מכונות ייעודיות וגישה ורידית טובה. חילוף ידני נגיש יותר. ⚠ **שתי השיטות עלולות לחשוף את החולה ליותר מנות ולכן לאלואימוניזציה**; עירוי פשוט עשוי להפחית חשיפה לתורמים ולהיות זמין יותר, אך מייצר עומס ברזל נקי גבוה יותר. ⚠ לפני ניתוח: מומלץ להעלות את ההמוגלובין עד לתקרה מוגדרת בלבד — חריגה מסכנת בהיפר-ויסקוזיות. בתסמונות קלות יותר כמו HbSC ההחלטה על עירוי חילופי נעשית לפי מקרה, משום שעירוי פשוט עלול להעלות את ההמוגלובין לרמה בלתי-מקובלת.",
+      "recommended_workup_he": [
+        "פנוטיפ או גנוטיפ מלא של אנטיגני כדורית אדומה לפני העירוי הראשון",
+        "התאמה מורחבת ל-C, E ו-Kell",
+        "בחירת שיטה לפי ההתוויה, רמת ההמוגלובין ועומס הברזל",
+        "העדפת עירוי חילופי בתסמינים נוירולוגיים חדשים",
+        "הימנעות מעירוי באירוע כאב לא-מסובך",
+        "תיאום עם ההמטולוג לפני ניתוח"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "RBC transfusions are not recommended for uncomplicated acute pain events. Select RBC volumes judiciously to avoid high posttransfusion Hb levels and hyperviscosity. … Patients with sickle cell disease are at increased risk of developing alloantibodies to less common RBC surface antigens after receiving even a single transfusion. In addition to standard cross matching for major blood group antigens (A, B, O, RhD), more extended matching should be performed to identify donor units that are C-, E-, and Kell-antigen matched. … Exchange transfusion, manual or automated, is preferable for patients with new neurologic symptoms. … Blood transfusion before surgery for children with sickle cell disease is recommended to raise Hb level preoperatively to no more than 10 g/dL, to avoid ACS development."
+    },
+    {
+      "rule_key": "nelson22.c511.acs_prevention",
+      "title_he": "מניעת תסמונת חזה חדה בחולה מאושפז",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "ילד חרמשי מאושפז בכאב או לאחר ניתוח", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, אמצעי המניעה כוללים: ספירומטריה מעודדת והליכה תקופתית בחולים המאושפזים לכאב חרמשי, לניתוח או לאירוע חום; המתנה ערנית בכל ילד או מבוגר מאושפז — ניטור רוויון והערכות נשימתיות תכופות; **שימוש זהיר בנוזלים תוך-ורידיים**; וחינוך אינטנסיבי וטיפול מיטבי בחולים שיש להם גם אנמיה חרמשית וגם אסתמה. ⚠ לפי המקור, **שימוש סדיר בספירומטר מעודד בקצב ובתדירות מוגדרים יכול להפחית מהותית את תדירות אירועי התסמונת בהמשך** בחולים עם כאב; הערכים מופיעים בציטוט המקור. ⚠ סוג האופיואיד משפיע: שימוש-יתר במורפין נקשר יותר בתסמונת מאשר נלבופין הידרוכלוריד, בין היתר בשל הרגעה ותת-הנשמה — **אך כאמור, אין להגביל מתן אופיואידים כדי למנוע את התסמונת.**",
+      "suspicion": "red",
+      "clinical_reasoning_he": "שלושת האמצעים הפשוטים ביותר — ספירומטר, הליכה, וזהירות בנוזלים — הם אלה שמיושמים הכי פחות. ⚠ הזהירות בנוזלים היא ההפך מהרפלקס הרגיל בטיפול בילד עם כאב חרמשי, והיא מתחברת ישירות למיתוס שהמקור מפריך: הידרציה אגרסיבית אינה משככת כאב. ⚠ האסתמה מופיעה כאן פעמיים — גם כגורם סיכון הדורש טיפול מיטבי מונע, וגם בטיפול: אבחנה קודמת של אסתמה או צפצופים עם התסמונת מחייבת טיפול לפי סטנדרט ההתקף, ו**האבחנה של תסמונת חזה חדה אינה מבטלת את ניהול ההתקף האסתמטי**.",
+      "recommended_workup_he": [
+        "ספירומטריה מעודדת בכל אשפוז לכאב או לניתוח",
+        "הליכה תקופתית",
+        "ניטור רוויון רציף והערכות נשימתיות תכופות",
+        "זהירות במתן נוזלים תוך-ורידיים",
+        "זיהוי וטיפול מיטבי באסתמה נלווית",
+        "צילום חזה בכל ילד צעיר עם חום"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "PREVENTION: Incentive spirometry and periodic ambulation in patients admitted for sickle cell pain, surgery, or febrile episodes; Watchful waiting in any hospitalized child or adult with sickle cell disease (pulse oximetry monitoring and frequent respiratory assessments); Cautious use of intravenous fluids; Intense education and optimum care of patients who have sickle cell anemia and asthma. … In patients with pain, regular use of an incentive spirometer at 10-12 breaths every 2 hours can significantly reduce the frequency of subsequent ACS episodes."
+    },
+    {
+      "rule_key": "nelson22.c511.other_syndromes",
+      "title_he": "תסמונות חרמשיות אחרות — ואי-יכולת לנבא מהלך",
+      "category": "criteria",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "תסמונת חרמשית שאינה HbSS", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, התסמונות החרמשיות השכיחות מלבד HbSS הן HbSC, HbS-בטא-אפס-תלסמיה ו-HbS-בטא-פלוס-תלסמיה. חולים עם HbS-בטא-אפס-תלסמיה בעלי פנוטיפ קליני **דומה** לזה של HbSS. בכדוריות של חולי HbSC, גבישי HbC מקיימים אינטראקציה עם הובלת יונים בממברנה, מייבשים את הכדורית ומשרים חרמוש. ⚠ **ילדים עם HbSC עלולים לחוות את אותם תסמינים וסיבוכים כמו במחלת HbSS קשה, אך בתדירות נמוכה יותר.** יש להם שכיחות מוגברת של רטינופתיה, היפרספלניזם כרוני והסגר טחולי חד לאורך החיים. ⚠ **המקור קובע במפורש: אין מודל מתוקף שיכול לנבא את המהלך הקליני של אדם עם מחלה חרמשית. חולה עם HbSC עלול לעבור מהלך קשה יותר מחולה עם HbSS.**",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ המשפט האחרון הוא המסקנה המעשית והוא מנוגד לאינטואיציה השכיחה: הפנוטיפ הגנטי אינו קובע את חומרת המהלך אצל הפרט. אין להרגיע חולה או משפחה על סמך «צורה קלה». ניהול הפרעות התפקוד של איברי הקצה בתסמונות החרמשיות דורש את אותם עקרונות כלליים כמו באנמיה חרמשית, אך כל מצב מנוהל לפי מקרה ודורש התייעצות עם המטולוג ילדים.",
+      "recommended_workup_he": [
+        "קביעת פנוטיפ מדויק — אך לא הסתמכות עליו לניבוי חומרה",
+        "מעקב אחר רטינופתיה ב-HbSC",
+        "מעקב אחר הסגר טחולי גם במתבגר וגם במבוגר ב-HbSC וב-HbS-בטא-פלוס",
+        "התייעצות עם המטולוג ילדים בכל סיבוך"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Patients with HbSβ0-thalassemia have a clinical phenotype similar to those with HbSS. … Children who have HbSC disease can experience the same symptoms and complications as those with severe HbSS disease, but less frequently. Children with HbSC have increased incidence of retinopathy, chronic hypersplenism, and acute splenic sequestration over the life span. … There is no validated model that can predict the clinical course of an individual with sickle cell disease. A patient with HbSC can have a more severe clinical course than a patient with HbSS."
+    },
+    {
+      "rule_key": "nelson22.c511.cognitive_screening",
+      "title_he": "סקר קוגניטיבי והשלכות חינוכיות",
+      "category": "workup",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "ילד בגיל בית ספר עם אנמיה חרמשית", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, ילדים ומתבגרים עם מחלה חרמשית סובלים מאיכות חיים מופחתת בהשוואה לאחיהם ולילדים עם מחלות כרוניות אחרות. ⚠ **הם נמצאים בסיכון גבוה לכישלון לימודי, ושיעור סיום התיכון שלהם נמוך** — בין היתר משום שכשליש מהילדים עם אנמיה חרמשית עברו אוטם מוחי, שקט או גלוי. ⚠ **ילדים בגיל בית ספר מוקדם עם אנמיה חרמשית צריכים לעבור MRI ללא הרגעה לסקר אוטם מוחי שקט.** ילדים עם אוטמים מוחיים דורשים הערכה מתמשכת של תפקוד קוגניטיבי וביצועים לימודיים, כדי שניתן יהיה למקד משאבים חינוכיים. השתתפות בקבוצות תמיכה ובפעילויות קבוצתיות, כמו מחנות לילדים עם מחלה חרמשית, עשויה להועיל ישירות בשיפור הדימוי העצמי ובביסוס קשרי עמיתים. ⚠ השיעורים המספריים מופיעים בציטוט המקור.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "⚠ הפרט הקליני החד כאן הוא **ללא הרגעה**: המקור מציין זאת במפורש, משום שהרגעה בילד עם אנמיה חרמשית נושאת סיכון נשימתי, ומשום שהיא מעוותת גם מדידות TCD. ⚠ שכיחות האוטם השקט ב-HbSS גבוהה — הערך מופיע בציטוט — כלומר זהו סקר עם תשואה גבוהה ולא בדיקה נדירה. הקישור בין האוטם השקט לבין הכישלון הלימודי הוא מה שהופך את הסקר להתערבות ולא רק לתיעוד.",
+      "recommended_workup_he": [
+        "MRI ללא הרגעה בגיל בית ספר מוקדם",
+        "הערכה קוגניטיבית וביצועים לימודיים בילד עם אוטם",
+        "מיקוד משאבים חינוכיים לפי הממצא",
+        "הערכת התא המשפחתי והמשאבים להתמודדות",
+        "הפניה לקבוצות תמיכה ולמחנות"
+      ],
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Furthermore, children with sickle cell disease are at great risk for academic failure and have a 20% high school graduation rate, possibly because, among other reasons, approximately one third of children with sickle cell anemia have had a cerebral infarct, either silent or an overt stroke. Early school-age children with sickle cell anemia should have MRI without sedation to screen for silent cerebral ischemia. … The prevalence of silent infarct among children with HbSS is around 35%."
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson22.c511.fever_reticulocytopenia",
+      "anchor_finding_he": "חום עם רטיקולוציטופניה בילד עם מחלה חרמשית",
+      "co_findings": [
+        "אנמיה עמוקה",
+        "חשיפה למחלת סטירת לחיים",
+        "כאב",
+        "הסגר טחולי"
+      ],
+      "implies_he": "משבר אפלסטי מ-parvovirus B19",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, הזיהום גורם לאפלזיה זמנית של השורה האדומה, המגבילה את ייצור הרטיקולוציטים וגורמת לאנמיה עמוקה.",
+      "action_he": "לפי המקור, החרפת האנמיה מטופלת שמרנית בעירוי כדוריות אדומות כאשר החולה נעשה סימפטומטי המודינמית או כשיש מחלה נלווית כמו תסמונת חזה חדה או הסגר טחולי. ⚠ **יש לנטר את החולים מקרוב** משום שהזיהום החד נקשר בכאב, בהסגר טחולי, בתסמונת חזה חדה, בגלומרולונפריטיס, בארתרופתיה ובשבץ. ⚠ החולים מדבקים — נדרשים אמצעי בידוד למניעת התפשטות נוזוקומיאלית ולמניעת חשיפה של מטפלות בהיריון, שעלולות להיות בסיכון לתוצאות עובריות שליליות.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "The acute exacerbation of anemia is treated conservatively using red cell transfusion when the patient becomes hemodynamically symptomatic or has a concurrent illness, such as ACS or acute splenic sequestration. Children with suspected aplastic crisis should be closely monitored because acute infection with parvovirus B19 is associated with pain, splenic sequestration, ACS, glomerulonephritis, arthropathy, and stroke. Patients with parvovirus-associated aplastic crisis are contagious, and infection precautions should be taken."
+    },
+    {
+      "assoc_key": "nelson22.c511.pain_episode_precedes_acs",
+      "anchor_finding_he": "משבר כאב המטופל באופיואידים סיסטמיים",
+      "co_findings": [
+        "ירידה ברוויון",
+        "עלייה בעבודת הנשימה",
+        "כאב בחזה",
+        "חום"
+      ],
+      "implies_he": "סיכון להתפתחות תסמונת חזה חדה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, האירוע השכיח ביותר שקודם לתסמונת חזה חדה הוא אירוע כאב הדורש טיפול אופיואידי סיסטמי. סוג האופיואיד משפיע, בין היתר בשל הרגעה ותת-הנשמה.",
+      "action_he": "⚠ זהו הקישור המעשי החשוב ביותר לניטור: ילד שאושפז בשל כאב הוא ילד שיש לנטר לתסמונת חזה חדה, לא ילד שהבעיה שלו כבר אובחנה. **הפעולה אינה הפחתת האופיואיד** — המקור אוסר זאת במפורש — אלא ספירומטריה מעודדת, הליכה, ניטור רוויון רציף וזהירות בנוזלים. ⚠ סימני האזהרה למתן דם: ירידה ברוויון, עלייה בעבודת הנשימה, מאמץ נשימתי משתנה במהירות עם או בלי החמרה בצילום, ירידת המוגלובין מהבסיס, או היסטוריה של תסמונת קשה שדרשה טיפול נמרץ.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "The most frequent event preceding ACS is a painful episode requiring systemic opioid treatment. … The type of opioid, with overuse of morphine being more likely to cause ACS than nalbuphine hydrochloride, is associated with an increase in the risk of ACS, in part because of sedation and hypoventilation. … Usually, blood transfusions are given when at least one of the following clinical features are present: decreasing So2, increasing work of breathing, rapidly changing respiratory effort either with or without a worsening chest radiograph, a dropping Hb of 2 g/dL below the patient's baseline, or previous history of severe ACS requiring admission to the intensive care unit."
+    },
+    {
+      "assoc_key": "nelson22.c511.fat_embolism",
+      "anchor_finding_he": "מצוקה נשימתית חדה עם שינוי במצב ההכרה בילד חרמשי",
+      "co_findings": [
+        "כאב",
+        "פריחה פטכיאלית",
+        "כשל רב-מערכתי",
+        "אוטם מוח עצם"
+      ],
+      "implies_he": "תסמונת תסחיף שומן",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, תסמונת תסחיף שומן קשורה באוטם מוח עצם, והיא סיבוך מתקדם במהירות ופוטנציאלית קטלני הכולל כאב, מצוקה נשימתית, שינויים במצב ההכרה וכשל רב-מערכתי.",
+      "action_he": "⚠ **הצירוף של מצוקה נשימתית עם שינוי הכרה הוא מה שמבחין בין תסחיף שומן לבין תסמונת חזה חדה רגילה.** לפי המקור, כאשר התסמונת מזוהה מוקדם, טיפול בעירוי חילופי שיפר הישרדות בסדרות מקרים קטנות. ⚠ פריחה פטכיאלית עשויה להופיע **אך עלולה להיות קשה לגילוי אם לא מחפשים אותה בקפידה**. יש לשקול את האבחנה בכל חולה עם מחלה חרמשית המתייצג בהופעה מהירה של מצוקה נשימתית ושינויי מצב הכרה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Fat embolism syndrome (associated with bone marrow infarction) is a rapidly progressive, potentially fatal complication involving pain, respiratory distress, changes in mental status, and multiorgan system failure. When this syndrome is identified early, exchange transfusion therapy has improved patient survival in small case series. … Fat emboli can be difficult to diagnose but should be considered in any patient with sickle cell disease presenting with rapid onset of respiratory distress and altered mental status changes. Petechial rash may also occur but may be difficult to detect if not carefully sought."
+    },
+    {
+      "assoc_key": "nelson22.c511.recurrent_sequestration",
+      "anchor_finding_he": "אירוע הסגר טחולי שחלף",
+      "co_findings": [
+        "אירוע הסגר קודם",
+        "גיל צעיר",
+        "טחול מוגדל במעקב"
+      ],
+      "implies_he": "סיכון גבוה להישנות — ורק כריתת טחול מונעת ביעילות",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, אירועים חוזרים של הסגר טחולי שכיחים, ורוב האירועים החוזרים מתפתחים בתוך פרק זמן קצר מהאירוע הקודם. השיעורים ופרקי הזמן מופיעים בציטוט המקור.",
+      "action_he": "⚠ **כאן המקור נוקט עמדה חד-משמעית שסותרת פרקטיקה נפוצה: כריתת טחול מונעת, המבוצעת לאחר שאירוע חד נפתר, היא האסטרטגיה היעילה היחידה למניעת אירועים מסכני חיים בעתיד.** אף שטיפול בעירויים שימש במטרה למנוע אירועים נוספים, **הראיות מצביעות בבירור שהאסטרטגיה הזו אינה מפחיתה את הסיכון להישנות** בהשוואה להיעדר עירויים. עם זאת, מהלך קצר של עירויים סדירים יכול לשמש עד לארגון הכריתה. ⚠ יש לחסן את הילדים כראוי בחיסוני מנינגוקוק ופנאומוקוק **לפני** הניתוח, ולרשום פרופילקסיס בפניצילין אחריו. ⚠ ראה גם את פרק 536 שנטען — שם מפורטות ההשלכות ארוכות-הטווח של הכריתה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Repeated episodes of splenic sequestration are common, occurring in 65% of patients. Most recurrent episodes develop within 6 months of the previous episode. Prophylactic splenectomy performed after an acute episode has resolved is the only effective strategy for preventing future life-threatening episodes. Although blood transfusion therapy has been used with the goal of preventing subsequent episodes, evidence strongly suggests that this strategy does not reduce the risk of recurrent splenic sequestration compared to no transfusion therapy. However, a short course of regular RBC transfusions can be used until splenectomy is arranged. Children should be appropriately immunized with meningococcal and pneumococcal vaccines before surgery."
+    },
+    {
+      "assoc_key": "nelson22.c511.hematologist_care",
+      "anchor_finding_he": "מעקב על ידי המטולוג ילדים",
+      "co_findings": [
+        "ביקורי מיון",
+        "משך אשפוז",
+        "הישרדות לגיל בגרות"
+      ],
+      "implies_he": "טיפול מומחה קשור בתוצאות טובות יותר",
+      "suspicion": "green",
+      "mechanism_he": "לפי המקור, טיפול רפואי הניתן על ידי המטולוג ילדים קשור בתדירות מופחתת של ביקורי מיון ובמשך אשפוז קצר יותר, בהשוואה לחולים שלא נראו על ידי המטולוג בשנה האחרונה.",
+      "action_he": "⚠ הניסוח במקור מדויק: הקישור הוא ל**ראייה על ידי המטולוג בשנה האחרונה** — כלומר לרציפות המעקב, לא לעצם ההפניה. זהו מדד שניתן לבדוק בגיליון ולפעול עליו: ילד עם מחלה חרמשית שלא נראה על ידי המטולוג בשנה האחרונה הוא ילד שיש להפנות עכשיו. המקור מציין בסמוך גם קישור להסתברות גבוהה יותר להישרדות לגיל בגרות.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "higher likelihood of survival to adult age. Medical care provided by a pediatric hematologist is also associated with a decreased frequency of emergency department (ED) visits and length of hospitalization compared to patients who were not seen by a hematologist within the last year."
+    },
+    {
+      "assoc_key": "nelson22.c511.enuresis",
+      "anchor_finding_he": "הרטבה לילית בילד עם מחלה חרמשית",
+      "co_findings": [
+        "זיהומי דרכי שתן חוזרים",
+        "היפוסתנוריה",
+        "דום נשימה חסימתי בשינה"
+      ],
+      "implies_he": "מצריך בירור שיטתי — ואינו רק בעיה התנהגותית",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, מחלת כליות בחולים עם מחלה חרמשית היא תחלואה נלווית מרכזית שעלולה להוביל למוות מוקדם. זוהו שבע נפרופתיות: המטוריה גסה, נמק פפילרי, תסמונת נפרוטית, אוטם כלייתי, היפוסתנוריה, פיאלונפריטיס וקרצינומה מדולרית של הכליה.",
+      "action_he": "לפי המקור, **חולים עם מחלה חרמשית והרטבה לילית צריכים לעבור הערכה שיטתית לזיהומי דרכי שתן חוזרים, לתפקוד כלייתי, ואפשרות של תסמונת דום נשימה חסימתי בשינה.** ⚠ המקור מסייג בכנות: לרוב הילדים עם הרטבה לילית לא נמצאת אטיולוגיה, והתערבויות טיפוליות ממוקדות היו בעלות הצלחה מוגבלת. השכיחות והתפלגותה לפי גיל מופיעות בציטוט המקור. הנקודה המעשית — התלונה מטרידה מאוד לילד ולהוריו ומצדיקה בירור, גם אם הסיכוי למצוא סיבה נמוך.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "The overall prevalence of enuresis was 33% in the Cooperative Study of Sickle Cell Disease, with the highest prevalence (42%) among children 6-8 years old. Furthermore, enuresis may still occur in approximately 9% of older adolescents. Patients with sickle cell disease and nocturnal enuresis should have a systematic evaluation for recurrent urinary tract infections, kidney function, and possibly obstructive sleep apnea syndrome."
+    },
+    {
+      "assoc_key": "nelson22.c511.avn_hip",
+      "anchor_finding_he": "צליעה או הפרש אורך גפיים בילד עם מחלה חרמשית",
+      "co_findings": [
+        "כאב ירך כרוני",
+        "אירועי כאב תכופים",
+        "המטוקריט מוגבר",
+        "נשאות אלפא-תלסמיה"
+      ],
+      "implies_he": "נמק אווסקולרי — לרוב של ראש הירך",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, נמק אווסקולרי מופיע בשיעור גבוה יותר בילדים עם מחלה חרמשית מאשר באוכלוסייה הכללית, והוא מקור לכאב חד וכרוני כאחד. לרוב מושפע ראש הירך; אתרים נוספים כוללים את ראש עצם הזרוע ואת הלסת.",
+      "action_he": "⚠ **צליעה בילד עם מחלה חרמשית אינה רק ביטוי של כאב** — היא ממצא שמצדיק בירור לנמק אווסקולרי. לפי המקור, גורמי הסיכון כוללים HbSS עם נשאות אלפא-תלסמיה, אירועים ואזו-אוקלוזיביים תכופים והמטוקריט מוגבר. הניהול הראשוני צריך לכלול הפניה לאורתופד ילדים ולפיזיותרפיסט. ⚠ שני סייגים: הטיפול המיטבי לא נקבע, ו**טיפול עירויים סדיר לא הוכח כיעיל בהפחתת הכאב החד והכרוני** הקשור בנמק. אופיואידים משמשים לעיתים קרובות אך בדרך כלל ניתן להפחיתם בהדרגה לאחר שהכאב החד שכך.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c511.sickle_cell_disease",
+      "source_quote_he": "Avascular necrosis (AVN) occurs at a higher rate among children with sickle cell disease than in the general population and is a source of both acute and chronic pain. Most often, the femoral head is affected. AVN of the hip may cause limp and leg-length discrepancy. … Risk factors for AVN include HbSS disease with α-thalassemia trait, frequent vasoocclusive episodes, and elevated hematocrit. … Regular blood transfusion therapy has not been demonstrated as an effective therapy to abate the acute and chronic pain associated with AVN."
+    }
+  ],
+
+  "gaps_he": [
+    "⚠ **טבלה 511.1 (תוצאות סקר יילודים והמוגלובין בסיסי) לא הומרה לרשומות ReferenceRange.** היא נותנת טווח המוגלובין בסיסי שונה לכל אחד משמונה פנוטיפים, לאחר גיל חמש. זהו מידע קריטי משום שכל הערכת אנמיה חדה במחלה חרמשית נעשית ביחס לבסיס — והבסיס תלוי פנוטיפ. **זהו המועמד החשוב ביותר להמרה מובנית מהפרק הזה.**",
+    "⚠ **טבלה 511.2 (גורמי סיכון בילד קודח) לא הומרה לכלי ניקוד.** היא מכילה ארבעה-עשר גורמים — קליניים, מעבדתיים וטיפוליים — הקובעים אם ילד קודח יאושפז או ינוהל אמבולטורית. סף לחץ הדם בה **תלוי גיל ומחושב בנוסחה**. לפי כללי הפרויקט, חישוב שייך לקוד דטרמיניסטי. נדרש מודול ייעודי עם בדיקות לפני שהרשימה תשמש בפלט קליני.",
+    "⚠ **ספי ה-TCD אינם מיוצגים כערכים.** הם מופיעים בציטוט בלבד, ובכוונה: קיימות שתי שיטות מדידה עם ערכים שונים, המקור עצמו מציין שהסף בשיטה ההדמייתית **לא הוכרע**, וחלק מהמומחים ממליצים על ספים זהים לשתיהן. **המרה לערך יחיד תייצר ודאות מדומה.** יש לקרוא מהמקור ולפעול לפי הפרוטוקול המקומי.",
+    "⚠ **טבלה 511.3 (שמונת שלבי אירוע הכאב) לא הומרה.** היא מתארת את הכרונולוגיה של הכאב מנתוני ילדים ומנתוני מבוגרים בנפרד, כולל השינויים המעבדתיים בכל שלב. זהו מבנה שימושי לתקשורת עם משפחות ולתכנון כאב מותאם אישית, והוא מצדיק חילוץ נפרד.",
+    "⚠ **טבלה 511.4 (ניהול תסמונת חזה חדה) חולצה חלקית** — המניעה והטיפול נגזרו לכללים, אך פירוט הבדיקות והניטור לא הומר במלואו.",
+    "⚠ כל המינונים והספים המספריים הוסרו מגוף הכללים ונשמרו בציטוטים וב-dosing_mentions_he: מינוני הפניצילין לפי גיל, מינוני ההידרוקסיאוריאה וההעלאה ההדרגתית, נפח וסף העירוי בהסגר טחולי, תקרות ההמוגלובין בשבץ ולפני ניתוח, סף ה-HbS בעירוי חילופי, סף הרוויון, תדירות הספירומטריה, וספי המעבדה בילד קודח.",
+    "⚠ **טיפול גנטי לא הומר לכללים.** המקור מתאר שתי גישות שאושרו בשנת 2023 לגילאי 12 ומעלה, אחת מהן עם אזהרת מסגרת שחורה לסיכון לעריכה מחוץ למטרה ולאפשרות של לוקמיה מיאלואידית חדה. זהו תחום המשתנה במהירות — **המידע כאן מתוארך ל-2023 ויש לאמת מול מקור עדכני לפני כל שימוש**.",
+    "⚠ תרופות אחרות — L-גלוטמין, קריזנליזומאב, ווקסלוטור — מוזכרות עם גילאי התוויה אך ללא מינון. הן לא הומרו לכללים. ההתוויות מבוססות על אישור FDA אמריקאי ואינן בהכרח תואמות את הרישום בישראל.",
+    "⚠ השתלת תאי גזע לא הומרה לכללי החלטה. המקור מציין שההתוויות השכיחות הן תסמונת חזה חוזרת, שבץ ו-TCD חריג, אך שההחלטה דורשת ייעוץ ממומחים. זו אינה החלטה של כלי תמיכה בהחלטות.",
+    "⚠ **טיפול כלציה בעומס ברזל לא הומר לכללים.** שלושת התכשירים מתוארים עם צורות מתן ותדירויות, וכן סיכון לאגרנולוציטוזיס המחייב ניטור ספירת דם שבועי. זהו טיפול הדורש מומחיות ייעודית והמקור קובע במפורש שהוא צריך להיות מנוהל על ידי רופא/ה עם מומחיות בכלציה.",
+    "⚠ הפרק מפנה לפרקים שלא חולצו: 507 (parvovirus B19), 408 ו-414 (מעורבות כבד ומרה), 725 (אוסטאומיאליטיס). טענות התלויות בהם אינן מיוצגות כאן.",
+    "⚠ **הנתונים האפידמיולוגיים הם אמריקאיים** — שיעורי הלידות לפי קבוצה אתנית ושכיחות המחלה. הם לא הומרו לטענות ואינם מייצגים את התפלגות המחלה בישראל.",
+    "⚠ המקור מפנה לדוח מומחים של NHLBI משנת 2014 ולהנחיות ASH לניהול כאב. שניהם מקורות חיצוניים שלא נקראו. **הנחיות כאב עשויות להיות עדכניות יותר מהפרק — יש לאמת.**",
+    "⚠ סיבוכים שהוזכרו ולא פותחו: רטינופתיה חרמשית, איחור בהתבגרות, כיבי רגליים, סיבוכי היריון ובריאות הרבייה. המקור עצמו מציין שהטיפול המיטבי בכל אחד מהם לא נקבע.",
+    "⚠ יתר לחץ דם ריאתי: המקור קובע במפורש ש**ההיסטוריה הטבעית בילדים אינה ידועה** ושחולים א-סימפטומטיים אינם דורשים סקר. לא נגזר ממנו כלל סקר."
+  ],
+
+  "dosing_mentions_he": [
+    "⚠ פניצילין VK פרופילקטי: המקור נוקב בשני מינונים לפי קבוצת גיל, בתדירות ובגיל המעבר ביניהם. נשמר בציטוט המקור בלבד. **זהו מועמד ישיר ל-DoseRecord** — הסכמה יכולה לייצג אותו (mg_absolute, interval_hours, min_age_days/max_age_days). דורש אישור רופא/ה.",
+    "⚠ הידרוקסיאוריאה: המקור נוקב במינון התחלתי לפי משקל, בעלייה מדורגת לפי מרווח זמן מוגדר, ובמינון מרבי. הוא מציין גם שמחקר בתינוקות מצא שניתן להתחיל במינון גבוה יותר בבטחה. הכול בציטוט המקור בלבד.",
+    "⚠ עירוי בהסגר טחולי: המקור נוקב בנפח כדוריות אדומות לפי משקל, ביעד המוגלובין שלאחר העירוי, ובסף שמעליו קיים סיכון להיפר-ויסקוזיות. בציטוט בלבד. ⚠ שלושת הערכים האלה קשורים זה בזה וקריאה חלקית שלהם מסוכנת.",
+    "⚠ ניהול שבץ חד: סף הרוויון לחמצן, חלון הזמן לעירוי, תקרת ההמוגלובין שלאחר העירוי, וסף ה-HbS בעירוי החילופי. כולם בציטוט בלבד.",
+    "⚠ עירוי לפני ניתוח: תקרת המוגלובין מוגדרת, שמעליה קיים סיכון להיפר-ויסקוזיות. בציטוט בלבד.",
+    "⚠ ספירומטריה מעודדת: המקור נוקב במספר נשימות ובתדירות. בציטוט בלבד.",
+    "⚠ עומס ברזל: הנפח המצטבר של עירויים שמעליו מתפתחים מאגרי ברזל עודפים. בציטוט בלבד.",
+    "⚠ תכשירי כלציה: דפרוקסאמין, דפרסירוקס ודפריפרון — צורות מתן ותדירויות מופיעות במקור ללא מינון. גיל האישור לדפרסירוקס מופיע. ⚠ סיכון האגרנולוציטוזיס והצורך בניטור ספירת דם שבועי מופיעים בציטוט.",
+    "⚠ טיפול בפריאפיזם: שטיפה באפינפרין מדולל — ללא ריכוז או נפח במקור.",
+    "⚠ אנטיביוטיקה בתסמונת חזה חדה: מקרוליד וצפלוספורין מדור שלישי, ללא מינון. צפטריאקסון בילד קודח, ללא מינון."
+  ]
+}
