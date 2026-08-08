@@ -216,13 +216,32 @@ export function validateExtraction(extraction) {
   for (const t of extraction?.topics ?? []) {
     if (!checkQuote(t, 'topic', t.topic_key)) continue;
     // ⚠ הדפוס חייב להיות מודע-יוניקוד. הגרסה הקודמת היתה [a-z0-9_]
-    // ולכן התריעה על **כל** העוגנים שהספר מייצר — topicKeyFor גוזר
-    // אותם משמות הפרקים והנושאים בעברית. אזהרה שנורית על הכל
-    // אינה אזהרה — היא רעש שמאמן להתעלם גם מאזהרות אמיתיות.
-    if (!/^nelson\.[\p{L}\p{N}_]+\.[\p{L}\p{N}_]+$/u.test(t.topic_key ?? '')) {
+    // ולכן התריעה על **כל** העוגנים שהספר מייצר. אזהרה
+    // שנורית על הכל אינה אזהרה — היא רעש שמאמן להתעלם גם
+    // מאזהרות אמיתיות.
+    //
+    // שני פורמטים מוכרים, וההבדל ביניהם אינו סגנוני:
+    //   nelson22.c<פרק>.<נושא>  — עוגן למקור המלא, עם מספר פרק אמיתי
+    //   nelson.<תחום>.<נושא>     — עוגן לספרון הסיכומים העברי
+    //
+    // הצורה השנייה אינה ניתנת לאימות מול מקור: אין בה פרק
+    // ואין בה עמוד, ולכן רופא/ה אינו יכול/ה לבדוק אותה ולחתום.
+    // לכן האזהרה מצביעה עליה, ולא על הצורה החדשה.
+    const key = t.topic_key ?? '';
+    const isAnchored = /^nelson22\.c\d+\.[\p{L}\p{N}_]+$/u.test(key);
+    const isLegacy = /^nelson\.[\p{L}\p{N}_]+\.[\p{L}\p{N}_]+$/u.test(key);
+
+    if (!isAnchored && !isLegacy) {
       problems.push({
-        kind: 'topic', key: t.topic_key, severity: 'warn',
-        why_he: 'topic_key אינו בפורמט nelson.<domain>.<topic>',
+        kind: 'topic', key, severity: 'warn',
+        why_he: 'topic_key אינו בפורמט nelson22.c<פרק>.<נושא> ולא בפורמט nelson.<תחום>.<נושא>',
+      });
+    } else if (isLegacy) {
+      problems.push({
+        kind: 'topic', key, severity: 'warn',
+        why_he:
+          'עוגן לספרון הסיכומים ולא למקור המלא. אין בו פרק ולא עמוד, ' +
+          'ולכן לא ניתן לאמת אותו מול נלסון ולחתום עליו כ-verified.',
       });
     }
     kept.topics.push(t);
