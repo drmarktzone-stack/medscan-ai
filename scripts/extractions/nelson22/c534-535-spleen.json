@@ -1,0 +1,340 @@
+{
+  "chapter_title_he": "אנטומיה ותפקוד הטחול, וספלנומגליה",
+  "_provenance_he": "נלסון 22 (Elsevier, 2025), פרקים 534 — Anatomy and Function of the Spleen ו-535 — Splenomegaly (Allison S. Remiker, Amanda M. Brandow), עמודים מודפסים 3060-3062. חולץ מטקסט verbatim של ה-PDF דרך scripts/nelsonExtract.py. ⚠ שני הפרקים חולצו יחד משום שהם רצופים, קצרים ומשלימים — הראשון מסביר את התפקוד, השני את מה שקורה כשהאיבר גדל. הם מהווים את הרקע לפרק 536 (היפוספלניזם) שנטען קודם. ⚠ הציטוטים באנגלית במכוון.",
+
+  "topics": [
+    {
+      "topic_key": "nelson22.c534.spleen_anatomy_function",
+      "topic_title_he": "אנטומיה ותפקוד הטחול",
+      "topic_title_en": "Anatomy and Function of the Spleen",
+      "chapter_number": 534,
+      "chapter_title_he": "מחלות הדם",
+      "page_start": 3060,
+      "page_end": 3061,
+      "summary_he": "הפרק מסביר מדוע אובדן תפקוד הטחול מסוכן דווקא בדרך שהוא מסוכן. המבנה קובע את התפקוד: חלק ניכר מהדם המגיע לטחול זורם לאט דרך מערכת פתוחה ומסונן דרך חריצים מיקרוסקופיים, וזה מה שמאפשר את שלושת התפקידים — מאגר, סינון וחיסון. הטחול הוא איבר הלימפה הגדול בגוף ומכיל כמחצית מלימפוציטי ה-B מייצרי הנוגדנים; הוא מייצר חלבונים המתווכים חיסון וחיוניים לפינוי חיידקים — משלים, אופסונינים, פרופרדין וטופצין. מכאן המסקנה שהפרק מגיע אליה במפורש: אנשים צעירים ולא-חיסוניים או היפוספלניים נמצאים בסיכון מוגבר לספסיס מפנאומוקוק ומחיידקים אחרים בעלי קפסולה. הפרק מסביר גם מדוע גופיפי Howell-Jolly מופיעים באובדן תפקוד, ומדוע ספירת טסיות גבוהה לאחר כריתה אינה מסוכנת בילדים.",
+      "keywords": [
+        "טחול",
+        "עיסה לבנה",
+        "עיסה אדומה",
+        "cords of Billroth",
+        "Howell-Jolly",
+        "Heinz",
+        "טופצין",
+        "פרופרדין",
+        "אופסונינים",
+        "טחול נוסף",
+        "המטופואזה טחולית",
+        "תרומבוציטוזיס"
+      ],
+      "age_scope": "child",
+      "source_quote_he": "The unique anatomy and blood flow of the spleen enable it to perform reservoir, filtering, and immunologic functions. … The spleen is the largest lymphoid organ in the body and contains almost half the body's total immunoglobulin-producing B lymphocytes. … Production of immune-mediating proteins important in bacterial clearance occurs in the spleen including complement, opsonins, properdin, and tuftsin. Thus young (nonimmune) or hyposplenic individuals are at increased risk for sepsis caused by pneumococci and other encapsulated bacteria."
+    },
+    {
+      "topic_key": "nelson22.c535.splenomegaly",
+      "topic_title_he": "ספלנומגליה",
+      "topic_title_en": "Splenomegaly",
+      "chapter_number": 535,
+      "chapter_title_he": "מחלות הדם",
+      "page_start": 3061,
+      "page_end": 3062,
+      "summary_he": "הפרק עוסק בשאלה מתי טחול נמוש הוא ממצא ומתי הוא נורמה. הוא קובע ששיעור לא-מבוטל של יילודים, ילדים ומתבגרים בריאים יש להם טחול רך ודק שנמוש — כלומר מישוש כשלעצמו אינו פתולוגיה — ושברוב האנשים הטחול חייב להיות גדול פי כמה מגודלו התקין כדי להיות נמוש בכלל. הוא נותן סף אנטומי חד לממצא חריג, מתאר את טכניקת המישוש הנכונה ואת המלכודת שבה טחול מוגדל מאוד יורד אל האגן ומוחמץ, ומפרט את האבחנה המבדלת: פסאודו-ספלנומגליה, היפרספלניזם וספלנומגליה גודשית. הוא מבחין במפורש בין המצב שבו כריתת הטחול מרפאת את ההיפרספלניזם לבין המצב השכיח יותר שבו החסימה כבדית או פורטלית ולכן מעקף פורטו-קאוואלי מועיל יותר.",
+      "keywords": [
+        "ספלנומגליה",
+        "היפרספלניזם",
+        "פסאודו-ספלנומגליה",
+        "ספלנומגליה גודשית",
+        "יתר לחץ דם פורטלי",
+        "ציטופניות",
+        "ציסטה טחולית",
+        "פוליספלניזם",
+        "טחול נודד",
+        "מעקף פורטו-קאוואלי"
+      ],
+      "age_scope": "child",
+      "source_quote_he": "A soft, thin spleen is palpable in 15% of neonates, 10% of normal children, and 5% of adolescents. In most individuals, the spleen must be 2-3 times its normal size before it is palpable. … A splenic edge felt more than 2 cm below the left costal margin is abnormal."
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson22.c534.hyposplenia_smear",
+      "title_he": "משטח דם באובדן תפקוד טחולי",
+      "components": [
+        { "analyte": "גופיפי Howell-Jolly", "direction": "present" },
+        { "analyte": "גופיפי Heinz", "direction": "present" },
+        { "analyte": "גומות בכדוריות אדומות", "direction": "present" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, היפוספלניה תפקודית או אנטומית מאופיינת בהמשך מחזור של תאים המכילים שרידים גרעיניים (גופיפי Howell-Jolly), המוגלובין מפורק (גופיפי Heinz) ופסולת אחרת בכדוריות אדומות. הפסולת הזו עשויה להיראות כ«גומות» במיקרוסקופיה עקיפה.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "המנגנון מסביר מדוע הממצא הזה ספציפי: לפי המקור, זרימת דם איטית ליד מקרופאגים ודרך פתחים קטנים בדפנות הסינוס מאפשרת לטחול לסנן, ולהסיר הסגרים תוך-ציטופלזמיים מכדוריות אדומות **בלי לפרק את התא**. רק הטחול עושה זאת, ולכן הישארות ההסגרים היא סמן ישיר לאובדן התפקוד. ⚠ שים לב לממצא נפרד שהמקור מונה: אובדן תפקוד הסרת הממברנה העודפת מכדוריות צעירות מתבטא בתאי מטרה, בפויקילוציטוזיס ובירידה בשבירות האוסמוטית.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c534.spleen_anatomy_function",
+      "source_quote_he": "Excess membrane is removed from young red blood cells (RBCs) and loss of this function is characterized by target cells, poikilocytosis, and decreased osmotic fragility. … Intracytoplasmic inclusions may be removed from RBCs without cell lysis. Functional or anatomic hyposplenia is characterized by continued circulation of cells containing nuclear remnants (Howell-Jolly bodies), denatured hemoglobin (Heinz bodies), and other debris in RBCs. This debris may appear as \"pits\" on indirect microscopy."
+    },
+    {
+      "pattern_key": "nelson22.c534.post_splenectomy_counts",
+      "title_he": "ספירות דם לאחר אובדן תפקוד הטחול",
+      "components": [
+        { "analyte": "טסיות", "direction": "high" },
+        { "analyte": "תאי דם לבנים", "direction": "high" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, תרומבוציטוזיס ולויקוציטוזיס מתרחשים עם אובדן תפקוד המאגר של הטחול. ⚠ **המקור קובע במפורש שספירת טסיות גבוהה לאחר אובדן תפקוד הטחול או לאחר כריתתו אינה קשורה בסיכון מוגבר לפקקת בילדים.**",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "⚠ זו רשומה שמונעת התערבות מיותרת, וחשוב לקרוא אותה יחד עם הדגל nelson22.c536.post_splenectomy_thrombosis שנטען מפרק 536. שם המקור אומר שחולים לאחר כריתה נמצאים בסיכון לסיבוכים תרומבו-אמבוליים **ללא תלות בספירת הטסיות**; כאן הוא אומר שספירת הטסיות הגבוהה עצמה אינה מנבאת פקקת בילדים. שתי האמירות עקביות והמסקנה המשותפת אחת: **ספירת הטסיות אינה המדד — לא כדי להרגיע ולא כדי להתריע.** המנגנון: לפי המקור, שליש ממסת הטסיות במחזור מוחזק בטחול ומשוחרר בעקה או בגירוי אפינפרין.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c534.spleen_anatomy_function",
+      "source_quote_he": "Factor VIII, iron, plasmablasts, plasma cells, and one third of the circulating platelet mass are sequestered in the spleen and can be released by stress or epinephrine stimulation. Thrombocytosis and leukocytosis occur with loss of the splenic reservoir function. A high platelet count after the loss of splenic function or splenectomy is not associated with an increased risk of thrombosis in children."
+    },
+    {
+      "pattern_key": "nelson22.c535.hypersplenism_cytopenias",
+      "title_he": "ציטופניות בהיפרספלניזם",
+      "components": [
+        { "analyte": "טסיות", "direction": "low" },
+        { "analyte": "נויטרופילים", "direction": "low" },
+        { "analyte": "המוגלובין", "direction": "low" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, תפקוד טחולי מוגבר — הסגר או הרס של תאים במחזור — עלול לגרום לציטופניות בדם ההיקפי: תרומבוציטופניה, נויטרופניה ואנמיה, יחד עם פעילות מוגברת של מוח העצם וספלנומגליה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "המנגנון הוא נפחי ולא חיסוני: לפי המקור, הטחול מקבל חלק ניכר מתפוקת הלב אך מכיל בדרך כלל נפח דם קטן, ויכול להחזיק הרבה יותר כשהוא גדל — ומכאן הציטופניות. ⚠ הנקודה הטיפולית: היפרספלניזם הוא בדרך כלל **משני** למחלה אחרת, ועשוי להירפא בטיפול במחלת הרקע; כריתת טחול היא אמצעי שממתן אותו רק אם היא הכרחית לחלוטין. כלומר ציטופניה עם טחול מוגדל אינה התוויה לכריתה — היא התוויה לחפש את מחלת הרקע.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c535.splenomegaly",
+      "source_quote_he": "Increased splenic function (sequestration or destruction of circulating cells) can result in peripheral blood cytopenias (thrombocytopenia, neutropenia, anemia), increased bone marrow activity, and splenomegaly. It is usually secondary to another disease and may be cured by treatment of the underlying condition or, if absolutely necessary, may be moderated by splenectomy. … The spleen receives 5–6% of the cardiac output but normally contains only 25 mL of blood. It can retain much more when it enlarges, leading to cytopenias."
+    }
+  ],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson22.c535.splenic_edge_abnormal",
+      "label_he": "שפת טחול נמושה מתחת לסף — ממצא חריג",
+      "trigger": {
+        "findings": [
+          "שפת טחול נמושה הרחק מתחת לקשת הצלעות השמאלית",
+          "כאב ברביע השמאלי העליון",
+          "גודש ורידי שטחי בדופן הבטן"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "warning",
+      "action_he": "לפי המקור, שפת טחול הנמושת מעבר לסף מרחק מסוים מתחת לקשת הצלעות השמאלית היא חריגה; הסף המספרי מופיע בציטוט המקור. ⚠ שים לב שהמקור קובע גם שטחול רך ודק נמוש בשיעור לא-מבוטל של יילודים, ילדים ומתבגרים **בריאים** — כלומר עצם המישוש אינו הממצא, אלא המרחק. ⚠ מלכודת מפורשת: טחול מוגדל עלול לרדת אל האגן, ולכן **כשיש חשד לספלנומגליה יש להתחיל את בדיקת הבטן מנקודת מוצא נמוכה יותר** — אחרת הקוטב התחתון יוחמץ. גודש ורידי שטחי בדופן הבטן עשוי להופיע כאשר הספלנומגליה נובעת מיתר לחץ דם פורטלי.",
+      "reason_he": "לפי המקור, ברוב האנשים הטחול חייב להיות גדול פי שניים עד שלושה מגודלו התקין לפני שהוא נמוש בכלל. כלומר טחול נמוש משמעותית כבר מעיד על הגדלה ניכרת. חולים עשויים גם להתלונן על כאב ברביע השמאלי העליון עם הגדלת הטחול.",
+      "source_anchor": "nelson22.c535.splenomegaly",
+      "source_quote_he": "In most individuals, the spleen must be 2-3 times its normal size before it is palpable. The spleen is best examined when standing on the right side of a supine patient by palpating across the abdomen as the patient inspires deeply or with the patient in the right lateral decubitus position. A splenic edge felt more than 2 cm below the left costal margin is abnormal. An enlarged spleen might descend into the pelvis; when splenomegaly is suspected, the abdominal examination should begin at a lower starting point."
+    },
+    {
+      "flag_key": "nelson22.c535.congestive_splenomegaly",
+      "label_he": "ספלנומגליה גודשית — חסימה ורידית",
+      "trigger": {
+        "findings": [
+          "ספלנומגליה עם יתר לחץ דם פורטלי",
+          "מצב לאחר צנתור ורידי טבורי ביילוד",
+          "אומפליטיס ספטי",
+          "דימום מדליות",
+          "מחלת כבד כרונית עם טחול מוגדל"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, ספלנומגליה עלולה לנבוע מחסימה בוורידים הכבדיים, הפורטליים או הטחוליים, המובילה להיפרספלניזם. ⚠ **נקודת ההכרעה הטיפולית**: כאשר הטחול עצמו הוא אתר החסימה — כריתת טחול מרפאת את ההיפרספלניזם. אולם מאחר שהחסימה נמצאת בדרך כלל במערכת הכבדית או הפורטלית, **מעקף פורטו-קאוואלי עשוי להועיל יותר**, משום שגם יתר לחץ הדם הפורטלי וגם התרומבוציטופניה תורמים לדימום מדליות. כלומר האבחנה של מיקום החסימה קודמת להחלטה הניתוחית, ואינה ניתנת לדילוג.",
+      "reason_he": "לפי המקור, מחלת וילסון, גלקטוזמיה, אטרזיה של דרכי המרה וחסר אלפא-1-אנטיטריפסין עלולים לגרום לדלקת כבדית, לפיברוזיס ולחסימה כלי-דמית. חריגות מולדות — היעדר או תת-התפתחות — של הוורידים הפורטלי או הטחולי עלולות לגרום לחסימה. אומפליטיס ספטי או תרומבופלביטיס, ספונטני או כתוצאה מצנתור ורידי טבורי ביילודים, עלול לגרום להיטמעות משנית של כלים אלה. ⚠ זרימת הדם הטחולית עלולה להיחסם על ידי מסות של כדוריות חרמשיות ולהוביל לאוטם.",
+      "source_anchor": "nelson22.c535.splenomegaly",
+      "source_quote_he": "Splenomegaly may result from obstruction in the hepatic, portal, or splenic veins leading to hypersplenism. … Septic omphalitis or thrombophlebitis (spontaneous or as a result of umbilical venous catheterization in neonates) may result in secondary obliteration of these vessels. Splenic venous flow may be obstructed by masses of sickled erythrocytes leading to infarction. When the spleen is the site of vascular obstruction, splenectomy cures hypersplenism. However, because obstruction usually is in the hepatic or portal systems, portacaval shunting may be more helpful since both portal hypertension and thrombocytopenia contribute to variceal bleeding."
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson22.c534.three_functions",
+      "title_he": "שלושת תפקידי הטחול ומה נאבד עם כל אחד",
+      "category": "criteria",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "הערכת תפקוד טחולי", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, האנטומיה וזרימת הדם הייחודיות של הטחול מאפשרות לו למלא שלושה תפקידים. **מאגר** — הטחול מקבל חלק מתפוקת הלב אך מכיל בדרך כלל נפח דם קטן; פקטור VIII, ברזל, פלזמובלסטים, תאי פלזמה ושליש ממסת הטסיות במחזור מוחזקים בו ומשוחררים בעקה או בגירוי אפינפרין. אובדן התפקיד הזה מתבטא בתרומבוציטוזיס ובלויקוציטוזיס. **סינון** — זרימה איטית ליד מקרופאגים ודרך פתחים קטנים בדפנות הסינוס מסירה מהמחזור כל חלקיק מעל גודל מסוים; הטחול הוא האתר הראשוני להרס כדוריות אדומות ישנות, ותפקיד זה נלקח על ידי תאים רטיקולו-אנדותליאליים אחרים לאחר כריתה. הוא מסיר גם כדוריות פגומות או חריגות — ספרוציטים, כדוריות מצופות נוגדנים — וטסיות פגומות או מזדקנות. **חיסון** — סינון מכני מסיר אריתרוציטים נגועי טפילים וחיידקים לא-אופסוניים; הטחול הוא איבר הלימפה הגדול בגוף ומכיל כמחצית מלימפוציטי ה-B מייצרי האימונוגלובולינים בגוף; הוא מעבד חומר זר כדי לעורר ייצור נוגדן מאופסן, ומייצר חלבונים המתווכים חיסון וחיוניים לפינוי חיידקים — משלים, אופסונינים, פרופרדין וטופצין. ⚠ הספים והשיעורים המספריים מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ההבחנה בין שלושת התפקידים היא מה שמסביר את התמונה הקלינית המלאה של האספלניה ולא רק את הסיכון לספסיס. אבל הפרט המכריע הוא זה: לפי המקור, **לטחול תפקיד מִשני בלבד בתגובת הנוגדנים לאנטיגנים שהוזרקו לשריר או תת-עורית, אך הוא נדרש לייצור נוגדנים מוקדם לאחר חשיפה לאנטיגנים תוך-ורידיים.** זה בדיוק ההסבר לכך שהחיסונים עובדים בחולה אספלני — הם ניתנים תוך-שרירית — בעוד שהתגובה לבקטרמיה, שהיא חשיפה תוך-ורידית, קורסת. זו הסיבה שהפרופילקסיס והחיסון אינם מיותרים זה לזה.",
+      "recommended_workup_he": [
+        "משטח דם היקפי להערכת תפקוד סינון",
+        "ספירת דם מלאה — תרומבוציטוזיס ולויקוציטוזיס כסמני אובדן מאגר",
+        "סריקת טחול בטכנציום להערכת תפקוד",
+        "השלמת חיסונים נגד חיידקים בעלי קפסולה"
+      ],
+      "source_anchor": "nelson22.c534.spleen_anatomy_function",
+      "source_quote_he": "The unique anatomy and blood flow of the spleen enable it to perform reservoir, filtering, and immunologic functions. … The spleen plays a large role in host defense against infection. Mechanical filtration occurs removing parasitized erythrocytes, as well as unopsonized bacteria. … The spleen has a minor role in antibody response to intramuscularly or subcutaneously injected antigens but is required for early antibody production after exposure to intravenous antigens."
+    },
+    {
+      "rule_key": "nelson22.c534.anatomy_determines_function",
+      "title_he": "המבנה שקובע את התפקוד — עיסה לבנה, עיסה אדומה וזרימה",
+      "category": "criteria",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "הערכת מבנה הטחול", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, מבשר הטחול ניתן לזיהוי כבר בשבוע החמישי להיריון. הטחול גדל עד גיל ההתבגרות ולאחר מכן קטן בבגרות; המשקלים מופיעים בציטוט המקור. ⚠ **בשיעור לא-מבוטל מהחולים יש טחול נוסף.** המרכיבים העיקריים הם תא לימפואידי — העיסה הלבנה — ומערכת סינון — העיסה האדומה. העיסה הלבנה מורכבת ממעטפות לימפתיות פרי-עורקיות של לימפוציטי T עם מרכזי נבט משוקעים המכילים לימפוציטי B. לעיסה האדומה שלד של תאים רטיקולריים קבועים, מקרופאגים ניידים, מעברים אנדותליאליים שקרסו חלקית (cords of Billroth) וסינוסים טחוליים. אזור פרי-פוליקולרי עשיר בתאים דנדריטיים מציגי-אנטיגן ובתאי NK מפריד בין העיסה האדומה ללבנה. קופסית הטחול מכילה שריר חלק ומתכווצת בתגובה לאפינפרין. חלק קטן מהדם המגיע לטחול זורם במהירות דרך רשת כלי-דם סגורה; **הרוב זורם לאט יותר דרך מערכת פתוחה — החוטים הטחוליים — שבה הוא מסונן דרך חריצים מיקרוסקופיים לפני כניסתו לסינוסים.**",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "המערכת הפתוchה האיטית היא הסיבה שהטחול מסוגל לסנן חלקיקים בסדר גודל של מיקרון — וזה בדיוק מה שאובד. ⚠ שני פרטים בעלי משמעות קלינית ישירה: קיומו של טחול נוסף בשיעור לא-מבוטל מהאנשים מסביר מדוע כריתת טחול עשויה שלא להשיג את מטרתה בציטופניה חיסונית, ומדוע ממצא של רקמת טחול בהדמיה אינו בהכרח ספלנוזיס. וכיווץ הקופסית בתגובה לאפינפרין מסביר את שחרור המאגר בעקה.",
+      "recommended_workup_he": [
+        "הדמיה לזיהוי טחול נוסף כשרלוונטי להחלטה על כריתה",
+        "הערכת גודל ביחס לגיל ולא ביחס לערך מוחלט"
+      ],
+      "source_anchor": "nelson22.c534.spleen_anatomy_function",
+      "source_quote_he": "The splenic precursor is recognizable by 5 weeks of gestation. At birth, the spleen weighs approximately 11 g. Thereafter, it enlarges until puberty, reaching an average weight of 150 g, and then diminishes in size during adulthood. Approximately 15% of patients will have an accessory spleen. … Approximately 10% of the blood delivered to the spleen flows rapidly through a closed vascular network. The other 90% flows more slowly through an open system (the splenic cords), where it is filtered through 1-5 μm slits before entering the splenic sinuses."
+    },
+    {
+      "rule_key": "nelson22.c534.splenic_hematopoiesis",
+      "title_he": "המטופואזה טחולית — מתי היא תקינה ומתי היא סימן",
+      "category": "criteria",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "המטופואזה חוץ-מדולרית", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, המטופואזה בעיסה האדומה היא תפקיד טחולי מרכזי בחלק מהחיים העובריים אך נעלמת לאחר מכן; פרקי הזמן מופיעים בציטוט המקור. ⚠ **המטופואזה טחולית עשויה להתחדש בחולים עם מיאלופיברוזיס או עם אנמיה המוליטית קשה.** כלומר הופעתה מחוץ לחלון העוברי אינה תקינה, והיא מפנה לשתי קבוצות אבחנה מוגדרות.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "זהו קישור שהופך ממצא פתולוגי בהדמיה או בביופסיה לרמז אבחנתי ממוקד: המטופואזה חוץ-מדולרית בטחול אינה ממצא כללי אלא מצביעה על כשל מוח עצם מסוג פיברוטי או על הרס כדוריות אדומות מסיבי ומתמשך.",
+      "recommended_workup_he": [
+        "בירור מיאלופיברוזיס",
+        "בירור אנמיה המוליטית קשה",
+        "בדיקת מוח עצם לפי ההתוויה"
+      ],
+      "source_anchor": "nelson22.c534.spleen_anatomy_function",
+      "source_quote_he": "Hematopoiesis in the red pulp is a major splenic function at 3-6 months of fetal life but subsequently disappears. Splenic hematopoiesis can be resumed in patients with myelofibrosis or severe hemolytic anemia."
+    },
+    {
+      "rule_key": "nelson22.c535.pseudosplenomegaly",
+      "title_he": "פסאודו-ספלנומגליה — מה מתחזה לטחול מוגדל",
+      "category": "criteria",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "חשד לספלנומגליה בבדיקה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, חיבורים מזנטריים ארוכים באופן חריג עלולים ליצור טחול נודד או צנוח. אונה שמאלית מוגדלת של הכבד, מסה ברביע השמאלי העליון, או המטומה טחולית עלולים להיחשב בטעות לספלנומגליה. ציסטות טחוליות עשויות לתרום לספלנומגליה או לחקות אותה; הן עשויות להיות מולדות (אפידרמואידיות) או נרכשות (פסאודוציסטה) לאחר חבלה או אוטם, והן בדרך כלל א-סימפטומטיות ומתגלות בהערכה רדיולוגית. ספלנוזיס לאחר קרע טחול, או טחול נוסף, עלולים אף הם לחקות ספלנומגליה — אף שרובם אינם נמושים. ⚠ תסמונת הפוליספלניזם המולד כוללת מומי לב, חריגות איברים בצד שמאל, ריאות דו-אונתיות, אטרזיה של דרכי המרה ופסאודו-ספלנומגליה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "הרשימה הזו חוסכת בירור מיותר, אבל שני פריטים בה דורשים דווקא בירור נוסף ולא הרגעה: המטומה טחולית — כלומר חבלה — ותסמונת הפוליספלניזם המולד, שמופיעה יחד עם מומי לב ואטרזיה של דרכי המרה. ⚠ שים לב להשלמה מפרק 536 שנטען: שם המקור מציין שתפקוד הטחול תקין בדרך כלל בילדים עם פוליספלניה מולדת — בניגוד לאספלניה, שבה הוא נעדר. שתי התסמונות נשמעות דומות ומשמעותן החיסונית הפוכה.",
+      "recommended_workup_he": [
+        "אולטרסאונד לאישוש הממצא לפני בירור נוסף",
+        "בירור חבלה בחשד להמטומה",
+        "הערכת לב ודרכי מרה בחשד לפוליספלניזם מולד",
+        "אבחנה מבדלת מול אונה שמאלית מוגדלת של הכבד"
+      ],
+      "source_anchor": "nelson22.c535.splenomegaly",
+      "source_quote_he": "Abnormally long mesenteric connections may produce a wandering or ptotic spleen. An enlarged left lobe of the liver, a left upper quadrant mass, or a splenic hematoma may be mistaken for splenomegaly. Splenic cysts may contribute to splenomegaly or mimic it; these may be congenital (epidermoid) or acquired (pseudocyst) after trauma or infarction. … The syndrome of congenital polysplenism includes cardiac defects, left-sided organ anomalies, bilobed lungs, biliary atresia, and pseudosplenomegaly."
+    },
+    {
+      "rule_key": "nelson22.c535.splenomegaly_workup",
+      "title_he": "בירור ספלנומגליה — אנמנזה, בדיקה והדמיה",
+      "category": "workup",
+      "domain": "hematology",
+      "conditions": [
+        { "type": "finding", "key": "ספלנומגליה מאוששת", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, אנמנזה יסודית עם מיקוד בתלונות מערכתיות — חום, הזעות לילה, חולשה, ירידה במשקל — ובדיקה גופנית מלאה עם תשומת לב מיוחדת ללימפאדנופתיה, לצהבת, להגדלת כבד, לפריחות, לנפיחות מפרקים, לפטכיות ולשטפי דם, בשילוב עם ספירת דם מלאה וסקירה קפדנית של המשטח ההיקפי, יכולים לסייע בהכוונת האבחנה. גילוי או אישוש רדיולוגי של הגדלת הטחול נעשה באולטרסאונד, ב-CT, ב-MRI, ב-PET או בסריקת טכנציום-99m סולפור קולואיד. ⚠ **הסריקה האחרונה מעריכה גם את תפקוד הטחול** — ולא רק את גודלו.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ההבחנה בין הדמיה שמודדת גודל לבין הדמיה שמודדת תפקוד היא הנקודה המעשית. טחול גדול אינו בהכרח מתפקד, וטחול בגודל תקין אינו בהכרח מתפקד — ולכן כשהשאלה היא חיסונית ולא אנטומית, סריקת הטכנציום היא זו שעונה עליה. ארבע התלונות המערכתיות שהמקור מונה הן בדיוק אלה שמפרידות בין ספלנומגליה זיהומית לבין ממאירה.",
+      "recommended_workup_he": [
+        "אנמנזה מערכתית: חום, הזעות לילה, חולשה, ירידה במשקל",
+        "בדיקה ללימפאדנופתיה, צהבת, הגדלת כבד, פריחה, מפרקים, פטכיות",
+        "ספירת דם מלאה וסקירת משטח היקפי",
+        "אולטרסאונד לאישוש הגודל",
+        "סריקת טכנציום להערכת תפקוד כשהשאלה חיסונית"
+      ],
+      "source_anchor": "nelson22.c535.splenomegaly",
+      "source_quote_he": "A thorough history with a focus on systemic complaints (e.g., fever, night sweats, malaise, weight loss) and a complete physical examination (with special attention to lymphadenopathy, jaundice, hepatomegaly, rashes, joint swelling, petechiae, ecchymoses), in combination with a complete blood count and careful review of the peripheral smear, can help guide diagnosis. … Radiologic detection or confirmation of splenic enlargement is done with ultrasonography, CT, MRI, positron emission tomography, or technetium-99m sulfur colloid scan. The latter also assesses splenic function."
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson22.c534.encapsulated_bacteria_mechanism",
+      "anchor_finding_he": "היפוספלניזם או גיל צעיר לא-חיסוני",
+      "co_findings": [
+        "אספלניה",
+        "מצב לאחר כריתת טחול",
+        "גופיפי Howell-Jolly",
+        "חום"
+      ],
+      "implies_he": "סיכון מוגבר לספסיס מפנאומוקוק ומחיידקים אחרים בעלי קפסולה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, ייצור החלבונים המתווכים חיסון והחיוניים לפינוי חיידקים — משלים, אופסונינים, פרופרדין וטופצין — מתרחש בטחול. סינון מכני מסיר חיידקים לא-אופסוניים, והטחול מעבד חומר זר כדי לעורר ייצור נוגדן מאופסן. באובדן התפקוד, שני המנגנונים האלה נפגעים יחד.",
+      "action_he": "⚠ הקישור הזה הוא הבסיס המכניסטי לכל הדגלים שנטענו מפרק 536, והוא מסביר גם למה **גיל צעיר** מופיע כאן לצד היפוספלניזם: המקור מציין את שניהם באותה נשימה, משום ששניהם מייצגים היעדר חסינות מוקדמת. יש להשלים חיסונים נגד חיידקים בעלי קפסולה, ולהתייחס לחום בחולה כזה כאל אירוע דחוף.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c534.spleen_anatomy_function",
+      "source_quote_he": "Production of immune-mediating proteins important in bacterial clearance occurs in the spleen including complement, opsonins, properdin, and tuftsin. Thus young (nonimmune) or hyposplenic individuals are at increased risk for sepsis caused by pneumococci and other encapsulated bacteria. The spleen can also use phagocytosis to trap and destroy intracellular parasites."
+    },
+    {
+      "assoc_key": "nelson22.c534.imc_spleen_role",
+      "anchor_finding_he": "ציטופניה חיסונית עם טסיות או כדוריות מצופות נוגדנים",
+      "co_findings": [
+        "תרומבוציטופניה חיסונית",
+        "אנמיה המוליטית אוטו-אימונית",
+        "תגובה לכריתת טחול"
+      ],
+      "implies_he": "הטחול הוא אתר הפגוציטוזה ומאגר תאי הפלזמה המייצרים את הנוגדן",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, הטחול חשוב בפתוגנזה של ציטופניות מתווכות-חיסון: טסיות או אריתרוציטים מצופי-נוגדנים עוברים פגוציטוזה במנגנונים הקשורים במקרופאגים טחוליים. הטחול משמש גם כמאגר לתאי פלזמה מייצרי נוגדנים המעורבים בציטופניות אלה.",
+      "action_he": "המנגנון הכפול הזה מסביר מדוע כריתת טחול נשקלת בציטופניות חיסוניות עמידות — היא מסירה גם את אתר ההרס וגם חלק ממקור הנוגדן. ⚠ אבל יש לקרוא זאת יחד עם רשימת ההימנעות מפרק 536 שנטען: קיימות ציטופניות חיסוניות שבהן כריתה **אינה** מומלצת, ובכללן ALPS, מחלת אגלוטינינים קרים והמוגלובינוריה קרה התקפית. האבחנה הבסיסית קובעת, לא המנגנון הכללי.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c534.spleen_anatomy_function",
+      "source_quote_he": "Additionally, the spleen is important in the pathogenesis of immune-mediated cytopenias (IMCs). Antibody-coated platelets or erythrocytes are phagocytosed via mechanisms associated with splenic macrophages. The spleen also serves as a reservoir for antibody producing plasma cells involved in IMCs."
+    },
+    {
+      "assoc_key": "nelson22.c535.sickle_splenic_infarction",
+      "anchor_finding_he": "אנמיה חרמשית עם ספלנומגליה או כאב ברביע השמאלי העליון",
+      "co_findings": [
+        "חסימת זרימה ורידית טחולית",
+        "אוטם טחולי",
+        "ציטופניות"
+      ],
+      "implies_he": "חסימת זרימה טחולית ממסות כדוריות חרמשיות — ואוטם",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, זרימת הדם הוורידית הטחולית עלולה להיחסם על ידי מסות של אריתרוציטים חרמשיים, ולהוביל לאוטם.",
+      "action_he": "⚠ זהו החוט המקשר בין ספלנומגליה לבין ההיפוספלניזם שנטען מפרק 536: אותו מנגנון שגורם לאוטם הוא זה שמוביל בהמשך לאוטו-אינפרקציה, לפיברוזיס ולאובדן תפקוד קבוע. כלומר ילד עם אנמיה חרמשית עלול לעבור את שני הקצוות — טחול מוגדל וכואב בשלב מוקדם, וטחול לא-מתפקד בהמשך — ושניהם דורשים התייחסות שונה. כאב ברביע השמאלי העליון בילד כזה אינו ממצא שגרתי.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c535.splenomegaly",
+      "source_quote_he": "Splenic venous flow may be obstructed by masses of sickled erythrocytes leading to infarction. … Patients may also complain of left upper quadrant pain as the spleen enlarges."
+    },
+    {
+      "assoc_key": "nelson22.c535.palpable_spleen_by_age",
+      "anchor_finding_he": "טחול רך ודק נמוש בילד בריא",
+      "co_findings": [
+        "יילוד",
+        "ילד",
+        "מתבגר",
+        "היעדר תלונות מערכתיות"
+      ],
+      "implies_he": "ממצא שעשוי להיות תקין — שכיחותו יורדת עם הגיל",
+      "suspicion": "green",
+      "mechanism_he": "לפי המקור, טחול רך ודק נמוש בחלק מהיילודים, מהילדים התקינים ומהמתבגרים; השיעורים לכל קבוצת גיל מופיעים בציטוט המקור והם יורדים עם הגיל.",
+      "action_he": "⚠ זו רשומה שמונעת בירור מיותר — ולכן חשוב לקרוא את גבולותיה. שני התנאים למישוש תקין הם **רך ודק**, והמרחק מתחת לקשת הצלעות חייב להיות מתחת לסף. טחול קשה, עבה, או שנמוש מעבר לסף — אינו נכנס לקטגוריה הזו. ⚠ השכיחות יורדת עם הגיל, ולכן אותו ממצא במתבגר מדאיג יותר מאשר ביילוד.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c535.splenomegaly",
+      "source_quote_he": "A soft, thin spleen is palpable in 15% of neonates, 10% of normal children, and 5% of adolescents. In most individuals, the spleen must be 2-3 times its normal size before it is palpable."
+    }
+  ],
+
+  "gaps_he": [
+    "⚠ **טבלה 535.1 (סיבות ספציפיות לספלנומגליה) לא חולצה.** המקור מפנה אליה פעמיים — פעם לרשימת הסיבות הכללית ופעם לרשימת המחלות הקשורות בספלנומגליה מסיבית. זהו המשאב המרכזי לאבחנה מבדלת בפרק 535, והוא מצדיק חילוץ מובנה נפרד. ההבחנה בין ספלנומגליה רגילה למסיבית היא בעלת משמעות אבחנתית והיא אינה מיוצגת כאן.",
+    "⚠ כל הערכים המספריים — משקלי הטחול לפי גיל, שיעור הטחול הנוסף, אחוזי הזרימה במערכת הסגורה והפתוחה, גודל החריצים והחלקיקים, אחוז תפוקת הלב, נפח הדם בטחול, הסף למישוש חריג ושיעורי המישוש התקין לפי גיל — נשמרו בציטוטי המקור בלבד ולא בגוף הכללים, כמינונים לוולידטור ול-numericGuard.",
+    "⚠ הפרקים מפנים לפרקים שלא חולצו: 480.11 (פוליספלניזם מולד), 405.2 (מחלת וילסון), 107.2 (גלקטוזמיה), 404.1 (אטרזיה של דרכי המרה), 405 (חסר אלפא-1-אנטיטריפסין). טענות התלויות בהם אינן מיוצגות כאן.",
+    "⚠ הפרקים אינם עוסקים בקרע טחול, בכריתת טחול או בפרופילקסיס — אלה בפרק 536, שנטען בנפרד. הקישור ביניהם נעשה דרך ה-source_anchor ודרך הפניות מפורשות ב-action_he, אך אין כאן כפילות של התוכן.",
+    "⚠ המקור אינו נותן ערכי נורמה לגודל הטחול בהדמיה לפי גיל — רק סף למישוש קליני. אין להסיק מהסף הקליני על סף רדיולוגי.",
+    "⚠ הפרקים אינם עוסקים בהיפרספלניזם כאבחנה עצמאית מעבר להגדרה, ואינם נותנים קריטריונים כמותיים לציטופניה המגדירה אותו.",
+    "⚠ אזור ה-PFZ מתואר במקור כמקביל ל«אזור השוליים» במודלים מיוריניים — כלומר ההקבלה אינה זהות. אין להשתמש בספרות על marginal zone בעכבר כאילו היא מתארת את האדם."
+  ],
+
+  "dosing_mentions_he": [
+    "⚠ אין בשני הפרקים האלה אף מינון תרופתי. הערכים המספריים היחידים הם אנטומיים ופיזיולוגיים (משקלים, אחוזים, נפחים, גדלים) וספי מישוש קליניים — כולם נשמרו בציטוטי המקור בלבד.",
+    "⚠ סריקת טכנציום-99m סולפור קולואיד מוזכרת ללא מינון או פרוטוקול. אין לגזור ממנה הנחיית ביצוע."
+  ]
+}
