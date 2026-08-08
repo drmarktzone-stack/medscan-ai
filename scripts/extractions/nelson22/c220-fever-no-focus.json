@@ -1,0 +1,630 @@
+{
+  "chapter_title_he": "חום ללא מוקד ביילוד ובתינוק הצעיר",
+  "_provenance_he": "נלסון 22 (Elsevier, 2025), פרק 220 — Fever Without a Focus in the Neonate and Young Infant (Laura Brower, Samir S. Shah), עמודים מודפסים 1642-1646. חולץ מטקסט verbatim של ה-PDF דרך scripts/nelsonExtract.py. ⚠ העמוד המודפס 1642 מכיל גם את סופו של פרק 219 (חום) — הפסקאות על נוגדי חום שייכות לפרק 219 ולא לפרק 220, והן לא נכללו כאן. ⚠ הציטוטים באנגלית במכוון: זהו הנוסח שניתן לאמת מול הספר.",
+
+  "topics": [
+    {
+      "topic_key": "nelson22.c220.fever_without_focus",
+      "topic_title_he": "חום ללא מוקד ביילוד ובתינוק הצעיר",
+      "topic_title_en": "Fever Without a Focus in the Neonate and Young Infant",
+      "chapter_number": 220,
+      "chapter_title_he": "מחלות זיהומיות",
+      "page_start": 1642,
+      "page_end": 1646,
+      "summary_he": "הפרק עוסק בשאלה השכיחה והמסוכנת ביותר ברפואת ילדים ראשונית: תינוק בן פחות משלושה חודשים עם חום ובלי מוקד. ההגדרה חדה — חום פי הטבעת של 38 מעלות ומעלה ללא סימנים או תסמינים מלווים. הקושי מוגדר במפורש: קשה להבחין בין זיהום חמור, חיידקי או נגיפי, לבין מחלה נגיפית מגבילת-עצמה. הפרק מחלק את הגישה לשלוש קבוצות גיל — יילודים 0 עד 28 יום, תינוקות צעירים 29 עד 90 יום, וילדים 3 עד 36 חודשים — ומדגיש שהסיכון לזיהום חיידקי חמור נמצא ביחס הפוך לגיל שלאחר הלידה. הוא מציג את פרוטוקול ה-AAP בן שלושת השלבים לגילאי 22 עד 60 יום, המפריד בין זיהום דרכי שתן לבין בקטרמיה ומנינגיטיס, ומדגיש שכל קריטריוני הסיכון-הנמוך חלים אך ורק על תינוק שנראה טוב. הוא מפרט גם את מגבלות כל בדיקה בנפרד — ספירת הדם, תרבית הדם, בדיקת השתן והנוזל השדרתי — ואת מקומו של HSV ביילוד.",
+      "keywords": [
+        "חום ללא מוקד",
+        "יילוד עם חום",
+        "תינוק צעיר",
+        "SBI",
+        "IBI",
+        "בקטרמיה",
+        "מנינגיטיס",
+        "זיהום דרכי שתן",
+        "HSV ביילוד",
+        "פרוקלציטונין",
+        "CRP",
+        "ANC",
+        "ניקור מותני",
+        "Step-by-Step",
+        "AAP guideline",
+        "אנטרווירוס"
+      ],
+      "age_scope": "infant",
+      "source_quote_he": "For this age-group (0-3 months), fever without a focus refers to a rectal temperature of 38°C (100.4°F) or greater without other presenting signs or symptoms. The evaluation of these patients can be challenging because of the difficulty distinguishing between a serious infection (bacterial or viral) and a self-limited viral illness. The etiology and evaluation of fever without a focus depend on the age of the child. Three age-groups are typically considered: neonates 0-28 days, young infants 29-90 days, and children 3-36 months."
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson22.c220.inflammatory_markers_low_risk",
+      "title_he": "סמני דלקת בפרוטוקול הסיכון הנמוך",
+      "components": [
+        { "analyte": "פרוקלציטונין", "direction": "normal" },
+        { "analyte": "CRP", "direction": "normal" },
+        { "analyte": "ספירת נויטרופילים מוחלטת", "direction": "normal" }
+      ],
+      "min_components": 2,
+      "direction_he": "לפי המקור, בגישת ה-AAP סמני דלקת מומלצים לכל התינוקות מגיל 22 יום ומעלה כחלק מדירוג הסיכון. כשזמין, מומלץ פרוקלציטונין יחד עם CRP או ANC. אם פרוקלציטונין אינו זמין — יש לשקול CRP, ANC וגובה החום כסמני דלקת. הספים המספריים לכל אחד מהם, וכן ערך החום הנכלל בקריטריון, מופיעים בציטוט המקור.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "⚠ שלוש נקודות שהמקור מדגיש והן משנות את הקריאה. ראשונה: הסמנים אינם עומדים לבדם — הם חלק מקריטריון מורכב שכולל גם אנמנזה, מראה קליני ובדיקת שתן. שנייה: המקור מציג עדות סותרת — מטה-אנליזה אחת מצאה שפרוקלציטונין עדיף על ספירת לבנות ו-CRP לזיהוי זיהום חיידקי פולשני, ואחרת מצאה שהוא נחות מכללי ניבוי. שלישית: גובה החום עצמו נספר כסמן דלקת בגישה הזו — פרט שקל להחמיץ.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Inflammatory markers: temperature ≤38.5°C, procalcitonin ≤0.5 ng/mL, CRP ≤20 mg/L, absolute neutrophil count ≤4,000-5,200/mm3 … In the approach from the AAP, inflammatory markers are recommended for all infants 22 days and older as part of risk stratification. If available, this approach recommends PCT along with either CRP or ANC. If PCT is unavailable, then CRP, ANC, and elevation in temperature should be considered as markers of inflammation."
+    },
+    {
+      "pattern_key": "nelson22.c220.wbc_cannot_exclude_sbi",
+      "title_he": "ספירת לבנות אינה שוללת זיהום חיידקי חמור",
+      "components": [
+        { "analyte": "ספירת תאי דם לבנים", "direction": "normal" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, ספירת התאים הלבנים לבדה אינה יכולה לנבא במדויק את הסיכון לזיהום חיידקי חמור. בסדרה אחת, שימוש מבודד בספי ספירת הלבנים היה מחמיץ שיעור ניכר מהתינוקות עם בקטרמיה ושיעור גבוה עוד יותר מאלה עם מנינגיטיס. השיעורים והספים מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ זו רשומה שתפקידה לשלול מסקנה, לא להסיק אחת. ספירת לבנות תקינה בתינוק צעיר עם חום אינה עדות לשלילת זיהום חיידקי חמור. יתרה מזו — לפי המקור, מחקר פרוספקטיבי לא מצא סיכון מוגבר לזיהום חיידקי חמור בתינוקות עם חום שנראים טוב ויש להם לויקופניה, כלומר גם ספירה נמוכה אינה מסמנת סיכון בפני עצמה. ספירת הלבנות יכולה לתרום בשילוב עם גורמים אחרים, ואין להשתמש בה במבודד.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "The white blood cell (WBC) count alone cannot accurately predict SBI risk. In one series, isolated use of the WBC cutoffs of outside 5,000-15,000 WBCs/mm3 would miss at least 33% of infants with bacteremia and 40% of those with meningitis. A prospective study found no increased risk of SBI in febrile, well-appearing infants with leukopenia (WBC count <5,000/mm3). The WBC count combined with other factors may help determine an infant's risk of SBI, but it should not be used in isolation to predict infection risk."
+    },
+    {
+      "pattern_key": "nelson22.c220.urinalysis_methods",
+      "title_he": "בדיקת שתן — הבדל בין השיטות",
+      "components": [
+        { "analyte": "לויקוציט אסטראז", "direction": "abnormal" },
+        { "analyte": "ניטריטים", "direction": "abnormal" },
+        { "analyte": "תאי דם לבנים בשתן", "direction": "high" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, בדיקת שתן מסורתית כוללת מקלון לניטריטים או לויקוציט אסטראז יחד עם בדיקה מיקרוסקופית לתאים לבנים ולחיידקים. מחקר אחד מצא שלבדיקה המסורתית ערך מנבא שלילי גבוה יותר מלמקלון לבדו, אך שלמקלון לבדו ערך מנבא חיובי גבוה יותר. השיעורים מופיעים בציטוט המקור. בדיקה מורחבת כוללת ספירת תאים בהמוציטומטר וצביעת גרם על שתן לא-מסורכז, ויש לה רגישות גבוהה יותר וסגוליות דומה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "⚠ המקור מסייג את הבדיקה המורחבת במפורש: היא לא נבדקה בפרוטוקולים הנפוצים להערכת תינוק עם חום, ומוסדות ומרפאות רבים אינם מבצעים אותה. כלומר אין לייחס לה את התפקיד שממלאת הבדיקה המסורתית בפרוטוקול. הבדל נוסף שראוי לשים לב אליו: קריטריון הסיכון הנמוך של ה-AAP נוקב בערכי תאים לבנים שונים לשתן מסורכז ולא-מסורכז — פרט שמשנה את סיווג הסיכון והוא מופיע בציטוט המקור.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "One study found that the traditional UA had a higher negative predictive value (NPV) than dipstick alone (99.2% vs 98.7%), but that dipstick alone had a higher positive predictive value (PPV, 66.8% for dipstick alone vs 51.2% for traditional UA). … However, the enhanced UA has not been studied in the most common protocols for evaluation of the febrile infant, and many institutions/office practices do not perform this test. … Urine: negative leukocyte esterase and nitrite, ≤5 WBC/hpf centrifuged and <10 WBC/hpf uncentrifuged."
+    },
+    {
+      "pattern_key": "nelson22.c220.csf_age_dependent",
+      "title_he": "ערכי נוזל שדרתי משתנים עם הגיל",
+      "components": [
+        { "analyte": "תאי דם לבנים בנוזל שדרתי", "direction": "abnormal" },
+        { "analyte": "חלבון בנוזל שדרתי", "direction": "abnormal" },
+        { "analyte": "גלוקוז בנוזל שדרתי", "direction": "abnormal" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, פרמטרים תקינים של נוזל שדרתי משתנים לפי גיל התינוק ויש לפרשם בשילוב עם גורמי סיכון קליניים והיסטוריים אחרים, שכן חלק מהתינוקות עם פרמטרים תקינים עלולים לעיתים נדירות לסבול מזיהום של מערכת העצבים המרכזית. ⚠ הערכים המספריים מופיעים בטבלה 220.3 שבמקור, והיא מציגה שישה סטים שונים של ערכי ייחוס מששה מחקרים — עם ספים שונים לאותו גיל. אין ערך סף יחיד.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ הנקודה הקריטית כאן היא לא הערך אלא הריבוי: המקור מציג שישה מקורות ייחוס עם ספים שונים לאותה קבוצת גיל, וכל אחד מהם נגזר מאוכלוסייה עם קריטריוני הכללה שונים. שימוש בערך סף אחד כאילו הוא הנורמה הוא שגיאה. הערכים חייבים להילקח מהמעבדה המקומית ומהפרוטוקול המחלקתי. המקור מציין בנוסף שצביעת גרם של הנוזל השדרתי היא תוספת שימושית בשל סגוליותה הגבוהה, אך שטווח הרגישות המדווח שלה רחב הרבה יותר.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Normal CSF parameters vary by age of the infant and should be interpreted in combination with other clinical and historical risk factors, given that some infants with normal CSF parameters may rarely have CNS infections. The CSF Gram stain can be a useful adjunct to other CSF parameters given the high specificity of the test (99.3–99.9%; i.e., relatively few false-positive results), although the range of reported sensitivity is much broader (67–94.1%)."
+    }
+  ],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson22.c220.toxic_appearing_any_age",
+      "label_he": "ילד עם מראה טוקסי וחום — בכל גיל עד 36 חודשים",
+      "trigger": {
+        "findings": [
+          "מראה טוקסי",
+          "מראה ספטי",
+          "לתרגיה",
+          "עצבנות חריגה",
+          "שינוי בטונוס",
+          "פטכיות",
+          "כחלון",
+          "מילוי קפילרי מושהה מעל שלוש שניות"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 1095,
+      "severity": "critical",
+      "action_he": "לפי המקור, כל ילד בגיל 0 עד 36 חודשים עם מראה טוקסי וחום פי הטבעת של 38 מעלות ומעלה — יש לאשפז, לקחת תרביות דם, שתן ונוזל שדרתי, לבצע בדיקות נוספות לפי ההקשר, ולתת אנטיביוטיקה פרנטרלית. ⚠ המקור מדגיש במפורש שקריטריוני הסיכון-הנמוך חלים אך ורק על ילד שנראה טוב, ושמי שנראה חולה קשה מחייב הערכה, החייאה וטיפול אנטיביוטי אמפירי בתוך שעה. בדיקות נוספות עשויות לכלול צילום חזה, בדיקות צואה, ו-PCR ל-HSV ולנגיפים אחרים.",
+      "reason_he": "לפי המקור, הסיכון לזיהום חיידקי חמור הוא הגבוה ביותר במי שנראה חולה, בניגוד למי שנראה טוב, ובמי שיש לו גורמי סיכון, והוא נמצא ביחס הפוך לגיל שלאחר הלידה.",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Any toxic-appearing child 0–36 mo and temperature ≥38°C (100.4°F): Hospitalize, cultures (blood, urine, CSF) plus other tests*, parenteral antibiotics. … It must be emphasized that these criteria apply to the well-appearing child; those who appear critically ill (septic) require prompt evaluation, resuscitation, and empiric antibiotic therapy (within 1 hour). … The risk for SBI is highest in those appearing ill (in contrast to well appearing) and those with risk factors and is inversely related to postnatal age."
+    },
+    {
+      "flag_key": "nelson22.c220.under_22_days_fever",
+      "label_he": "חום בתינוק מתחת לגיל 22 יום — אין מסלול סיכון-נמוך",
+      "trigger": {
+        "findings": [
+          "חום בתינוק מתחת לגיל 22 יום",
+          "חום פי הטבעת 38 מעלות ומעלה ביילוד"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 21,
+      "severity": "critical",
+      "action_he": "לפי המקור, ילד מתחת לגיל 22 יום עם חום פי הטבעת של 38 מעלות ומעלה — גם אם הוא נראה טוב — יש לאשפז, לקחת תרביות דם, שתן ונוזל שדרתי ובדיקות נוספות, ולתת אנטיביוטיקה פרנטרלית. ⚠ בקבוצת הגיל הזו אין תהליך תלת-שלבי ואין סיווג סיכון-נמוך. המקור מציין שבפרוטוקולים הנוכחיים יילודים בגילאי 22 עד 28 יום העומדים בקריטריונים מסוימים יכולים להיות מנוהלים מחוץ לבית החולים, ושבמחקר אחד הסיכון לבקטרמיה בקבוצת גיל זו היה נמוך מזה שבתינוקות מתחת לגיל 22 יום. השיעורים מופיעים בציטוט המקור.",
+      "reason_he": "לפי המקור, זיהום חיידקי חמור מתרחש בשיעור ניכר מהיילודים והתינוקות הצעירים עם חום; הזיהומים השכיחים הם זיהום דרכי שתן, בקטרמיה ומנינגיטיס. השיעורים מופיעים בציטוט המקור. המקור מציין גם שבמחקר אחד שהחיל קריטריוני סיכון קודמים על יילודים, חלק מאלה שסווגו כסיכון נמוך התבררו כנושאי זיהום חיידקי חמור.",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Child <22 days and temperature ≥38°C (100.4°F): Hospitalize, cultures (blood, urine, CSF) plus other tests*, parenteral antibiotics. … Serious bacterial infection (SBI) occurs in 7–13% of neonates and young infants with fever. In this group, the most common SBIs are urinary tract infection (UTI; 5–13%), bacteremia (1–2%), and meningitis (0.2–0.5%). … In one study, <1% of low-risk infants ≤28 days old had SBI; however, in another study applying the other criteria to neonates, 3–4% of those classified as low risk had SBI. In the current protocols, neonates 22-28 days who meet certain low-risk criteria can be managed outside the hospital; in one study, the risk of bacteremia in this age-group was lower than in infants <22 days (1.6% vs 3.3–5.3%)."
+    },
+    {
+      "flag_key": "nelson22.c220.neonatal_hsv",
+      "label_he": "חשד ל-HSV ביילוד עם חום",
+      "trigger": {
+        "findings": [
+          "פריחה שלפוחיתית ביילוד",
+          "פרכוס ביילוד",
+          "בדיקה נוירולוגית חריגה ביילוד",
+          "חשיפה לאם עם HSV ראשוני או זיהום גניטלי ראשון",
+          "דום נשימה",
+          "תת-חום",
+          "פריחה פטכיאלית או דימומיות יתר",
+          "אי-ספיקת כבד",
+          "אלקטרודת קרקפת בלידה"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 42,
+      "severity": "critical",
+      "action_he": "לפי המקור, זיהומי HSV צריכים להישקל ביילודים עם חום, ובמיוחד מתחת לגיל 28 יום, בשל שיעור התמותה הגבוה והתחלואה המשמעותית בשורדים. ועדת המחלות המזהמות של ה-AAP ממליצה על הבדיקות הבאות: תרביות או PCR ממשטחי לחמית, פה או אף-לוע, רקטום וכל שלפוחית; PCR מנוזל שדרתי; PCR מדם מלא; ורמת ALT בסרום. ⚠ הנקודה החשובה: המקור קובע במפורש שיילודים עם HSV עלולים להתייצג ללא שום מאפיין קליני או היסטורי בסיכון גבוה, ובמיוחד במחלה מבודדת מוקדמת של מערכת העצבים המרכזית. כלומר היעדר גורמי סיכון אינו שולל. ⚠ מינון האציקלוביר אינו בדגל זה — ראה dosing_mentions_he.",
+      "reason_he": "לפי המקור, HSV ביילוד נדיר, ורוב הזיהומים נגרמים מ-HSV מסוג 2 אף שגם סוג 1 עלול לגרום לזיהום ביילוד. יילודים עם מחלה מפושטת ועם מחלת עור-עין-פה מתייצגים בדרך כלל בימים 5 עד 12 לחיים; יילודים עם מחלת מערכת העצבים המרכזית מתייצגים בדרך כלל בימים 16 עד 19. HSV שנרכש סב-לידתית מתבטא לעיתים מעבר לגיל 28 יום, אף שרוב המקרים מעבר לגיל זה מייצגים רכישה לאחר הלידה.",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Herpes simplex virus (HSV) infections should also be considered in febrile neonates, particularly those under 28 days old, given the high rate of mortality and significant morbidity among survivors. … Historical and clinical features that should raise concern for HSV include exposure to individuals infected with HSV, particularly mothers with primary HSV infections or first-time genital infections, seizure or abnormal neurologic examination, vesicular rash, ill appearance, apnea, hypothermia, petechial rash/excessive bleeding, hepatic failure, or a history of a scalp electrode. However, neonates with HSV can present without any high-risk clinical or historical features, particularly with early isolated CNS disease."
+    },
+    {
+      "flag_key": "nelson22.c220.hypothermia_systemic_illness",
+      "label_he": "תת-חום או סימני מחלה מערכתית ביילוד",
+      "trigger": {
+        "findings": [
+          "תת-חום",
+          "טכיפנאה",
+          "מצוקה נשימתית",
+          "דום נשימה",
+          "טכיקרדיה",
+          "מילוי קפילרי מושהה",
+          "דפקים חלשים או חזקים מדי",
+          "בדיקת בטן חריגה",
+          "לתרגיה או עצבנות או שינוי בטונוס",
+          "פריחה או פטכיות או כחלון"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 90,
+      "severity": "critical",
+      "action_he": "לפי המקור, חלק מהיילודים והתינוקות הצעירים יפגינו סימני מחלה מערכתית בהתייצגות: טמפרטורה חריגה — הן תת-חום והן חום — בדיקה נשימתית חריגה, בדיקת מחזור חריגה, בדיקת בטן חריגה, בדיקה נוירולוגית חריגה, או בדיקת עור חריגה. ⚠ הסף המספרי לכל אחד מהם מופיע בציטוט המקור. הנקודה המעשית: **תת-חום נמנה במקור לצד החום כסימן מערכתי** — תינוק קר אינו תינוק בריא.",
+      "reason_he": "לפי המקור, ביילודים ובתינוקות צעירים זיהומים חיידקיים ונגיפיים עלולים להתייצג בחום מבודד או בתסמינים לא-ספציפיים, מה שהופך את אבחון המחלות החמורות למאתגר.",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Some neonates and young infants will have signs of systemic illness at presentation, including abnormal temperature (hypothermia <36°C [96.8°F], fever ≥38°C [100.4°F]), abnormal respiratory examination (tachypnea >60 breaths/min, respiratory distress, apnea), abnormal circulatory examination (tachycardia >180 beats/min, delayed capillary refill >3 seconds, weak or bounding pulses), abnormal abdominal examination, abnormal neurologic examination (lethargy, irritability, alterations in tone), or abnormal skin examination (rash, petechiae, cyanosis)."
+    },
+    {
+      "flag_key": "nelson22.c220.pseudoparalysis",
+      "label_he": "פסאודו-שיתוק ועצבנות פרדוקסלית",
+      "trigger": {
+        "findings": [
+          "אי-הנעה של גף",
+          "עצבנות פרדוקסלית",
+          "כאב בניסיון להרגיע את התינוק",
+          "נפיחות או רגישות סביב מפרק או עצם"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 90,
+      "severity": "critical",
+      "action_he": "לפי המקור, תינוקות עם דלקת מפרק ספטית או אוסטאומיאליטיס עשויים להיראות טוב פרט לסימנים סביב המפרק או העצם המעורבים, או להתבטא רק בפסאודו-שיתוק — אי-שימוש בגף — ובעצבנות פרדוקסלית, שבה התינוק חש כאב דווקא בניסיונות להרגיעו. ⚠ המשמעות: תינוק שנראה טוב ואינו מזיז גף אינו תינוק שנראה טוב לצורך הפרוטוקול. יש לבדוק את כל הגפיים בתנועה פעילה.",
+      "reason_he": "לפי המקור, זיהומים חיידקיים ספציפיים העלולים להתייצג עם חום בקבוצת גיל זו — אף שלרוב עם תסמינים מלבד חום מבודד — כוללים פנאומוניה, גסטרואנטריטיס, אוסטאומיאליטיס, דלקת מפרק ספטית, אומפליטיס, צלוליטיס וזיהומי עור ורקמות רכות אחרים.",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Infants with septic arthritis or osteomyelitis may appear well except for signs around the involved joint or bone or may only manifest with pseudoparalysis (disuse) and paradoxical irritability (infant experiences pain during attempts to comfort the child)."
+    },
+    {
+      "flag_key": "nelson22.c220.negative_blood_culture_not_reassuring",
+      "label_he": "תרבית דם שלילית אינה שוללת מנינגיטיס",
+      "trigger": {
+        "findings": [
+          "תרבית דם שלילית בתינוק עם חום",
+          "החלטה על ניקור מותני בתינוק צעיר עם חום"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 90,
+      "severity": "warning",
+      "action_he": "לפי המקור, תרבית דם שלילית אינה שוללת את האפשרות של מנינגיטיס חיידקי; במחקר אחד, חלק ניכר מהתינוקות עם מנינגיטיס חיידקי מוכח-תרבית היו עם תרביות דם שליליות. השיעור מופיע בציטוט המקור. ⚠ המשמעות המעשית: ההחלטה על ניקור מותני אינה יכולה להישען על תוצאת תרבית הדם. המקור מציין שהיכולת לזהות מחוללים בדם תלויה בנפח הדם, בעיתוי הלקיחה ביחס למתן האנטיביוטיקה, ובמידה פחותה במספר התרביות.",
+      "reason_he": "לפי המקור, קיימת שונות משמעותית בפרקטיקה הקלינית בביצוע ניקור מותני בתינוקות שנראים טוב מעל גיל 28 יום. בהחלטה יש לשקול גורמים מרובים, ובכללם מצב הבית והיכולת ליצור קשר עם המשפחה.",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "A negative blood culture does not exclude the possibility of bacterial meningitis; in one study, 38% of infants with culture-proven bacterial meningitis had negative blood cultures. … The ability to identify pathogens in the blood depends on the volume of blood, the timing of the blood culture in relation to antimicrobial administration, and, to a lesser degree, the number of blood cultures obtained."
+    },
+    {
+      "flag_key": "nelson22.c220.traumatic_lp",
+      "label_he": "ניקור מותני טראומטי — פרשנות בלתי-אמינה",
+      "trigger": {
+        "findings": [
+          "ניקור מותני טראומטי",
+          "נוזל שדרתי מזוהם בדם היקפי",
+          "נוזל שדרתי בלתי-ניתן לפרשנות"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 90,
+      "severity": "critical",
+      "action_he": "לפי המקור, קלינאים עשויים לשקול אשפוז ומתן אנטיביוטיקה אמפירית בחולים עם ניקור מותני טראומטי, בהתחשב בקושי לפרש את ספירת התאים הלבנים בנוזל השדרתי כאשר הדגימה מזוהמת בדם. ⚠ המקור מציג עדות סותרת לגבי תיקון הספירה: מחקר עוקבה אחד מצא שיחס מסוים בין הספירה הנצפית לחזויה עוזר לשלול מנינגיטיס חיידקי, ואילו מחקר עוקבה אחר וסדרת מקרים הסיקו שתיקון הספירה אינו משפר את דיוק האבחנה. אין להסתמך על תיקון חשבוני. המקור מציין שבדיקה מולקולרית מהדור הבא מסייעת בזיהוי המחוללים למרות ניקור טראומטי, ושהתוצאות זמינות לעיתים קרובות תוך שעות ספורות.",
+      "reason_he": "לפי המקור, פרשנות הנוזל השדרתי מאתגרת בניקור טראומטי שבו הנוזל מזוהם בדם היקפי. חלק מהקלינאים מניחים יחס קבוע בין תאים לבנים לאדומים; אחרים מחשבים ספירה חזויה. החישוב מניח שהיחס בין לבנות לאדומות בדם ההיקפי נשמר לאחר החדרתן לנוזל השדרתי — הנחה שאינה בהכרח נכונה.",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "One retrospective cohort study concluded that an observed/predicted CSF WBC ratio of ≤0.01 was helpful in predicting the absence of bacterial meningitis; however, another retrospective cohort study and one case series of traumatic LPs concluded that adjustment of CSF WBC count does not improve the accuracy of diagnosis of meningitis in patients with traumatic LPs. Clinicians may consider hospitalization and empirical antimicrobials in patients with traumatic LPs given the challenge of interpreting the CSF WBC count when there is blood contamination of the specimen."
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson22.c220.definition_and_age_bands",
+      "title_he": "הגדרת חום ללא מוקד וחלוקת קבוצות הגיל",
+      "category": "criteria",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "חום בתינוק מתחת לשלושה חודשים", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, בקבוצת הגיל 0 עד 3 חודשים, «חום ללא מוקד» מוגדר כטמפרטורת פי הטבעת של 38 מעלות צלזיוס ומעלה ללא סימנים או תסמינים מלווים אחרים. האטיולוגיה וההערכה תלויות בגיל הילד, ובדרך כלל נשקלות שלוש קבוצות גיל: יילודים 0 עד 28 יום, תינוקות צעירים 29 עד 90 יום, וילדים 3 עד 36 חודשים. ⚠ שתי הערות על ההגדרה עצמה: המדידה היא **פי הטבעת** — לא בית שחי ולא מצח; ו«ללא מוקד» פירושו היעדר סימנים אחרים, כלומר כל סימן נוסף מוציא את המקרה מההגדרה ומחייב בירור לפי אותו סימן.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "החלוקה לשלוש קבוצות אינה שרירותית — לפי המקור הסיכון לזיהום חיידקי חמור נמצא ביחס הפוך לגיל שלאחר הלידה, כלומר ככל שהתינוק צעיר יותר כך הסיכון גבוה יותר. אבל שים לב שהפרוטוקול המעשי (טבלה 220.2) חותך בגילאים אחרים מאלה: 22 יום, 28 יום ו-60 יום. שתי החלוקות מתקיימות זו לצד זו במקור, וזה מקור שכיח לבלבול.",
+      "recommended_workup_he": [
+        "מדידת חום פי הטבעת",
+        "בדיקה גופנית מלאה לשלילת מוקד",
+        "קביעת גיל מדויק בימים — לא בשבועות",
+        "הערכת מראה כללי: טוב מול חולה"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "For this age-group (0-3 months), fever without a focus refers to a rectal temperature of 38°C (100.4°F) or greater without other presenting signs or symptoms. … Three age-groups are typically considered: neonates 0-28 days, young infants 29-90 days, and children 3-36 months. … The risk for SBI is highest in those appearing ill (in contrast to well appearing) and those with risk factors and is inversely related to postnatal age."
+    },
+    {
+      "rule_key": "nelson22.c220.aap_three_step",
+      "title_he": "פרוטוקול AAP תלת-שלבי לגילאי 22 עד 60 יום",
+      "category": "management",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "חום בתינוק שנראה טוב בגיל 22 עד 60 יום", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, בילד שנראה טוב בגיל 22 עד 60 יום עם חום פי הטבעת של 38 מעלות ומעלה מופעל תהליך בן שלושה שלבים. **שלב ראשון** — קביעת סיכון לפי אנמנזה, בדיקה גופנית ובדיקות מעבדה. סיכון נמוך מוגדר כהיסטוריה רפואית לא-מסובכת, בדיקה גופנית של ילד שנראה טוב, בדיקות מעבדה תקינות, שתן עם לויקוציט אסטראז וניטריטים שליליים ומתחת לספי התאים הלבנים, סמני דלקת מתחת לספים, ובדיקות צואה תקינות אם יש שלשול. **שלב שני** — אם הילד עומד בכל קריטריוני הסיכון-הנמוך, הגיל קובע: בגיל 22 עד 28 יום מבצעים בדיקת שתן, תרבית דם וסמני דלקת, אפשר לבצע ניקור מותני, אפשר לתת אנטיביוטיקה פרנטרלית, ומשגיחים בבית החולים. בגיל 29 עד 60 יום מבצעים את אותן בדיקות, אין צורך בניקור מותני, אין צורך באנטיביוטיקה, ומשגיחים בקפידה בבית עם מעקב תוך פרק זמן קצוב. **שלב שלישי** — אם הילד אינו עומד בכל הקריטריונים, הגיל ותוצאות המעבדה קובעים יחד את הצורך בניקור מותני, באנטיביוטיקה ובאשפוז. ⚠ פרקי הזמן והספים המספריים מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ שלוש נקודות מגבילות שהמקור מדגיש. ראשונה: כל הפרוטוקול חל **רק על ילד שנראה טוב** — מראה חולה מבטל אותו לחלוטין. שנייה: הפרוטוקולים פותחו במקורם לשימוש במיון, ותינוק שנבדק במרפאה עשוי להצדיק גישה שונה כשקיים כבר קשר בין הרופא/ה למשפחה המאפשר תקשורת ברורה ומעקב בזמן. שלישית: בכל אחת מהגישות התינוק חייב להיות עם בדיקה גופנית תקינה, חייבת להיות אפשרות אמינה למעקב צמוד, והוא חייב לעמוד בקריטריוני מעבדה או הדמיה מסוימים. שלושת התנאים האלה אינם המלצה — הם תנאי לשימוש.",
+      "recommended_workup_he": [
+        "בדיקת שתן ותרבית שתן",
+        "תרבית דם",
+        "סמני דלקת לפי הזמינות",
+        "ניקור מותני לפי הגיל וקבוצת הסיכון",
+        "בדיקות צואה אם יש שלשול",
+        "וידוא אפשרות מעקב צמוד לפני שחרור"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Child 22–60 days and temperature ≥38°C (100.4°F): Three-Step Process. 1. Determine risk based on history, physical examination, and laboratory studies. Low risk: Uncomplicated medical history; Well-appearing physical examination; Normal laboratory studies … 2. If child fulfills all low-risk criteria, use age to determine need for LP, parenteral antimicrobials, and hospital observation. Age 22-28 days: Obtain UA, blood culture, inflammatory markers. May perform LP. May administer parenteral antimicrobials. Observe in hospital. Age 29-60 days old: Obtain UA, blood culture, inflammatory markers. Need not perform LP. Need not administer antimicrobials. Observe closely at home with follow-up within 24-36 hr."
+    },
+    {
+      "rule_key": "nelson22.c220.sbi_pathogens",
+      "title_he": "מחוללי הזיהום החיידקי החמור לפי אתר",
+      "category": "criteria",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "חשד לזיהום חיידקי חמור בתינוק צעיר", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, Escherichia coli הוא המחולל השכיח ביותר של זיהום חיידקי חמור, ואחריו סטרפטוקוק מקבוצה B. שכיחות זיהומי GBS ירדה כתוצאה מהגברת הסקר בנשים הרות ומשימוש בפרופילקסיס אנטיביוטי תוך-לידתי. מחוללים אחרים, פחות שכיחים, כוללים Klebsiella, Enterococcus, Streptococcus pneumoniae, Neisseria meningitidis ו-Staphylococcus aureus. Listeria monocytogenes היא סיבה נדירה לזיהומי יילודים, ככל הנראה בקשר לשינויים בחינוך לבריאות הציבור ולשיפורים בבטיחות המזון. ⚠ המקור מבחין בין המחוללים בזיהום דרכי שתן לבין אלה בבקטרמיה ובמנינגיטיס: GBS נדיר בזיהום דרכי שתן אך שכיח בבקטרמיה ובמנינגיטיס, ו-Listeria מופיעה כפחות-שכיחה בבקטרמיה ובמנינגיטיס ולא ברשימת דרכי השתן.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ההבחנה בין המחוללים לפי אתר אינה טריוויה מיקרוביולוגית — היא מסבירה מדוע המקור ממליץ על משלבים אנטיביוטיים שונים לפי גיל. הכיסוי ל-Listeria הוא מה שמכתיב את הוספת האמפיצילין ביילודים בני 0 עד 28 יום, ולכן הירידה בשכיחותה היא מידע שרלוונטי להחלטה ולא רק לרקע.",
+      "recommended_workup_he": [
+        "תרבית דם",
+        "תרבית שתן",
+        "תרבית וצביעת גרם מנוזל שדרתי לפי ההתוויה",
+        "התחשבות באפידמיולוגיה ובדפוסי עמידות מקומיים"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Escherichia coli is the most common organism causing SBI, followed by group B Streptococcus (GBS). The frequency of GBS infections has decreased as a consequence of increased screening of pregnant women and use of intrapartum antibiotic prophylaxis. Other, less common organisms include Klebsiella spp., Enterococcus spp., Streptococcus pneumoniae, Neisseria meningitidis, and Staphylococcus aureus. Listeria monocytogenes is a rare cause of neonatal infections."
+    },
+    {
+      "rule_key": "nelson22.c220.sbi_vs_ibi",
+      "title_he": "ההבחנה בין SBI ל-IBI ומדוע היא משנה",
+      "category": "criteria",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "זיהום חיידקי חמור בתינוק צעיר", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, המונח «זיהום חיידקי פולשני» (IBI) מתייחס לבקטרמיה ולמנינגיטיס, והוא מכיר בכך שתינוקות עם זיהום דרכי שתן עשויים להיות מנוהלים אחרת — לעיתים קרובות באנטיביוטיקה פומית — מאשר אלה עם בקטרמיה או מנינגיטיס. הפרוטוקול העדכני של ה-AAP שוקל זיהומי דרכי שתן בנפרד מבקטרמיה וממנינגיטיס. ⚠ השיעורים היחסיים של שלושת הזיהומים בקרב יילודים ותינוקות צעירים עם חום מופיעים בציטוט המקור, וההפרש ביניהם גדול בסדרי גודל.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ההבחנה הזו היא הבסיס לכל הפרוטוקול המודרני. זיהום דרכי שתן הוא הזיהום החיידקי החמור השכיח ביותר בגיל הזה בפער גדול, אבל הוא גם זה שניתן לנהל בצורה הפחות אגרסיבית. ערבוב בין הקטגוריות מוביל לשתי טעויות הופכיות: אשפוז ואנטיביוטיקה פרנטרלית לכל זיהום שתן, או הרגעה לגבי סיכון לבקטרמיה על סמך שכיחות שנשלטת על ידי זיהומי שתן.",
+      "recommended_workup_he": [
+        "הפרדה מפורשת בין ממצא בשתן לבין חשד לבקטרמיה או מנינגיטיס",
+        "תרבית שתן בכל תינוק צעיר עם חום ללא מוקד",
+        "תרבית דם בנפרד",
+        "החלטה על ניקור מותני לפי הגיל וקבוצת הסיכון"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "The term invasive bacterial infection (IBI), which refers to bacteremia and meningitis, recognizes that infants with UTIs may be managed differently (e.g., often with oral antibiotics) than those with bacteremia or meningitis. … Serious bacterial infection (SBI) occurs in 7–13% of neonates and young infants with fever. In this group, the most common SBIs are urinary tract infection (UTI; 5–13%), bacteremia (1–2%), and meningitis (0.2–0.5%)."
+    },
+    {
+      "rule_key": "nelson22.c220.hsv_testing_approaches",
+      "title_he": "בדיקה וטיפול אמפירי ל-HSV — שלוש גישות מפורסמות",
+      "category": "workup",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "יילוד עם חום הנבדק לזיהום", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, **אין קונצנזוס** באילו יילודים יש לבדוק ולטפל אמפירית ב-HSV. שלוש גישות פורסמו: (1) בדיקה וטיפול אמפירי בכל היילודים מתחת לגיל 21 יום הנבדקים לזיהום; (2) בדיקה וטיפול אמפירי ביילודים עם מאפיינים קליניים בסיכון גבוה ל-HSV; (3) בדיקה וטיפול אמפירי בכל היילודים עם מאפיינים בסיכון גבוה, בתוספת בדיקת נוזל שדרתי לכל היילודים מתחת לגיל 21 יום תוך דחיית האציקלוביר האמפירי במי שאין להם מאפיינים בסיכון גבוה — אלא אם בדיקת ה-PCR ל-HSV בנוזל השדרתי חיובית. ⚠ המקור מציג את שלוש הגישות בלי להעדיף אחת. הבחירה היא החלטת פרוטוקול מחלקתי.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "היעדר הקונצנזוס הוא עצמו המידע החשוב. ההבדל בין הגישות אינו קוסמטי: הראשונה מטפלת בכל יילוד מתחת לגיל 21 יום, השנייה רק במי שיש לו סימנים, והשלישית מנסה לגשר בעזרת בדיקת נוזל שדרתי אוניברסלית. בשילוב עם העובדה שהמקור קובע במפורש ש-HSV יכול להתייצג ללא שום מאפיין בסיכון גבוה — הגישה השנייה לבדה משאירה פער ידוע.",
+      "recommended_workup_he": [
+        "תרביות או PCR מלחמית, פה או אף-לוע, רקטום, וכל שלפוחית",
+        "PCR ל-HSV מנוזל שדרתי",
+        "PCR מדם מלא",
+        "ALT בסרום",
+        "קביעת הגישה לפי הפרוטוקול המחלקתי"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "No consensus exists on which neonates should be tested and empirically treated for HSV infection. … Published approaches to neonatal HSV include (1) testing and empirical treatment of all neonates <21 days old who are evaluated for infection; (2) testing and empirical treatment of neonates with the presence of high-risk clinical features for HSV; and (3) testing and empirical treatment for all neonates with high-risk features plus testing the CSF of all neonates <21 days old while deferring empirical acyclovir in those without high-risk features, unless the CSF HSV PCR test is positive. … The AAP Committee on Infectious Diseases recommends that neonates undergoing evaluation for HSV have the following laboratory studies performed: surface cultures or PCR of the conjunctiva, mouth or nasopharynx, rectum, and any vesicles; CSF PCR (sensitivity: 75–100%); whole blood PCR; and serum levels of alanine transaminase (ALT)."
+    },
+    {
+      "rule_key": "nelson22.c220.enterovirus_testing",
+      "title_he": "בדיקת אנטרווירוס בנוזל שדרתי",
+      "category": "workup",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "תינוק עם חום בעונת אנטרווירוס", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, אנטרווירוס הוא סיבה שכיחה ובדרך כלל שפירה לחום בתינוקות, אף שקשה להבחין בינה לבין זיהום חיידקי חמור בהתייצגות הראשונית. בדיקת PCR לאנטרווירוס מהנוזל השדרתי היא אמצעי רגיש ומהיר לאבחון. מחקר רטרוספקטיבי אחד לא מצא אף מקרה של מנינגיטיס חיידקי בחולים עם PCR חיובי לאנטרווירוס — ⚠ אך המחקר הזה **לא כלל יילודים בני 28 יום ומטה**, ולכן המסקנה אינה ניתנת להחלה עליהם. מספר מחקרים הדגימו אשפוז קצר יותר, פחות אנטיביוטיקה ועלות נמוכה יותר בתינוקות עם בדיקת אנטרווירוס חיובית. המקור מסיק שבעונות אנטרווירוס מקומיות, ואם בדיקת PCR זמינה, הבדיקה עשויה להועיל.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "הסייג לגבי היילודים הוא העיקר כאן. תוצאה חיובית לאנטרווירוס בתינוק בן חודשיים היא מידע שמאפשר להקל; אותה תוצאה ביילוד בן שבועיים אינה נתמכת בנתונים שהמקור מציג. חלק מהמרכזים משתמשים בפאנלי PCR מרובים המאפשרים בדיקה בו-זמנית של מספר נגיפים, ובכללם אנטרווירוס ו-HSV, וגם חיידקים.",
+      "recommended_workup_he": [
+        "PCR לאנטרווירוס מנוזל שדרתי בעונה המתאימה",
+        "אי-החלת התוצאה על יילודים בני 28 יום ומטה",
+        "שקילת פאנל PCR מרובה כשזמין"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "One retrospective study of patients with CSF enterovirus testing found no cases of bacterial meningitis in patients with positive enterovirus PCR; this study did not include neonates ≤28 days old. Several studies have demonstrated shorter length of stay, fewer antibiotics, and lower cost among infants with positive CSF enterovirus test results. These results suggest that during local enterovirus seasons, and if PCR testing is available, testing for enterovirus may be of benefit in the evaluation of febrile infants and neonates."
+    },
+    {
+      "rule_key": "nelson22.c220.antimicrobial_choice_by_age",
+      "title_he": "בחירת המשלב האנטיביוטי לפי גיל",
+      "category": "management",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "תינוק צעיר עם חום המצריך אנטיביוטיקה אמפירית", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, תינוקות שנראים חולים, תינוקות בסיכון גבוה, ואלה מתחת לגיל 22 יום המאושפזים לבירור — צריכים לקבל טיפול אנטיביוטי. המשלבים הנפוצים הם: (1) צפלוספורין מדור שלישי; (2) צפלוספורין מדור שלישי יחד עם אמפיצילין; (3) אמינוגליקוזיד יחד עם אמפיצילין. אמפיצילין הוא הטיפול המועדף ל-GBS והוא מכסה את Listeria monocytogenes, חלק מזני Enterococcus וחלק מזני E. coli. **ביילודים בני 0 עד 28 יום מומלצות אפשרויות 2 או 3, בשל הסיכון ל-Listeria.** בתינוקות מעל גיל 28 יום, צפלוספורין מדור שלישי לבדו הוא בחירה סבירה. בתינוקות שנראים חולים או עם צביעת גרם חיובית בנוזל השדרתי, ייתכן שיידרשו אנטיביוטיקות נוספות כמו ונקומיצין או תרופות רחבות-טווח כמו קרבפנמים. יש להיעזר באפידמיולוגיה ובדפוסי העמידות המקומיים. ⚠ המינונים אינם בכלל הזה — ראה dosing_mentions_he.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "הכלל המעשי היחיד שצריך לזכור מכאן הוא הגבול בגיל 28 יום: מתחתיו נדרש כיסוי ל-Listeria, כלומר אמפיצילין. צפלוספורין לבדו ביילוד בן שבועיים משאיר פער כיסוי ידוע. שאר הבחירות תלויות בהתייצגות ובאפידמיולוגיה המקומית, ואינן ניתנות להכרעה מהספר.",
+      "recommended_workup_he": [
+        "קביעת גיל מדויק בימים לפני בחירת המשלב",
+        "תרביות לפני מתן האנטיביוטיקה כשאפשר",
+        "צביעת גרם מנוזל שדרתי",
+        "התאמה לדפוסי עמידות מקומיים",
+        "מינונים מהפרוטוקול המחלקתי"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Commonly used regimens include (1) a third-generation cephalosporin (typically cefepime or ceftazidime), (2) a third-generation cephalosporin and ampicillin, or (3) an aminoglycoside and ampicillin. Ampicillin is the preferred treatment of GBS and covers L. monocytogenes and many Enterococcus spp. and some E. coli. For neonates 0-28 days, options 2 or 3 have been recommended, given the risk of L. monocytogenes. For young infants >28 days, option 1 (third-generation cephalosporin: ceftriaxone) is a reasonable choice."
+    },
+    {
+      "rule_key": "nelson22.c220.culture_observation_period",
+      "title_he": "משך התצפית עד לשחרור — זמן לחיוביות התרביות",
+      "category": "management",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "תינוק מאושפז בהמתנה לתרביות", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, מסורתית תינוקות נשארו מאושפזים עד שהתרביות היו שליליות במשך 48 שעות או יותר. מחקרים מרובים הצביעו על כך שתקופות תצפית קצרות יותר עשויות להיות סבירות, משום שרוב המחוללים בדם צומחים בתוך פרק הזמן הזה בשימוש במערכות ניטור אוטומטיות. השיעורים המדויקים לפי שעות — לתרביות דם, נוזל שדרתי ושתן — מופיעים בציטוט המקור. ⚠ ליילודים העוברים בירור ל-HSV, המקור קובע שסביר להמתין לתוצאות בדיקת ה-HSV לפני שחרור הביתה. בחולים עם זיהום חיידקי או HSV מזוהה, משך האשפוז ייקבע לפי המחולל ואתר הזיהום.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ההנחיה המעשית היחידה שהמקור נותן במפורש ולא כנתון סטטיסטי היא זו על HSV: להמתין לתוצאה לפני שחרור. השאר הוא נתוני זמן-לחיוביות שמאפשרים לשקול קיצור תצפית — אבל המקור אינו קובע סף. הוא מציין שפחות מחקרים בדקו את זמן החיוביות של תרביות נוזל שדרתי ושתן מאשר של תרביות דם.",
+      "recommended_workup_he": [
+        "ניטור תרביות במערכת אוטומטית",
+        "המתנה לתוצאת HSV לפני שחרור ביילוד שנבדק",
+        "קביעת משך האשפוז לפי המחולל והאתר בזיהום מזוהה",
+        "וידוא מעקב לאחר שחרור"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "In one multicenter retrospective cross-sectional study, 91% of blood cultures were positive by 24 hours and 96% by 36 hours. … in one large study of febrile infants 28-90 days old, all positive CSF cultures grew within 24 hours (median time to positivity, 18 hours). … For neonates undergoing evaluation for HSV, it is reasonable to await results of HSV testing before discharge to home."
+    },
+    {
+      "rule_key": "nelson22.c220.chest_xray_low_yield",
+      "title_he": "צילום חזה בתינוק עם חום ללא תסמינים נשימתיים",
+      "category": "workup",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "תינוק עם חום ללא תסמינים נשימתיים", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, צילומי חזה אינם צפויים להיות שימושיים קלינית בהערכת תינוק עם חום ללא תסמינים נשימתיים. מחקרים שבחנו שימוש שגרתי בצילומים מצאו תועלת מוגבלת, משום שבתינוקות ללא תסמינים נשימתיים רוב התוצאות יהיו תקינות, ותוצאות חריגות עלולות להיות קשות לפרשנות.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "זו רשומה שמונעת בדיקה, לא מוסיפה אחת — וזה ערכה. שתי הסיבות שהמקור נותן שונות זו מזו: לא רק שהתשואה נמוכה, אלא שממצא חריג בתינוק ללא תסמינים נשימתיים קשה לפרשנות ועלול להוביל לטיפול שאינו נדרש. ⚠ עם זאת, טבלת הניהול מונה צילום חזה בין «בדיקות נוספות» בילד עם מראה טוקסי — כלומר ההימנעות חלה על ההערכה השגרתית, לא על הילד החולה.",
+      "recommended_workup_he": [
+        "הימנעות מצילום שגרתי בהיעדר תסמינים נשימתיים",
+        "בדיקה נשימתית מדוקדקת לפני ההחלטה",
+        "שקילת צילום כחלק מהבירור בילד עם מראה טוקסי"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Chest radiographs are unlikely to be clinically useful in the evaluation of the febrile infant without respiratory symptoms. Studies that have examined routine use of radiographs have found limited utility because in infants without respiratory symptoms, most results will be normal and abnormal results can be difficult to interpret."
+    },
+    {
+      "rule_key": "nelson22.c220.office_vs_ed",
+      "title_he": "הערכה במרפאה לעומת מיון",
+      "category": "management",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "תינוק עם חום הנבדק במרפאה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, הפרוטוקולים פותחו במקורם לשימוש במיון, ותינוקות הנבדקים במרפאה עשויים להצדיק גישה שונה כאשר קיים כבר קשר בין הרופא/ה למשפחה המאפשר תקשורת ברורה ומעקב בזמן. במחקר גדול של תינוקות מתחת לגיל שלושה חודשים שהוערכו במרפאה, הקלינאים אשפזו רק חלק מהם אך התחילו אנטיביוטיקה כמעט בכל אלה שהתבררו עם בקטרמיה או מנינגיטיס חיידקי. ⚠ **הסתייגות מפורשת במקור**: חלק מהתינוקות עם זיהום חיידקי חמור לא קיבלו בתחילה אנטיביוטיקה אמפירית, ולכן נדרשת שקילה זהירה של הסיכונים והתועלות בבדיקה סלקטיבית ובטיפול אמפירי סלקטיבי, לעומת אוניברסליים. השיעורים מופיעים בציטוט המקור.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "המקור מציג כאן איזון ולא היתר. הנתון המרגיע — שרוב המקרים הקשים זוהו — מובא יחד עם הנתון המסייג: חלקם לא. התנאי שהמקור מציב לגישה המרפאתית הוא מעקב צמוד מאוד, ובמפורש: ביקורים חוזרים פנים-אל-פנים או קשר טלפוני תכוף. בלי זה, הבסיס לגישה נופל.",
+      "recommended_workup_he": [
+        "וידוא יכולת מעקב צמוד לפני החלטה על ניהול מרפאתי",
+        "תיאום ביקורים חוזרים או קשר טלפוני תכוף",
+        "תיעוד מפורש של הקריטריונים שהתקיימו",
+        "הנחיות ברורות למשפחה מתי לחזור מיד"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "In one large study of febrile infants <3 months old who were initially evaluated for fever in the office setting, clinicians hospitalized only 36% of infants but initiated antibiotics in 61 of the 63 infants with bacteremia or bacterial meningitis. … It is important to note that 3% of infants with SBI did not initially receive empiric antibiotics, necessitating careful consideration of risks and benefits of selective rather than universal testing and empiric antibiotic treatment of febrile infants evaluated in the office setting."
+    },
+    {
+      "rule_key": "nelson22.c220.older_infant_management",
+      "title_he": "ניהול ילד בגיל 2 עד 36 חודשים עם חום",
+      "category": "management",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "ילד בגיל 2 עד 36 חודשים עם חום ללא מוקד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, בילד בגיל 2 עד 36 חודשים ההנהלה נחלקת לפי גובה החום. בטווח הנמוך יותר — הרגעה שהאבחנה היא ככל הנראה זיהום נגיפי מגביל-עצמו, עם הנחיה לחזור אם החום נמשך, אם הוא עולה מעל הסף הגבוה, או אם מופיעים סימנים ותסמינים חדשים. מעל הסף הגבוה — תהליך בן שני שלבים: (1) קביעת מצב החיסונים; (2) אם התקבלו החיסונים המצומדים לפנאומוקוק ול-Haemophilus influenzae type b, יש לבצע בדיקות שתן — תאים לבנים, לויקוציט אסטראז, ניטריטים ותרבית — בכל הבנות, בכל הבנים מתחת לגיל שישה חודשים, בכל הבנים הלא-נימולים מתחת לגיל שנתיים, ובכל הילדים עם זיהומי דרכי שתן חוזרים. אם לא התקבלו החיסונים — יש לנהוג לפי הנחיות 1993. ⚠ ספי החום מופיעים בציטוט המקור.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "מצב החיסונים הוא השלב הראשון ולא השני — וזה סדר שמשנה. ילד לא-מחוסן בגיל הזה חוזר למסלול הנחיות ישן ואגרסיבי יותר, ולכן שאלה אחת על החיסונים קובעת את כל ההמשך. ⚠ לוח החיסונים בישראל שונה מזה שבמקור, ויש לפעול לפי הנחיות משרד הבריאות. הפירוט של מי מקבל בדיקת שתן — לפי מין, גיל ומצב מילה — הוא חד ולא אינטואיטיבי, וכדאי לקרוא אותו מהמקור.",
+      "recommended_workup_he": [
+        "בירור מצב חיסונים לפני כל החלטה",
+        "בדיקת שתן ותרבית לפי הקריטריונים של מין, גיל ומצב מילה",
+        "הנחיות חזרה ברורות למשפחה בטווח החום הנמוך",
+        "התאמה ללוח החיסונים הישראלי"
+      ],
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Child 2-36 mo and temperature 38–39°C (100.4–102.2°F): Reassurance that diagnosis is likely self-limited viral infection, but advise return with persistence of fever, temperatures >39°C (102.2°F), and/or new signs and symptoms. Child 2-36 mo and temperature >39°C (102.2°F): Two-Step Process. 1. Determine immunization status. 2. If received conjugate pneumococcal and Haemophilus influenzae type b vaccines, obtain urine studies (urine WBC, leukocyte esterase, nitrite, and culture) for all females, all males <6 mo old, all uncircumcised males <2 yr, and all children with recurrent urinary tract infections."
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson22.c220.uti_with_meningitis",
+      "anchor_finding_he": "בדיקת שתן חריגה בתינוק צעיר עם חום",
+      "co_findings": [
+        "זיהום דרכי שתן מאושש",
+        "גיל מתחת ל-28 יום",
+        "גיל מעל 28 יום עם מראה טוב"
+      ],
+      "implies_he": "מנינגיטיס חיידקי נלווה — בסיכון שונה מהותית לפי הגיל",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, הסיכון למנינגיטיס חיידקי נלווה לזיהום דרכי שתן שונה בין קבוצות הגיל; הערכים המספריים מופיעים בציטוט המקור.",
+      "action_he": "⚠ זו נקודת ההחלטה שבה גיל בימים משנה את הפעולה. בתינוק שנראה טוב מעל גיל 28 יום עם בדיקת שתן חריגה, המקור מציין שיש עדות לכך שהסיכון למנינגיטיס חיידקי נמוך ביותר — ולכן ניקור מותני אינו הכרחי בהכרח. ביילודים בגילאי 0 עד 28 יום הסיכון גבוה בסדר גודל, והפרוטוקול נותר מלא. בעבר תינוקות עם בדיקת שתן חריגה עברו בירור מלא כולל ניקור מותני; המקור מתאר את השינוי הזה במפורש.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "In the past, infants with abnormal findings on urinalysis (UA) would undergo complete evaluation for infection, including LP. In well-appearing infants >28 days old with an abnormal UA, some evidence suggests that the risk of bacterial meningitis is extremely low: <0.5%. For neonates 0-28 days, the risk of concomitant bacterial meningitis with UTI is 1–2%."
+    },
+    {
+      "assoc_key": "nelson22.c220.sterile_pleocytosis_uti",
+      "anchor_finding_he": "פלאוציטוזיס בנוזל שדרתי בתינוק עם זיהום דרכי שתן",
+      "co_findings": [
+        "תרבית נוזל שדרתי שלילית",
+        "זיהום דרכי שתן",
+        "ניקור מותני טראומטי"
+      ],
+      "implies_he": "פלאוציטוזיס עקר — לא בהכרח מנינגיטיס חיידקי",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, הסיבה אינה ודאית; חלק מהמחקרים מייחסים את התופעה לניקורים טראומטיים או לזיהום נגיפי בלתי-מזוהה, ולא לדלקת בהקשר של מחלה מערכתית.",
+      "action_he": "⚠ הקישור הזה עובד בשני הכיוונים ויש להיזהר בשניהם. מצד אחד — פלאוציטוזיס בתינוק עם זיהום שתן אינו מוכיח מנינגיטיס חיידקי, והמקור מדווח שהוא מופיע בשיעור ניכר מהתינוקות עם זיהום שתן. מצד שני — אין להסיק ממנו שמדובר בעקר לפני שהתרבית חזרה. השיעור מופיע בציטוט המקור.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "CSF pleocytosis in the absence of bacterial meningitis (i.e., sterile pleocytosis) has been reported in ∼23% infants with UTI. The cause is uncertain, with some studies attributing this phenomenon to traumatic LPs or undetected viral infection rather than inflammation in the context of systemic illness."
+    },
+    {
+      "assoc_key": "nelson22.c220.viral_test_positive",
+      "anchor_finding_he": "בדיקה חיובית לשפעת, RSV או נגיף נשימתי אחר בתינוק עם חום",
+      "co_findings": [
+        "ברונכיוליטיס",
+        "תסמינים נשימתיים",
+        "גיל מעל 28 יום"
+      ],
+      "implies_he": "סיכון מופחת לזיהום חיידקי חמור — אך לא לזיהום דרכי שתן",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, מספר מחקרים הדגימו סיכון מופחת לזיהום חיידקי חמור בתינוקות עם בדיקה חיובית לשפעת, RSV ומחלות נגיפיות נשימתיות אחרות, אף שהסיכון לזיהום דרכי שתן נותר משמעותי.",
+      "action_he": "⚠ שני סייגים מפורשים במקור. הראשון: הסיכון לזיהום דרכי שתן **נותר משמעותי** — כלומר בדיקה נגיפית חיובית אינה מבטלת את הצורך בבדיקת שתן. השני: במחקר פרוספקטיבי אחד, הסיכון לזיהום חיידקי חמור ביילודים מתחת לגיל 28 יום **לא הושפע** ממצב ה-RSV. לפי המקור, תינוקות צעירים עם חום וברונכיוליטיס עשויים שלא להזדקק לניקור מותני, במיוחד אם ניתן להשגיח עליהם מקרוב או יש מעקב צמוד.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Several studies have demonstrated a decreased risk of SBI in infants with positive testing for influenza, RSV, and other respiratory viral illnesses, although the risk of UTI remains significant. In one prospective study, the risk of SBI in neonates <28 days old was not altered by RSV status. Given these data, young febrile infants with bronchiolitis may not require LP, particularly if they can be closely observed or have close follow-up."
+    },
+    {
+      "assoc_key": "nelson22.c220.hsv_presentation_timing",
+      "anchor_finding_he": "יילוד עם חום בשבוע השני או השלישי לחיים",
+      "co_findings": [
+        "פריחה שלפוחיתית",
+        "מעורבות עין או פה",
+        "פרכוס",
+        "בדיקה נוירולוגית חריגה"
+      ],
+      "implies_he": "HSV ביילוד — עיתוי ההתייצגות מכוון לצורת המחלה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, יילודים עם מחלה מפושטת ועם מחלת עור-עין-פה מתייצגים בדרך כלל בימים 5 עד 12 לחיים, ואילו יילודים עם מחלת מערכת העצבים המרכזית מתייצגים בדרך כלל בימים 16 עד 19.",
+      "action_he": "העיתוי הוא רמז אנמנסטי שקל להחמיץ: יילוד בן שבועיים וחצי עם חום ובדיקה נוירולוגית חריגה נמצא בדיוק בחלון של מחלת מערכת העצבים המרכזית. ⚠ המקור מציין ש-HSV שנרכש סב-לידתית מתבטא לעיתים מעבר לגיל 28 יום, אף שרוב המקרים מעבר לגיל זה מייצגים רכישה לאחר הלידה — כלומר גיל מעל 28 יום מפחית את ההסתברות אך אינו שולל.",
+      "age_scope": "neonate",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Neonates with disseminated disease and skin, eye, and mouth (SEM) disease typically present at 5-12 days of life. Neonates with central nervous system (CNS) disease generally present at 16-19 days. Perinatally acquired HSV occasionally manifests beyond 28 days of age, although most cases beyond 28 days of age represent postnatal acquisition."
+    },
+    {
+      "assoc_key": "nelson22.c220.antibiotics_before_lp",
+      "anchor_finding_he": "אנטיביוטיקה שניתנה לפני הניקור המותני",
+      "co_findings": [
+        "תרבית נוזל שדרתי שלילית",
+        "גלוקוז תקין בנוזל שדרתי",
+        "חלבון מוגבר בנוזל שדרתי"
+      ],
+      "implies_he": "הנוזל השדרתי עדיין מספק מידע — אך לא כל הפרמטרים",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, תרביות נוזל שדרתי הופכות שליליות במהירות יחסית לאחר מתן אנטיביוטיקה, ובפרקי זמן שונים לפי המחולל. הגלוקוז בנוזל השדרתי עולה לטווח התקין, ואילו ריכוזי החלבון, אף שיורדים, נותרים חריגים למשך זמן ארוך יותר. השינויים בספירת התאים הלבנים ובספירת הנויטרופילים מינימליים בשעות הראשונות.",
+      "action_he": "⚠ המסקנה המעשית הפוכה לאינטואיציה השכיחה: המקור קובע במפורש שממצאי הנוזל השדרתי מספקים מידע ניהולי רלוונטי **גם** כאשר ניתנה אנטיביוטיקה לפני הניקור. כלומר מתן אנטיביוטיקה אינו סיבה לוותר על הניקור. הפרמטר שנפגע ראשון הוא התרבית, ואחריו הגלוקוז; ספירת התאים והחלבון נשמרים ארוך יותר. בדיקה מולקולרית מהדור הבא אינה מושפעת מטיפול אנטיביוטי קודם. פרקי הזמן מופיעים בציטוט המקור.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "CSF cultures are negative relatively rapidly after antibiotic administration, within 2 hours for N. meningitidis and 4-24 hours for S. pneumoniae. Next-generation molecular testing is not affected by prior antibiotic treatment… In patients with bacterial meningitis, CSF glucose increases to normal range, often within 4-24 hours of antibiotic administration, whereas CSF protein concentrations, despite decreasing, remain abnormal for >24 hours after antibiotic administration. Changes in CSF WBC count and ANC are minimal in the first 24 hours of antibiotic therapy. Therefore CSF findings can provide relevant management information even in the setting of antibiotic administration before LP."
+    },
+    {
+      "assoc_key": "nelson22.c220.step_by_step_criteria",
+      "anchor_finding_he": "תינוק עם חום שאינו עומד באף אחד מקריטריוני הסיכון",
+      "co_findings": [
+        "גיל מעל 21 יום",
+        "מראה טוב",
+        "ספירת נויטרופילים תקינה",
+        "היעדר פיאוריה",
+        "פרוקלציטונין ו-CRP תקינים"
+      ],
+      "implies_he": "סיכון נמוך מאוד לזיהום חיידקי פולשני — לפי גישת Step-by-Step",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, כללי ניבוי קליניים לתינוקות עם חום, כמו גישת Step-by-Step, משלבים פרוקלציטונין ו-CRP יחד עם גיל, מראה קליני, ספירת נויטרופילים ופיאוריה, בגישה מדורגת לקביעת מי בסיכון גבוה לזיהום חיידקי פולשני.",
+      "action_he": "לפי המקור, רק שיעור זעיר מהתינוקות שלא עמדו באף אחד מהקריטריונים סבלו מזיהום חיידקי פולשני. השיעור והספים מופיעים בציטוט המקור. ⚠ הסייג: המקור מציג בסמוך עדות סותרת לגבי ערכו של הפרוקלציטונין — מטה-אנליזה אחת מצאה אותו עדיף על ספירת לבנות ו-CRP, ואחרת מצאה אותו נחות מכללי ניבוי בזיהוי זיהום חיידקי חמור בתינוקות צעירים. אין להציג את הגישה כוודאית.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "clinical prediction rules for febrile infants, such as the Step-by-Step approach, incorporate PCT and CRP, along with age ≤21 days, ill appearance, ANC >10,000/mm3, and pyuria in a stepwise approach to determine which patients are at high risk for IBI; only 0.7% of infants who met none of those criteria had IBI."
+    },
+    {
+      "assoc_key": "nelson22.c220.hsv_mortality_outcome",
+      "anchor_finding_he": "HSV ביילוד — מחלה מפושטת או מחלת מערכת העצבים המרכזית",
+      "co_findings": [
+        "מנינגיטיס חיידקי",
+        "תמותה בתינוק עם חום",
+        "תחלואה נוירולוגית ארוכת-טווח"
+      ],
+      "implies_he": "שני הגורמים העיקריים לתמותה ולתחלואה ארוכת-טווח בגיל הזה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, רוב התמותה והתחלואה ארוכת-הטווח הקשורות בזיהום נובעות מזיהום HSV וממנינגיטיס חיידקי.",
+      "action_he": "⚠ זהו הנימוק שמאחורי כל אגרסיביות הפרוטוקול בגיל הזה. רוב היילודים והתינוקות הצעירים עם חום שנראים טוב מחלימים במלואם ובמהירות יחסית — אבל שני האבחונים האלה הם אלה שקובעים את המחיר של החמצה. שיעורי התמותה וההתפתחות התקינה לפי צורת המחלה מופיעים בציטוט המקור, והם שונים מהותית בין מחלה מפושטת למחלת מערכת העצבים המרכזית.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c220.fever_without_focus",
+      "source_quote_he": "Most well-appearing neonates and young infants with fever recover completely and relatively quickly, depending on the etiology of the fever. Most infection-related mortality and long-term morbidity result from HSV infection and bacterial meningitis. For HSV, reported mortality rates range from 27% to 31% for disseminated disease and from 4% to 6% for CNS disease. Of those who survive, 83% of patients with disseminated disease and 31% of those with CNS disease will have normal development at 12 months old. The mortality of bacterial meningitis varies by pathogen but ranges from 4% to 15%."
+    }
+  ],
+
+  "gaps_he": [
+    "⚠ **פרוטוקול ה-AAP המלא לא הומר לקוד דטרמיניסטי.** טבלה 220.2 היא עץ החלטה בן שלושה שלבים עם הסתעפות לפי גיל בימים (22, 28, 60), לפי תוצאת בדיקת שתן, ולפי סמני דלקת. הכלל nelson22.c220.aap_three_step מתאר אותו בפרוזה. **עץ החלטה שמכריע על ניקור מותני ועל אשפוז שייך לקוד דטרמיניסטי עם בדיקות**, לא לטקסט שה-LLM קורא. זו המשימה החשובה ביותר שנותרה מהפרק הזה.",
+    "⚠ ערכי הייחוס של הנוזל השדרתי (טבלה 220.3) לא הומרו לרשומות ReferenceRange. הטבלה מכילה שישה סטים שונים מששה מחקרים, עם ספים שונים לאותה קבוצת גיל — משום שאוכלוסיות ההכללה שונות. **אין להמיר אותה לערך סף יחיד.** אם היא תומר בעתיד, יש לשמר את זהות המחקר לצד כל ערך.",
+    "⚠ כל הספים המספריים של קריטריוני הסיכון-הנמוך — פרוקלציטונין, CRP, ANC, תאים לבנים בשתן מסורכז ולא-מסורכז, וגובה החום — נשמרו בציטוטי המקור בלבד ולא בגוף הכללים, כמינונים לוולידטור ול-numericGuard.",
+    "⚠ כל השיעורים והאחוזים — שכיחות SBI לפי אתר, סיכון לבקטרמיה לפי גיל, ערכי PPV ו-NPV של בדיקת השתן, רגישות וסגוליות של צביעת גרם, זמן לחיוביות התרביות, ושיעורי התמותה — נשמרו בציטוטים בלבד.",
+    "⚠ המינונים האנטיביוטיים אינם בפרק כלל: המקור מונה תכשירים בשמם (צפפים, צפטזידים, צפטריאקסון, אמפיצילין, אמינוגליקוזיד, ונקומיצין, קרבפנמים) ללא מינון. מינון האציקלוביר הוא היחיד שמופיע — ראה dosing_mentions_he.",
+    "⚠ טבלה 220.1 (מחוללים לפי אתר ולפי שכיחות) הומרה לכלל אחד בפרוזה. היא מכילה שלוש דרגות שכיחות לשני אתרים והיא מועמדת לחילוץ מובנה נפרד.",
+    "⚠ הפרק מפנה לפרקים רבים שלא חולצו: 148 (מנינגיטיס), 575 (זיהום דרכי שתן), 246 (E. coli), 230 (GBS), 228 (פנאומוקוק), 237 (מנינגוקוק), 227.1 (סטאפ), 234 (ליסטריה), 299 (HSV), 297 (אנטרווירוס ופארכווירוס), 305-310 (נגיפים נשימתיים), 449 (פנאומוניה), 725-726 (אוסטאומיאליטיס ודלקת מפרק ספטית), 144 (אומפליטיס), 706 (זיהומי עור). טענות התלויות בהם אינן מיוצגות כאן.",
+    "⚠ **פרק 221 — חום בילד הגדול — לא חולץ.** הוא הפרק המקביל לגילאי 3 עד 36 חודשים ומעלה, וטבלה 220.2 מפנה אליו בפועל. הכלל nelson22.c220.older_infant_management מכסה רק את מה שמופיע בטבלה שבפרק 220.",
+    "⚠ **פרק 219 — חום — לא חולץ.** הוא כולל את ההגדרות הבסיסיות ואת נוגדי החום. הפסקאות שלו מופיעות בעמוד המודפס 1642 שחולץ, אך הן לא עוגנו לכאן משום שהן שייכות לפרק אחר. מינוני הפרצטמול והאיבופרופן נמצאים שם ולא כאן.",
+    "⚠ המקור מציין ש«קיימת שונות מהותית בגישה ובניהול של התינוק עם חום למרות הפרוטוקולים». זהו סייג על כל התוכן כאן: הפרוטוקול אינו מיושם אחיד גם במקומות שאימצו אותו.",
+    "⚠ לוח החיסונים הישראלי שונה מזה שבמקור. ההפניה ל«הנחיות 1993» עבור ילדים לא-מחוסנים היא הפניה למקור אמריקאי משנת 1993 שאינו חלק מהפרק ולא נקרא."
+  ],
+
+  "dosing_mentions_he": [
+    "⚠ אציקלוביר ליילוד עם חשד ל-HSV: המקור נוקב במינון גבוה, לפי משקל ליום. זהו המינון היחיד המופיע בפרק. הוא נשמר בציטוט המקור ולא הוכנס לאף כלל. הוא מועמד ל-DoseRecord ודורש אישור רופא/ה.",
+    "⚠ המשלבים האנטיביוטיים מוזכרים בשמם בלבד ללא מינון: צפלוספורין מדור שלישי (צפפים, צפטזידים, צפטריאקסון), אמפיצילין, אמינוגליקוזיד, ונקומיצין, קרבפנמים. אין מהם המלצת מינון בפרק.",
+    "⚠ ספי המעבדה של קריטריוני הסיכון-הנמוך (פרוקלציטונין, CRP, ANC, תאים לבנים בשתן) אינם מינונים אך הם ספים מספריים המכריעים החלטה, ולכן נשמרו בציטוט בלבד באותה מדיניות.",
+    "⚠ ספי הסימנים החיוניים לזיהוי מחלה מערכתית — טמפרטורה, קצב נשימה, קצב לב וזמן מילוי קפילרי — נשמרו בציטוט הדגל nelson22.c220.hypothermia_systemic_illness בלבד."
+  ]
+}
