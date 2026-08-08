@@ -1,0 +1,535 @@
+{
+  "chapter_title_he": "חום ממקור לא ידוע",
+  "_provenance_he": "נלסון 22 (Elsevier, 2025), פרק 222 — Fever of Unknown Origin (Andrew P. Steenhoff), עמודים מודפסים 1651-1658. חולץ מטקסט verbatim של ה-PDF דרך scripts/nelsonExtract.py. ⚠ תחילת העמוד המודפס 1651 מכילה את סופו של פרק 221 (חום בילד הגדול) — הפסקאות על אנטיביוטיקה בילד הלא-מחוסן ועל בקטרמיה סמויה שייכות לפרק 221 ולא עוגנו כאן. ⚠ הציטוטים באנגלית במכוון: זהו הנוסח שניתן לאמת מול הספר.",
+
+  "topics": [
+    {
+      "topic_key": "nelson22.c222.fuo",
+      "topic_title_he": "חום ממקור לא ידוע בילדים",
+      "topic_title_en": "Fever of Unknown Origin",
+      "chapter_number": 222,
+      "chapter_title_he": "מחלות זיהומיות",
+      "page_start": 1651,
+      "page_end": 1658,
+      "summary_he": "הפרק פותח באמירה שמסגרת את כל השאר: חום ממקור לא ידוע הוא בדרך כלל התייצגות **לא שכיחה של מחלה שכיחה**, ורוב המחלות השכיחות האלה ניתנות לטיפול בקלות. כלומר החיפוש אינו אחר מחלה נדירה אלא אחר פנים לא-אופייניות של מחלה מוכרת. ההגדרה: חום מעל 38 מעלות שתועד על ידי איש צוות רפואי, ושסיבתו לא זוהתה לאחר שמונה ימי בירור לפחות. הפרק מבחין בין FUO לבין חום ללא מקור (FWS) — ההבדל הוא משך הבירור בלבד. הוא מונה ארבעה תת-סוגים של FUO עם הגדרות ומהלכי זמן שונים, מפרט את שלוש קבוצות הסיבות העיקריות — זיהומית, מחלת רקמת חיבור ואונקולוגית — ומדגיש שיעור ניכר של מקרים שנשארים ללא אבחנה. הוא מקדיש מקום נרחב לאנמנזה ולבדיקה הגופנית החוזרת, ומזהיר במפורש מפני ניסיונות טיפול אמפיריים.",
+      "keywords": [
+        "FUO",
+        "חום ממקור לא ידוע",
+        "חום ללא מקור",
+        "pseudo-FUO",
+        "חום מדומה",
+        "חום מתרופה",
+        "JIA",
+        "מחלת קוואסאקי",
+        "HLH",
+        "ESR",
+        "CRP",
+        "ברדיקרדיה יחסית",
+        "טוקסוקרה",
+        "שחפת",
+        "חום ים תיכוני משפחתי"
+      ],
+      "age_scope": "child",
+      "source_quote_he": "Fever of unknown origin (FUO) is a diagnostic dilemma for pediatricians because it is often difficult to distinguish clinically between benign and potentially life-threatening causes. … Fortunately, FUO is usually an uncommon presentation of a common disease, with most of these common diseases being easily treatable. The classification of FUO is best reserved for children with a temperature >38°C (100.4°F) documented by a healthcare provider and for which the cause could not be identified after at least 8 days of evaluation."
+    }
+  ],
+
+  "lab_patterns": [
+    {
+      "pattern_key": "nelson22.c222.neutrophil_counts",
+      "title_he": "ספירת נויטרופילים בבירור חום ממקור לא ידוע",
+      "components": [
+        { "analyte": "ספירת נויטרופילים מוחלטת", "direction": "abnormal" },
+        { "analyte": "ספירת נויטרופילים לא-מפולחים", "direction": "high" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, ספירת נויטרופילים מוחלטת מתחת לסף מסוים היא **עדות נגד** זיהום חיידקי אינדולנטי — פרט לקדחת הטיפוס. מנגד, בחולים עם ספירת נויטרופילים מפולחים מעל סף מסוים, או ספירת נויטרופילים לא-מפולחים מעל סף אחר, זיהום חיידקי חמור סביר מאוד. ⚠ הספים המספריים מופיעים בציטוט המקור.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "זו אחת הבדיקות הבודדות שהמקור נותן להן כוח שלילי מפורש — כלומר יכולת להרחיק אבחנה ולא רק לתמוך בה. ⚠ אבל שים לב לחריג שהמקור נוקב בו במפורש: קדחת הטיפוס. ילד עם היסטוריית נסיעה למדינה עם הכנסה נמוכה או בינונית וספירת נויטרופילים נמוכה אינו ילד שהזיהום החיידקי הורחק אצלו. המקור מציין בטבלה שלויקופניה היא דווקא ממצא בקדחת מעיים.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "An absolute neutrophil count (ANC) of <5,000/μL is evidence against indolent bacterial infection other than typhoid fever. Conversely, in patients with a polymorphonuclear leukocyte (PMN) count of >10,000/μL or a nonsegmented PMN count of >500/μL, a severe bacterial infection is highly likely."
+    },
+    {
+      "pattern_key": "nelson22.c222.esr_crp",
+      "title_he": "שקיעת דם ו-CRP — אחד מהם, לא שניהם",
+      "components": [
+        { "analyte": "שקיעת דם", "direction": "high" },
+        { "analyte": "CRP", "direction": "high" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, שקיעת דם מעל סף מסוים מעידה על דלקת ועל הצורך בבירור נוסף למחלות זיהומיות, אוטו-אימוניות, אוטו-דלקתיות או ממאירות, לשחפת, למחלת קוואסאקי או למחלה אוטו-אימונית. ⚠ **שקיעת דם נמוכה אינה מבטלת את האפשרות של זיהום או של ארתריטיס אידיופתית של גיל הילדות.** CRP הוא מגיב פאזה חדה נוסף, שעולה וחוזר לנורמה מהר יותר מהשקיעה. הסף המספרי מופיע בציטוט המקור.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "⚠ המקור נותן כאן הנחיה מעשית מפורשת שקל לפספס: מומחים ממליצים לבדוק **או** שקיעת דם **או** CRP, משום שאין ראיה ששתי הבדיקות באותו חולה עם FUO מועילות קלינית. כלומר הזמנת שתיהן יחד אינה מוסיפה מידע. ההבדל ביניהן הוא בקינטיקה — CRP מגיב מהר יותר בשני הכיוונים — ולכן הבחירה תלויה בשאלה הנשאלת: מגמה מהירה או אינטגרציה על פני זמן.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "An erythrocyte sedimentation rate (ESR) >30 mm/hr indicates inflammation and the need for further evaluation for infectious, autoimmune, autoinflammatory, or malignant diseases, tuberculosis, Kawasaki disease, or autoimmune disease. A low ESR does not eliminate the possibility of infection or JIA. C-reactive protein (CRP) is another acute-phase reactant that becomes elevated and returns to normal more rapidly than the ESR. Experts recommend checking either ESR or CRP, because there is no evidence that measuring both in the same patient with FUO is clinically useful."
+    },
+    {
+      "pattern_key": "nelson22.c222.blood_smear_parasites",
+      "title_he": "משטח דם ישיר לזיהוי טפילים",
+      "components": [
+        { "analyte": "משטח דם בצביעת Giemsa או Wright", "direction": "abnormal" }
+      ],
+      "min_components": 1,
+      "direction_he": "לפי המקור, בדיקה ישירה של משטח הדם בצביעת Giemsa או Wright עשויה לחשוף את המחוללים של מלריה, טריפנוסומיאזיס, בבזיוזיס או קדחת חוזרת.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "זו בדיקה זולה, זמינה ומהירה שנשכחת כמעט תמיד כשאין חשד מוקדם — ובדיוק ב-FUO אין חשד מוקדם. ארבעת המחוללים שהיא מזהה נקשרים כולם להיסטוריית נסיעה או חשיפה, ולכן ערכה עולה מאוד כשהאנמנזה כוללת שהות באזור אנדמי. ⚠ המקור מדגיש שיש **ליידע את המעבדה** אילו מחוללים נחשדים, משום שבידוד לפטוספירה, פרנציסלה או ירסיניה דורש מצע סלקטיבי או תנאים שאינם בשימוש שגרתי.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Direct examination of the blood smear with Giemsa or Wright stain can reveal organisms of malaria, trypanosomiasis, babesiosis, or relapsing fever. … The isolation of leptospires, Francisella, or Yersinia requires selective media or specific conditions not routinely used. Therefore it is important to inform the laboratory what organisms are suspected in a particular case."
+    }
+  ],
+
+  "red_flags": [
+    {
+      "flag_key": "nelson22.c222.no_empiric_trials",
+      "label_he": "ניסיון טיפול אנטימיקרוביאלי אמפירי ב-FUO",
+      "trigger": {
+        "findings": [
+          "שקילת אנטיביוטיקה אמפירית בחום ממושך ללא אבחנה",
+          "חום ממושך ללא עדות לזיהום"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, **חום וזיהום בילדים אינם מילים נרדפות**, ויש להשתמש בתכשירים אנטימיקרוביאליים רק כשיש עדות לזיהום, תוך הימנעות מניסיונות טיפול אמפיריים. ⚠ המקור מנמק זאת מפורשות: ניסיונות אמפיריים של תכשירים אנטימיקרוביאליים עלולים להיות **מסוכנים** ולטשטש את האבחנה של אנדוקרדיטיס זיהומי, מנינגיטיס, זיהום פארא-מנינגיאלי או אוסטאומיאליטיס. חריג אפשרי אחד: טיפול אנטי-שחפתי בילדים חולים קשה עם חשד לשחפת מפושטת. לאחר בירור מלא, נוגדי חום עשויים להיות מותווים לשליטה בחום המלווה בתסמינים מטרידים.",
+      "reason_he": "לפי המקור, הטיפול הסופי ב-FUO מותאם לאבחנה הבסיסית. ניסיון אמפירי אינו רק חסר תועלת — הוא הופך את האבחנה של ארבעה מצבים מסוכנים לקשה יותר לזיהוי בהמשך.",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "The ultimate treatment of FUO is tailored to the underlying diagnosis. Fever and infection in children are not synonymous, and antimicrobial agents should only be used when there is evidence of infection, with avoidance of empirical trials of medication. An exception may be the use of antituberculous treatment in critically ill children with suspected disseminated tuberculosis. Empirical trials of other antimicrobial agents may be dangerous and can obscure the diagnosis of infective endocarditis, meningitis, parameningeal infection, or osteomyelitis."
+    },
+    {
+      "flag_key": "nelson22.c222.pseudo_fuo",
+      "label_he": "Pseudo-FUO — סדרת זיהומים נפרדים הנתפסת כחום אחד ממושך",
+      "trigger": {
+        "findings": [
+          "חום ממושך לפי דיווח ההורים",
+          "היעדר תיעוד רפואי של החום",
+          "ילד שאינו נראה חולה עם חום ממושך מדווח"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "warning",
+      "action_he": "לפי המקור, Pseudo-FUO מוגדר כאירועים עוקבים של זיהומים שפירים ומגבילי-עצמם עם חום, שההורים תופסים כאירוע חום ממושך אחד. ⚠ **יש לשלול אותו בקפידה לפני שמתחילים בירור מיותר.** בדרך כלל הוא מתחיל בזיהום מוגדר היטב, לעיתים קרובות נגיפי, שחולף ואחריו מחלות נגיפיות אחרות שעשויות להיות מוגדרות פחות. האבחנה דורשת אנמנזה קפדנית המתמקדת בזיהוי **תקופות חסרות-חום בין אירועי החום**. אם יש חשד והילד אינו נראה חולה — יומן חום עשוי לסייע.",
+      "reason_he": "לפי המקור, סיווג FUO שמור לילדים עם חום מתועד על ידי איש צוות רפואי. חום שדווח בלבד ולא תועד אינו עומד בהגדרה, וההבחנה הזו מונעת בירור פולשני שאין לו הצדקה.",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Pseudo-FUO is defined as successive episodes of benign, self-limited infections with fever that the parents perceive as one prolonged fever episode. This needs to be carefully ruled out before undertaking an unnecessary evaluation. Usually, pseudo-FUO starts with a well-defined infection (frequently viral) that resolves but is followed by other febrile viral illnesses that may be less well defined. Diagnosis of pseudo-FUO usually requires a careful history, focusing on identifying afebrile periods between febrile episodes. If pseudo-FUO is suspected and the patient does not appear ill, keeping a fever diary can be helpful."
+    },
+    {
+      "flag_key": "nelson22.c222.factitious_fever",
+      "label_he": "חום מדומה — כולל תסמונת מינכהאוזן by proxy",
+      "trigger": {
+        "findings": [
+          "אי-התאמה בין החום לסימנים החיוניים",
+          "אי-התאמה בין חום שנמדד על ידי ההורה לטמפרטורת השתן",
+          "סמני דלקת תקינים למרות חום גבוה מדווח",
+          "בקטרמיה פולי-מיקרוביאלית"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, אם יש חשד לחום מדומה — הזרקת חומר פיוגני או מניפולציה של המדחום על ידי החולה או ההורה — **יש לתעד את נוכחות החום ואת דפוסו בבית החולים**. תצפית ממושכת ורציפה על החולה, שיכולה לכלול מעקב אלקטרוני או וידאו, היא הכרחית. הטבלה שבמקור מונה שלושה סימנים מבחינים: אי-התאמה בין החום לסימנים החיוניים, אי-התאמה בין הטמפרטורה שנמדדה על ידי ההורה לטמפרטורת השתן, וסמני דלקת תקינים. ⚠ המקור מציין בנפרד שבקטרמיה פולי-מיקרוביאלית מרמזת על זיהום מדומה או עצמי-מושרה, או על פתולוגיה במערכת העיכול.",
+      "reason_he": "לפי המקור, האימות נעשה על ידי מדידת הטמפרטורה במסגרת רפואית, והדינמיקה המנבאת היא יחסי הורה-חולה מסוימים. זהו אבחון שדורש זהירות רבה — הוא נושא השלכות משפטיות ומשפחתיות — אך אי-העלאתו כלל מובילה לבירור פולשני מיותר.",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "If factitious fever (inoculation of pyogenic material or manipulation of the thermometer by the patient or parent) is suspected, the presence and pattern of fever should be documented in the hospital. Prolonged and continuous observation of the patient, which can include electronic or video surveillance, is imperative. … Factitious fever or Munchausen syndrome by proxy … Discordant temperature and vital signs; discordant parent-measured temperature and urine temperature; normal inflammatory markers. … Polymicrobial bacteremia suggests factitious or self-induced infection or gastrointestinal (GI) pathology."
+    },
+    {
+      "flag_key": "nelson22.c222.fuo_over_six_months",
+      "label_he": "חום ממקור לא ידוע הנמשך מעל שישה חודשים",
+      "trigger": {
+        "findings": [
+          "חום ממקור לא ידוע מעל שישה חודשים",
+          "חום חוזר ממושך ללא אבחנה"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "warning",
+      "action_he": "לפי המקור, FUO הנמשך מעל שישה חודשים אינו שכיח בילדים, והוא מרמז על מחלה גרנולומטוטית, אוטו-דלקתית או אוטו-אימונית. נדרשת הערכה חוזרת במרווחים, ובכללה אנמנזה, בדיקה גופנית, בירור מעבדתי ובדיקות הדמיה. ⚠ המשמעות: המשך אותו בירור אינו התשובה — הכיוון האבחנתי עצמו משתנה בנקודה הזו.",
+      "reason_he": "לפי המקור, רוב מקרי החום ממקור לא ידוע נובעים מהתייצגויות לא-אופייניות של מחלות שכיחות; בחלק מהמקרים ההתייצגות כ-FUO אופיינית למחלה — למשל ארתריטיס אידיופתית של גיל הילדות — אך האבחנה הסופית ניתנת לקביעה רק לאחר תצפית ממושכת, משום שבתחילה אין ממצאים נלווים או ספציפיים בבדיקה הגופנית וכל תוצאות המעבדה שליליות או תקינות.",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "FUO lasting >6 months is uncommon in children and suggests granulomatous, autoinflammatory, or autoimmune disease. Repeat interval evaluation is required, including history, physical examination, laboratory evaluation, and imaging studies. … In some cases, the presentation as an FUO is characteristic of the disease (e.g., juvenile idiopathic arthritis), but the definitive diagnosis can be established only after prolonged observation, because initially there are no associated or specific findings on physical examination, and all laboratory results are negative or normal."
+    },
+    {
+      "flag_key": "nelson22.c222.hlh_features",
+      "label_he": "מאפייני לימפוהיסטיוציטוזיס המופגוציטית (HLH)",
+      "trigger": {
+        "findings": [
+          "מחלה קשה ומתקדמת במהירות עם חום",
+          "הגדלת כבד עם לימפאדנופתיה ופריחה",
+          "ציטופניות",
+          "עלייה קיצונית בסמני דלקת",
+          "פריטין גבוה מאוד"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, HLH מתייצגת כמחלה קשה ומתקדמת במהירות, עם הגדלת כבד, לימפאדנופתיה ופריחה, ציטופניות ועליות קיצוניות בסמני דלקת. שיטת האבחון כוללת רמות פריטין וטריגליצרידים, פאנל גנטי וקריטריונים אבחנתיים נוספים, אריתרופגוציטוזה על ידי מקרופאגים, ותפקוד לקוי של תאי NK ושל לימפוציטים מסוג CD8+. ⚠ המקור מציין ש-HLH עשויה להיות משפחתית, נגיפית או מושרית ראומטולוגית — תסמונת הפעלת מקרופאגים. ⚠ העיתוי הוא העניין: זו האבחנה היחידה בטבלת הסיבות הלא-זיהומיות שהמקור מתאר כ«מתקדמת במהירות», ולכן היא אינה מתאימה לקצב הבירור האיטי המקובל ב-FUO.",
+      "reason_he": "לפי המקור, קצב הבירור האבחנתי צריך להיות מותאם לקצב המחלה: מהירות עשויה להיות הכרחית בחולה קריטי, ואילו אם המחלה כרונית יותר הבירור יכול להתקדם באופן שיטתי ובמסגרת אמבולטורית.",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Hemophagocytic lymphohistiocytosis: Familial, virus, or rheumatologic (macrophage activation syndrome) induced. Severe, rapidly progressive illness; hepatomegaly, lymphadenopathy, exanthem; cytopenias; extreme elevations of inflammatory markers. Ferritin, triglyceride levels, gene panel, other diagnostic criteria; erythrophagocytosis by macrophages; natural killer cell, CD8+ T-lymphocyte dysfunction. … The tempo of diagnostic evaluation should be adjusted to the tempo of the illness; haste may be imperative in a critically ill patient."
+    },
+    {
+      "flag_key": "nelson22.c222.drug_fever",
+      "label_he": "חום מתרופה",
+      "trigger": {
+        "findings": [
+          "חום מתמשך בחולה המקבל תרופה כלשהי",
+          "חום ללא תסמינים נלווים",
+          "תחושת רווחה נשמרת למרות החום",
+          "אאוזינופיליה עם פריחה"
+        ],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "warning",
+      "action_he": "לפי המקור, יש לשקול חום מתרופה אם החולה מקבל תרופה כלשהי. החום מתרופה הוא בדרך כלל מתמשך ואינו מלווה בתסמינים אחרים. הפסקת התרופה קשורה בהיעלמות החום, בדרך כלל תוך פרק זמן קצר — ⚠ אך תרופות מסוימות, כמו יודידים, מופרשות לאורך זמן ממושך, והחום עשוי להימשך זמן רב לאחר הפסקתן. פרקי הזמן מופיעים בציטוט המקור. ⚠ יש לברר את היסטוריית התרופות בקפידה, כולל תכשירים ללא מרשם ותכשירים מקומיים — **ובכללם טיפות עיניים**, שעלולות להיות קשורות בחום מושרה-אטרופין.",
+      "reason_he": "לפי המקור, המאפיינים המבחינים של רגישות-יתר לתרופה הם תחושת רווחה נשמרת, פריחות, אאוזינופיליה ותפקוד לקוי של איברים — כלייתי, לבבי או ריאתי. שיטת האבחון היא הקונסטלציה הקלינית והפסקת התרופה.",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "The possibility of drug fever should be considered if the patient is receiving any drug. Drug fever is usually sustained and not associated with other symptoms. Discontinuation of the drug is associated with resolution of the fever, generally within 72 hours, although certain drugs, such as iodides, are excreted for a prolonged period, with fever that can persist for as long as 1 month after drug withdrawal. … A medication history should be pursued rigorously. This history should elicit information about nonprescription preparations and topical agents, including eyedrops, that may be associated with atropine-induced fever."
+    }
+  ],
+
+  "clinical_rules": [
+    {
+      "rule_key": "nelson22.c222.definition_and_fws",
+      "title_he": "הגדרת FUO וההבחנה מחום ללא מקור",
+      "category": "criteria",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "חום ממושך ללא אבחנה", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, סיווג FUO שמור לילדים עם טמפרטורה מעל 38 מעלות צלזיוס **שתועדה על ידי איש צוות רפואי**, ושסיבתה לא ניתנה לזיהוי לאחר שמונה ימי בירור לפחות. חשוב להבחין בין FUO לבין חום ללא מקור (FWS): FWS הוא חום שמקורו טרם זוהה, והוא נבדל מ-FUO **במשך בלבד**. FWS יכול להתקדם ל-FUO אם לא נמצאה סיבה לאחר שבעה ימי בירור. ⚠ שני התנאים הם מצטברים ושניהם נדרשים: תיעוד רפואי של החום, ומשך בירור מינימלי. חום שדווח בלבד אינו FUO, וחום שנמשך זמן רב אך לא נבדק אינו FUO.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ההבחנה הזו קובעת את כל הגישה. FWS מפעיל את הפרוטוקולים החדים של הגיל — למשל פרק 220 בתינוק צעיר — שבהם ההחלטה נופלת תוך שעות. FUO מפעיל בירור שיטתי ואיטי, שבו המקור אומר במפורש שההמתנה והתצפית החוזרת הן חלק מהאבחנה ולא כישלון שלה. יישום הגישה הלא-נכונה על המצב הלא-נכון מייצר או בירור פולשני מוקדם מדי, או המתנה מסוכנת.",
+      "recommended_workup_he": [
+        "תיעוד החום במסגרת רפואית",
+        "קביעת משך הבירור שכבר בוצע",
+        "הבחנה מפורשת בין FWS ל-FUO לפני בחירת הגישה",
+        "שלילת Pseudo-FUO בעזרת זיהוי תקופות חסרות-חום"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "The classification of FUO is best reserved for children with a temperature >38°C (100.4°F) documented by a healthcare provider and for which the cause could not be identified after at least 8 days of evaluation. It is important to differentiate FUO from fever without a source (FWS). FWS is fever where the source has not yet been identified and is differentiated from FUO by the duration of the fever. FWS can progress to FUO if no cause is elicited after 7 days of evaluation."
+    },
+    {
+      "rule_key": "nelson22.c222.four_subtypes",
+      "title_he": "ארבעה תת-סוגים של FUO — הגדרה, קצב ובירור",
+      "category": "criteria",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "חום ממקור לא ידוע", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, קיימים ארבעה תת-סוגים של FUO, וכל אחד מהם שונה בהגדרה, במיקום החולה, בסיבות המובילות, בדגש האנמנסטי, בדגש הבדיקה, בדגש הבירור, בניהול, במהלך הזמן ובקצב הבירור. **FUO קלאסי** — הסיבות המובילות הן סרטן, זיהומים, מצבים דלקתיים, מקרים לא-מאובחנים והיפרתרמיה הרגלית; הניהול הוא תצפית, גיליון טמפרטורה אמבולטורי, בירור, **והימנעות מטיפולים אמפיריים**; מהלך הזמן חודשים וקצב הבירור שבועות. **FUO הקשור בטיפול רפואי** — זיהומים הקשורים בטיפול, סיבוכים שלאחר ניתוח וחום מתרופה; הדגש על ניתוחים, פרוצדורות והתקנים; קצב הבירור ימים. **FUO בחסר חיסוני** — הרוב נגרם מזיהומים אך הסיבה מתועדת רק בחלק מהמקרים; הדגש על שלב הכימותרפיה ועל התרופות; ⚠ **קצב הבירור הוא שעות**. **FUO הקשור ב-HIV** — HIV עצמו, מיקובקטריות טיפוסיות ואטיפיות, CMV, לימפומות, טוקסופלזמוזיס, קריפטוקוקוזיס ותסמונת שחזור חיסוני. ⚠ ההגדרות המספריות — סף החום ומשך הזמן לכל תת-סוג — מופיעות בציטוט המקור והן שונות זו מזו.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "⚠ הפרט המכריע הוא קצב הבירור, והוא נע מ**שעות** בחסר חיסוני ועד **שבועות** ב-FUO קלאסי — הפרש של שני סדרי גודל. ילד עם נויטרופניה כימותרפית וחום אינו במסלול FUO הקלאסי, וההימנעות מטיפול אמפירי — שהיא הכלל המפורש ב-FUO קלאסי — אינה חלה עליו. זיהוי תת-הסוג הוא לכן ההחלטה הראשונה, לפני כל בירור.",
+      "recommended_workup_he": [
+        "זיהוי תת-הסוג לפני תחילת הבירור",
+        "בירור מצב חיסוני והיסטוריית כימותרפיה",
+        "בירור אשפוז ופרוצדורות אחרונים",
+        "בירור מצב HIV לפי ההקשר",
+        "התאמת קצב הבירור לתת-הסוג ולמצב הקליני"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Classic FUO: >38°C (100.4°F), >3 wk, >2 visits, or 1 wk in hospital. Healthcare-associated FUO: ≥38°C (100.4°F), >1 wk, not present or incubating on admission. Immune-deficient FUO: ≥38°C (100.4°F), >1 wk, negative cultures after 48 hr. HIV-related FUO: ≥38°C (100.4°F), >3 wk for outpatients, >1 wk for inpatients, HIV infection confirmed. … Tempo of investigation: Weeks | Days | Hours | Days to weeks."
+    },
+    {
+      "rule_key": "nelson22.c222.etiology_categories",
+      "title_he": "קבוצות הסיבות ל-FUO ושיעוריהן",
+      "category": "criteria",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "חום ממקור לא ידוע", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, הסיבות ל-FUO בילדים הן תהליכים זיהומיים, ראומטולוגיים (רקמת חיבור או אוטו-אימוניים), אוטו-דלקתיים, אונקולוגיים, נוירולוגיים, גנטיים, מדומים ויאטרוגניים. ⚠ אף שיש לשקול הפרעות אונקולוגיות ברצינות, **רוב הילדים עם ממאירויות אינם סובלים מחום לבדו**. המחלות הזיהומיות המערכתיות המעורבות ביותר בילדים עם FUO בארצות הברית כוללות אנטרוקוליטיס חיידקי ובכללו סלמונלוזיס, וכן שחפת, מחלות ריקציאליות, עגבת, מחלת ליים, מחלת שריטת החתול, התייצגויות ממושכות לא-אופייניות של מחלות נגיפיות שכיחות כמו אדנווירוס, EBV ו-CMV, הפטיטיס נגיפי, קוקצידיואידומיקוזיס, היסטופלזמוזיס, מלריה וטוקסופלזמוזיס. ארתריטיס אידיופתית של גיל הילדות ולופוס הן מחלות רקמת החיבור הקשורות ביותר ב-FUO; מחלות מעי דלקתיות ומחלת קוואסאקי מדווחות אף הן בתדירות. ⚠ השיעורים ההיסטוריים והעדכניים מופיעים בציטוט המקור, והם שונים מהותית זה מזה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "⚠ המקור מסביר תופעה שנראית פרדוקסלית ויש להבין אותה כדי לקרוא נכון את המספרים: שיעור המקרים הלא-מאובחנים **עלה** עם השנים, וזאת דווקא בגלל שיפור טכניקות האבחון. PCR, שיפור בתרביות והבנה טובה יותר של פתוגנזה נגיפית וחיידקית אטיפית מובילים לאבחנה מוקדמת יותר — ולכן פחות ילדים עם המצבים האלה מגיעים בכלל לקטגוריית ה-FUO. מה שנשאר בקטגוריה הוא הקשה יותר. ⚠ המקור מציין בנפרד שבמדינות עם הכנסה נמוכה ובינונית הסיבות נותרות בעיקר זיהומיות, בשל נטל מחלות זיהומיות גבוה יותר וזמינות מוגבלת של אבחון מתקדם.",
+      "recommended_workup_he": [
+        "בירור שיטתי של כל קבוצות הסיבות ולא רק הזיהומית",
+        "אנמנזת נסיעות ממושכת — עד ללידת הילד",
+        "אנמנזת חשיפה לבעלי חיים בית ובר",
+        "בירור אנמנזה משפחתית וגנטית",
+        "תשומת לב לאפידמיולוגיה המקומית ולא רק לזו שבמקור"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Historically, 90% of pediatric FUO cases in the United States had an identifiable cause: approximately 50% infectious, 10–20% collagen vascular, and 10% oncologic. Other studies had variable results: 20–44% infectious, 0–7% collagen vascular, 2–3% oncologic, and up to 67% undiagnosed. The reason for the paradoxical increase in undiagnosed cases of FUO ironically is likely caused by improved infectious and autoimmune diagnostic techniques."
+    },
+    {
+      "rule_key": "nelson22.c222.history_taking",
+      "title_he": "אנמנזה ב-FUO — מה חייב להישאל",
+      "category": "workup",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "בירור חום ממקור לא ידוע", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, יש לקחת אנמנזת חום מפורטת: התחלה, תדירות, משך, תגובה או היעדר תגובה לטיפול, הישנות ותסמינים נלווים. צמרמורות חוזרות וקפיצות טמפרטורה שכיחות בילדים עם ספטיצמיה מכל סיבה, ובמיוחד כשהן קשורות במחלת כליה, במחלת כבד או דרכי מרה, באנדוקרדיטיס זיהומי, במלריה, בברוצלוזיס, בקדחת נשיכת החולדה או באוסף מוגלה מכוסה. יש לברר חשיפה לבעלי חיים בר וביתיים — ⚠ המקור מדגיש שזיהומים זואונוטיים נרכשים לעיתים קרובות מחיות מחמד **שאינן נראות חולות**, ושחיסון כלבים נגד לפטוספירוזיס עשוי למנוע מחלה בכלב אך אינו מונע תמיד נשיאה והפרשה שעלולות להידבק לבני הבית. יש לברר פיקה — אכילת עפר היא רמז חשוב במיוחד. יש לברר הרגלי תזונה חריגים ונסיעות **עד ללידת הילד**; שחפת, מלריה, היסטופלזמוזיס וקוקצידיואידומיקוזיס עלולות להתפרץ מחדש שנים לאחר ביקור או מגורים באזור אנדמי. ⚠ אבנים, עפר וחפצים שנאספו מאזורים גיאוגרפיים רחוקים והובאו הביתה כמזכרות יכולים לשמש וקטורים למחלה. יש לברר את הרקע הגנטי.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ארבעה מהפריטים ברשימה נשאלים לעיתים רחוקות ומניבים אבחנה: חיות מחמד בריאות למראה, פיקה, נסיעות מלפני שנים, ומזכרות. ⚠ הרקע הגנטי מוביל לקבוצה שלמה של תסמונות חום תקופתיות: מוצא ממדינות הים התיכון מרמז על חום ים תיכוני משפחתי; דיסאוטונומיה משפחתית שכיחה יותר בקרב יהודים; חום ים תיכוני משפחתי ותסמונת hyper-IgD עוברים בתורשה אוטוזומלית רצסיבית, ואילו TRAPS ותסמונת Muckle-Wells בתורשה אוטוזומלית דומיננטית. בהקשר הישראלי הפריט הזה משמעותי במיוחד.",
+      "recommended_workup_he": [
+        "אנמנזת חום מפורטת: התחלה, תדירות, משך, תגובה לטיפול, הישנות",
+        "חשיפה לחיות בר וביתיות — כולל חיות שנראות בריאות",
+        "פיקה ואכילת עפר",
+        "נסיעות ומגורים מאז הלידה, כולל חיסונים והגנה על מזון ומים",
+        "היסטוריית תרופות מלאה כולל ללא מרשם וטיפות עיניים",
+        "רקע גנטי ומוצא — לשקילת תסמונות חום תקופתיות",
+        "נשיכות קרציות ושהות באזורים נגועים"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "A history of exposure to wild or domestic animals should be solicited. The incidence of zoonotic infections in the United States is increasing, and these infections are often acquired from pets that are not overtly ill. … Any history of pica should be elicited. Ingestion of dirt is a particularly important clue to infection with Toxocara canis (visceral larva migrans) or Toxoplasma gondii (toxoplasmosis). A history of unusual dietary habits or travel as early as the birth of the child should be sought. … Rocks, dirt, and artifacts from geographically distant regions that have been collected and brought into the home as souvenirs can serve as vectors of disease."
+    },
+    {
+      "rule_key": "nelson22.c222.repeated_physical_exam",
+      "title_he": "בדיקה גופנית חוזרת — עיקרון מרכזי ב-FUO",
+      "category": "workup",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "בירור חום ממקור לא ידוע", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, בדיקה גופנית מלאה חיונית לחיפוש רמזים לאבחנה הבסיסית, ולעיתים קרובות **כדאי לחזור על בדיקה מפורטת בימים שונים** כדי לזהות סימנים שהשתנו או שהוחמצו. יש לציין את המראה הכללי ובכללו הזעה בזמן החום — ⚠ **היעדר מתמשך של הזעה בנוכחות טמפרטורת גוף מוגברת או משתנה מרמז על התייבשות** מהקאות, משלשול או מסוכרת תפלה מרכזית או נפרוגנית; הוא מרמז גם על דיספלזיה אקטודרמלית אנהידרוטית, על דיסאוטונומיה משפחתית או על חשיפה לאטרופין. יש לבצע בדיקה עינית קפדנית ולמשש בקפידה את השרירים והעצמות. יש לבצע בדיקה רקטלית — היא עשויה לחשוף לימפאדנופתיה או רגישות פרי-רקטלית המרמזות על מורסה אגנית עמוקה, אדניטיס איליאקלית או אוסטאומיאליטיס אגני — ולבצע בדיקת דם סמוי בצואה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "העיקרון של חזרה על הבדיקה בימים שונים הוא מה שמייחד את הגישה ל-FUO. המקור אומר במפורש שבמצב שבו אין רמזים באנמנזה או בבדיקה, **לא סביר שבדיקות אבחנתיות יעזרו**, ושבתרחיש השכיח הזה יש להעסיק מעקב מתמשך והערכות חוזרות כדי לזהות ממצאים קליניים חדשים. כלומר — התצפית עצמה היא הבדיקה, לא תחליף לה.",
+      "recommended_workup_he": [
+        "בדיקה גופנית מלאה החוזרת בימים שונים",
+        "תיעוד נוכחות או היעדר הזעה בזמן החום",
+        "בדיקה עינית קפדנית כולל קרקעית",
+        "מישוש שרירים ועצמות לרגישות נקודתית",
+        "בדיקה רקטלית ובדיקת דם סמוי בצואה",
+        "בדיקת נימי מצע הציפורן באופתלמוסקופ"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "A complete physical examination is essential to search for any clues to the underlying diagnosis, and often it is worthwhile to repeat a detailed examination on different days to detect signs that may have changed or been missed. The child's general appearance, including sweating during fever, should be noted. The continuing absence of sweat in the presence of an elevated or changing body temperature suggests dehydration caused by vomiting, diarrhea, or central or nephrogenic diabetes insipidus. … If there are no clues in the patient's history or on physical examination that suggest a specific infection or area of suspicion, it is unlikely that diagnostic studies will be helpful. In this common scenario, continued surveillance and repeated reevaluations of the child should be employed to detect any new clinical findings."
+    },
+    {
+      "rule_key": "nelson22.c222.laboratory_approach",
+      "title_he": "גישה מעבדתית ב-FUO — מה כן ומה לא",
+      "category": "workup",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "בירור חום ממקור לא ידוע", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, **הזמנת מספר גדול של בדיקות אבחנתיות בכל ילד עם FUO לפי רשימה קבועה מראש אינה רצויה**, אך יש לשקול בדיקות מסוימות. ספירת דם מלאה עם ספירה מבדלת ובדיקת שתן צריכות להיות חלק מהבירור הראשוני. תרביות דם יש לקחת אווירובית — ⚠ תרביות אנאירוביות בעלות תשואה נמוכה ביותר ויש לקחתן רק אם יש סיבה ספציפית לחשד לזיהום אנאירובי. ייתכן שיידרשו תרביות דם מרובות או חוזרות לזיהוי בקטרמיה הקשורה באנדוקרדיטיס זיהומי, באוסטאומיאליטיס או במורסות עמוקות. **תרבית שתן יש לקחת בכל המקרים.** יש לבצע בדיקת עור לשחפת בהזרקה תוך-עורית; בילדים מעל גיל שנתיים סביר לבדוק שחפת באמצעות בדיקת שחרור אינטרפרון-גמא. בדיקת מוח עצם עשויה לחשוף לוקמיה, גידול גרורתי, זיהום מיקובקטריאלי, פטרייתי או טפילי, היסטיוציטוזיס, המופגוציטוזיס או מחלות אגירה — ואם מבוצעת שאיבת מוח עצם, יש לקחת תרביות לחיידקים, למיקובקטריות ולפטריות.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "המקור מנסח כאן עמדה שקל להחמיץ: **בדיקות רבות אינן פתרון להיעדר רמז**. שתי הבדיקות היחידות שהוא מגדיר כחובה גורפת הן בדיקת השתן ותרבית השתן — שאר הבדיקות מוצדקות רק לפי רמז מהאנמנזה או מהבדיקה. ⚠ המקור מציין גם שאשפוז עשוי להידרש לבדיקות שאינן זמינות אמבולטורית, לתצפית קפדנית יותר, או **להקלה זמנית על חרדת ההורים** — הצדקה שהוא מונה במפורש ואינה קלינית.",
+      "recommended_workup_he": [
+        "ספירת דם מלאה עם ספירה מבדלת",
+        "בדיקת שתן — בכל מקרה",
+        "תרבית שתן — בכל מקרה",
+        "תרביות דם אווירוביות, מרובות לפי ההתוויה",
+        "שקיעת דם או CRP — לא שניהם",
+        "בדיקת שחפת: עור או IGRA לפי הגיל",
+        "יידוע המעבדה אילו מחוללים נחשדים"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Although ordering a large number of diagnostic tests in every child with FUO according to a predetermined list is discouraged, certain studies should be considered in the evaluation. A complete blood cell count (CBC) with a white blood cell (WBC) differential and a urinalysis should be part of the initial laboratory evaluation. … Blood cultures should be obtained aerobically. Anaerobic blood cultures have an extremely low yield and should be obtained only if there are specific reasons to suspect anaerobic infection. … Urine culture should be obtained in all cases."
+    },
+    {
+      "rule_key": "nelson22.c222.imaging_strategy",
+      "title_he": "אסטרטגיית הדמיה ב-FUO",
+      "category": "workup",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "בירור חום ממקור לא ידוע ללא רמז ממקד", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, CT או MRI של כל הגוף, שניהם עם חומר ניגוד, הם בדרך כלל בדיקת ההדמיה הראשונה המועדפת; שניהם מאפשרים זיהוי גידולים ואוספי חומר מוגלתי ללא חקירה ניתוחית או רדיואיזוטופים. הם מסייעים בזיהוי נגעים בראש, בצוואר, בחזה, במרווחים רטרו-פריטונאליים, בכבד, בטחול, בבלוטות לימפה תוך-בטניות ותוך-חזיות, בכליות, באגן ובמדיאסטינום. ⚠ **עם CT הילד נחשף לכמויות גדולות של קרינה.** MRI מועיל במיוחד לזיהוי אוסטאומיאליטיס או מיוזיטיס כשיש חשש לגבי גף מסוים. PET משולב עם MRI או CT הוא אמצעי הדמיה מועיל שתרם לאבחנה סופית בחלק ניכר מהילדים במחקר הולנדי; השיעור מופיע בציטוט המקור. אקו-לב יכול להדגים וגטציות על עלי המסתמים. אולטרסאונד יכול לזהות מורסות תוך-בטניות בכבד, במרווח התת-סרעפתי, באגן או בטחול. שאיבה או ביופסיה מונחית CT או אולטרסאונד הפחיתו את הצורך בלפרוטומיה או תורקוטומיה חוקרת.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "אזהרת הקרינה אינה הערת שוליים בהקשר הזה: FUO הוא מצב שבו ההדמיה חוזרת על עצמה לאורך שבועות, ולכן החשיפה המצטברת גדולה. ההעדפה ל-MRI כשהשאלה ממוקדת בגף, ולאולטרסאונד כשהשאלה בטנית, אינה רק שאלה של דיוק אלא של מינון קרינה. ⚠ המקור מציין במפורש שביחס לכל בדיקה פולשנית יש לשקול תמיד את יחס הסיכון-תועלת לפני המשך.",
+      "recommended_workup_he": [
+        "הדמיה מכוונת לפי ממצא היסטורי או גופני כשקיים",
+        "CT או MRI של כל הגוף עם ניגוד כשאין ממצא ממקד",
+        "העדפת MRI בחשד ממוקד לגף",
+        "אולטרסאונד לחשד למורסה בטנית",
+        "אקו-לב בחשד לאנדוקרדיטיס",
+        "שקילת מינון קרינה מצטבר"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Total-body CT or MRI (both with contrast) is usually the first imaging study of choice; both permit detection of neoplasms and collections of purulent material without the use of surgical exploration or radioisotopes. … With CT scans, however, the child is exposed to large amounts of radiation. … 18F-fluorodeoxyglucose positron emission tomography (PET) combined with MRI or CT is a helpful imaging modality and contributed to an ultimate diagnosis in 48% of children in a Dutch study."
+    },
+    {
+      "rule_key": "nelson22.c222.age_based_differential",
+      "title_he": "אבחנה מבדלת של FUO לפי גיל",
+      "category": "criteria",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "חום ממקור לא ידוע", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, גיל החולה מסייע בהערכת FUO. ילדים מעל גיל שש שנים סובלים לעיתים קרובות מזיהום בדרכי הנשימה או בדרכי השתן והמין, מזיהום מקומי — מורסה או אוסטאומיאליטיס — מארתריטיס אידיופתית של גיל הילדות, או לעיתים נדירות מלוקמיה. מתבגרים נוטים יותר לסבול ממחלת מעי דלקתית, מתהליכים אוטו-אימוניים, מלימפומה או משחפת — **בנוסף** לסיבות ה-FUO הנמצאות בילדים צעירים יותר.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "המילה «בנוסף» היא העיקר: רשימת המתבגרים אינה מחליפה את רשימת הילדים הצעירים אלא מתווספת עליה. כלומר ככל שהילד גדול יותר, האבחנה המבדלת מתרחבת ולא מצטמצמת.",
+      "recommended_workup_he": [
+        "התאמת האבחנה המבדלת לגיל",
+        "בירור מערכת נשימה ודרכי שתן בילד מעל שש",
+        "שקילת מחלת מעי דלקתית ולימפומה במתבגר",
+        "בדיקת שחפת במתבגר לפי ההקשר האפידמיולוגי"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "The age of the patient is helpful in evaluating FUO. Children >6 years old often have a respiratory or genitourinary tract infection, localized infection (abscess, osteomyelitis), JIA, or rarely, leukemia. Adolescent patients are more likely to have IBD, autoimmune processes, lymphoma, or tuberculosis in addition to the causes of FUO found in younger children."
+    },
+    {
+      "rule_key": "nelson22.c222.prognosis",
+      "title_he": "פרוגנוזה ושיעור המקרים שנותרים ללא אבחנה",
+      "category": "criteria",
+      "domain": "infectious_disease",
+      "conditions": [
+        { "type": "finding", "key": "חום ממקור לא ידוע", "op": "present" }
+      ],
+      "logic": "all",
+      "conclusion_he": "לפי המקור, לילדים עם FUO פרוגנוזה טובה יותר מלמבוגרים. התוצאה בילד תלויה בתהליך המחלה הראשוני. במקרים רבים לא ניתן לקבוע אבחנה והחום שוכך באופן ספונטני. ⚠ בשיעור ניכר מהילדים שבהם החום נמשך, הסיבה נותרת בלתי ברורה גם לאחר בירור מקיף; השיעור מופיע בציטוט המקור.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "זו רשומה שנועדה לשמש בשיחה עם המשפחה. המסר הכפול שהמקור נותן — פרוגנוזה טובה מצד אחד, ושיעור ניכר של מקרים שנשארים ללא אבחנה מצד שני — הוא מה שמאפשר להסביר להורים מדוע ההמתנה והתצפית הן חלק מהטיפול ולא כישלון שלו. המקור מביא סדרת מקרים המדגימה זאת: מתוך חולים שהופנו בשל חום ממושך בלתי-מוסבר, חלקם כלל לא היו עם חום, וחלקם קיבלו אבחנה שהייתה גלויה כבר בביקור הראשון.",
+      "recommended_workup_he": [
+        "שיחה עם המשפחה על סבירות ההגעה לאבחנה",
+        "הסבר מדוע תצפית חוזרת היא חלק מהבירור",
+        "המשך מעקב גם כשהחום שוכך",
+        "הערכה חוזרת במרווחים אם החום נמשך"
+      ],
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Children with FUO have a better prognosis than adults. The outcome in a child depends on the primary disease process. In many cases, no diagnosis can be established, and fever abates spontaneously. In as many as 25% of children in whom fever persists, the cause of the fever remains unclear even after thorough evaluation."
+    }
+  ],
+
+  "associations": [
+    {
+      "assoc_key": "nelson22.c222.relative_bradycardia",
+      "anchor_finding_he": "ברדיקרדיה יחסית בחולה עם חום",
+      "co_findings": [
+        "היסטוריית נסיעה",
+        "הגדלת כבד וטחול",
+        "כאב ראש",
+        "לויקופניה"
+      ],
+      "implies_he": "קדחת מעיים, מלריה, לפטוספירוזיס, פסיטקוזיס, חום מרכזי או חום מתרופה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, ברדיקרדיה יחסית — קצב לב שאינו עולה כמצופה לגובה החום — היא ממצא גופני בעל משמעות מיוחדת בבירור FUO, והיא מופיעה בקבוצת אבחנות מוגדרת.",
+      "action_he": "⚠ זהו ממצא שמופיע בכל מדידת סימנים חיוניים ונרשם, אך כמעט לעולם אינו נקרא כרמז. הקבוצה שהוא מפנה אליה כוללת גם מחלות שדורשות נסיעה — קדחת מעיים, מלריה — וגם שתי סיבות לא-זיהומיות: חום מרכזי וחום מתרופה. המקור מונה ברדיקרדיה יחסית גם בטבלת הרמזים לבבזיוזיס, לקדחת Q ולטולרמיה. השילוב עם היסטוריית נסיעה או חשיפה מצמצם מאוד.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Heart: Relative bradycardia — Typhoid fever, malaria, leptospirosis, psittacosis, central fever, drug fever."
+    },
+    {
+      "assoc_key": "nelson22.c222.absent_sweating",
+      "anchor_finding_he": "היעדר מתמשך של הזעה בנוכחות חום",
+      "co_findings": [
+        "הקאות או שלשול",
+        "היעדר דמעות",
+        "היעדר רפלקס קרנית",
+        "לשון חלקה ללא פפילות פטרייתיות",
+        "היפרנתרמיה"
+      ],
+      "implies_he": "התייבשות, סוכרת תפלה, דיסאוטונומיה משפחתית, דיספלזיה אקטודרמלית אנהידרוטית או חשיפה לאטרופין",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, היעדר מתמשך של הזעה בנוכחות טמפרטורת גוף מוגברת או משתנה מרמז על התייבשות שנגרמה מהקאות, משלשול או מסוכרת תפלה מרכזית או נפרוגנית; הוא מרמז גם על דיספלזיה אקטודרמלית אנהידרוטית, על דיסאוטונומיה משפחתית או על חשיפה לאטרופין.",
+      "action_he": "⚠ זהו ממצא שאינו נרשם כלל בגיליון סטנדרטי, ולכן יש להסתכל עליו במכוון. הוא מחבר בין ארבע קבוצות שונות מאוד, וההבחנה ביניהן נעשית בבדיקה: היעדר דמעות, היעדר רפלקס קרנית או לשון חלקה ללא פפילות פטרייתיות מכוונים לדיסאוטונומיה משפחתית. ⚠ בהקשר הישראלי הדבר משמעותי — לפי המקור, דיסאוטונומיה משפחתית שכיחה יותר בקרב יהודים מאשר בקבוצות אוכלוסייה אחרות. סמני דלקת תקינים עם היפרנתרמיה והיעדר תגובה לנוגדי דלקת לא-סטרואידיים מכוונים לתפקוד לקוי היפותלמי.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "The continuing absence of sweat in the presence of an elevated or changing body temperature suggests dehydration caused by vomiting, diarrhea, or central or nephrogenic diabetes insipidus. It also should suggest anhidrotic ectodermal dysplasia, familial dysautonomia, or exposure to atropine. … Fever resulting from familial dysautonomia may be suggested by lack of tears, an absent corneal reflex, or a smooth tongue with absence of fungiform papillae. … Familial dysautonomia (Riley-Day syndrome), a disorder in which hyperthermia is recurrent, is more common among Jews than among other population groups."
+    },
+    {
+      "assoc_key": "nelson22.c222.conjunctivitis_pattern",
+      "anchor_finding_he": "דלקת לחמית בילד עם חום ממקור לא ידוע",
+      "co_findings": [
+        "לחמית עפעפית מודלקת",
+        "לחמית בולברית מודלקת",
+        "דימומים פטכיאליים בלחמית",
+        "אובאיטיס",
+        "כוריו-רטיניטיס"
+      ],
+      "implies_he": "מיקום הדלקת בלחמית מבחין בין קבוצות אבחנה שונות לחלוטין",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, ההבחנה בין דלקת לחמית עפעפית לבין בולברית מפנה לשתי קבוצות שונות: העפעפית לחצבת, לזיהום קוקסאקי, לשחפת, למונונוקלאוזיס זיהומית, ללימפוגרנולומה ונראום או למחלת שריטת החתול; הבולברית למחלת קוואסאקי או ללפטוספירוזיס.",
+      "action_he": "⚠ ההבחנה האנטומית הזו — עפעפית מול בולברית — היא בדיוק סוג הפרט שנרשם כ«עיניים אדומות» ומאבד את ערכו. הבחנות נוספות שהמקור מונה: דימומים פטכיאליים בלחמית מרמזים על אנדוקרדיטיס זיהומי; אובאיטיס על סרקואידוזיס, JIA, לופוס, קוואסאקי, מחלת Behçet וּוסקוליטיס; כוריו-רטיניטיס על CMV, טוקסופלזמוזיס ועגבת; פרופטוזיס על גידול אורביטלי, תירוטוקסיקוזיס, גרורה, זיהום אורביטלי, גרנולומטוזיס עם פוליאנגייטיס או פסאודו-טומור. ⚠ המקור מציין גם שכשל בכיווץ אישונים הוא רמז לתפקוד לקוי היפותלמי, בשל היעדר שריר הסוגר של העין.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Palpebral conjunctivitis in a febrile patient may be a clue to measles, coxsackievirus infection, tuberculosis, infectious mononucleosis, lymphogranuloma venereum, or cat-scratch disease. In contrast, bulbar conjunctivitis in a child with FUO suggests Kawasaki disease or leptospirosis. Petechial conjunctival hemorrhages suggest infective endocarditis. Uveitis suggests sarcoidosis, JIA, SLE, Kawasaki disease, Behçet disease, and vasculitis. Chorioretinitis suggests CMV, toxoplasmosis, and syphilis. … FUO is sometimes caused by hypothalamic dysfunction. A clue to this disorder is failure of pupillary constriction because of absence of the sphincter constrictor muscle of the eye."
+    },
+    {
+      "assoc_key": "nelson22.c222.bone_point_tenderness",
+      "anchor_finding_he": "רגישות נקודתית מעל עצם בילד עם חום ממושך",
+      "co_findings": [
+        "רגישות מעל שריר הטרפז",
+        "רגישות שרירית מפושטת",
+        "רגישות מעל עמוד השדרה",
+        "כאב עצם לא-מפרקי"
+      ],
+      "implies_he": "אוסטאומיאליטיס סמויה, פלישת מוח עצם ניאופלסטית, או מורסה תת-סרעפתית",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, יש למשש בקפידה את השרירים ואת העצמות. רגישות נקודתית מעל עצם עשויה להצביע על אוסטאומיאליטיס סמויה או על פלישת מוח עצם ממחלה ניאופלסטית. רגישות מעל שריר הטרפז עשויה להיות רמז למורסה תת-סרעפתית.",
+      "action_he": "⚠ הרגישות מעל הטרפז היא כאב מוקרן ממקור בטני-עליון — צירוף שקל לפרש כמוסקולו-סקלטלי. המקור מונה בנפרד: רגישות שרירית מפושטת מרמזת על דרמטומיוזיטיס, טריכינוזיס, פוליארטריטיס, מחלת קוואסאקי או זיהום מיקופלזמה או ארבו-נגיפי; רגישות מעל עמוד השדרה מרמזת על אוסטאומיאליטיס חולייתי; ורגישות פארא-ספינלית על אוסף פארא-ספינלי. MRI מועיל במיוחד לזיהוי אוסטאומיאליטיס או מיוזיטיס כשיש חשש לגבי גף מסוים.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "The muscles and bones should be palpated carefully. Point tenderness over a bone can suggest occult osteomyelitis or bone marrow invasion from neoplastic disease. Tenderness over the trapezius muscle may be a clue to subdiaphragmatic abscess. Generalized muscle tenderness suggests dermatomyositis, trichinosis, polyarteritis, Kawasaki disease, or Mycoplasma or arboviral infection. … Spine: Spinal tenderness — Vertebral osteomyelitis. Paraspinal tenderness — Paraspinal collection."
+    },
+    {
+      "assoc_key": "nelson22.c222.pica_parasites",
+      "anchor_finding_he": "היסטוריית פיקה ואכילת עפר",
+      "co_findings": [
+        "חשיפה לכלבים או חתולים",
+        "הגדלת כבד",
+        "אאוזינופיליה",
+        "כוריו-רטיניטיס"
+      ],
+      "implies_he": "Toxocara canis (visceral larva migrans) או Toxoplasma gondii",
+      "suspicion": "yellow",
+      "mechanism_he": "לפי המקור, אכילת עפר היא רמז חשוב במיוחד לזיהום ב-Toxocara canis או ב-Toxoplasma gondii.",
+      "action_he": "פיקה היא שאלה שאינה נשאלת כמעט לעולם בבירור חום, והיא לוקחת שניות. ⚠ שתי האבחנות שהיא מפנה אליהן ניתנות לבירור סרולוגי, ואחת מהן — טוקסופלזמוזיס — מופיעה גם ברשימת הכוריו-רטיניטיס שבמקור, כלומר יש לה ממצא עיני מתאים שניתן לחפש באותה בדיקה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Any history of pica should be elicited. Ingestion of dirt is a particularly important clue to infection with Toxocara canis (visceral larva migrans) or Toxoplasma gondii (toxoplasmosis). … Chorioretinitis suggests CMV, toxoplasmosis, and syphilis."
+    },
+    {
+      "assoc_key": "nelson22.c222.repetitive_chills",
+      "anchor_finding_he": "צמרמורות חוזרות וקפיצות טמפרטורה",
+      "co_findings": [
+        "מחלת כליה",
+        "מחלת כבד או דרכי מרה",
+        "אוושה לבבית",
+        "היסטוריית נסיעה"
+      ],
+      "implies_he": "ספטיצמיה, אנדוקרדיטיס זיהומי, מלריה, ברוצלוזיס, קדחת נשיכת חולדה, או אוסף מוגלה מכוסה",
+      "suspicion": "red",
+      "mechanism_he": "לפי המקור, צמרמורות חוזרות וקפיצות טמפרטורה שכיחות בילדים עם ספטיצמיה מכל סיבה, ובמיוחד כשהן קשורות במחלת כליה, במחלת כבד או דרכי מרה, באנדוקרדיטיס זיהומי, במלריה, בברוצלוזיס, בקדחת נשיכת החולדה או באוסף מוגלה מכוסה.",
+      "action_he": "⚠ הדפוס הזה מבחין בין FUO שדורש בירור איטי לבין מצב שדורש תרביות דם מרובות עכשיו. המקור מציין שייתכן שיידרשו תרביות דם מרובות או חוזרות לזיהוי בקטרמיה הקשורה באנדוקרדיטיס זיהומי, באוסטאומיאליטיס או במורסות עמוקות — כלומר תרבית בודדת שלילית אינה שוללת. אקו-לב מותווה בחשד לאנדוקרדיטיס. ⚠ המקור מציין בנפרד שרוב המחלות הגורמות ל-FUO **אינן** בעלות דפוס חום אופייני, ולכן דפוס אינו כלי אבחנתי כללי.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c222.fuo",
+      "source_quote_he": "Repetitive chills and temperature spikes are common in children with septicemia (regardless of cause), particularly when associated with kidney disease, liver or biliary disease, infective endocarditis, malaria, brucellosis, rat-bite fever, or a loculated collection of pus. … Occasionally the fever pattern helps make a diagnosis. Nonetheless, most diseases causing an FUO do not have a typical fever pattern."
+    }
+  ],
+
+  "gaps_he": [
+    "⚠ **טבלה 222.2 (אטיולוגיה של FUO) לא חולצה כרשומות.** היא רשימה של מאות אבחנות בעשר קטגוריות — מורסות, מחלות חיידקיות, נגיפיות, פטרייתיות, ריקציאליות, טפיליות, מחלות רקמת חיבור, ממאירויות, הפרעות ויסות חום, ושונות. זהו המשאב המרכזי לאבחנה מבדלת בפרק, והוא מצדיק חילוץ מובנה נפרד. הפריטים המסומנים בה כשכיחים ביותר בילדים הם מורסה תוך-בטנית, מורסה אגנית, מחלת מעי דלקתית ומחלת קוואסאקי.",
+    "⚠ **טבלה 222.4 (רמזים אבחנתיים לזיהומים) לא חולצה כרשומות.** היא מכילה כשמונה-עשרה אבחנות זיהומיות, לכל אחת רמזים היסטוריים ורמזים גופניים נפרדים. זהו מבנה שמתאים ישירות ל-Association, והוא מועמד מובהק לחילוץ עצמאי. הרמזים בה נוגעים לגיאוגרפיה של ארצות הברית ברובם ויש להתאימם לאפידמיולוגיה הישראלית.",
+    "⚠ **טבלה 222.5 (סיבות לא-זיהומיות) לא חולצה במלואה.** רק HLH והחום המדומה נגזרו ממנה לדגלים. היא מכילה שתים-עשרה אבחנות עם חשיפה, מאפיינים ושיטת אבחון — גם היא מועמדת לחילוץ מובנה.",
+    "⚠ **טבלה 222.3 (ממצאים גופניים עדינים) חולצה חלקית.** נגזרו ממנה שלוש אסוציאציות. הטבלה מכילה כשמונה-עשרה ממצאים לפי אזור גוף, ובכללם ממצאים שלא יוצגו כאן: רגישות סינוסים, שן רופפת (היסטיוציטוזיס של תאי לנגרהנס או לוקמיה), אוושה בעורק הבטן או הכליה (וסקוליטיס של כלים גדולים), רגישות קוסטו-ורטברלית, ופסאודו-פארזיס (מחלת עצם עגבתית).",
+    "⚠ **איור 222.2 — אלגוריתם הגישה ל-FUO — לא הומר.** הטקסט שחולץ מכיל רק את תחילת האלגוריתם. אלגוריתם החלטה שייך לקוד דטרמיניסטי, לא לרשומת ידע. ⚠ שים לב שהאלגוריתם עצמו פותח בסף שונה מזה של הגדרת הפרק: הוא מתחיל ב«חום מעל 38.3 מעלות למשך 14 ימים ומעלה», בעוד ההגדרה בגוף הפרק היא 38 מעלות ושמונה ימים. **אין ליישב בין השניים** — ההפרש קיים במקור ויש להצביע עליו.",
+    "⚠ איור 222.1 (דפוסי חום מבחינים — מלריה, קדחת מעיים, מחלת הודג'קין, בורליוזיס) לא הומר. אלה גרפים, והמקור עצמו מציין שרוב המחלות אינן בעלות דפוס אופייני.",
+    "⚠ כל הספים המספריים — ANC, PMN מפולחים ולא-מפולחים, שקיעת דם — נשמרו בציטוטי המקור בלבד ולא בגוף הכללים, כמינונים לוולידטור ול-numericGuard. כך גם כל השיעורים והאחוזים.",
+    "⚠ מינון ה-PPD לבדיקת שחפת מופיע במקור. הוא נשמר בציטוט בלבד — ראה dosing_mentions_he.",
+    "⚠ **פרק 221 — חום בילד הגדול — לא חולץ**, אף שסופו מופיע בעמוד 1651 שחולץ. הוא מכיל את הגישה לבקטרמיה סמויה בילד הלא-מחוסן, ואת ההנחיות לגבי אנטיביוטיקה פומית בזיהום דרכי שתן. אלה משלימים ישירות את פרק 222 ולא עוגנו כאן.",
+    "⚠ הפרק מפנה לפרקים שלא חולצו: 85 (שוק — חולץ בנפרד), 218 (חום במטייל החוזר), 223 (זיהומים במדוכאי חיסון), 680 (דלקת אוזן תיכונה חדה). טענות התלויות בהם אינן מיוצגות כאן.",
+    "⚠ הפרק כתוב לאפידמיולוגיה של ארצות הברית: החשיפות הגיאוגרפיות, הזואונוזות והמחוללים האנדמיים המנויים בו אינם תואמים בהכרח לישראל. **אין להשתמש ברשימות החשיפה כמסננת אפידמיולוגית מקומית.** המקור עצמו מציין שבמדינות עם הכנסה נמוכה ובינונית הסיבות נותרות בעיקר זיהומיות.",
+    "⚠ סדרת המקרים המצוטטת בסוף הפרק (69 חולים שהופנו) קטנה מכדי לגזור ממנה שכיחויות. היא נשמרה בציטוט בלבד ולא הומרה לטענה."
+  ],
+
+  "dosing_mentions_he": [
+    "⚠ בדיקת עור לשחפת: המקור נוקב במספר יחידות של תוצר חלבון מטוהר להזרקה תוך-עורית, ומציין במפורש שהתכשיר נשמר בקירור מתאים. המינון נשמר בציטוט המקור בלבד ולא הוכנס לאף כלל.",
+    "⚠ המקור אינו נוקב במינונים אנטיביוטיים כלל בפרק זה — ובמכוון: הוא ממליץ במפורש נגד טיפול אמפירי. החריג היחיד שהוא מזכיר, טיפול אנטי-שחפתי בילד חולה קשה עם חשד לשחפת מפושטת, מוזכר ללא תכשיר וללא מינון.",
+    "⚠ ספי המעבדה (ANC, PMN, שקיעת דם) אינם מינונים אך הם ספים מספריים המכריעים החלטה, ולכן נשמרו בציטוטים באותה מדיניות.",
+    "⚠ הגדרת האופתלמוסקופ לבדיקת נימי מצע הציפורן (ההגדרה המספרית של העדשה) נשמרה בציטוט הרלוונטי בלבד."
+  ]
+}
