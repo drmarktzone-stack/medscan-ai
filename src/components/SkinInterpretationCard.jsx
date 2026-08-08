@@ -49,6 +49,8 @@ export default function SkinInterpretationCard({ interpretation }) {
   const warnings = interpretation.warnings || [];
   const confidence = interpretation.confidence;
   const dd = st.differential_diagnoses || [];
+  const dermo = interpretation.dermoscopy;
+  const allergens = interpretation.suspected_allergens || [];
   const flags = (st.critical_red_flags || []).filter(Boolean);
   const urg = urgencyConfig[st.clinical_urgency] || urgencyConfig.Normal;
   const primaryLesion = (d.primary_lesions || [])[0];
@@ -167,6 +169,25 @@ export default function SkinInterpretationCard({ interpretation }) {
                   <li key={i} className="text-[11px] text-slate-600 flex gap-1.5"><span className="text-teal-400">•</span><span>{s}</span></li>
                 ))}
               </ul>
+            </Section>
+          )}
+
+          {dermo && (
+            <Section icon={Stethoscope} title="ניקוד דרמוסקופי (מחושב בקוד)">
+              <div className="text-[11px] text-slate-700 space-y-0.5 bg-white/60 rounded-md px-2 py-1.5">
+                <div>7-point checklist: <b>{dermo.seven.score}</b>{dermo.seven.flagged ? <span className="text-red-600"> ⚠️ ≥3</span> : null}</div>
+                <div>ABCD-TDS: <b>{dermo.tds.tds}</b> <span className="text-slate-500">({dermo.tds.band})</span></div>
+                {dermo.chaos?.excise && <div className="text-red-600">Chaos &amp; Clues → שקילת כריתה</div>}
+                <div className="font-semibold">סיכון ממאירות: {dermo.risk.level} — {dermo.risk.referral_he}</div>
+                <div className="text-[10px] text-slate-400">{dermo.risk.disclaimer_he}</div>
+              </div>
+            </Section>
+          )}
+
+          {allergens.length > 0 && (
+            <Section icon={Tag} title="אלרגנים אפשריים לפי פיזור">
+              <div className="text-[11px] text-slate-700">{allergens.flatMap((a) => a.allergens).join(" · ")}</div>
+              <div className="text-[10px] text-slate-400 mt-0.5">רלוונטיות קלינית נקבעת ע"י הרופא/ה מול חשיפה בפועל.</div>
             </Section>
           )}
 
