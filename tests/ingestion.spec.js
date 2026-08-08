@@ -239,6 +239,38 @@ await testAsync('שינוי שקט בין מה שנשלח למה שנשמר — 
   assert(r.mismatches.some((m) => m.field === 'conclusion_he'));
 });
 
+await testAsync('שדה שנמחק בשקט על ידי שכבת האחסון — נתפס', async () => {
+  // ⚠ זה קרה בפועל: שדה נשלח, הכתיבה החזירה הצלחה,
+  // והערך נעלם בלי שום שגיאה. השמטה של עמוד או פרק
+  // הופכת נושא לבלתי בר-אימות — והרשומה עדיין נראית תקינה.
+  const store = fakeStore();
+  store.deps.createRecord = async (entity, rec) => {
+    const saved = { ...rec };
+    if (entity === 'KnowledgeTopic') delete saved.page_start;
+    store.rows[entity].push(saved);
+  };
+  const plan = planIngestion({ extraction: extraction() });
+  const r = await applyPlan({ plan, deps: store.deps });
+  assertEq(r.ok, false, 'השמטת עמוד עברה כהצלחה');
+  assert(r.mismatches.some((m) => m.field === 'page_start'), JSON.stringify(r.mismatches));
+});
+
+await testAsync('השמטת חלון גיל בדגל אדום — נתפסת', async () => {
+  // דגל שאיבד את חלון הגיל שלו נורה לכל הגילאים.
+  // זה שינוי בטיחותי, והוא שקט לחלוטין.
+  const store = fakeStore();
+  store.deps.createRecord = async (entity, rec) => {
+    const saved = { ...rec };
+    if (entity === 'RedFlag') saved.age_max_days = null;
+    store.rows[entity].push(saved);
+  };
+  const plan = planIngestion({
+    extraction: extraction({ red_flags: [{ ...FLAG, age_min_days: 0, age_max_days: 28 }] }),
+  });
+  const r = await applyPlan({ plan, deps: store.deps });
+  assert(r.mismatches.some((m) => m.field === 'age_max_days'), 'הרחבת חלון הגיל עברה בשקט');
+});
+
 await testAsync('רשומה שנכתבה ולא נמצאה בקריאה חוזרת — נתפסת', async () => {
   const store = fakeStore();
   store.deps.createRecord = async (entity, rec) => {
