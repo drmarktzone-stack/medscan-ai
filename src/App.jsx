@@ -30,6 +30,7 @@ import VerifyKnowledge from '@/pages/VerifyKnowledge';
 import History from '@/pages/History';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import Evaluation from '@/pages/Evaluation';
+import ECGValidation from '@/pages/ECGValidation';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -62,6 +63,7 @@ const AuthenticatedApp = () => {
           <Route path="/" element={<Home />} />
           <Route path="/ecg" element={<ECGAnalysis />} />
           <Route path="/ecg-compare" element={<ECGComparison />} />
+          <Route path="/ecg-validate" element={<ECGValidation />} />
           <Route path="/skin" element={<SkinAnalysis />} />
           <Route path="/radiology" element={<RadiologyAnalysis />} />
           <Route path="/labs" element={<LabInterpreter />} />
