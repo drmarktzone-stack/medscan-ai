@@ -1,6 +1,15 @@
 import { base44 } from "@/api/base44Client";
 import { buildCasesForMatching } from "./knowledgeBase";
 import { GENERATION_MODEL } from "./aiConfig";
+import { createVisionInvokeLLM } from "./medscan/llmAdapter";
+
+// ⚠ עובר דרך המתאם ולא ישירות ל-SDK.
+// שינוי התנהגות מכוון: add_context_from_internet היה true בשני המקומות
+// וכעת מושבת. בהערכה זו אינה החמרה אלא תיקון: המבחן אמור
+// למדוד את איכות ההתאמה מול ה-KB, וגישה לאינטרנט מנפחת את הדיוק
+// הנמדד — המודל מחפש במקום להתאים.
+const invokeEval = createVisionInvokeLLM({ purpose: "evaluation_match" });
+const invokeGenerate = createVisionInvokeLLM({ purpose: "case_generation" });
 
 function normalize(s) {
   return (s || "")
@@ -48,7 +57,7 @@ export async function runEvaluation({ type, onProgress, onUpdate }) {
   for (let i = 0; i < testable.length; i++) {
     const gs = testable[i];
 
-    const matchingResult = await base44.integrations.Core.InvokeLLM({
+    const matchingResult = await invokeEval({
       prompt: `אתה ${domainRole}. התאם את התמונה מול כל מקרי מאגר הידע והחזר את התואם ביותר.
 
 ## מאגר הידע
@@ -77,7 +86,6 @@ ${casesForMatching}
         },
         required: ["matches"],
       },
-      add_context_from_internet: true,
       model: GENERATION_MODEL,
     });
 
@@ -140,7 +148,13 @@ export async function generateCasesWithAI({ type, target, topic, count = 10 }) {
   const categories = categoriesByType[type];
   const domain = domainByType[type];
 
-  const result = await base44.integrations.Core.InvokeLLM({
+  // ⚠ הערת בטיחות: הפונקציה מייצרת מקרי ייחוס קליניים — אבחנות,
+  // מאפיינים ודירוג דחיפות — מתוך ידע המודל, ללא עוגן למקור.
+  // המקרים האלה נכנסים ל-ECGCase/SkinCase/RadiologyCase ומזינים את
+  // שלב ההתאמה בצינור הקליני. זהו ידע שהמודל המציא ואז מסתמך
+  // עליו כעל ייחוס. יש להשתמש בו למילוי ראשוני בלבד, וכל מקרה
+  // חייב סקירה רפואית לפני שהוא משמש בפועל.
+  const result = await invokeGenerate({
     prompt: `אתה מומחה רפואי בתחום ${domain}.
 צור ${count} מקרים קליניים מגוונים ומדויקים${topic ? ` בנושא: ${topic}` : ""}.
 
@@ -171,7 +185,6 @@ export async function generateCasesWithAI({ type, target, topic, count = 10 }) {
       },
       required: ["cases"],
     },
-    add_context_from_internet: true,
     model: GENERATION_MODEL,
   });
 
