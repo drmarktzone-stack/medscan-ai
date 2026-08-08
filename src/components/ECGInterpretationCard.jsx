@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Brain, ShieldAlert, AlertTriangle, Ruler, Heart, Zap, Waves,
-  Activity, ListChecks, Stethoscope, FileText,
+  Activity, ListChecks, Stethoscope, FileText, Download,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CRITICAL_RULE_OUT } from "@/lib/ecgEngine";
@@ -53,6 +53,7 @@ function HeaderStat({ label, value }) {
 }
 
 export default function ECGInterpretationCard({ interpretation }) {
+  const [pdfBusy, setPdfBusy] = useState(false);
   if (!interpretation || !interpretation.structured) return null;
 
   const st = interpretation.structured;
@@ -67,6 +68,25 @@ export default function ECGInterpretationCard({ interpretation }) {
   const primary = (st.primary_findings || []).filter(Boolean);
   const urg = urgencyConfig[st.clinical_urgency] || urgencyConfig.Normal;
   const boolHe = (b) => (b ? "כן" : "לא");
+
+  const handleExportPdf = async () => {
+    try {
+      setPdfBusy(true);
+      const { exportEcgReportPdf } = await import("@/lib/ecgReportPdf");
+      await exportEcgReportPdf({
+        structured: st,
+        warnings,
+        confidence,
+        uncertaintyLevel: interpretation.uncertaintyLevel,
+        imageUrl: interpretation.imageUrl,
+        patientRef: interpretation.patientRef,
+      });
+    } catch (e) {
+      alert("יצירת ה-PDF נכשלה: " + (e?.message || e));
+    } finally {
+      setPdfBusy(false);
+    }
+  };
 
   return (
     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl overflow-hidden">
@@ -85,6 +105,14 @@ export default function ECGInterpretationCard({ interpretation }) {
           {typeof confidence === "number" && (
             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">{confidence}%</span>
           )}
+          <button
+            onClick={handleExportPdf}
+            disabled={pdfBusy}
+            title="ייצוא דו״ח PDF"
+            className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-indigo-600 text-white flex items-center gap-1 disabled:opacity-50"
+          >
+            <Download className="w-3 h-3" /> {pdfBusy ? "..." : "PDF"}
+          </button>
         </div>
       </div>
 
