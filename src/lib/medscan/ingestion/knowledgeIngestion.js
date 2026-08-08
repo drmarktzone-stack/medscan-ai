@@ -29,15 +29,9 @@ export {
 // שהפיל 947 מתוך 1001 חילוצים בהרצה הקודמת — והוא אינו נתפס
 // בבדיקת ייבוא: שם לא-מוגדר בתוך גוף פונקציה נכשל רק בזמן הקריאה.
 import { detectSeams, validateExtraction, extractFromChunk } from './extractionCore.js';
+import { NATURAL_KEY, WRITE_ORDER, LIST_BY_ENTITY, toKbRecords } from './kbRecords.js';
 
-/** שדה המפתח הטבעי של כל ישות — בו נעשה הזיהוי לצורך upsert. */
-export const NATURAL_KEY = {
-  KnowledgeTopic: 'topic_key',
-  LabPattern: 'pattern_key',
-  RedFlag: 'flag_key',
-  ClinicalRule: 'rule_key',
-  Association: 'assoc_key',
-};
+export { NATURAL_KEY };
 
 /**
  * שומר חילוץ מאומת-מבנית ל-KB. הכל כטיוטה.
@@ -57,91 +51,38 @@ export async function saveExtraction(kept, existingKeys = null) {
   const failed = [];
   const skipped = [];
 
-  const save = async (entity, rows, counterKey, mapFn) => {
+  // ⚠ המיפוי מגיע מ-kbRecords.js ולא ממומש כאן. קודם הוא היה
+  // משוכפל בין קובץ זה לסקריפט ה-Node, ושני העותקים נפרדו:
+  // אחד המיר conditions[].value למחרוזת והשני לא. שכבת האחסון
+  // מקבלת שם מחרוזת בלבד, ולכן המסלול הזה היה מפיל כל כלל
+  // עם ערך מספרי — בלי שאיש ישים לב, כי הנתיב השני עבד.
+  const records = toKbRecords(kept);
+  const COUNTER = {
+    KnowledgeTopic: 'topics',
+    LabPattern: 'lab_patterns',
+    RedFlag: 'red_flags',
+    ClinicalRule: 'clinical_rules',
+    Association: 'associations',
+  };
+
+  for (const entity of WRITE_ORDER) {
+    const rows = records[entity] ?? [];
     const keyField = NATURAL_KEY[entity];
-    for (const row of rows) {
-      const key = row[keyField];
+    for (const rec of rows) {
+      const key = rec[keyField];
       if (existingKeys?.has(`${entity}:${key}`)) {
         skipped.push({ entity, key, why_he: 'רשומה עם מפתח זה כבר קיימת — לא נוצרה כפילות.' });
         continue;
       }
       try {
-        await createKbRecord(entity, mapFn(row));
+        await createKbRecord(entity, rec);
         existingKeys?.add(`${entity}:${key}`); // מונע כפילות גם בתוך אותה הרצה
-        saved[counterKey] += 1;
+        saved[COUNTER[entity]] += 1;
       } catch (e) {
         failed.push({ entity, key, error: String(e?.message ?? e) });
       }
     }
-  };
-
-  // הציטוט נשמר ב-review_note_he — הוא מה שהרופא/ה בודק/ת מולו
-  const note = (r) => `ציטוט מקור: "${r.source_quote_he}"`;
-
-  await save('KnowledgeTopic', kept.topics, 'topics', (t) => ({
-    topic_key: t.topic_key,
-    topic_title_he: t.topic_title_he,
-    topic_title_en: t.topic_title_en ?? null,
-    summary_he: t.summary_he,
-    keywords: t.keywords ?? [],
-    age_scope: t.age_scope ?? 'all',
-    review_note_he: note(t),
-  }));
-
-  await save('LabPattern', kept.lab_patterns, 'lab_patterns', (p) => ({
-    pattern_key: p.pattern_key,
-    title_he: p.title_he,
-    components: p.components,
-    min_components: p.min_components ?? 2,
-    direction_he: p.direction_he,
-    suspicion: p.suspicion,
-    clinical_reasoning_he: p.clinical_reasoning_he ?? null,
-    confirm_with_he: p.confirm_with_he ?? [],
-    source_anchor: p.source_anchor,
-    review_note_he: note(p),
-  }));
-
-  await save('RedFlag', kept.red_flags, 'red_flags', (f) => ({
-    flag_key: f.flag_key,
-    label_he: f.label_he,
-    trigger: f.trigger,
-    age_min_days: f.age_min_days ?? null,
-    age_max_days: f.age_max_days ?? null,
-    severity: f.severity ?? 'red',
-    action_he: f.action_he,
-    reason_he: f.reason_he ?? null,
-    source_anchor: f.source_anchor,
-    review_note_he: note(f),
-  }));
-
-  await save('ClinicalRule', kept.clinical_rules, 'clinical_rules', (r) => ({
-    rule_key: r.rule_key,
-    title_he: r.title_he,
-    category: r.category ?? null,
-    domain: r.domain ?? null,
-    conditions: r.conditions,
-    logic: r.logic ?? 'all',
-    min_count: r.min_count ?? 0,
-    conclusion_he: r.conclusion_he,
-    suspicion: r.suspicion,
-    clinical_reasoning_he: r.clinical_reasoning_he ?? null,
-    recommended_workup_he: r.recommended_workup_he ?? [],
-    source_anchor: r.source_anchor,
-    review_note_he: note(r),
-  }));
-
-  await save('Association', kept.associations, 'associations', (a) => ({
-    assoc_key: a.assoc_key,
-    anchor_finding_he: a.anchor_finding_he,
-    co_findings: a.co_findings ?? [],
-    implies_he: a.implies_he,
-    suspicion: a.suspicion,
-    mechanism_he: a.mechanism_he ?? null,
-    action_he: a.action_he ?? null,
-    age_scope: a.age_scope ?? 'all',
-    source_anchor: a.source_anchor,
-    review_note_he: note(a),
-  }));
+  }
 
   return { saved, skipped, failed };
 }
