@@ -6,6 +6,14 @@ import { runRadiologyEngine, buildRadiologyEvidenceBlock } from "./radiologyEngi
 import { runSkinEngine, buildSkinEvidenceBlock } from "./skinEngine";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { guardVisionNarrative } from "./medscan/engines/visionNarrativeGuard";
+import { createVisionInvokeLLM } from "./medscan/llmAdapter";
+
+// ⚠ כל קריאות ה-LLM בצינור עוברות דרך המתאם ולא ישירות ל-SDK.
+// המתאם אוכף סכמת פלט, משבית הקשר-מהאינטרנט ומרכז ניטור.
+// ⚠ זה אינו תחליף לשער העיגון (groundedInvoke) — ראה הערה בראש שלב 2.
+const invokeExtract = createVisionInvokeLLM({ purpose: "vision_extract_match" });
+const invokeDiagnosis = createVisionInvokeLLM({ purpose: "vision_diagnosis" });
+const invokeEngine = createVisionInvokeLLM({ purpose: "vision_engine" });
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
