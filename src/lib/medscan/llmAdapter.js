@@ -66,6 +66,54 @@ export function createInvokeLLM({ fileUrls = null, onCall = null } = {}) {
 }
 
 /**
+ * מתאם למסלול ה-Vision — צורת ארגומנטים גולמית, אותם כללים.
+ *
+ * למה שני מתאמים ולא אחד: `createInvokeLLM` משרת את השער,
+ * שמעביר `{system, prompt, schema, purpose}` ומזריק את ה-system בראש
+ * הפרומפט. מנועי ה-Vision הקיימים בונים פרומפט מלא בעצמם
+ * ומעבירים צורה גולמית. שכתוב שלהם הוא שינוי גדול ומסוכן
+ * יותר מהתועלת — אבל אסור שיקראו ל-SDK ישירות.
+ *
+ * ⚠ מה שנאכף כאן ולא נסמך על זכרונו של הקורא:
+ *   1. `response_json_schema` חובה — פלט לא-מובנה עוקף את כל האימות.
+ *   2. `add_context_from_internet` מושבת תמיד — מקור-האמת הוא
+ *      התמונה וה-FACT BLOCK, לא דף שהמודל מצא.
+ *   3. נקודת ניטור אחת — `onCall`.
+ *
+ * @param {object} [opts]
+ * @param {string} [opts.purpose] לצרכי ניטור ובחירת דגם
+ * @param {function} [opts.onCall]
+ */
+export function createVisionInvokeLLM({ purpose = 'vision', onCall = null } = {}) {
+  return async function visionInvokeLLM(args = {}) {
+    const { response_json_schema: schema, model } = args;
+
+    if (!schema) {
+      // כלל-ברזל 3: פלט לא-מובנה אסור. נכשל רועש, לא שקט.
+      throw new Error(
+        `MedScan: קריאת Vision ללא response_json_schema (purpose=${purpose}). ` +
+        'פלט לא-מובנה אסור — הוא עוקף את כל שכבת האימות.'
+      );
+    }
+
+    onCall?.({
+      purpose,
+      model: model ?? DIAGNOSIS_MODEL,
+      promptLength: String(args.prompt ?? '').length,
+      fileCount: (args.file_urls ?? []).length,
+    });
+
+    return base44.integrations.Core.InvokeLLM({
+      ...args,
+      model: model ?? DIAGNOSIS_MODEL,
+      // נכפה כאן ולא נסמך על הקורא: הקשר מהאינטרנט מכניס טענות
+      // שאינן ניתנות לעקיבה לתמונה ולא לידע המאומת.
+      add_context_from_internet: false,
+    });
+  };
+}
+
+/**
  * טוען את פריטי ה-KB הרלוונטיים מהישויות.
  * מחזיר את המבנה ש-`runRulesEngine` מצפה לו.
  *
