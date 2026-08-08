@@ -5,6 +5,11 @@ import { runEcgComparison } from "@/lib/ecgCompare";
 import EmergencyTriageBanner from "@/components/EmergencyTriageBanner";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
+import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+
+// ⚠ עובר דרך המתאם ולא ישירות ל-SDK — סכמה נכפית,
+// הקשר-מהאינטרנט מושבת, ונקודת ניטור אחת.
+const invokeComparison = createVisionInvokeLLM({ purpose: "ecg_comparison" });
 
 function parseStructured(a) {
   try {
