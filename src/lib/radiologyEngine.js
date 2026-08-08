@@ -15,6 +15,7 @@
 
 import { verifyDiagnosis } from "./verify";
 import { DIAGNOSIS_MODEL } from "./aiConfig";
+import { RADIOLOGY_CRITICAL_PROMPT, applyRadiologyCritical } from "./radiologyCritical";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -55,6 +56,8 @@ ${MODALITY_PHYSICS}
 ${SEARCH_PATTERNS}
 
 ${ANTI_HALLUCINATION}
+
+${RADIOLOGY_CRITICAL_PROMPT}
 
 ## פלט
 החזר אך ורק JSON התואם לסכמה. טקסט חופשי ב-${outputLang}; מונחים רפואיים ניתן להשאיר גם באנגלית.`;
@@ -116,6 +119,19 @@ export const RADIOLOGY_SCHEMA = {
     clinical_urgency: { type: "string", enum: ["Normal", "Urgent", "Emergency"] },
     critical_red_flags: { type: "array", items: { type: "string" } },
     recommended_next_steps: { type: "array", items: { type: "string" } },
+    critical_rule_out: {
+      type: "array",
+      description: "שלילת דפוסים מסכני-חיים — לכל דפוס: met / indeterminate / not_met",
+      items: {
+        type: "object",
+        properties: {
+          pattern_key: { type: "string" },
+          status: { type: "string", description: "met / indeterminate / not_met" },
+          evidence: { type: "string" },
+        },
+        required: ["pattern_key", "status"],
+      },
+    },
     confidence: { type: "number", description: "0-100 calibrated confidence" },
   },
   required: [
@@ -207,6 +223,14 @@ export async function runRadiologyEngine({
   const cons = radiologyConsistency(pass1);
   const warnings = [...cons.warnings];
   let confidence = (typeof pass1.confidence === "number" ? pass1.confidence : 60) - cons.penalty;
+
+  // ---- Critical rule-out escalation (a met life-threat forces urgency) ----
+  const radCrit = applyRadiologyCritical(pass1);
+  warnings.push(...radCrit.warnings);
+  const urank = { Normal: 0, Urgent: 1, Emergency: 2 };
+  if (radCrit.forcedUrgency && urank[radCrit.forcedUrgency] > urank[pass1.clinical_urgency || "Normal"]) {
+    pass1.clinical_urgency = radCrit.forcedUrgency;
+  }
 
   const urgent = pass1.clinical_urgency === "Urgent" || pass1.clinical_urgency === "Emergency";
   const needsScrutiny = urgent || confidence < 60 || cons.warnings.length > 0;
