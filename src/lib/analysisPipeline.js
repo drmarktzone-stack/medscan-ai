@@ -90,7 +90,7 @@ export async function runDiagnosisPipeline({
   // ---------- Stage 1: Scan, Measure & Match ----------
   onStage?.("extracting");
 
-  const stage1Promise = base44.integrations.Core.InvokeLLM({
+  const stage1Promise = invokeExtract({
     prompt: `אתה ${domainRole} עם ניסיון רב שנים. משימה זו מחולקת לשני חלקים: ראשית סריקה ומדידה שיטתית של התמונה, ולאחר מכן התאמה מול כל מקרי מאגר הידע.
 
 ## התמונות לניתוח
@@ -153,7 +153,7 @@ ${langDirective}`,
         pediatric,
         ageYears: patientAgeYears,
         sex: patientSex,
-        invokeLLM: (args) => base44.integrations.Core.InvokeLLM(args),
+        invokeLLM: invokeEngine,
         onStage,
       })
     : null;
@@ -245,7 +245,22 @@ ${langDirective}`,
     `${i + 1}. ${m.title} — ${m.diagnosis || ""} (ביטחון התאמה: ${m.confidence}%): ${m.reasoning}`
   ).join("\n");
 
-  const diagnosis = await base44.integrations.Core.InvokeLLM({
+  // ⚠ שלב הפרשנות — הפער שנותר פתוח.
+  //
+  // שלב זה מפיק אבחנה ראשית, אבחנות מבדלות, דרגת חומרה
+  // והמלצות קליניות — כלומר פרשנות, לא תפיסה. לפי התכן הוא
+  // אמור לעבור דרך groundedInvoke ולהידרש ל-fact_refs לכל טענה.
+  //
+  // הוא אינו עובר שם עדיין, מסיבה אחת: כל ה-KB בסטטוס טיוטה,
+  // ולכן buildFactBlock מחזיר hasVerifiedClinicalContent=false
+  // ו-preflightCheck היה מסרב לכל ניתוח עם no_verified_knowledge.
+  // זו התנהגות נכונה של השער, אך משמעותה שהמודול יפסיק להפיק
+  // פלט עד שיאומת ידע — וזו הכרעה מוצרית, לא הנדסית.
+  //
+  // עד להכרעה: הקריאה עוברת דרך המתאם, ו-guardVisionNarrative
+  // מאמת שכל מספר בנרטיב עקיב לתצפית. הוא מאמת עקיבות,
+  // לא נכונות — ואינו דורש fact_refs.
+  const diagnosis = await invokeDiagnosis({
     prompt: `אתה ${domainRole} עם ניסיון רב שנים. בצע אימות קריטריוני אבחון ולאחריו ניתוח קליני מפורט, המבוסס על המדידות שחולצו והמקרים התואמים מול מאגר הידע.
 
 ## התמונות לניתוח
