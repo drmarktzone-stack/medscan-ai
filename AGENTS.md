@@ -32,3 +32,15 @@ npx skills add base44/skills
 - Prefer the existing Base44 CLI workflow over adding new npm scripts for Base44-specific tasks.
 - Reuse the existing SDK client and Vite plugin patterns before adding new Base44 integration paths.
 - Run the relevant checks from `package.json` before finishing code changes.
+
+## פרוטוקול תיבת-פרומפטים (MedScan)
+
+ד"ר סמר מוסיף משימות כקובצי פרומפט (`.md`) בתיקייה `prompts/inbox/`. **כשהמשתמש כותב בצ'אט טריגר כמו "בדוק את ה-inbox" / "הרץ את הפרומפטים החדשים":**
+
+1. קרא את הקבצים ב-`prompts/inbox/*.md` (פרט ל-`README`) — אלה משימות לביצוע.
+2. בצע אותן **אחת-אחת, לפי סדר שמות**, תחת כללי הפרויקט: שינוי ממוקד → הרצת ה-checks מ-`package.json` (build) → checkpoint אחרי כל שלב.
+3. קבצים ב-`prompts/hold/` — **אל תבצע** (ממתינים לשחרור).
+4. אחרי סיום מוצלח של פרומפט — העבר אותו ל-`prompts/done/`.
+5. דווח סיכום מרוכז בסוף. בספק/סתירה קלינית — סמן `needs_verification`, אל תנחש. Claude בלבד כמנוע; אין Gemini.
+
+> הערה: קובצי `.claude/` (hook + פקודת `/inbox`) פועלים רק ב-Claude Code בטרמינל, לא בממשק Base44. בממשק — הטריגר הוא משפט קצר בצ'אט, והכלל הזה ב-AGENTS.md הוא מה שמפעיל אותו.
