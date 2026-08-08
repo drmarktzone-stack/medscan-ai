@@ -1,0 +1,303 @@
+{
+  "chapter_title_he": "המטולוגיה — טחול",
+  "_provenance_he": "נלסון 22 (Elsevier, 2025), פרק 536 — Hyposplenism, Splenic Trauma, and Splenectomy, עמודים 3063-3064. חולץ מטקסט verbatim של ה-PDF המקורי. ⚠ הציטוטים בשדות source_quote_he הם באנגלית ובמכוון: זהו הנוסח שניתן לאמת מול הספר. תרגום היה מוסיף שכבת פרשנות בין הטענה למקור. ⚠ קובץ המקור knowledge/source/nelson22/hyposplenism.json מכיל רשימת subsections שגויה (נושאי אנדוקרינולוגיה שאינם שייכים לפרק) — הטקסט עצמו תקין ולא נעשה בה שימוש.",
+  "topics": [
+    {
+      "topic_key": "nelson22.c536.hyposplenism",
+      "topic_title_he": "היפוספלניזם, חבלת טחול וכריתת טחול",
+      "topic_title_en": "Hyposplenism, Splenic Trauma, and Splenectomy",
+      "chapter_number": 536,
+      "chapter_title_he": "מחלות הדם",
+      "page_start": 3063,
+      "page_end": 3064,
+      "source_edition": "nelson22",
+      "summary_he": "הפרק מאגד שלושה מצבים שהמשותף להם הוא אובדן תפקוד הטחול — מולד, נרכש או ניתוחי — וכולם מובילים לאותה סכנה: ספסיס מחיידקים בעלי קפסולה שמתקדם במהירות. הנקודה הקלינית החדה ביותר היא שהספסיס יכול להוביל למוות תוך 12 עד 24 שעות מתחילתו, ולכן חום בחולה ללא טחול מתפקד אינו אירוע שממתין לבירור. הפרק מפרט גם את הגורמים להיפוספלניזם תפקודי — ובראשם אנמיה חרמשית, שבה תפקוד הטחול נפגע כבר מגיל שישה חודשים — את דרכי האבחון, ואת מה שניתן לעשות לפני ואחרי כריתה כדי להקטין סיכון.",
+      "keywords": ["היפוספלניזם", "אספלניה", "כריתת טחול", "OPSI", "Howell-Jolly", "Ivemark", "חיידקים עם קפסולה", "פנאומוקוק", "Capnocytophaga", "חבלת טחול", "אנמיה חרמשית", "פרופילקסיס"],
+      "age_scope": "child",
+      "source_quote_he": "Patients with functional hyposplenism or asplenia are at increased risk for sepsis from encapsulated bacteria and benefit from antibiotic prophylaxis and urgent evaluation when febrile."
+    }
+  ],
+  "lab_patterns": [],
+  "red_flags": [
+    {
+      "flag_key": "nelson22.c536.febrile_asplenic",
+      "label_he": "חום בחולה ללא טחול מתפקד",
+      "trigger": {
+        "findings": ["חום בחולה לאחר כריתת טחול", "חום בחולה עם אספלניה", "חום בחולה עם היפוספלניזם תפקודי", "חום בילד עם אנמיה חרמשית"],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "הערכה וטיפול אנטיביוטי מיידיים. לפי המקור, הספסיס — עם או בלי מנינגיטיס — יכול להתקדם במהירות ולהוביל למוות תוך 12 עד 24 שעות מתחילתו. המקור קובע במפורש שיש להתחיל את הטיפול כבר בבית אם הגישה לטיפול רפואי מוגדר תתעכב. הכיסוי חייב לכלול חיידקים עם קפסולה. בחירת התכשיר והמינון מהפרוטוקול המחלקתי — ראה dosing_mentions_he.",
+      "reason_he": "לפי המקור, מאחר שהטחול אחראי לסינון הדם ולתגובת הנוגדנים המוקדמת, הספסיס יכול להתקדם במהירות ולהוביל למוות תוך 12 עד 24 שעות מתחילתו; חולים שנכרת טחולם והם קודחים צריכים להיות מוערכים ומטופלים באנטיביוטיקה במהירות.",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Because the spleen is responsible for filtering the blood and for early antibody responses, sepsis (with or without meningitis) can progress rapidly, leading to death within 12-24 hours of onset. Febrile splenectomized patients should be evaluated and treated promptly with antibiotics to cover the organisms previously mentioned. This treatment should be initiated at home if access to definitive medical care will be delayed."
+    },
+    {
+      "flag_key": "nelson22.c536.splenectomy_under_five",
+      "label_he": "כריתת טחול מתחת לגיל חמש",
+      "trigger": {
+        "findings": ["כריתת טחול מתוכננת", "גיל מתחת לחמש שנים", "מצב לאחר כריתת טחול בגיל צעיר"],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 1825,
+      "severity": "critical",
+      "action_he": "לפי המקור, הסיכון לזיהום מכריע לאחר כריתת טחול גבוה במיוחד בילדים שגילם היה מתחת לחמש שנים בעת הניתוח. אם ניתן — יש לוודא את הצורך בכריתה ולדחות את הניתוח עד שהילד בן חמש לפחות. זהו שיקול שמשנה עיתוי, לא רק מעקב.",
+      "reason_he": "לפי המקור, הסיכון ארוך-הטווח המרכזי של כריתת טחול הוא זיהום מכריע פתאומי לאחר הכריתה — ספסיס או מנינגיטיס — והסיכון גבוה במיוחד בילדים מתחת לגיל חמש בעת הניתוח; חשוב לוודא את הצורך בכריתה, ואם אפשר לדחות את הניתוח עד גיל חמש ומעלה.",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "The major long-term risk of splenectomy is sudden, overwhelming postsplenectomy infections (sepsis or meningitis). This risk is especially high in children <5 years old at surgery. … It is important to be certain of the need for splenectomy and, if possible, to postpone the operation until the patient is ≥5 years of age."
+    },
+    {
+      "flag_key": "nelson22.c536.animal_bite_asplenic",
+      "label_he": "נשיכת או ליקוק בעל חיים בחולה ללא טחול",
+      "trigger": {
+        "findings": ["נשיכת כלב בחולה ללא טחול", "ליקוק בעל חיים בחולה ללא טחול", "מצב לאחר כריתת טחול עם חשיפה לבעל חיים"],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, זיהומים חמורים עלולים להתרחש לאחר נשיכה או ליקוק של בעל חיים — בעיקר כלבים — ונגרמים על ידי Capnocytophaga canimorsus או C. cynodegmi. יש לתת אנטיביוטיקה מונעת לאחר נשיכה כדי למנוע ספסיס מהמחוללים האלה. זהו טיפול מונע שניתן על סמך החשיפה עצמה, ולא רק כשמופיעים סימני זיהום.",
+      "reason_he": "לפי המקור, חולים שנכרת טחולם נמצאים בסיכון מוגבר גם לזיהומים פרוטוזואליים כמו מלריה ובבזיוזיס; וזיהומים חמורים עלולים להתרחש לאחר נשיכה או ליקוק של בעל חיים ונגרמים על ידי Capnocytophaga.",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Serious infections may occur after an animal bite or lick (particularly dogs) and is caused by Capnocytophaga canimorsus or C. cynodegmi. Prophylactic antibiotics should be given after a bite potentially to prevent sepsis caused by these organisms."
+    },
+    {
+      "flag_key": "nelson22.c536.splenomegaly_contact_sport",
+      "label_he": "טחול מוגדל — סיכון לקרע בחבלה קלה",
+      "trigger": {
+        "findings": ["ספלנומגליה", "מונונוקלאוזיס זיהומית", "כאב בטן לאחר חבלה בילד עם טחול מוגדל", "כאב מוקרן לכתף שמאל"],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, טחול שהיה מוגדל קודם — כמו בחולי מונונוקלאוזיס זיהומית — נוטה יותר להיקרע בחבלה קלה. חולים עם ספלנומגליה צריכים להימנע מספורט מגע ומפעילויות אחרות שמגבירות את הסיכון לחבלת טחול. כאב בטן או כאב מוקרן לכתף שמאל בילד כזה מחייבים הערכה מיידית — הכאב המוקרן נובע מגירוי הסרעפת על ידי דם.",
+      "reason_he": "לפי המקור, קרעים קטנים בקופסית הטחול עלולים לגרום לכאב בטני או לכאב מוקרן לכתף שמאל כתוצאה מגירוי הסרעפת על ידי דם; קרעים גדולים יותר גורמים לאיבוד דם משמעותי יותר עם אותו כאב וסימני שוק היפו-וולמי.",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Small splenic capsular tears may cause abdominal or referred left shoulder pain as a result of diaphragmatic irritation by blood. Larger tears result in more severe blood loss, with similar pain and signs of hypovolemic shock. Previously enlarged spleens (as in patients with infectious mononucleosis) are more likely to rupture with minor trauma. Patients with splenomegaly should avoid contact sports and other activities that increase the risk of splenic trauma."
+    },
+    {
+      "flag_key": "nelson22.c536.sickle_cell_early_hyposplenism",
+      "label_he": "אנמיה חרמשית — פגיעה בתפקוד הטחול כבר מגיל שישה חודשים",
+      "trigger": {
+        "findings": ["אנמיה חרמשית", "המוגלובינופתיה חרמשית", "חום בתינוק עם אנמיה חרמשית"],
+        "logic": "any"
+      },
+      "age_min_days": 180,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, ילדים עם המוגלובינופתיות חרמשיות עלולים לסבול מתת-תפקוד של הטחול כבר מגיל שישה חודשים. בהמשך הטחול עובר אוטו-אינפרקציה, נעשה פיברוטי ומאבד את תפקודו לצמיתות. משמע: ילד עם אנמיה חרמשית הוא ילד ללא טחול מתפקד לצורך הערכת חום — גם אם הטחול קיים אנטומית. המקור מציין שבילדים עם אנמיה חרמשית יש להתחיל פרופילקסיס בפניצילין ברגע שהאבחנה נקבעת.",
+      "reason_he": "לפי המקור, ילדים עם המוגלובינופתיות חרמשיות עשויים לסבול מתת-תפקוד טחולי כבר מגיל שישה חודשים; בסביבה הזו הטחול עובר אוטו-אינפרקציה בסופו של דבר ונעשה פיברוטי ולא-מתפקד לצמיתות.",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Children with sickle cell hemoglobinopathies may have splenic hypofunction as early as 6 months of age. In this setting, the spleen eventually autoinfarcts and becomes fibrotic and permanently nonfunctional. … In children with sickle cell disease, penicillin prophylaxis should be started as soon as the diagnosis is made."
+    },
+    {
+      "flag_key": "nelson22.c536.post_splenectomy_thrombosis",
+      "label_he": "סיבוכים תרומבו-אמבוליים לאחר כריתת טחול",
+      "trigger": {
+        "findings": ["מצב לאחר כריתת טחול", "פקקת ורידית", "פקקת עורקית", "יתר לחץ דם ריאתי", "פקקת וריד השער"],
+        "logic": "any"
+      },
+      "age_min_days": 0,
+      "age_max_days": 6570,
+      "severity": "critical",
+      "action_he": "לפי המקור, בנוסף לספסיס, חולים לאחר כריתת טחול נמצאים בסיכון לסיבוכים תרומבו-אמבוליים — פקקת עורקית וורידית ויתר לחץ דם ריאתי. הממצאים דווחו ללא תלות בסיבה לכריתה **וללא תלות בספירת הטסיות** שלאחריה. משמע: ספירת טסיות תקינה אינה שוללת את הסיכון. פקקת וריד השער דווחה כסיבוך של כריתה לפרוסקופית.",
+      "reason_he": "לפי המקור, הממצאים דווחו ללא קשר לסיבה הבסיסית לכריתת הטחול ולספירת הטסיות שלאחריה; המנגנונים המוצעים כוללים אובדן תפקוד הסינון של הטחול, המאפשר לכדוריות אדומות בלתי-תקינות להישאר במחזור ולהפעיל את מפל הקרישה.",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "In addition to postsplenectomy sepsis, splenectomized patients may be at risk for thromboembolic complications, including arterial and venous thrombosis and pulmonary hypertension. These findings have been reported regardless of the underlying reason for splenectomy and the postsplenectomy platelet count."
+    }
+  ],
+  "clinical_rules": [
+    {
+      "rule_key": "nelson22.c536.hyposplenism_causes",
+      "title_he": "היפוספלניזם — גורמים מולדים ונרכשים",
+      "category": "criteria",
+      "domain": "hematology",
+      "conditions": [{ "type": "finding", "key": "חשד לתת-תפקוד טחולי", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "היעדר מולד של הטחול (אספלניה) או תת-התפתחות שלו (היפוספלניה) קשורים במומי לב כחלוניים מורכבים, בדקסטרוקרדיה, בריאות תלת-אונתיות דו-צדדית ובאיברי בטן הטרוטופיים — תסמונת Ivemark. בחולים עם אספלניה מולדת מבודדת נמצאו וריאנטים פתוגניים ב-RPSA בכ-40% מהמקרים. איזומריזם עלייתי ימני, צורה של הטרוטקסיה, עשוי להיות מלווה באספלניה עם וריאנטים פתוגניים ב-GDF1. תפקוד הטחול תקין בדרך כלל בילדים עם פוליספלניה מולדת. היפוספלניזם תפקודי עשוי להתרחש ביילודים תקינים, ובמיוחד בפגים. הוא עשוי להתרחש גם במלריה, לאחר הקרנה לרביע השמאלי העליון, וכאשר התפקוד הרטיקולו-אנדותליאלי של הטחול מוצף — כמו באנמיה המוליטית קשה או במחלת אגירה מטבולית. פקקת של עורק הטחול, עורק הצליאק או וריד הטחול קשורה בהיפוספלניזם תפקודי. תת-תפקוד טחולי דווח מדי פעם בחולים עם מחלות אוטו-אימוניות — ארתריטיס אידיופתית של גיל הילדות, לופוס, סרקואידוזיס — וכן בנפריטיס, במחלות מעי דלקתיות, במחלת צליאק, בהפטיטיס כרונית, בתסמונת Pearson, באנמיית Fanconi, בשימוש בקורטיקוסטרואידים במינון גבוה, ובמחלת שתל נגד מאכסן.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "הרשימה הזו הופכת את השאלה מ«האם הטחול קיים» ל«האם הוא מתפקד». חלק ניכר מהגורמים — צליאק, IBD, לופוס, סטרואידים במינון גבוה — הם מצבים שכיחים שבהם איש אינו חושב על הטחול. משמע: חום בחולה עם אחת מהמחלות האלה עשוי להיות חום בחולה ללא הגנה טחולית.",
+      "recommended_workup_he": ["משטח דם — Howell-Jolly", "הערכת מבנה לב במומים כחלוניים מורכבים", "בירור גנטי ב-RPSA או GDF1 בהקשר מתאים", "בחינת מחלת רקע אוטו-אימונית או גסטרו-אינטסטינלית"],
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Congenital absence (asplenia) or underdevelopment (hyposplenia) of the spleen is associated with complex cyanotic heart defects, dextrocardia, bilateral trilobed lungs, and heterotopic abdominal organs (Ivemark syndrome). Patients with isolated congenital asplenia have pathogenic variants in RPSA in ∼40% of cases. … Functional hyposplenism may occur in normal neonates, especially premature infants. … Splenic hypofunction has been reported occasionally in patients with autoimmune diseases (i.e., juvenile idiopathic arthritis, lupus, sarcoidosis), nephritis, inflammatory bowel disease, celiac disease, chronic hepatitis, Pearson syndrome, Fanconi anemia, those with use of high-dose corticosteroids, and graft-versus-host disease."
+    },
+    {
+      "rule_key": "nelson22.c536.hyposplenism_diagnosis",
+      "title_he": "היפוספלניזם — אבחון",
+      "category": "criteria",
+      "domain": "hematology",
+      "conditions": [{ "type": "finding", "key": "חשד לתת-תפקוד טחולי", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "תת-תפקוד טחולי מאופיין בהסגרים בכדוריות דם אדומות במשטח דם היקפי — גופיפי Howell-Jolly או Heinz — ב«גומות» (pits) במיקרוסקופיה של התאבכות, ובקליטה ירודה של טכנציום או סריקות טחול אחרות. ניתן לגלות גם ירידה בתאי B זיכרון מסוג IgM, וזהו גורם סיכון לספסיס מכריע.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "משטח דם הוא הבדיקה הזמינה ביותר כאן, והיא נעשית ממילא. גופיפי Howell-Jolly בילד שאיש לא חשב עליו כאספלני הם הרמז שמשנה את כל הערכת החום שלו מכאן והלאה.",
+      "recommended_workup_he": ["משטח דם היקפי — Howell-Jolly ו-Heinz", "מיקרוסקופיית התאבכות לספירת גומות", "סריקת טחול בטכנציום", "רמות תאי B זיכרון מסוג IgM"],
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Splenic hypofunction is characterized by red blood cell (RBC) inclusions in peripheral blood smears (Howell-Jolly or Heinz bodies), \"pits\" on interference microscopy, and poor uptake of technetium or other spleen scans. Reduced immunoglobulin M memory B cells may also be detected and is a risk factor for overwhelming sepsis."
+    },
+    {
+      "rule_key": "nelson22.c536.splenic_trauma_management",
+      "title_he": "חבלת טחול — הערכה וטיפול",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [{ "type": "finding", "key": "חבלת בטן עם חשד לפגיעה בטחול", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "CT עם חומר ניגוד תוך-ורידי הוא אמצעי ההדמיה הטוב ביותר להערכת חבלת טחול בחולה יציב המודינמית. במצבי חירום יש לשקול E-FAST כהערכה ראשונית, אף שהרגישות והסגוליות בילדים משתנות. הטיפול בפגיעה קופסיתית קטנה כולל תצפית קפדנית עם תשומת לב לשינויים בסימנים חיוניים או בממצאי הבטן, בדיקות המוגלובין סדרתיות, וזמינות של התערבות כירורגית מהירה אם מצב החולה מידרדר. דרישות עירוי הדם צפויות להיות מינימליות — הסף מופיע בציטוט המקור. חולים אלה מאושפזים בדרך כלל 10 עד 14 ימים ופעילותם מוגבלת למשך חודשים. לפרוטומיה, עם או בלי כריתת טחול, מותווית בדימום בטני בולט יותר, בחולים עם חוסר יציבות או הידרדרות קלינית, או כאשר יש חשד לנזק לאיבר אחר. יש להעדיף כריתה חלקית ותיקון טחול על פני כריתה מלאה כשהדבר אפשרי, כדי לשמר תפקוד חיסוני טחולי. טיפול לא-ניתוחי אפשרי בדרך כלל ביותר מ-90% מהחולים. קרע מאוחר של הטחול נדיר למדי בילדים.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "ההעדפה לכריתה חלקית על פני מלאה אינה שיקול כירורגי בלבד — היא ההבדל בין ילד עם הגנה טחולית חלקית לילד שיזדקק לפרופילקסיס ולהערכה דחופה בכל חום עד סוף חייו. ההנחיה לטיפול לא-ניתוחי ביותר מ-90% מהמקרים נובעת מאותו היגיון.",
+      "recommended_workup_he": ["CT עם חומר ניגוד בחולה יציב", "E-FAST במצב חירום", "המוגלובין סדרתי", "ניטור סימנים חיוניים וממצאי בטן", "זמינות התערבות כירורגית"],
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "CT scan with intravenous contrast is the best imaging modality to assess splenic trauma in a hemodynamically stable patient. In emergent situations extended focused assessment with sonography in trauma (E-FAST) should be considered as an initial evaluation… RBC transfusion requirements should be minimal (<25 mL/kg/48 hr). These patients are usually hospitalized for 10-14 days and have their activities restricted for months. … Partial splenectomy and splenic repair should be substituted for total splenectomy when feasible to maintain some splenic immune function. Nonoperative management is typically possible in >90% of patients."
+    },
+    {
+      "rule_key": "nelson22.c536.splenectomy_indications",
+      "title_he": "כריתת טחול — התוויות ומצבים שבהם יש להימנע",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [{ "type": "finding", "key": "שקילת כריתת טחול", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "כריתת טחול צריכה להיות מוגבלת להתוויות ספציפיות שבהן הטיפול הרפואי אינו יעיל או לא היה יעיל. אלה כוללות קרע טראומטי של הטחול, פגמים אנטומיים, ממאירות טחולית (לדוגמה לימפומה של אזור השוליים הטחולי), אנמיה המוליטית קשה תלוית-עירויים, ציטופניות חיסוניות עמידות וקשות, מחלות אגירה מטבוליות, והיפרספלניזם משני. קיימים מצבים שבהם יש להימנע מכריתת טחול בשל סיכון מוגבר לסיבוכים ו/או חלופות טיפוליות טובות יותר: תסמונת לימפופרוליפרטיבית אוטו-אימונית (ALPS), סטומטוציטוזיס תורשתי, קסרוציטוזיס תורשתי, מחלת אגלוטינינים קרים, המוגלובינוריה קרה התקפית, מחלת גושה, ותרומבוציטופניה בשחמת כבד.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "רשימת ההימנעות היא החלק המעשי כאן: אלה מצבים שבהם כריתה נראית כפתרון סביר לציטופניה, אך בפועל היא מחמירה או שקיימת חלופה. שאלה אחת על האבחנה הבסיסית לפני ההפניה לכירורג משנה את ההחלטה.",
+      "recommended_workup_he": ["אישוש האבחנה הבסיסית לפני ההפניה", "בחינת חלופות טיפוליות", "הערכת גיל הילד ביחס לעיתוי הניתוח", "השלמת חיסונים לפני הניתוח"],
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Splenectomy should be limited to specific indications where medical therapy is (or has been) ineffective. These include traumatic splenic rupture, anatomic defects, splenic malignancy… There are certain conditions where splenectomy should be avoided because of increased risk of complications and/or better alternative treatments. These include autoimmune lymphoproliferative syndrome (ALPS), hereditary stomatocytosis (HSt), hereditary xerocytosis (HX), cold agglutinin disease (CAD), paroxysmal cold hemoglobinuria (PCH), Gaucher disease, and thrombocytopenia in hepatic cirrhosis."
+    },
+    {
+      "rule_key": "nelson22.c536.opsi_risk_stratification",
+      "title_he": "ספסיס מכריע לאחר כריתת טחול — דירוג הסיכון",
+      "category": "criteria",
+      "domain": "hematology",
+      "conditions": [{ "type": "finding", "key": "מצב לאחר כריתת טחול", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "הסיכון לספסיס נמוך יותר כאשר הכריתה בוצעה בשל חבלה, פגמים בממברנת הכדורית האדומה או תרומבוציטופניה חיסונית, לעומת מצבים של אנמיה חרמשית, תלסמיה, חסר חיסוני קיים (תסמונת Wiskott-Aldrich, מחלת הודג'קין) או חסימה רטיקולו-אנדותליאלית (מחלת אגירה, אנמיה המוליטית קשה) — והשיעורים המספריים מופיעים בציטוט המקור. הסיכון הכולל הוא בסדר גודל של מקרים בודדים לכל 1,000 שנות-חולה אספלני, עם סיכון לכל החיים לזיהום מכריע. יותר ממחצית המקרים מתרחשים בשנתיים הראשונות לאחר הכריתה, אף שהסיכון נותר לכל החיים. חיידקים עם קפסולה — Streptococcus pneumoniae ביותר מ-60% מהמקרים, Haemophilus influenzae ו-Neisseria meningitidis — מהווים יותר מ-80% ממקרי הספסיס לאחר כריתה. כריתה לפרוסקופית הפחיתה את התחלואה הניתוחית ואת זמן האשפוז.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "הפער בין קבוצות הסיכון גדול, וההשלכה שלו מעשית: הסיבה לכריתה קובעת את עוצמת המעקב והפרופילקסיס. הנתון שיותר ממחצית המקרים מתרחשים בשנתיים הראשונות — אך שהסיכון נותר לכל החיים — הוא מה שמצדיק גם ערנות מוגברת בהתחלה וגם שלא להרפות אחר כך.",
+      "recommended_workup_he": ["תיעוד הסיבה לכריתה בגיליון", "התאמת עוצמת הפרופילקסיס לקבוצת הסיכון", "חינוך המשפחה לזיהוי חום כאירוע דחוף", "מעקב לכל החיים"],
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "The risk of sepsis is less when splenectomy is performed for trauma, RBC membrane defects, and immune thrombocytopenia (2–4%) than when there is sickle cell anemia, thalassemia, or a preexisting immune deficiency (Wiskott-Aldrich syndrome, Hodgkin disease) or reticuloendothelial blockade (storage disease, severe hemolytic anemia) (8–30%). The overall risk is 2-5 per 1,000 asplenic patient-years, with a lifelong risk of overwhelming postsplenectomy infections of 5%; more than half occur within 2 years after splenectomy, although the risk remains lifelong. … Encapsulated bacteria, such as Streptococcus pneumoniae (>60% of cases), Haemophilus influenzae, and Neisseria meningitidis, account for >80% of cases of postsplenectomy sepsis."
+    },
+    {
+      "rule_key": "nelson22.c536.perioperative_risk_reduction",
+      "title_he": "הפחתת סיכון סב-ניתוחית והשלמת חיסונים",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [{ "type": "finding", "key": "כריתת טחול מתוכננת", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "ניהול טרום-ניתוחי, תוך-ניתוחי ואחרי-ניתוחי עשוי להפחית את הסיכון לזיהום לאחר כריתת טחול. חשוב לוודא את הצורך בכריתה, ואם אפשר לדחות את הניתוח עד שהחולה בן חמש שנים לפחות. חיסוני פנאומוקוק, מנינגוקוק ו-Haemophilus influenzae מצומדים שניתנים לפחות 14 ימים לפני הכריתה עשויים להפחית ספסיס לאחריה. יש לתת גם חיסון פנאומוקוקלי פוליסכרידי מגיל שנתיים ומעלה, עם מנה שנייה כעבור חמש שנים. יש לתת חיסון שפעת שנתי, מאחר שזיהום בשפעת הוא גורם סיכון לזיהום פנאומוקוקלי משני. ⚠ מינוני הפרופילקסיס האנטיביוטי מופיעים בציטוט המקור וב-dosing_mentions_he בלבד.",
+      "suspicion": "red",
+      "clinical_reasoning_he": "חלון ה-14 ימים לפני הניתוח הוא הפרט שנופל בין הכיסאות: הוא מחייב תכנון חיסונים לפני ההפניה לכירורג, לא אחריה. וההנחיה על חיסון שפעת שנתי מוסברת במפורש — השפעת אינה הסכנה עצמה, היא הפותחת את הדלת לפנאומוקוק.",
+      "recommended_workup_he": ["השלמת חיסונים לפחות 14 ימים לפני הניתוח", "חיסון פנאומוקוקלי מצומד ופוליסכרידי לפי הגיל", "חיסון מנינגוקוק ו-Hib", "חיסון שפעת שנתי", "פרופילקסיס אנטיביוטי לפי הפרוטוקול המחלקתי"],
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Pneumococcal, meningococcal, and H. influenzae conjugate vaccines given at least 14 days before splenectomy may reduce postsplenectomy sepsis. … In addition, the 23-valent pneumococcal polysaccharide vaccine (Pneumovax) should be given at age ≥2 years and a second dose 5 years later. Yearly influenza vaccine should also be given because influenza infection is a risk factor for secondary pneumococcal infections."
+    },
+    {
+      "rule_key": "nelson22.c536.spleen_preservation",
+      "title_he": "שימור רקמת טחול לאחר חבלה",
+      "category": "management",
+      "domain": "hematology",
+      "conditions": [{ "type": "finding", "key": "כריתת טחול על רקע חבלה", "op": "present" }],
+      "logic": "all",
+      "conclusion_he": "בחולים עם פגיעה טראומטית יש לשקול תיקון טחול או כריתה חלקית בניסיון לשמר תפקוד טחולי. כריתה חלקית או אמבוליזציה טחולית חלקית עשויות להספיק כדי להקל על חלק מצורות האנמיה ההמוליטית. עד מחצית מהילדים שטחולם הוסר בשל חבלה מפתחים ספלנוזיס ספונטני; ספלנוזיס כירורגי — פיזור חתיכות טחול קטנות ברחבי הבטן — עשוי להפחית את הסיכון לספסיס בחולים שכריתת הטחול אצלם נדרשה בשל חבלה. ⚠ עם זאת, המקור מציין במפורש שבשני המצבים האלה רקמת הטחול שצומחת מחדש נוטה לתפקד בצורה ירודה.",
+      "suspicion": "yellow",
+      "clinical_reasoning_he": "ההסתייגות בסוף היא העיקר. ספלנוזיס — ספונטני או כירורגי — נראה כמו החזרת ההגנה, אבל המקור אומר שהתפקוד לרוב ירוד. משמע: נוכחות רקמת טחול בהדמיה אינה עילה להפסיק פרופילקסיס.",
+      "recommended_workup_he": ["העדפת תיקון או כריתה חלקית כשאפשר", "אי-הסתמכות על ספלנוזיס כתחליף לתפקוד", "המשך פרופילקסיס למרות נוכחות רקמת טחול"],
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Up to 50% of children whose spleen is removed because of trauma have spontaneous splenosis; surgical splenosis (distributing small pieces of spleen throughout the abdomen) may decrease the risk of sepsis in patients whose splenectomy is necessitated by trauma. However, in both these settings, the splenic tissue that regrows frequently has poor function."
+    }
+  ],
+  "associations": [
+    {
+      "assoc_key": "nelson22.c536.ivemark",
+      "anchor_finding_he": "אספלניה ביילוד",
+      "co_findings": ["מומי לב כחלוניים מורכבים", "דקסטרוקרדיה", "ריאות תלת-אונתיות דו-צדדית", "איברי בטן הטרוטופיים", "איזומריזם עלייתי ימני"],
+      "implies_he": "תסמונת Ivemark — הטרוטקסיה",
+      "suspicion": "red",
+      "mechanism_he": "הטרוטקסיה פוגעת בסידור האיברים באופן סימטרי, ולכן היעדר הטחול מופיע יחד עם מומי לב מורכבים ועם היפוך מיקומי איברים.",
+      "action_he": "הצירוף הזה נראה בהדמיה של הלב, לא של הטחול — ולכן קל להחמיץ את המשמעות החיסונית. יילוד עם מום לב כחלוני מורכב ודקסטרוקרדיה זקוק לבירור אספלניה, ואם היא קיימת — לפרופילקסיס ולהערכת חום דחופה לכל חייו. וריאנטים ב-GDF1 מדווחים באיזומריזם עלייתי ימני.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Congenital absence (asplenia) or underdevelopment (hyposplenia) of the spleen is associated with complex cyanotic heart defects, dextrocardia, bilateral trilobed lungs, and heterotopic abdominal organs (Ivemark syndrome). … Right atrial isomerism (Ivemark syndrome), a form of heterotaxy, may have asplenia associated with pathogenic variants of GDF1."
+    },
+    {
+      "assoc_key": "nelson22.c536.howell_jolly",
+      "anchor_finding_he": "גופיפי Howell-Jolly במשטח דם",
+      "co_findings": ["גופיפי Heinz", "גומות בכדוריות אדומות", "קליטה ירודה בסריקת טחול", "ירידה בתאי B זיכרון IgM"],
+      "implies_he": "תת-תפקוד טחולי — גם כשהטחול קיים אנטומית",
+      "suspicion": "red",
+      "mechanism_he": "הטחול אחראי להסרת הסגרים גרעיניים מכדוריות אדומות; הישארותם מעידה על אובדן התפקוד.",
+      "action_he": "זהו ממצא שמופיע בבדיקה שנעשית ממילא, ומשנה את כל הערכת החום של הילד מכאן והלאה. ילד עם Howell-Jolly הוא ילד ללא הגנה טחולית — גם אם הטחול נראה תקין בהדמיה. הירידה בתאי B זיכרון מסוג IgM מסומנת במקור כגורם סיכון עצמאי לספסיס מכריע.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Splenic hypofunction is characterized by red blood cell (RBC) inclusions in peripheral blood smears (Howell-Jolly or Heinz bodies), \"pits\" on interference microscopy, and poor uptake of technetium or other spleen scans. Reduced immunoglobulin M memory B cells may also be detected and is a risk factor for overwhelming sepsis."
+    },
+    {
+      "assoc_key": "nelson22.c536.mononucleosis_rupture",
+      "anchor_finding_he": "כאב בטן או כאב מוקרן לכתף שמאל לאחר חבלה קלה",
+      "co_findings": ["מונונוקלאוזיס זיהומית", "ספלנומגליה", "סימני שוק היפו-וולמי", "ספורט מגע"],
+      "implies_he": "קרע טחול",
+      "suspicion": "red",
+      "mechanism_he": "טחול מוגדל נוטה להיקרע בחבלה קלה; הדם מגרה את הסרעפת ומייצר כאב מוקרן לכתף שמאל.",
+      "action_he": "כאב מוקרן לכתף שמאל אחרי חבלה קלה בילד עם מונונוקלאוזיס אינו כאב שרירי. זהו הסימן הקלאסי, והוא מצדיק הערכה מיידית. ההשלכה המונעת: ילד עם ספלנומגליה צריך להימנע מספורט מגע — הנחיה שניתנת מראש ולא אחרי האירוע.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Small splenic capsular tears may cause abdominal or referred left shoulder pain as a result of diaphragmatic irritation by blood. … Previously enlarged spleens (as in patients with infectious mononucleosis) are more likely to rupture with minor trauma. Patients with splenomegaly should avoid contact sports."
+    },
+    {
+      "assoc_key": "nelson22.c536.capnocytophaga",
+      "anchor_finding_he": "נשיכת כלב בחולה ללא טחול מתפקד",
+      "co_findings": ["ליקוק בעל חיים", "מצב לאחר כריתת טחול", "אספלניה"],
+      "implies_he": "Capnocytophaga canimorsus או C. cynodegmi",
+      "suspicion": "red",
+      "mechanism_he": "המקור מציין שזיהומים חמורים עלולים להתרחש לאחר נשיכה או ליקוק של בעל חיים, בעיקר כלבים, ונגרמים על ידי מחוללים אלה.",
+      "action_he": "זהו טיפול מונע שניתן על סמך החשיפה בלבד. בחולה ללא טחול, נשיכת כלב אינה פצע שמנקים ומשחררים — היא התוויה לאנטיביוטיקה מונעת. שווה לציין גם את הסיכון המוגבר למלריה ולבבזיוזיס באותה אוכלוסייה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Splenectomized patients are also at increased risk for contracting protozoal infections, such as malaria and babesiosis. Serious infections may occur after an animal bite or lick (particularly dogs) and is caused by Capnocytophaga canimorsus or C. cynodegmi. Prophylactic antibiotics should be given after a bite potentially to prevent sepsis caused by these organisms."
+    },
+    {
+      "assoc_key": "nelson22.c536.sickle_cell_autoinfarction",
+      "anchor_finding_he": "אנמיה חרמשית בתינוק מגיל שישה חודשים",
+      "co_findings": ["המוגלובינופתיה חרמשית", "גופיפי Howell-Jolly", "חום"],
+      "implies_he": "היפוספלניזם תפקודי — ובהמשך אובדן תפקוד קבוע",
+      "suspicion": "red",
+      "mechanism_he": "הטחול עובר אוטו-אינפרקציה, נעשה פיברוטי ומאבד את תפקודו לצמיתות.",
+      "action_he": "הגיל הוא העיקר: כבר מגיל שישה חודשים הילד מאבד את ההגנה הטחולית, הרבה לפני שהדבר גלוי בהדמיה. המקור מורה להתחיל פרופילקסיס בפניצילין ברגע שהאבחנה נקבעת — כלומר בסקר יילודים, ולא בהמשך.",
+      "age_scope": "infant",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Children with sickle cell hemoglobinopathies may have splenic hypofunction as early as 6 months of age. In this setting, the spleen eventually autoinfarcts and becomes fibrotic and permanently nonfunctional. … In children with sickle cell disease, penicillin prophylaxis should be started as soon as the diagnosis is made."
+    },
+    {
+      "assoc_key": "nelson22.c536.chronic_disease_hyposplenism",
+      "anchor_finding_he": "חום בחולה עם צליאק, IBD, לופוס או טיפול בסטרואידים במינון גבוה",
+      "co_findings": ["מחלת צליאק", "מחלת מעי דלקתית", "לופוס", "ארתריטיס אידיופתית של גיל הילדות", "סרקואידוזיס", "קורטיקוסטרואידים במינון גבוה", "מחלת שתל נגד מאכסן"],
+      "implies_he": "היפוספלניזם תפקודי אפשרי — ולכן סיכון מוגבר לספסיס",
+      "suspicion": "yellow",
+      "mechanism_he": "המקור מדווח על תת-תפקוד טחולי בחולים עם המחלות האלה, אף כי מציין שהדבר קורה מדי פעם ולא בכל חולה.",
+      "action_he": "אלה מחלות שכיחות שבהן איש אינו חושב על הטחול. משטח דם — בדיקה שנעשית ממילא — הוא מה שיכול להעלות את החשד. ⚠ המקור מנסח זאת כ«דווח מדי פעם», ולכן אין להסיק שכל חולה כזה הוא אספלני; הקישור מצדיק ערנות ובדיקת משטח, לא הנחה.",
+      "age_scope": "child",
+      "source_anchor": "nelson22.c536.hyposplenism",
+      "source_quote_he": "Splenic hypofunction has been reported occasionally in patients with autoimmune diseases (i.e., juvenile idiopathic arthritis, lupus, sarcoidosis), nephritis, inflammatory bowel disease, celiac disease, chronic hepatitis, Pearson syndrome, Fanconi anemia, those with use of high-dose corticosteroids, and graft-versus-host disease."
+    }
+  ],
+  "gaps_he": [
+    "⚠ מינוני הפרופילקסיס בפניצילין VK מופיעים במקור במפורש, לפי שתי קבוצות גיל. הם לא הוכנסו לאף כלל קליני — מינונים שייכים ל-DoseRecord בלבד. בניגוד לחילוצים הקודמים, סכמת DoseRecord המעודכנת **כן** יכולה לייצג אותם (mg_absolute + interval_hours), ולכן הם מועמדים ליצירת רשומות מינון בנתיב מאומת. ראה dosing_mentions_he.",
+    "⚠ סף עירוי הדם בחבלת טחול (מ\"ל/ק\"ג ל-48 שעות) נשמר בציטוט המקור בלבד ולא בגוף הכלל — הוא נקרא כמינון לוולידטור ול-numericGuard.",
+    "⚠ שיעורי הסיכון לספסיס לפי קבוצה (שתי קבוצות באחוזים) נשמרו בציטוט בלבד ולא בגוף הכלל, מאותה סיבה. הם ספים שמכריעים על עוצמת המעקב ולכן יש לקרוא אותם מהמקור.",
+    "⚠ המקור מפנה לטבלה 536.1 (מחלות הקשורות בהיפוספלניזם) ולטבלה 536.2 (טכניקות אבחון) — שתיהן קיימות בטקסט שחולץ, אך לא הומרו לפריטי ידע נפרדים בחילוץ הזה. הן מכילות רשימות ארוכות שראוי לחלץ בנפרד.",
+    "⚠ המקור אינו מציין מהי הגדרת החום שמפעילה את מסלול ההערכה הדחופה בחולה אספלני. הוא כותב \"febrile\" בלבד. הסף חייב להילקח מהפרוטוקול המחלקתי.",
+    "⚠ המקור מזכיר תכשירים אנטיביוטיים אמפיריים בשמם (אמוקסיצילין-קלבולנט, צפדיניר, צפוטקסים, צפטריאקסון, ונקומיצין) ללא מינון. לא נגזרה מהם המלצת טיפול.",
+    "⚠ המקור מציין ש-PCV7 הוחלף ב-PCV13, וש\"תלוי איזה חיסון פנאומוקוקלי ראשוני ניתן, מנה בודדת של PCV13 עשויה להיות מומלצת\". לוח החיסונים בישראל שונה מזה שבמקור — יש לפעול לפי הנחיות משרד הבריאות ולא לפי הפירוט האמריקאי שבספר.",
+    "⚠ הפרק אינו עוסק כלל בהיפרספלניזם, בספלנומגליה כאבחנה מבדלת, או בהערכת גודל הטחול. אלה נושאים סמוכים שאינם בו."
+  ],
+  "dosing_mentions_he": [
+    "⚠ פרופילקסיס פומי בפניצילין VK — המקור נוקב במינון מוחלט לפי שתי קבוצות גיל, בתדירות ובמשך (\"עד גיל חמש לפחות, ולפחות שנתיים לאחר הכריתה\"). לא הוכנס לאף כלל. סכמת DoseRecord המעודכנת יכולה לייצג זאת: unit=mg_absolute, interval_hours, min_age_days/max_age_days. יצירת הרשומות דורשת נתיב מאומת ואישור רופא/ה.",
+    "⚠ המקור מציין שיש לשקול פרופילקסיס לכל החיים בחולים שעברו זיהום פנאומוקוקלי פולשני או שיש להם חסר חיסוני בסיסי, ושבאנמיה חרמשית יש להתחיל עם קביעת האבחנה. אלה החלטות משך-טיפול, לא מינון.",
+    "⚠ סף עירוי דם בחבלת טחול — נשמר בציטוט המקור בלבד.",
+    "⚠ אנטיביוטיקה אמפירית לחום בחולה אספלני מוזכרת בשמות תכשירים בלבד, ללא מינון. חייבת להגיע מהפרוטוקול המחלקתי."
+  ]
+}
