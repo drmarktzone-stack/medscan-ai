@@ -40,30 +40,21 @@ const ANCHORED_ENTITIES = ['LabPattern', 'RedFlag', 'ClinicalRule', 'Association
  * @returns {object} תכנית מלאה
  */
 export function planIngestion({ extraction, existingKeys = new Set(), existingTopicKeys = new Set() }) {
-  const { kept, problems, dropped } = validateExtraction(extraction);
+  // ⚠ העוגנים נבדקים במקום אחד — בתוך הוולידטור, שמקבל את
+  // הנושאים שכבר ב-KB. בדיקה כפולה היתה מתפצלת מוקדם או מאוחר,
+  // ואז שתי תשובות שונות לאותה שאלה נראות שתיהן נכונות.
+  const { kept, problems, dropped } = validateExtraction(extraction, {
+    knownTopicKeys: existingTopicKeys,
+  });
   const records = toKbRecords(kept);
 
   // ── עוגנים תלויים ────────────────────────────────────────────────────
   // עוגן שמצביע על נושא שאינו קיים — לא בחילוץ הזה ולא ב-KB — הוא
   // ציטוט לשום מקום. הוא ייראה תקין בכל בדיקה עתידית, כי השדה מלא.
   // זו בדיוק הצורה שבה מקור מזויף שורד.
-  const topicsInBatch = new Set((records.KnowledgeTopic ?? []).map((t) => t.topic_key));
-  const knownAnchors = new Set([...topicsInBatch, ...existingTopicKeys]);
-
-  const danglingAnchors = [];
-  for (const entity of ANCHORED_ENTITIES) {
-    for (const rec of records[entity] ?? []) {
-      const anchor = rec.source_anchor;
-      if (anchor && !knownAnchors.has(anchor)) {
-        danglingAnchors.push({
-          entity,
-          key: rec[NATURAL_KEY[entity]],
-          anchor,
-          why_he: `העוגן "${anchor}" אינו מצביע על נושא קיים — לא באצווה זו ולא ב-KB.`,
-        });
-      }
-    }
-  }
+  const danglingAnchors = (problems ?? [])
+    .filter((p) => p.code === 'dangling_anchor')
+    .map((p) => ({ entity: p.kind, key: p.key, anchor: p.anchor, why_he: p.why_he }));
 
   // ── כפילויות ─────────────────────────────────────────────────────────
   // כפילות ב-KB אינה מטרד קוסמטי: היא מגיעה ל-FACT BLOCK פעמיים
