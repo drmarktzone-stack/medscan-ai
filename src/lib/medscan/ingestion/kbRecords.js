@@ -93,7 +93,11 @@ const MAPPERS = {
     chapter_title_he: t.chapter_title_he ?? null,
     page_start: t.page_start ?? null,
     page_end: t.page_end ?? null,
-    source_edition: t.source_edition ?? null,
+    // ⚠ אין כאן source_edition. השדה נוסה ונדחה על ידי שכבת
+    // האחסון — הכתיבה החזירה הצלחה והערך נעלם בשקט.
+    // שדה שנמחק בשקט גרוע משדה שאינו קיים: המפה מצהירה
+    // על ייחוס שלא נשמר. הייחוס נשמר במקום אחר ובשלוש דרכים:
+    // chapter_number, page_start/page_end, והקידומת שב-topic_key.
     summary_he: t.summary_he,
     keywords: t.keywords ?? [],
     age_scope: t.age_scope ?? 'all',
@@ -184,9 +188,28 @@ export function toKbRecords(kept) {
  * המפתח, העוגן, סטטוס האימות, והטקסט הקליני שנושא את המשמעות.
  */
 export const VERIFY_FIELDS = {
-  KnowledgeTopic: ['topic_key', 'topic_title_he', 'summary_he', 'verification_status'],
-  LabPattern: ['pattern_key', 'title_he', 'direction_he', 'suspicion', 'source_anchor', 'verification_status'],
-  RedFlag: ['flag_key', 'label_he', 'action_he', 'severity', 'source_anchor', 'verification_status'],
-  ClinicalRule: ['rule_key', 'title_he', 'conclusion_he', 'suspicion', 'source_anchor', 'verification_status'],
-  Association: ['assoc_key', 'anchor_finding_he', 'implies_he', 'suspicion', 'source_anchor', 'verification_status'],
+  KnowledgeTopic: [
+    'topic_key', 'topic_title_he', 'summary_he', 'verification_status',
+    // שדות הייחוס — בלעדיהם הנושא אינו בר-אימות מול המקור
+    'chapter_number', 'page_start', 'page_end',
+  ],
+  LabPattern: [
+    'pattern_key', 'title_he', 'direction_he', 'suspicion',
+    'source_anchor', 'verification_status', 'min_components',
+  ],
+  RedFlag: [
+    'flag_key', 'label_he', 'action_he', 'severity',
+    'source_anchor', 'verification_status',
+    // חלון הגיל קובע למי הדגל נורה. השמטה שלו מרחיבה
+    // אותו לכל הגילאים — שינוי בטיחותי שקט.
+    'age_min_days', 'age_max_days',
+  ],
+  ClinicalRule: [
+    'rule_key', 'title_he', 'conclusion_he', 'suspicion',
+    'source_anchor', 'verification_status', 'logic',
+  ],
+  Association: [
+    'assoc_key', 'anchor_finding_he', 'implies_he', 'suspicion',
+    'source_anchor', 'verification_status', 'age_scope',
+  ],
 };
