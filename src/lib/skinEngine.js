@@ -16,6 +16,8 @@
 
 import { verifyDiagnosis } from "./verify";
 import { DIAGNOSIS_MODEL } from "./aiConfig";
+import { sevenPointScore, abcdTds, chaosAndClues, malignancyRisk } from "./dermoscopyScore";
+import { allergensForDistribution } from "./allergyModule";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -59,6 +61,9 @@ ${clinicalContext ? `## הקשר קליני\n${clinicalContext}\n` : ""}
 ${MORPHOLOGY}
 
 ${ANTI_HALLUCINATION}
+
+## דרמוסקופיה (אם רלוונטי)
+אם התמונה דרמוסקופית — מלא את שדה \`dermoscopy\`: סמן נוכחות/היעדר של המבנים (רשת אטיפית, blue-white veil, כלי-דם אטיפיים, פסים/נקודות/כתמים לא-סדירים, רגרסיה), תן קלט ABCD (אסימטריה 0-2, מקטעי-גבול 0-8, מספר צבעים 1-6, מבנים 1-5), ו-chaos+clues. **אל תחשב ניקוד — הוא מחושב בקוד.** תמונה קלינית (לא דרמוסקופית) → is_dermoscopic=false.
 
 ## פלט
 החזר אך ורק JSON התואם לסכמה. טקסט חופשי ב-${outputLang}; מונחים רפואיים ניתן להשאיר גם באנגלית.`;
@@ -107,6 +112,36 @@ export const SKIN_SCHEMA = {
     clinical_urgency: { type: "string", enum: ["Normal", "Urgent", "Emergency"] },
     critical_red_flags: { type: "array", items: { type: "string" } },
     recommended_next_steps: { type: "array", items: { type: "string" } },
+    dermoscopy: {
+      type: "object",
+      description: "מלא רק אם התמונה דרמוסקופית (אחרת is_dermoscopic=false). מבנים = נוכחות/היעדר; ABCD = קלט לניקוד. הניקוד עצמו מחושב בקוד — אל תחשב.",
+      properties: {
+        is_dermoscopic: { type: "boolean" },
+        structures: {
+          type: "object",
+          properties: {
+            atypical_network: { type: "boolean" },
+            blue_white_veil: { type: "boolean" },
+            atypical_vascular: { type: "boolean" },
+            irregular_streaks: { type: "boolean" },
+            irregular_dots_globules: { type: "boolean" },
+            irregular_blotches: { type: "boolean" },
+            regression: { type: "boolean" },
+          },
+        },
+        abcd: {
+          type: "object",
+          properties: {
+            asymmetry: { type: "number", description: "0-2" },
+            border_segments: { type: "number", description: "0-8" },
+            colors: { type: "number", description: "1-6" },
+            structures: { type: "number", description: "1-5" },
+          },
+        },
+        chaos: { type: "boolean" },
+        clues: { type: "array", items: { type: "string" } },
+      },
+    },
     confidence: { type: "number", description: "0-100 calibrated confidence" },
   },
   required: [
@@ -193,6 +228,22 @@ export async function runSkinEngine({
   const warnings = [...cons.warnings];
   let confidence = (typeof pass1.confidence === "number" ? pass1.confidence : 60) - cons.penalty;
 
+  // ---- Deterministic dermoscopy scoring + allergen mapping (code, not LLM) ----
+  let dermoscopy = null;
+  if (pass1?.dermoscopy?.is_dermoscopic) {
+    const d = pass1.dermoscopy;
+    const seven = sevenPointScore(d.structures || {});
+    const tds = abcdTds(d.abcd || {});
+    const chaos = chaosAndClues(d.chaos, d.clues || []);
+    const risk = malignancyRisk({ sevenPoint: seven, tds, chaos, redFlags: pass1.critical_red_flags || [] });
+    dermoscopy = { seven, tds, chaos, risk };
+    if (risk.level === "high" && pass1.clinical_urgency === "Normal") {
+      pass1.clinical_urgency = "Urgent";
+      warnings.push(`ניקוד דרמוסקופי גבוה (${risk.reasons.join(", ")}) — הועלתה הדחיפות; ${risk.referral_he}`);
+    }
+  }
+  const suspectedAllergens = allergensForDistribution(pass1?.dermatological_descriptors?.distribution_pattern || "");
+
   const urgent = pass1.clinical_urgency === "Urgent" || pass1.clinical_urgency === "Emergency";
   const needsScrutiny = urgent || confidence < 60 || cons.warnings.length > 0;
 
@@ -223,5 +274,5 @@ export async function runSkinEngine({
   if (confidence < 45 || (verification && verification.refuted)) uncertaintyLevel = "high";
   else if (confidence < 65 || cons.warnings.length) uncertaintyLevel = "medium";
 
-  return { abstain: false, structured: pass1, warnings, confidence, uncertaintyLevel, verification };
+  return { abstain: false, structured: pass1, warnings, confidence, uncertaintyLevel, verification, dermoscopy, suspected_allergens: suspectedAllergens };
 }
