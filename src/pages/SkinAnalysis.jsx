@@ -11,6 +11,7 @@ import PediatricToggle from "@/components/PediatricToggle";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
+import LesionMorphometry from "@/components/LesionMorphometry";
 import BackButton from "@/components/BackButton";
 import { useI18n } from "@/lib/i18n";
 import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
@@ -171,6 +172,10 @@ export default function SkinAnalysis() {
               numericIntegrity={result.numericIntegrity}
             />
           </div>
+        )}
+
+        {result && result.imageUrl && (
+          <LesionMorphometry imageUrl={result.imageUrl} />
         )}
 
         {groundedLoading && (
