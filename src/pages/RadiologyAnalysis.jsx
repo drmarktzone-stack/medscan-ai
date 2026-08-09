@@ -6,6 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
+import ExamFindingsInput, { RADIOLOGY_EXAM_FIELDS } from "@/components/ExamFindingsInput";
 import PediatricToggle from "@/components/PediatricToggle";
 import AnalysisResult from "@/components/AnalysisResult";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
@@ -25,6 +26,7 @@ export default function RadiologyAnalysis() {
   const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
   const [clinicalContext, setClinicalContext] = useState("");
+  const [examFindings, setExamFindings] = useState("");
   const [pediatric, setPediatric] = useState(false);
   const [grounded, setGrounded] = useState(null);
   const [groundedLoading, setGroundedLoading] = useState(false);
@@ -58,13 +60,14 @@ export default function RadiologyAnalysis() {
     if (files.length === 0) return;
     setLoading(true);
     setError(null);
+    const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
     try {
       const res = await runDiagnosisPipeline({
         files,
         entityName: "RadiologyCase",
         analysisType: "radiology",
         domainRole: "רדיולוג מומחה",
-        clinicalContext,
+        clinicalContext: fullContext,
         language: lang,
         pediatric,
         matchingInstructions: `1. זהה את סוג הבדיקה הרדיולוגית (רנטגן, CT, MRI, אולטראסאונד) ואת האזור האנטומי המצולם.
@@ -92,7 +95,7 @@ export default function RadiologyAnalysis() {
         runGroundedVisionInterpretation({
           modality: "radiology",
           engineResult: res.structuredInterpretation,
-          clinicalContext,
+          clinicalContext: fullContext,
         })
           .then(setGrounded)
           .catch((e) => {
@@ -148,6 +151,7 @@ export default function RadiologyAnalysis() {
         {files.length > 0 && !result && (
           <>
             <ClinicalContextForm onChange={setClinicalContext} />
+            <ExamFindingsInput onChange={setExamFindings} fields={RADIOLOGY_EXAM_FIELDS} title="התוויה קלינית ורקע" />
             <PediatricToggle value={pediatric} onChange={setPediatric} />
             <Button
               onClick={handleAnalyze}
