@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag, ScanLine, AlertTriangle, Inbox, PlusCircle } from "lucide-react";
+import { Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag, ScanLine, AlertTriangle, Inbox, PlusCircle, ShieldCheck } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { base44 } from "@/api/base44Client";
 import { runEvaluation } from "@/lib/evaluation";
@@ -8,6 +8,7 @@ import MetricsChart from "@/components/evaluation/MetricsChart";
 import BulkImport from "@/components/knowledge/BulkImport";
 import BackButton from "@/components/BackButton";
 import { computeCalibration } from "@/lib/calibration";
+import { runRedTeamSuite } from "@/lib/redTeamSuite";
 import { useI18n } from "@/lib/i18n";
 
 export default function Evaluation() {
@@ -23,6 +24,7 @@ export default function Evaluation() {
   const [error, setError] = useState(null);
   const [feedbackItems, setFeedbackItems] = useState([]);
   const [promoted, setPromoted] = useState(new Set());
+  const [redTeam, setRedTeam] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -127,6 +129,39 @@ export default function Evaluation() {
           </TabsList>
 
           <TabsContent value={tab} className="mt-4 space-y-4">
+            <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-emerald-600" /> בדיקת מעקות (Red-Team)</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">מוודא ששערי-הבטיחות מסרבים/מסלימים כנדרש. דטרמיניסטי, ללא LLM.</p>
+                </div>
+                <button onClick={() => setRedTeam(runRedTeamSuite())}
+                  className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-emerald-600 text-white text-sm font-semibold">
+                  <ShieldCheck className="w-4 h-4" /> הרץ
+                </button>
+              </div>
+              {redTeam && (
+                <div className={`rounded-lg p-3 ${redTeam.all_guards_ok ? "bg-emerald-50 border border-emerald-200" : "bg-red-50 border border-red-200"}`}>
+                  <p className={`text-sm font-bold ${redTeam.all_guards_ok ? "text-emerald-700" : "text-red-700"}`}>
+                    {redTeam.all_guards_ok ? "✓ כל המעקות תקינים" : `⚠ ${redTeam.failed_count} פרצות בגבול-הבטיחות`} · {redTeam.passed}/{redTeam.total} ({redTeam.pass_rate}%)
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {Object.entries(redTeam.by_domain).map(([d, s]) => (
+                      <span key={d} className={`text-[10px] px-2 py-0.5 rounded-full ${s.passed === s.total ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>{d}: {s.passed}/{s.total}</span>
+                    ))}
+                  </div>
+                  {redTeam.failures.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {redTeam.failures.map((f) => (
+                        <p key={f.id} className="text-[11px] text-red-700">✗ {f.description_he} — {f.detail_he}</p>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">{redTeam.note_he}</p>
+                </div>
+              )}
+            </div>
+
             <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
