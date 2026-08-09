@@ -100,14 +100,27 @@ export default function LesionMorphometry({ imageUrl }) {
             <Metric label="חוסר-סדירות גבול (B)" value={state.data.border_irregularity != null ? state.data.border_irregularity : "—"} hint="1.0=עיגול · גבוה=משונן" />
             <Metric label="גווני צבע (C)" value={state.data.color_clusters} hint="ריבוי גוונים → דגל" />
           </div>
-          {state.data.scale_unknown && (
-            <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2 flex items-start gap-1.5">
-              <Info className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-amber-800 leading-relaxed">
-                אין סמן קנה-מידה בתמונה — הקוטר יחסי (פיקסלים), לא מ"מ מוחלטים. לצילום עם סרגל/מדבקה ידועה יתקבלו מ"מ אמיתיים.
-              </p>
+          <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-2.5">
+            <label className="text-[10px] font-semibold text-slate-600 flex items-center gap-1">
+              <Info className="w-3 h-3 text-slate-400" /> סמן קנה-מידה (אופציונלי)
+            </label>
+            <div className="flex items-center gap-2 mt-1.5">
+              <input
+                type="number" inputMode="decimal" min="1" value={fieldMm}
+                onChange={(e) => setFieldMm(e.target.value)}
+                placeholder='רוחב התמונה במציאות (מילימטר)'
+                className="flex-1 h-8 rounded-md border border-slate-300 px-2 text-[12px]"
+              />
+              {realDiameterMm != null && (
+                <span className="text-[12px] font-bold text-pink-600 whitespace-nowrap">≈ {realDiameterMm} ממ</span>
+              )}
             </div>
-          )}
+            <p className="text-[9px] text-muted-foreground mt-1 leading-relaxed">
+              {realDiameterMm != null
+                ? 'קוטר אמיתי חושב מרוחב-השדה שהזנת (לא נוחש). אמת מול סרגל בתמונה.'
+                : 'אין סמן קנה-מידה — הקוטר יחסי. אם צילמת עם סרגל/מדבקה, הזן כמה מילימטר רוחב כל התמונה מכסה → תקבל קוטר אמיתי.'}
+            </p>
+          </div>
 
           {/* מעקב-שינוי לאורך זמן */}
           <div className="mt-3 pt-3 border-t border-slate-100">
