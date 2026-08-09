@@ -104,13 +104,34 @@ export async function assessEcgQuality({ fileUrls, language = "he", invokeLLM, m
  */
 export function deterministicLeadReversalCheck(structured) {
   if (!structured) return { suspected: false };
-  const deg = structured?.axis?.degrees;
   const rhythmType = structured?.rhythm_and_rate?.rhythm_type || "";
   const sinus =
     /sinus/i.test(rhythmType) && structured?.rhythm_and_rate?.p_wave_present !== false;
+
+  // —— שכבה א': פולריות אמיתית (הסימן הודאי יותר) ——
+  // בהיפוך LA/RA: ציר גל P מתהפך — P הופך שלילי ב-I וחיובי ב-aVR (הפוך מהתקין),
+  // ולעיתים QRS ב-I הופך שלילי. זהו דפוס ספציפי יותר מציר בלבד.
+  const lp = structured?.lead_polarity || {};
+  const I_p = lp.I_p, aVR_p = lp.aVR_p, I_qrs = lp.I_qrs;
+  const pAxisFlipped = I_p === "negative" && aVR_p === "positive";
+  const iGloballyNegative = I_p === "negative" && I_qrs === "negative";
+  if (sinus && (pAxisFlipped || iGloballyNegative)) {
+    return {
+      suspected: true,
+      method: "polarity",
+      reason_he:
+        `פולריות הפוכה בקצב סינוס (` +
+        `${pAxisFlipped ? "P שלילי ב-I וחיובי ב-aVR" : "P ו-QRS שליליים ב-I"}` +
+        `) — דפוס אופייני להיפוך אלקטרודות זרוע שמאל/ימין (LA/RA). ודא הצבת אלקטרודות לפני אימוץ ממצא.`,
+    };
+  }
+
+  // —— שכבה ב': גיבוי מבוסס-ציר (כשאין פולריות) ——
+  const deg = structured?.axis?.degrees;
   if (typeof deg === "number" && sinus && deg <= -90 && deg >= -180) {
     return {
       suspected: true,
+      method: "axis",
       reason_he: `ציר צפוני-מערבי (${deg}°) בקצב סינוס — דפוס אפשרי של היפוך אלקטרודות גפיים (LA/RA). ודא הצבת אלקטרודות לפני אימוץ ממצא.`,
     };
   }
