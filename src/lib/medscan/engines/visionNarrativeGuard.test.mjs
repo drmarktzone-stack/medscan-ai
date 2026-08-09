@@ -118,5 +118,28 @@ test('פלט ריק אינו מפיל את הבדיקה', () => {
   assert.strictEqual(integrity.ok, true);
 });
 
+/* ── מנדט: לעולם לא אבחנה סופית (validateScope על נרטיב ה-Vision) ── */
+
+test('ניסוח "האבחנה היא" בנרטיב מסומן כחריגת-מנדט', () => {
+  const { integrity } = run({ summary: 'האבחנה היא אוטיזם.' });
+  assert.strictEqual(integrity.mandate_ok, false, 'ניסוח אבחנה סופית לא נתפס');
+  assert.ok(integrity.mandate_violations.length > 0, 'לא דווחה חריגת מנדט');
+  assert.ok(/מנדט/.test(integrity.mandate_note_he), 'אין הודעת מנדט למשתמש');
+});
+
+test('ניסוח דיספוזיציה ("ניתן לשחרר") מסומן כחריגת-מנדט', () => {
+  const { integrity } = run({ guideline: 'מצב יציב — ניתן לשחרר לבית.' });
+  assert.strictEqual(integrity.mandate_ok, false);
+});
+
+test('ניסוח תמיכה-בהחלטה תקין עובר ללא חריגה', () => {
+  const { integrity } = run({
+    summary: 'ממצאים מתאימים ל-QT מוארך; מומלץ בירור והתייעצות.',
+    analysis: 'הכיוון הסביר ביותר הוא QT מוארך; יש לשקול אבחנות נוספות.',
+  });
+  assert.strictEqual(integrity.mandate_ok, true, 'ניסוח תקין סומן בטעות כחריגה');
+  assert.strictEqual(integrity.mandate_violations.length, 0);
+});
+
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);
 process.exit(fail > 0 ? 1 : 0);
