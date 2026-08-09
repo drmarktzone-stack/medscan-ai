@@ -175,6 +175,39 @@ export default function Evaluation() {
               </div>
             )}
 
+            {calibration && calibration.n > 0 && (
+              <div className="bg-white rounded-xl border border-indigo-200 p-4">
+                <h4 className="text-sm font-bold mb-1">כיול ביטחון (Calibration)</h4>
+                <p className="text-[10px] text-muted-foreground mb-3 leading-relaxed">
+                  האם ה-% שהמערכת מציגה אמין? משווה ביטחון מוצהר מול דיוק בפועל על {calibration.n} מקרים. מחושב בקוד, ללא LLM.
+                </p>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <MetricCard label="ECE (שגיאת כיול)" value={calibration.ece} color={calibration.ece > 15 ? "text-red-600" : "text-indigo-600"} />
+                  <MetricCard label="MCE (מקסימלית)" value={calibration.mce} color={calibration.mce > 25 ? "text-red-600" : "text-indigo-600"} />
+                  <div className="text-center bg-slate-50 rounded-lg py-2">
+                    <p className="text-2xl font-extrabold text-slate-700">{calibration.brier}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Brier</p>
+                  </div>
+                </div>
+                <div className={`text-[11px] rounded-lg p-2 leading-relaxed ${calibration.verdict === "overconfident" ? "bg-red-50 text-red-700" : calibration.verdict === "underconfident" ? "bg-amber-50 text-amber-700" : "bg-green-50 text-green-700"}`}>
+                  {calibration.verdict_he} (ביטחון ממוצע {calibration.avg_confidence}% · דיוק בפועל {calibration.accuracy}%)
+                </div>
+                {calibration.reliability?.length > 0 && (
+                  <div className="mt-3 space-y-1">
+                    {calibration.reliability.map((b, i) => (
+                      <div key={i} className="flex items-center gap-2 text-[10px]">
+                        <span className="w-16 shrink-0 text-muted-foreground">{b.range}</span>
+                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                          <div className={`h-full ${b.gap > 15 ? "bg-red-400" : "bg-indigo-400"}`} style={{ width: `${b.accuracy}%` }} />
+                        </div>
+                        <span className="w-24 shrink-0 text-left text-muted-foreground">דיוק {b.accuracy}% (n={b.count})</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {liveResults.length > 0 && (
               <div className="bg-white rounded-xl border border-slate-200 p-4">
                 <h4 className="text-sm font-bold mb-2">{t("eval.live")}</h4>
