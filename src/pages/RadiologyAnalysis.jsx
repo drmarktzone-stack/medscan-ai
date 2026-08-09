@@ -46,7 +46,7 @@ export default function RadiologyAnalysis() {
   }, [viewerSrc, files]);
 
   useEffect(() => {
-    base44.entities.RadiologyCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
+    base44.entities.RadiologyCase.list("-created_date", 500).then((cases) => setKbCount(cases.length)).catch(() => {});
   }, []);
 
   const handleFilesChange = (newFiles) => {

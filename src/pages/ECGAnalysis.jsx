@@ -49,7 +49,7 @@ export default function ECGAnalysis() {
         if (Array.isArray(urls) && urls.length > 0) setUploadedUrls(urls);
       } catch {}
     }
-    base44.entities.ECGCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
+    base44.entities.ECGCase.list("-created_date", 500).then((cases) => setKbCount(cases.length)).catch(() => {});
   }, []);
 
   const handleFilesChange = async (newFiles) => {

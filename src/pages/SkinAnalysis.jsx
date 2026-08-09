@@ -31,7 +31,7 @@ export default function SkinAnalysis() {
   const [pediatric, setPediatric] = useState(false);
 
   useEffect(() => {
-    base44.entities.SkinCase.list("-created_date", 100).then((cases) => setKbCount(cases.length)).catch(() => {});
+    base44.entities.SkinCase.list("-created_date", 500).then((cases) => setKbCount(cases.length)).catch(() => {});
   }, []);
 
   const handleFilesChange = (newFiles) => {
