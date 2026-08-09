@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Activity, Stethoscope, Loader2, Trash2, Play, TrendingUp, Target, ImageOff, Flag, ScanLine, AlertTriangle, Inbox, PlusCircle, ShieldCheck } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { base44 } from "@/api/base44Client";
