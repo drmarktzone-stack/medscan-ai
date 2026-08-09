@@ -9,6 +9,7 @@ import AnalytePicker from "@/components/AnalytePicker";
 import { base44 } from "@/api/base44Client";
 import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
 import { runLabScan } from "@/lib/labScanEngine";
+import { downscaleImageFile } from "@/lib/imageOptimize";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
 import { RESULT_TYPES, CATALOG_SIZE } from "@/lib/medscan/deterministic/analyteCatalog";
 
@@ -59,7 +60,8 @@ export default function LabInterpreter() {
     setScanInfo(null);
     setError(null);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const optimized = await downscaleImageFile(file);
+      const { file_url } = await base44.integrations.Core.UploadFile({ file: optimized });
       const scan = await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
       if (!scan.ok) {
         setScanInfo({ error: scan.note_he || "לא הצלחתי לקרוא את הדף." });
