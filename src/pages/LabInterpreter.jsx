@@ -374,6 +374,24 @@ export default function LabInterpreter() {
               </div>
             )}
 
+            {result.calculators?.length > 0 && (
+              <div className="bg-indigo-50/60 rounded-lg p-3 border border-indigo-100">
+                <h4 className="text-[11px] font-bold text-indigo-700 mb-2">מחשבונים דטרמיניסטיים (מחושב בקוד)</h4>
+                <div className="space-y-1.5">
+                  {result.calculators.map((c, i) => (
+                    <div key={i} className="bg-white rounded-md p-2 border border-indigo-100">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="text-[11px] font-semibold text-slate-700">{c.label_he}</span>
+                        <span className="text-sm font-extrabold text-indigo-600 shrink-0">{c.value} <span className="text-[10px] font-normal text-slate-400">{c.unit}</span></span>
+                      </div>
+                      {c.formula_source && <p className="text-[9px] text-slate-400 mt-0.5 leading-tight">{c.formula_source}</p>}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[9px] text-slate-500 mt-2 leading-relaxed">תוצאות אריתמטיות בלבד, לא הוראת מתן. טעונות אימות מקומי.</p>
+              </div>
+            )}
+
             {result.calculator_refusals?.length > 0 && (
               <div className="bg-slate-50 rounded-lg p-3">
                 <h4 className="text-[11px] font-bold text-slate-600 mb-1">מחשבונים שסירבו לחשב</h4>
