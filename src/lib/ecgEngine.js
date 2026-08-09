@@ -38,6 +38,7 @@ import { ECG_FULL_RULES } from "./ecgRules";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { flagEcgNormals } from "./ecgNormals";
 import { assessEcgQuality, decideGate, deterministicLeadReversalCheck } from "./ecgQualityGate";
+import { runVisionNumericGuard, groundedEcgNumbers } from "./visionNumericGuard";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -800,6 +801,9 @@ export async function runEcgEngine({
     confidence -= 10;
     warnings.push("בקר האיכות סימן חשד להיפוך אלקטרודות — ודא הצבה תקינה לפני אימוץ ממצאים.");
   }
+
+  // ---- Vision numeric guard: flag narrative numbers not backed by a measurement ----
+  warnings.push(...runVisionNumericGuard(structured, groundedEcgNumbers(structured)).warnings);
 
   if (consistencyAgree === false) {
     confidence -= 20;
