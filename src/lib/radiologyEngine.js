@@ -62,7 +62,7 @@ ${ANTI_HALLUCINATION}
 ${RADIOLOGY_CRITICAL_PROMPT}
 
 ## מדידות (אם האנטומיה הרלוונטית מצולמת)
-דווח measurements כמערך של { key, value } עם המפתחות הסטנדרטיים. **אל תשווה לנורמה בעצמך — המערכת משווה לפי גיל בקוד.** מפתחות: cardiothoracic_ratio (יחס), appendix_diameter_us, pylorus_muscle_thickness, pylorus_channel_length, spleen_length_us (ס"מ), retropharyngeal_soft_tissue, retrotracheal_soft_tissue, bladder_wall_thickness_full, neonatal_frontal_horn, neonatal_third_ventricle, small_bowel_diameter/large_bowel_diameter/cecum_diameter (ס"מ), atlanto_dental_interval, thoracic_kyphosis/lumbar_lordosis/acetabular_index (מעלות), gi_wall_stomach/gi_wall_colon (מ"מ אלא אם צוין אחרת). דווח גם patient_age_months אם ניתן להעריך מההקשר (נדרש לנורמות תלויות-גיל).
+דווח measurements כמערך של { key, value } עם המפתחות הסטנדרטיים. **אל תשווה לנורמה בעצמך — המערכת משווה לפי גיל בקוד.** מפתחות: cardiothoracic_ratio (יחס), appendix_diameter_us, pylorus_muscle_thickness, pylorus_channel_length, spleen_length_us (ס"מ), retropharyngeal_soft_tissue, retrotracheal_soft_tissue, bladder_wall_thickness_full, neonatal_frontal_horn, neonatal_third_ventricle, small_bowel_diameter/large_bowel_diameter/cecum_diameter (ס"מ), atlanto_dental_interval, thoracic_kyphosis/lumbar_lordosis/acetabular_index (מעלות), gi_wall_stomach/gi_wall_colon (מ"מ אלא אם צוין אחרת), renal_length_us, center_edge_angle, optic_nerve_sheath_diameter, common_bile_duct_diameter, prevertebral_c2_soft_tissue. דווח גם patient_age_months אם ניתן להעריך מההקשר (נדרש לנורמות תלויות-גיל).
 
 ## פלט
 החזר אך ורק JSON התואם לסכמה. טקסט חופשי ב-${outputLang}; מונחים רפואיים ניתן להשאיר גם באנגלית.`;
