@@ -259,6 +259,17 @@ export const ECG_STRUCTURED_SCHEMA = {
       required: ["interpretation"],
     },
 
+    lead_polarity: {
+      type: "object",
+      description: "פולריות גל P ו-QRS בהובלות I ו-aVR — לזיהוי היפוך אלקטרודות גפיים (LA/RA). מלא רק אם הפולריות נראית בבירור; אחרת השאר unclear. תקין בסינוס: I_p חיובי, aVR_p שלילי.",
+      properties: {
+        I_p: { type: "string", enum: ["positive", "negative", "biphasic", "unclear"], description: "פולריות גל P בהובלה I" },
+        I_qrs: { type: "string", enum: ["positive", "negative", "equiphasic", "unclear"], description: "פולריות QRS בהובלה I" },
+        aVR_p: { type: "string", enum: ["positive", "negative", "biphasic", "unclear"], description: "פולריות גל P בהובלה aVR" },
+        aVR_qrs: { type: "string", enum: ["positive", "negative", "equiphasic", "unclear"], description: "פולריות QRS בהובלה aVR" },
+      },
+    },
+
     intervals: {
       type: "object",
       properties: {
