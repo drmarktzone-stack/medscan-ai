@@ -10,28 +10,49 @@ import { ShieldCheck, ShieldAlert, ChevronDown } from "lucide-react";
  */
 export default function NumericIntegrityNotice({ integrity }) {
   const [open, setOpen] = useState(false);
-  if (!integrity || !integrity.checked_numbers) return null;
+  const mandateHit = (integrity?.mandate_violations?.length ?? 0) > 0;
+  if (!integrity || (!integrity.checked_numbers && !mandateHit)) return null;
 
   const blocked = integrity.blocked ?? [];
   const warnings = (integrity.violations ?? []).filter((v) => v.severity !== "block");
   const clean = blocked.length === 0 && warnings.length === 0;
 
+  // באנר מנדט: ניסוח שחורג מגבול הכלי (אבחנה סופית וכו') — מוצג תמיד, גם כשהמספרים נקיים.
+  const MandateBanner = mandateHit ? (
+    <div className="rounded-xl border p-3 text-sm bg-red-50 border-red-200 text-red-900 mb-2">
+      <div className="flex items-start gap-2">
+        <ShieldAlert className="w-4 h-4 mt-0.5 shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold">ניסוח חורג ממנדט — הכלי אינו קובע אבחנה סופית</p>
+          <p className="text-xs mt-1 opacity-90">{integrity.mandate_note_he}</p>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   // אין ממצא ואין מה להתריע — הודעה שקטה בשורה אחת.
   if (clean) {
     return (
-      <div className="flex items-start gap-2 text-xs text-muted-foreground border border-border rounded-lg px-3 py-2">
-        <ShieldCheck className="w-4 h-4 mt-px shrink-0 text-emerald-600" />
-        <span>
-          {integrity.checked_numbers} מספרים בניתוח נבדקו — לכולם יש מקור בתצפית.
-          <span className="block opacity-70">{integrity.limitation_he}</span>
-        </span>
-      </div>
+      <>
+        {MandateBanner}
+        {integrity.checked_numbers ? (
+          <div className="flex items-start gap-2 text-xs text-muted-foreground border border-border rounded-lg px-3 py-2">
+            <ShieldCheck className="w-4 h-4 mt-px shrink-0 text-emerald-600" />
+            <span>
+              {integrity.checked_numbers} מספרים בניתוח נבדקו — לכולם יש מקור בתצפית.
+              <span className="block opacity-70">{integrity.limitation_he}</span>
+            </span>
+          </div>
+        ) : null}
+      </>
     );
   }
 
   const severe = blocked.length > 0;
 
   return (
+    <>
+    {MandateBanner}
     <div
       className={`rounded-xl border p-3 text-sm ${
         severe
@@ -82,5 +103,6 @@ export default function NumericIntegrityNotice({ integrity }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
