@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import {
   ScanLine, ChevronDown, ShieldAlert, AlertTriangle, Layers, ListChecks,
-  Stethoscope, FileText, CheckCircle2, XCircle, HelpCircle,
+  Stethoscope, FileText, CheckCircle2, XCircle, HelpCircle, Ruler,
 } from "lucide-react";
+import { evaluateMeasurements } from "@/lib/radiologyMeasurements";
+import { RADIOLOGY_CRITICAL_LABEL } from "@/lib/radiologyCritical";
 
 /**
  * Structured radiology dashboard. `interpretation` is the engine result:
@@ -46,6 +48,10 @@ export default function RadiologyInterpretationCard({ interpretation }) {
   const dd = st.differential_diagnoses || [];
   const flags = (st.critical_red_flags || []).filter(Boolean);
   const urg = urgencyConfig[st.clinical_urgency] || urgencyConfig.Normal;
+  const measEval = evaluateMeasurements(st.measurements || [], { ageMonths: st.patient_age_months });
+  const cro = st.critical_rule_out || [];
+  const croMet = cro.filter((x) => x.status === "met");
+  const croIndet = cro.filter((x) => x.status === "indeterminate");
 
   return (
     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl overflow-hidden">
@@ -164,6 +170,36 @@ export default function RadiologyInterpretationCard({ interpretation }) {
                   <li key={i} className="text-[11px] text-slate-600 flex gap-1.5"><span className="text-indigo-400">•</span><span>{s}</span></li>
                 ))}
               </ul>
+            </Section>
+          )}
+
+          {measEval.length > 0 && (
+            <Section icon={Ruler} title="מדידות מול נורמה לגיל (מחושב בקוד)">
+              <div className="space-y-1">
+                {measEval.map((m, i) => (
+                  <div key={i} className={`flex items-center justify-between rounded-md px-2 py-1 ${m.verdict !== "normal" ? "bg-amber-50 border border-amber-200" : "bg-white/60"}`}>
+                    <span className="text-[11px] text-slate-700">{m.label_he}: <b>{m.value}{m.unit}</b></span>
+                    <span className={`text-[9px] font-bold ${m.verdict === "normal" ? "text-emerald-600" : "text-amber-600"}`}>
+                      {m.verdict === "normal" ? "תקין" : m.verdict === "above_normal" ? "מעל נורמה" : m.verdict === "below_normal" ? "מתחת לנורמה" : "—"} ({m.normal[0] ?? ""}–{m.normal[1] ?? ""}{m.unit})
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="text-[9px] text-slate-400 mt-0.5">מקור: Caffey/OHSU · draft — טעון אימות</div>
+            </Section>
+          )}
+
+          {(croMet.length > 0 || croIndet.length > 0) && (
+            <Section icon={ShieldAlert} title="שלילת דפוסים מסכני-חיים">
+              {croMet.length > 0 && (
+                <div className="bg-red-600 text-white rounded-lg p-2 mb-1">
+                  <p className="text-[11px] font-bold mb-0.5">🚨 זוהו ({croMet.length})</p>
+                  <ul className="space-y-0.5">{croMet.map((x, i) => <li key={i} className="text-[10px]">• {RADIOLOGY_CRITICAL_LABEL[x.pattern_key] || x.pattern_key}{x.evidence ? ` — ${x.evidence}` : ""}</li>)}</ul>
+                </div>
+              )}
+              {croIndet.length > 0 && (
+                <div className="text-[10px] text-amber-700">לא ניתן לשלול: {croIndet.map((x) => RADIOLOGY_CRITICAL_LABEL[x.pattern_key] || x.pattern_key).join(", ")}</div>
+              )}
             </Section>
           )}
 
