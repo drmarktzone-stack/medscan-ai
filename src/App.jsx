@@ -31,6 +31,7 @@ import History from '@/pages/History';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import Evaluation from '@/pages/Evaluation';
 import ECGValidation from '@/pages/ECGValidation';
+import SkinValidation from '@/pages/SkinValidation';
 import KnowledgeCoverage from '@/pages/KnowledgeCoverage';
 
 const AuthenticatedApp = () => {
@@ -65,6 +66,7 @@ const AuthenticatedApp = () => {
           <Route path="/ecg" element={<ECGAnalysis />} />
           <Route path="/ecg-compare" element={<ECGComparison />} />
           <Route path="/ecg-validate" element={<ECGValidation />} />
+          <Route path="/skin-validate" element={<SkinValidation />} />
           <Route path="/skin" element={<SkinAnalysis />} />
           <Route path="/radiology" element={<RadiologyAnalysis />} />
           <Route path="/labs" element={<LabInterpreter />} />
