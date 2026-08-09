@@ -6,6 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
+import ExamFindingsInput from "@/components/ExamFindingsInput";
 import PediatricToggle from "@/components/PediatricToggle";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
@@ -25,6 +26,7 @@ export default function SkinAnalysis() {
   const [error, setError] = useState(null);
   const [kbCount, setKbCount] = useState(0);
   const [clinicalContext, setClinicalContext] = useState("");
+  const [examFindings, setExamFindings] = useState("");
   const [pediatric, setPediatric] = useState(false);
 
   useEffect(() => {
@@ -42,13 +44,14 @@ export default function SkinAnalysis() {
     if (files.length === 0) return;
     setLoading(true);
     setError(null);
+    const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
     try {
       const res = await runDiagnosisPipeline({
         files,
         entityName: "SkinCase",
         analysisType: "skin",
         domainRole: "דרמטולוג מומחה",
-        clinicalContext,
+        clinicalContext: fullContext,
         language: lang,
         pediatric,
         matchingInstructions: `1. בחן את הנגע בצורה שיטתית: מורפולוגיה (מקולרי/פפולרי/נודולרי/וסיקולרי), צבע, גודל, גבולות, פיזור, סימטריה.
@@ -73,7 +76,7 @@ export default function SkinAnalysis() {
         runGroundedVisionInterpretation({
           modality: "skin",
           engineResult: res.structuredInterpretation,
-          clinicalContext,
+          clinicalContext: fullContext,
         })
           .then(setGrounded)
           .catch((e) => { console.error("grounded interpretation failed", e); setGrounded(null); })
@@ -126,6 +129,7 @@ export default function SkinAnalysis() {
         {files.length > 0 && !result && (
           <>
             <ClinicalContextForm onChange={setClinicalContext} />
+            <ExamFindingsInput onChange={setExamFindings} />
             <PediatricToggle value={pediatric} onChange={setPediatric} />
             <Button
               onClick={handleAnalyze}
