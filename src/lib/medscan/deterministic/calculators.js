@@ -301,6 +301,33 @@ function normalCdf(z) {
   return 0.5 * (1 + sign * y);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * 6-9. נוסחאות אריתמטיות-טהורות (הגדרות מתמטיות מקובלות, לא ערכי-נורמה)
+ * ──────────────────────────────────────────────────────────────────────── */
+export function anionGap({ na, cl, hco3 }) {
+  if (![na, cl, hco3].every(isNum)) return failure('electrolytes.anion_gap', 'נדרשים Na, Cl ו-HCO3 לחישוב anion gap.');
+  const ag = Number(na) - (Number(cl) + Number(hco3));
+  return { ok: true, ...result({ key: 'electrolytes.anion_gap', label_he: 'Anion Gap', value: round(ag, 1), unit: 'mmol/L', formula_source: 'Na − (Cl + HCO3)', inputs: { na: +na, cl: +cl, hco3: +hco3 }, notes_he: ['ללא אשלגן. פרשנות (חמצת עם/בלי פער) היא קלינית.'] }) };
+}
+
+export function correctedSodium({ na, glucose_mg_dl }) {
+  if (![na, glucose_mg_dl].every(isNum)) return failure('electrolytes.corrected_na', 'נדרשים Na וגלוקוז (mg/dL).');
+  const corr = Number(na) + 1.6 * ((Number(glucose_mg_dl) - 100) / 100);
+  return { ok: true, ...result({ key: 'electrolytes.corrected_na', label_he: 'Na מתוקן להיפרגליקמיה', value: round(corr, 1), unit: 'mmol/L', formula_source: 'Na + 1.6 × (גלוקוז−100)/100 (Katz)', inputs: { na: +na, glucose_mg_dl: +glucose_mg_dl } }) };
+}
+
+export function correctedCalcium({ calcium_mg_dl, albumin_g_dl }) {
+  if (![calcium_mg_dl, albumin_g_dl].every(isNum)) return failure('electrolytes.corrected_ca', 'נדרשים סידן (mg/dL) ואלבומין (g/dL).');
+  const corr = Number(calcium_mg_dl) + 0.8 * (4.0 - Number(albumin_g_dl));
+  return { ok: true, ...result({ key: 'electrolytes.corrected_ca', label_he: 'סידן מתוקן לאלבומין', value: round(corr, 2), unit: 'mg/dL', formula_source: 'Ca + 0.8 × (4.0 − אלבומין)', inputs: { calcium_mg_dl: +calcium_mg_dl, albumin_g_dl: +albumin_g_dl } }) };
+}
+
+export function serumOsmolality({ na, glucose_mg_dl, bun_mg_dl }) {
+  if (![na, glucose_mg_dl, bun_mg_dl].every(isNum)) return failure('renal.osmolality', 'נדרשים Na, גלוקוז (mg/dL) ו-BUN (mg/dL).');
+  const osm = 2 * Number(na) + Number(glucose_mg_dl) / 18 + Number(bun_mg_dl) / 2.8;
+  return { ok: true, ...result({ key: 'renal.osmolality', label_he: 'אוסמולליות מחושבת', value: round(osm, 0), unit: 'mOsm/kg', formula_source: '2×Na + גלוקוז/18 + BUN/2.8', inputs: { na: +na, glucose_mg_dl: +glucose_mg_dl, bun_mg_dl: +bun_mg_dl } }) };
+}
+
 /**
  * מריץ אוסף מחשבונים ומחזיר רק את המוצלחים כפריטי D#,
  * לצד רשימת הסירובים (שמוצגת לרופא/ה — סירוב הוא מידע).
@@ -317,6 +344,10 @@ export function runCalculators(requests = []) {
       case 'bsa':                res = bodySurfaceArea(req.params); break;
       case 'dose':               res = weightBasedDose(req.params); break;
       case 'growth_percentile':  res = growthPercentile(req.params); break;
+      case 'anion_gap':          res = anionGap(req.params); break;
+      case 'corrected_sodium':   res = correctedSodium(req.params); break;
+      case 'corrected_calcium':  res = correctedCalcium(req.params); break;
+      case 'serum_osmolality':   res = serumOsmolality(req.params); break;
       default:
         refusals.push({ key: req.type, message_he: `מחשבון לא מוכר: ${req.type}` });
         continue;
