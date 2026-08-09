@@ -145,7 +145,12 @@ export default function KnowledgeAdmin() {
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         {/* מצב הידע */}
         <div className="bg-white rounded-2xl border border-slate-100 p-4">
-          <h3 className="text-sm font-bold mb-1">מצב בסיס הידע</h3>
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-sm font-bold">מצב בסיס הידע</h3>
+            <Link to="/knowledge-coverage" className="text-[11px] font-semibold text-teal-600 flex items-center gap-1">
+              <Database className="w-3.5 h-3.5" /> דשבורד כיסוי
+            </Link>
+          </div>
           <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
             רק פריטים <strong>מאומתים</strong> משתתפים בפלט קליני. טיוטה נשמרת,
             מוצגת כאן, ואינה נכנסת לניתוח — עד שתאשר אותה.
