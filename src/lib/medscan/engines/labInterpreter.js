@@ -143,7 +143,53 @@ export async function runLabInterpreter({
       },
     });
   }
-  const { deterministic, refusals } = runCalculators(calcRequests);
+  // מחשבוני אלקטרוליטים/אוסמולליות — נבנים רק כשהמדדים קיימים **ויחידותיהם תואמות**.
+  // יחידה לא-תואמת/חסרה → דילוג מפורש (לא הזנת מספר ביחידה שגויה). זו מדיניות אפס-הזיות.
+  const normU = (u) => String(u ?? '').trim().toLowerCase().replace(/\s+/g, '');
+  const MMOL = ['mmol/l', 'meq/l']; // זהים מספרית ל-Na/Cl/HCO3 חד-ערכיים
+  const labVal = (canonKey, accepted) => {
+    const it = normalized.find((n) => n.canonical_key === canonKey && Number.isFinite(Number(n.value)));
+    if (!it) return { present: false, value: null };
+    const ok = accepted.includes(normU(it.unit));
+    return { present: true, value: ok ? Number(it.value) : null, unitOk: ok, unit: it.unit ?? null };
+  };
+  const unitSkips = [];
+  const na = labVal('sodium', MMOL);
+  const cl = labVal('chloride', MMOL);
+  const hco3 = labVal('bicarbonate', MMOL);
+  const glu = labVal('glucose', ['mg/dl']);
+  const ca = labVal('calcium', ['mg/dl']);
+  const alb = labVal('albumin', ['g/dl']);
+  const bun = labVal('urea', ['mg/dl']);
+
+  if (na.present && cl.present && hco3.present) {
+    if (na.value != null && cl.value != null && hco3.value != null) {
+      calcRequests.push({ type: 'anion_gap', params: { na: na.value, cl: cl.value, hco3: hco3.value } });
+    } else {
+      unitSkips.push({ key: 'electrolytes.anion_gap', message_he: 'Anion gap לא חושב: נדרשות יחידות mmol/L (או mEq/L) ל-Na/Cl/HCO3.' });
+    }
+  }
+  if (na.present && glu.present && bun.present) {
+    if (na.value != null && glu.value != null && bun.value != null) {
+      calcRequests.push({ type: 'serum_osmolality', params: { na: na.value, glucose_mg_dl: glu.value, bun_mg_dl: bun.value } });
+    } else {
+      unitSkips.push({ key: 'renal.osmolality', message_he: 'אוסמולליות לא חושבה: נדרש Na ב-mmol/L, גלוקוז ו-BUN ב-mg/dL.' });
+    }
+  }
+  // Na מתוקן — רק כשיש היפרגליקמיה (≥150), שם התיקון משנה ניהול.
+  if (na.value != null && glu.value != null && glu.value >= 150) {
+    calcRequests.push({ type: 'corrected_sodium', params: { na: na.value, glucose_mg_dl: glu.value } });
+  }
+  if (ca.present && alb.present) {
+    if (ca.value != null && alb.value != null) {
+      calcRequests.push({ type: 'corrected_calcium', params: { calcium_mg_dl: ca.value, albumin_g_dl: alb.value } });
+    } else {
+      unitSkips.push({ key: 'electrolytes.corrected_ca', message_he: 'סידן מתוקן לא חושב: נדרש סידן ב-mg/dL ואלבומין ב-g/dL.' });
+    }
+  }
+
+  const { deterministic, refusals: calcRefusals } = runCalculators(calcRequests);
+  const refusals = [...calcRefusals, ...unitSkips];
 
   // ── 5–6. ספרות + שער ─────────────────────────────────────────────────
   const invokeLLM = createInvokeLLM();
