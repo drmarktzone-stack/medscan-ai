@@ -228,6 +228,7 @@ export async function runLabInterpreter({
     normalized,
     warnings,
     missing_ranges: missingRanges,
+    calculators: deterministic,
     calculator_refusals: refusals,
     reference_range_meta: rangeMeta,
     evidence_meta: evidence.meta,
