@@ -7,6 +7,7 @@ import GoldStandardForm from "@/components/evaluation/GoldStandardForm";
 import MetricsChart from "@/components/evaluation/MetricsChart";
 import BulkImport from "@/components/knowledge/BulkImport";
 import BackButton from "@/components/BackButton";
+import { computeCalibration } from "@/lib/calibration";
 import { useI18n } from "@/lib/i18n";
 
 export default function Evaluation() {
@@ -94,6 +95,16 @@ export default function Evaluation() {
   };
 
   const testableCount = goldCases.filter((c) => c.image_url).length;
+
+  // Deterministic confidence-calibration from the just-completed run (no LLM).
+  const calibration = React.useMemo(() => {
+    if (!liveResults.length) return null;
+    return computeCalibration(
+      liveResults
+        .filter((r) => Number.isFinite(Number(r.confidence)) && typeof r.is_correct === "boolean")
+        .map((r) => ({ confidence: Number(r.confidence), correct: r.is_correct }))
+    );
+  }, [liveResults]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50/30 via-white to-slate-50">
