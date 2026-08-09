@@ -82,6 +82,49 @@ export const RADIOLOGY_NORMALS = {
     label_he: "חדר שלישי (יילוד, US)", region: "neuro", unit: "mm",
     bands: [{ age_max_months: 1, normal: [null, 4], label: "<4מ\"מ" }],
   },
+  small_bowel_diameter: {
+    label_he: "קוטר מעי דק (כלל 3/6/9)", region: "abdomen", unit: "cm",
+    bands: [{ age_max_months: 3000, normal: [null, 3], label: "<3ס\"מ" }],
+    note_he: ">3ס\"מ — חשד לחסימת מעי דק.",
+  },
+  large_bowel_diameter: {
+    label_he: "קוטר מעי גס (כלל 3/6/9)", region: "abdomen", unit: "cm",
+    bands: [{ age_max_months: 3000, normal: [null, 6], label: "<6ס\"מ" }],
+  },
+  cecum_diameter: {
+    label_he: "קוטר צקום (כלל 3/6/9)", region: "abdomen", unit: "cm",
+    bands: [{ age_max_months: 3000, normal: [null, 9], label: "<9ס\"מ" }],
+    note_he: ">9ס\"מ — סכנת ניקוב.",
+  },
+  atlanto_dental_interval: {
+    label_he: "מרווח אטלנטו-דנטלי (ADI)", region: "neck_spine", unit: "mm",
+    bands: [
+      { age_max_months: 168, normal: [null, 5], label: "ילד (<5מ\"מ)" },
+      { age_max_months: 3000, normal: [null, 3], label: "מבוגר (<3מ\"מ)" },
+    ],
+    note_he: "עלייה — חוסר-יציבות אטלנטו-צירית (שקול טראומה/RA/דאון).",
+  },
+  thoracic_kyphosis: {
+    label_he: "קיפוזיס תורקלי (T3–T12)", region: "spine", unit: "°",
+    bands: [{ age_max_months: 3000, normal: [21, 33], label: "21–33°" }],
+  },
+  lumbar_lordosis: {
+    label_he: "לורדוזיס מותני (L1–L5)", region: "spine", unit: "°",
+    bands: [{ age_max_months: 3000, normal: [31, 50], label: "31–50°" }],
+  },
+  gi_wall_stomach: {
+    label_he: "עובי דופן קיבה (CT)", region: "abdomen", unit: "mm",
+    bands: [{ age_max_months: 3000, normal: [3, 5], label: "3–5מ\"מ" }],
+  },
+  gi_wall_colon: {
+    label_he: "עובי דופן מעי גס (CT)", region: "abdomen", unit: "mm",
+    bands: [{ age_max_months: 3000, normal: [null, 3], label: "≤3מ\"מ" }],
+  },
+  acetabular_index: {
+    label_he: "אינדקס אצטבולרי (יילוד, DDH)", region: "hip", unit: "°",
+    bands: [{ age_max_months: 6, normal: [null, 30], label: "יילוד (≤~30°)" }],
+    note_he: ">30° — חשד לדיספלזיה התפתחותית של מפרק הירך (אימות קליני/US).",
+  },
 };
 
 /** Bladder expected capacity (mL) = (age_years + 2) × 30. Deterministic formula. */
