@@ -31,6 +31,7 @@ import History from '@/pages/History';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import Evaluation from '@/pages/Evaluation';
 import ECGValidation from '@/pages/ECGValidation';
+import KnowledgeCoverage from '@/pages/KnowledgeCoverage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
           <Route path="/history" element={<History />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/evaluation" element={<Evaluation />} />
+          <Route path="/knowledge-coverage" element={<KnowledgeCoverage />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
