@@ -7,6 +7,7 @@ import { runSkinEngine, buildSkinEvidenceBlock } from "./skinEngine";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { guardVisionNarrative } from "./medscan/engines/visionNarrativeGuard";
 import { createVisionInvokeLLM } from "./medscan/llmAdapter";
+import { downscaleImageFile } from "./imageOptimize";
 
 // ⚠ כל קריאות ה-LLM בצינור עוברות דרך המתאם ולא ישירות ל-SDK.
 // המתאם אוכף סכמת פלט, משבית הקשר-מהאינטרנט ומרכז ניטור.
@@ -75,7 +76,11 @@ export async function runDiagnosisPipeline({
   const [resolvedUrls, allCases] = await Promise.all([
     preUploadedUrls && preUploadedUrls.length > 0
       ? Promise.resolve(preUploadedUrls)
-      : Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f }))).then((rs) => rs.map((r) => r.file_url)),
+      : Promise.all(files.map(async (f) => {
+          const optimized = await downscaleImageFile(f); // מקטין מהירות; לא פוגע באיכות הפענוח
+          const r = await base44.integrations.Core.UploadFile({ file: optimized });
+          return r.file_url;
+        })),
     base44.entities[entityName].list("-created_date", 1000),
   ]);
   const fileUrls = resolvedUrls;
