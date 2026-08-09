@@ -17,6 +17,7 @@ import { deterministicLesionDelta } from "@/lib/skinCompare";
 export default function LesionMorphometry({ imageUrl }) {
   const [state, setState] = useState({ loading: true, data: null, failed: null });
   const [prior, setPrior] = useState({ url: null, data: null, loading: false, failed: null });
+  const [fieldMm, setFieldMm] = useState("");
   const fileRef = useRef(null);
 
   // מדידת התמונה הנוכחית
@@ -68,6 +69,12 @@ export default function LesionMorphometry({ imageUrl }) {
     error: "אירעה שגיאה במדידה.",
     unknown: "המדידה לא הושלמה.",
   };
+
+  const fieldMmNum = Number(fieldMm);
+  const realDiameterMm =
+    state.data && Number.isFinite(fieldMmNum) && fieldMmNum > 0 && state.data.image_width_px
+      ? Math.round((state.data.diameter_px * fieldMmNum / state.data.image_width_px) * 10) / 10
+      : null;
 
   const delta = state.data && prior.data ? deterministicLesionDelta(state.data, prior.data) : null;
 
