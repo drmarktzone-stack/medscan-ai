@@ -1,0 +1,157 @@
+/**
+ * ============================================================================
+ *  MedScan AI — Lab Report Scanner (Vision extraction, zero-hallucination)
+ * ============================================================================
+ *  Reads a photographed / scanned / PDF lab report and extracts each analyte,
+ *  value, unit and reference range into structured rows so the physician does
+ *  not type them by hand.
+ *
+ *  ⚠ ANTI-HALLUCINATION — the whole point of this module:
+ *    - The model returns ONLY what is clearly legible. Anything it cannot read
+ *      with confidence is returned as value=null / confidence="unreadable" —
+ *      it NEVER guesses a number. A blank is safe; a wrong number is not.
+ *    - Every extracted row is a DRAFT. Nothing enters the interpreter until the
+ *      physician reviews/confirms it in the UI. Low-confidence and blank rows
+ *      are flagged for manual entry.
+ *    - Canonical analyte matching is DETERMINISTIC (analyteCatalog), not by the
+ *      model — so "Hb"/"המוגלובין"/"HGB" map to the same field in code.
+ * ============================================================================
+ */
+
+import { resolveAnalyte } from "./medscan/deterministic/analyteCatalog";
+
+export const LAB_SCAN_SCHEMA = {
+  type: "object",
+  properties: {
+    is_lab_report: {
+      type: "boolean",
+      description: "true only if the image clearly appears to be a laboratory results report/sheet. If it is not, return false and an empty rows array.",
+    },
+    patient: {
+      type: "object",
+      properties: {
+        age_text: { type: "string", description: "Patient age exactly as printed if visible (e.g. '5 y', '18 months'); else empty string." },
+        sex: { type: "string", enum: ["male", "female", ""], description: "Only if explicitly printed; else empty." },
+        report_date: { type: "string", description: "Report/collection date as printed if visible; else empty." },
+      },
+    },
+    rows: {
+      type: "array",
+      description: "One entry per test line that is visible on the report.",
+      items: {
+        type: "object",
+        properties: {
+          analyte_raw: { type: "string", description: "Test name EXACTLY as printed (do not translate or normalize)." },
+          value: { type: ["number", "null"], description: "The numeric result ONLY if clearly legible. If not clearly legible, or non-numeric, return null. NEVER guess or infer a number." },
+          value_text: { type: "string", description: "For qualitative/textual results (e.g. 'Positive','Negative','Not detected') as printed; else empty." },
+          unit: { type: "string", description: "Unit exactly as printed (e.g. 'g/dL','10^9/L'); empty if not printed/legible." },
+          ref_low: { type: ["number", "null"], description: "Lower reference bound as printed if legible; else null." },
+          ref_high: { type: ["number", "null"], description: "Upper reference bound as printed if legible; else null." },
+          flag_printed: { type: "string", description: "Any H/L/* abnormal flag printed next to the value; else empty." },
+          confidence: { type: "string", enum: ["high", "medium", "low", "unreadable"], description: "Your legibility confidence for THIS row's value. Use 'unreadable' (with value=null) when you cannot read the number reliably." },
+        },
+        required: ["analyte_raw", "confidence"],
+      },
+    },
+  },
+  required: ["is_lab_report", "rows"],
+};
+
+const SCAN_PROMPT = `אתה קורא/ת בזהירות דף תוצאות מעבדה (צילום מודפס, צילום-מסך, PDF, או כתב-יד).
+
+חלץ/י כל שורת-בדיקה שנראית בדף: שם הבדיקה בדיוק כפי שמודפס (analyte_raw), הערך (value), היחידה (unit), וטווח-הייחוס (ref_low/ref_high) אם מודפסים.
+
+חוק-ברזל למניעת טעויות (קריטי):
+- החזר/י ערך מספרי **רק אם הוא קריא בבירור**. אם ספרה מטושטשת, חתוכה, או לא ודאית — החזר/י value=null ו-confidence="unreadable". **אסור לנחש מספר.** עדיף שדה ריק מאשר מספר שגוי.
+- אל תמציא/י בדיקות שלא רואים, ואל תשלים/י ערכים מהזיכרון/מהידע הכללי.
+- תוצאה איכותית (חיובי/שלילי/לא נמצא) → value_text, ו-value=null.
+- שמור/י יחידות וטווחים בדיוק כפי שמודפסים; אם לא מודפס/לא קריא — השאר/י ריק/null.
+- confidence לכל שורה משקף עד כמה הערך קריא: high/medium/low/unreadable.
+
+אם התמונה אינה דף מעבדה — החזר/י is_lab_report=false ו-rows ריק.
+
+החזר/י אך ורק JSON התואם לסכמה.`;
+
+/**
+ * @param {object} p
+ * @param {string[]} p.fileUrls  uploaded image/pdf urls
+ * @param {function} p.invokeLLM vision invoker (createVisionInvokeLLM)
+ * @param {string} [p.model]
+ * @returns {Promise<{ok:boolean, is_lab_report:boolean, patient:object, rows:object[], stats:object, note_he:string}>}
+ */
+export async function runLabScan({ fileUrls = [], invokeLLM, model } = {}) {
+  if (!fileUrls.length) return { ok: false, reason: "no_file", note_he: "לא סופק קובץ לסריקה." };
+  if (typeof invokeLLM !== "function") return { ok: false, reason: "no_invoker", note_he: "מנוע הסריקה אינו זמין." };
+
+  const raw = await invokeLLM({
+    prompt: SCAN_PROMPT,
+    file_urls: fileUrls,
+    response_json_schema: LAB_SCAN_SCHEMA,
+    model,
+  });
+
+  if (!raw || raw.is_lab_report === false) {
+    return {
+      ok: false,
+      is_lab_report: false,
+      rows: [],
+      note_he: "התמונה אינה נראית כדף מעבדה. צלם/י דף תוצאות ברור, או הזן/י ידנית.",
+    };
+  }
+
+  const rows = mapScanRows(raw.rows || []);
+  const stats = {
+    total: rows.length,
+    readable: rows.filter((r) => !r.needs_review).length,
+    needs_review: rows.filter((r) => r.needs_review).length,
+    unmatched: rows.filter((r) => !r.canonical_key).length,
+  };
+
+  return {
+    ok: true,
+    is_lab_report: true,
+    patient: raw.patient || {},
+    rows,
+    stats,
+    note_he:
+      "חילוץ אוטומטי — טיוטה בלבד. עברו/עברי על כל הערכים לפני אישור. " +
+      "שדות שסומנו לבדיקה (מטושטשים/לא-קריאים/לא-מזוהים) יש להשלים/לאמת ידנית.",
+  };
+}
+
+/** Deterministic canonical matching + review flagging. No model here. */
+export function mapScanRows(rows = []) {
+  return (rows || [])
+    .filter((r) => r && (r.analyte_raw || "").trim())
+    .map((r) => {
+      const known = resolveAnalyte(r.analyte_raw);
+      const numericLegible = Number.isFinite(Number(r.value)) && r.confidence !== "unreadable";
+      const hasQualitative = !!(r.value_text || "").trim();
+      const lowConf = r.confidence === "low" || r.confidence === "unreadable";
+      const needs_review = !known || (!numericLegible && !hasQualitative) || lowConf;
+
+      return {
+        analyte_raw: (r.analyte_raw || "").trim(),
+        canonical_key: known?.key ?? null,
+        matched_he: known?.he ?? null,
+        matched_en: known?.en ?? null,
+        expected_unit: known?.unit ?? null,
+        category: known?.cat ?? null,
+        value: numericLegible ? Number(r.value) : null,
+        value_text: hasQualitative ? r.value_text.trim() : "",
+        unit: (r.unit || "").trim(),
+        ref_low: Number.isFinite(Number(r.ref_low)) ? Number(r.ref_low) : null,
+        ref_high: Number.isFinite(Number(r.ref_high)) ? Number(r.ref_high) : null,
+        flag_printed: (r.flag_printed || "").trim(),
+        confidence: r.confidence || "medium",
+        needs_review,
+        review_reason_he: !known
+          ? "שם הבדיקה לא זוהה — בחר/י מהרשימה"
+          : lowConf
+          ? "קריאה לא-ודאית — אמת/י את הערך"
+          : (!numericLegible && !hasQualitative)
+          ? "לא נקרא ערך — הזן/י ידנית"
+          : "",
+      };
+    });
+}
