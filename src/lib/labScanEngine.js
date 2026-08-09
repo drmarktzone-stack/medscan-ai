@@ -125,7 +125,8 @@ export function mapScanRows(rows = []) {
     .filter((r) => r && (r.analyte_raw || "").trim())
     .map((r) => {
       const known = resolveAnalyte(r.analyte_raw);
-      const numericLegible = Number.isFinite(Number(r.value)) && r.confidence !== "unreadable";
+      const hasNum = r.value !== null && r.value !== undefined && String(r.value).trim() !== "";
+      const numericLegible = hasNum && Number.isFinite(Number(r.value)) && r.confidence !== "unreadable";
       const hasQualitative = !!(r.value_text || "").trim();
       const lowConf = r.confidence === "low" || r.confidence === "unreadable";
       const needs_review = !known || (!numericLegible && !hasQualitative) || lowConf;
