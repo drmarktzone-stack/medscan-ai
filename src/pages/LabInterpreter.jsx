@@ -158,6 +158,40 @@ export default function LabInterpreter() {
           </span>
         </p>
 
+        {/* סריקת דף מעבדה — מילוי אוטומטי במקום הקלדה */}
+        <div className="bg-white rounded-2xl border border-teal-200 p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <ScanLine className="w-4 h-4 text-teal-600" />
+            <h3 className="text-sm font-bold">סריקת דף מעבדה (במקום הקלדה)</h3>
+          </div>
+          <p className="text-[11px] text-slate-500 leading-relaxed mb-3">
+            העלה/י צילום/PDF/צילום-מסך של דף תוצאות — המערכת תקרא את הערכים ותמלא אותם.
+            <strong> ערכים לא-קריאים יישארו ריקים למילוי ידני</strong> — המערכת לא מנחשת מספרים.
+            כל ערך טעון אישורך לפני הניתוח.
+          </p>
+          <input ref={scanFileRef} type="file" accept="image/*,application/pdf" capture="environment" className="hidden" onChange={handleScanFile} />
+          <button
+            onClick={() => scanFileRef.current?.click()}
+            disabled={scanning}
+            className="w-full h-11 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50/50 text-teal-700 text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            {scanning ? <><Loader2 className="w-4 h-4 animate-spin" /> סורק וקורא ערכים…</> : <><Upload className="w-4 h-4" /> העלה דף מעבדה / צלם</>}
+          </button>
+          {scanInfo?.error && (
+            <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2 text-[11px] text-amber-800 leading-relaxed">{scanInfo.error}</div>
+          )}
+          {scanInfo?.stats && (
+            <div className="mt-2 bg-teal-50 border border-teal-200 rounded-lg p-2.5">
+              <p className="text-[11px] text-teal-800 font-semibold">
+                זוהו {scanInfo.stats.total} מדדים · {scanInfo.stats.readable} נקראו בביטחון
+                {scanInfo.stats.needs_review > 0 && <span className="text-amber-700"> · {scanInfo.stats.needs_review} לבדיקה/השלמה</span>}
+              </p>
+              {scanInfo.ageText && <p className="text-[10px] text-slate-500 mt-1">גיל שזוהה בדף: “{scanInfo.ageText}” — הזן/י ואמת/י בשדה הגיל.</p>}
+              <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">{scanInfo.note}</p>
+            </div>
+          )}
+        </div>
+
         {/* פרטי המטופל */}
         <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
           <h3 className="text-sm font-bold">פרטי המטופל</h3>
@@ -226,7 +260,17 @@ export default function LabInterpreter() {
           {rows.map((row, i) => {
             const qualitative = row.result_type !== RESULT_TYPES.NUMERIC;
             return (
-              <div key={i} className="rounded-lg border border-slate-100 p-2 space-y-1.5">
+              <div key={i} className={`rounded-lg border p-2 space-y-1.5 ${row.needs_review ? "border-amber-400 bg-amber-50/40" : "border-slate-100"}`}>
+                {row._scan && (
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${row.needs_review ? "bg-amber-100 text-amber-700" : "bg-teal-100 text-teal-700"}`}>
+                      {row.needs_review ? `⚠ ${row.review_reason_he || "לבדיקה"}` : `✓ נסרק (${row.confidence})`}
+                    </span>
+                    {row.analyte_raw && row.analyte_raw !== row.analyte && (
+                      <span className="text-[9px] text-slate-400">בדף: “{row.analyte_raw}”</span>
+                    )}
+                  </div>
+                )}
                 <div className="flex items-start gap-2">
                   <AnalytePicker
                     className="flex-1"
