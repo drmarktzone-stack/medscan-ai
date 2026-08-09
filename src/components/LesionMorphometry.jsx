@@ -95,7 +95,7 @@ export default function LesionMorphometry({ imageUrl }) {
       ) : state.data ? (
         <>
           <div className="grid grid-cols-2 gap-2">
-            <Metric label="קוטר (יחסי)" value={state.data.diameter_mm != null ? `${state.data.diameter_mm} מ"מ` : `${state.data.diameter_px}px`} />
+            <Metric label={realDiameterMm != null ? "קוטר (ממ)" : "קוטר (יחסי)"} value={realDiameterMm != null ? (realDiameterMm + " ממ") : state.data.diameter_mm != null ? `${state.data.diameter_mm} מ"מ` : `${state.data.diameter_px}px`} />
             <Metric label="אסימטריה (A)" value={state.data.asymmetry_index != null ? state.data.asymmetry_index : "—"} hint="0=סימטרי · 1=א-סימטרי" />
             <Metric label="חוסר-סדירות גבול (B)" value={state.data.border_irregularity != null ? state.data.border_irregularity : "—"} hint="1.0=עיגול · גבוה=משונן" />
             <Metric label="גווני צבע (C)" value={state.data.color_clusters} hint="ריבוי גוונים → דגל" />
