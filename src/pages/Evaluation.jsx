@@ -162,6 +162,15 @@ export default function Evaluation() {
               )}
             </div>
 
+            <div className="flex gap-2">
+              <Link to="/ecg-validate" className="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-[11px] font-semibold">
+                <ShieldCheck className="w-3.5 h-3.5" /> ולידציה ECG
+              </Link>
+              <Link to="/skin-validate" className="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-lg border border-teal-200 bg-teal-50 text-teal-700 text-[11px] font-semibold">
+                <ShieldCheck className="w-3.5 h-3.5" /> ולידציה עור (הוגנות)
+              </Link>
+            </div>
+
             <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
