@@ -108,6 +108,17 @@ export function guardVisionNarrative({
 
   const result = numericGuard(subject, pseudoFactBlock);
 
+  // ── מנדט: לעולם לא אבחנה סופית ──
+  // אותה בדיקה דטרמיניסטית (validateScope) שרצה במסלול המעוגן — כאן על
+  // נרטיב ה-Vision. מאתרת ניסוחי "האבחנה היא", ודאות מוחלטת, שלילה
+  // גורפת והחלטות דיספוזיציה/מתן — חריגה מגבול הכלי (תמיכה-בהחלטה בלבד).
+  let mandateViolations = [];
+  try {
+    mandateViolations = validateScope(subject) || [];
+  } catch {
+    mandateViolations = [];
+  }
+
   const out = { ...diagnosis };
   const redactedFields = [];
 
@@ -124,6 +135,11 @@ export function guardVisionNarrative({
 
   const integrity = {
     checked_numbers: result.checkedCount,
+    mandate_ok: mandateViolations.length === 0,
+    mandate_violations: mandateViolations.map((v) => ({ path: v.path, why: v.why, message_he: v.message_he })),
+    mandate_note_he: mandateViolations.length
+      ? 'זוהה ניסוח החורג ממנדט הכלי (אבחנה סופית / ודאות מוחלטת / שלילה גורפת / החלטת דיספוזיציה או מתן). הכלי הוא תמיכה בהחלטה בלבד — יש להתייחס לניסוח זה בביקורתיות; ההכרעה והאחריות הן של הרופא/ה.'
+      : '',
     sourced_from: 'מדידות שחולצו מהתמונה · הקריאה המובנית של מנוע התחום · ההקשר הקליני · מקרי הייחוס',
     violations: result.violations,
     blocked: result.blocked,
