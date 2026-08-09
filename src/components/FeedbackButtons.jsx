@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ThumbsUp, ThumbsDown, Check, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
+import { promoteFeedbackToGold } from "@/lib/feedbackFlywheel";
 
 export default function FeedbackButtons({ analysisId, analysisType }) {
   const { t } = useI18n();
@@ -15,6 +16,8 @@ export default function FeedbackButtons({ analysisId, analysisType }) {
     setSaving(true);
     try {
       await base44.entities.Feedback.create({ analysis_id: analysisId, analysis_type: analysisType, is_correct: true });
+      // Flywheel: promote confirmation into the labeled evaluation set (non-blocking).
+      promoteFeedbackToGold({ analysisId, feedback: { analysis_type: analysisType, is_correct: true } });
       setSubmitted(true);
     } finally {
       setSaving(false);
@@ -30,6 +33,11 @@ export default function FeedbackButtons({ analysisId, analysisType }) {
         is_correct: false,
         corrected_diagnosis: correctedDiagnosis,
         notes,
+      });
+      // Flywheel: a physician correction becomes labeled ground truth (non-blocking).
+      promoteFeedbackToGold({
+        analysisId,
+        feedback: { analysis_type: analysisType, is_correct: false, corrected_diagnosis: correctedDiagnosis, notes },
       });
       setSubmitted(true);
       setShowForm(false);
