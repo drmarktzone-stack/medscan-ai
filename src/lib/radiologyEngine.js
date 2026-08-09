@@ -17,6 +17,7 @@ import { verifyDiagnosis } from "./verify";
 import { DIAGNOSIS_MODEL } from "./aiConfig";
 import { RADIOLOGY_CRITICAL_PROMPT, applyRadiologyCritical } from "./radiologyCritical";
 import { evaluateMeasurements } from "./radiologyMeasurements";
+import { runVisionNumericGuard, groundedRadiologyNumbers } from "./visionNumericGuard";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -259,6 +260,9 @@ export async function runRadiologyEngine({
       );
     }
   }
+
+  // ---- Vision numeric guard: flag narrative numbers not backed by a measurement ----
+  warnings.push(...runVisionNumericGuard(pass1, groundedRadiologyNumbers(pass1, measurementEval)).warnings);
 
   const urgent = pass1.clinical_urgency === "Urgent" || pass1.clinical_urgency === "Emergency";
   const needsScrutiny = urgent || confidence < 60 || cons.warnings.length > 0;
