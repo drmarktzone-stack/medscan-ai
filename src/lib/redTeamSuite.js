@@ -48,11 +48,15 @@ function ecgGateCases() {
     const g = decideGate({ is_ecg: true, quality_score: 88, is_interpretable: true });
     out.push(tc("ecg.valid_pass", "ECG", "תרשים תקין 88/100 — השער לא אמור לחסום", g.pass === true, g.pass === true ? "עבר כנדרש (אין over-blocking)" : "❌ חסם תרשים תקין"));
   }
-  // E. חשד היפוך-לידים (aVR חיובי + I שלילי) → דגל
+  // E. חשד היפוך-לידים (ציר צפוני-מערבי בקצב סינוס) → דגל
   {
-    const r = deterministicLeadReversalCheck({ leads: { aVR: { p_polarity: "positive", qrs_polarity: "positive" }, I: { p_polarity: "negative", qrs_polarity: "negative" } } });
-    const flagged = !!(r && (r.suspected || r.lead_reversal_suspected || r.flag));
-    out.push(tc("ecg.lead_reversal", "ECG", "aVR חיובי + I שלילי — חשד להיפוך LA/RA", flagged, flagged ? "סומן חשד כנדרש" : "לא סומן (בדוק שדות פולריות)"));
+    const r = deterministicLeadReversalCheck({ axis: { degrees: -120 }, rhythm_and_rate: { rhythm_type: "sinus rhythm", p_wave_present: true } });
+    out.push(tc("ecg.lead_reversal", "ECG", "ציר −120° בקצב סינוס — חשד להיפוך LA/RA", r?.suspected === true, r?.suspected === true ? "סומן חשד כנדרש" : "❌ לא סומן חשד"));
+  }
+  // F. ציר תקין בסינוס → אין חשד (שלילת over-flagging)
+  {
+    const r = deterministicLeadReversalCheck({ axis: { degrees: 60 }, rhythm_and_rate: { rhythm_type: "sinus rhythm", p_wave_present: true } });
+    out.push(tc("ecg.axis_normal", "ECG", "ציר תקין 60° בסינוס — אין לסמן היפוך", r?.suspected === false, r?.suspected === false ? "לא סומן כנדרש" : "❌ סימן חשד שווא"));
   }
   return out;
 }
