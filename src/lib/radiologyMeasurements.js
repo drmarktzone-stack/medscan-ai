@@ -125,6 +125,47 @@ export const RADIOLOGY_NORMALS = {
     bands: [{ age_max_months: 6, normal: [null, 30], label: "יילוד (≤~30°)" }],
     note_he: ">30° — חשד לדיספלזיה התפתחותית של מפרק הירך (אימות קליני/US).",
   },
+  renal_length_us: {
+    label_he: "אורך כליה (US)", region: "genitourinary", unit: "cm",
+    bands: [
+      { age_max_months: 3, normal: [3.3, 6.0], label: "0–3ח'" },
+      { age_max_months: 12, normal: [4.5, 7.0], label: "3–12ח'" },
+      { age_max_months: 60, normal: [5.5, 8.5], label: "1–5ש'" },
+      { age_max_months: 120, normal: [6.5, 9.5], label: "5–10ש'" },
+      { age_max_months: 3000, normal: [8.0, 11.0], label: "10–15ש'" },
+    ],
+    note_he: "נומוגרמה תלוית-גיל (Rosenbaum). אסימטריה >1ס\"מ בין כליות — משמעותית. אמת מול נומוגרמה מקומית.",
+  },
+  center_edge_angle: {
+    label_he: "זווית מרכז-קצה (Wiberg CE)", region: "hip", unit: "°",
+    bands: [
+      { age_max_months: 96, normal: [19, null], label: "5–8ש' (>19°)" },
+      { age_max_months: 3000, normal: [25, null], label: "≥13ש' (>25°)" },
+    ],
+    note_he: "נמוך מהסף — כיסוי אצטבולרי לקוי (דיספלזיה). מדיד מגיל ~5 (גרעין ראש עצם ירך).",
+  },
+  optic_nerve_sheath_diameter: {
+    label_he: "קוטר נדן עצב הראייה (ONSD, US 3מ\"מ מאחורי לגלגל)", region: "neuro", unit: "mm",
+    bands: [
+      { age_max_months: 12, normal: [null, 4.0], label: "תינוק (≤4.0)" },
+      { age_max_months: 3000, normal: [null, 4.5], label: "ילד (≤4.5)" },
+    ],
+    note_he: "עלייה — סמן עקיף אפשרי ללחץ תוך-גולגולתי מוגבר. אינו מאבחן; מצריך הקשר קליני.",
+  },
+  common_bile_duct_diameter: {
+    label_he: "קוטר צינור מרה משותף (CBD, US)", region: "abdomen", unit: "mm",
+    bands: [
+      { age_max_months: 1, normal: [null, 1.0], label: "יילוד (≤1)" },
+      { age_max_months: 12, normal: [null, 2.0], label: "תינוק (≤2)" },
+      { age_max_months: 3000, normal: [null, 4.0], label: "ילד (≤4)" },
+    ],
+    note_he: "הרחבה — חשד לחסימה ביליארית (אבן/ציסטה כולדוכאלית).",
+  },
+  prevertebral_c2_soft_tissue: {
+    label_he: "רקמה רכה טרום-חולייתית C2", region: "neck_spine", unit: "mm",
+    bands: [{ age_max_months: 3000, normal: [null, 7], label: "≤~7מ\"מ" }],
+    note_he: "נמדד בצילום צוואר לטרלי בשאיפה. בכי עלול ליצור הרחבה מדומה.",
+  },
 };
 
 /** Bladder expected capacity (mL) = (age_years + 2) × 30. Deterministic formula. */
