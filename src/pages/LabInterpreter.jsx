@@ -1,13 +1,18 @@
-import React, { useState } from "react";
-import { FlaskConical, Loader2, Plus, X, ShieldCheck, AlertTriangle } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { FlaskConical, Loader2, Plus, X, ShieldCheck, AlertTriangle, ScanLine, Upload, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
 import AnalytePicker from "@/components/AnalytePicker";
+import { base44 } from "@/api/base44Client";
+import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+import { runLabScan } from "@/lib/labScanEngine";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
 import { RESULT_TYPES, CATALOG_SIZE } from "@/lib/medscan/deterministic/analyteCatalog";
+
+const scanInvoke = createVisionInvokeLLM({ purpose: "lab_scan" });
 
 const emptyRow = () => ({
   analyte: "", value: "", unit: "", ref_low: "", ref_high: "",
@@ -25,6 +30,53 @@ export default function LabInterpreter() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [scanning, setScanning] = useState(false);
+  const [scanInfo, setScanInfo] = useState(null);
+  const scanFileRef = useRef(null);
+
+  // המרת שורת-סריקה לשורת-טופס. ערך לא-קריא → ריק (לא מנוחש).
+  const scanRowToUiRow = (sr) => {
+    const isQual = sr.value == null && !!(sr.value_text || "").trim();
+    return {
+      analyte: sr.matched_he || sr.analyte_raw || "",
+      value: sr.value != null ? String(sr.value) : (sr.value_text || ""),
+      unit: sr.unit || sr.expected_unit || "",
+      ref_low: sr.ref_low != null ? String(sr.ref_low) : "",
+      ref_high: sr.ref_high != null ? String(sr.ref_high) : "",
+      result_type: isQual ? RESULT_TYPES.QUALITATIVE : RESULT_TYPES.NUMERIC,
+      _scan: true,
+      analyte_raw: sr.analyte_raw || "",
+      needs_review: sr.needs_review,
+      review_reason_he: sr.review_reason_he || "",
+      confidence: sr.confidence || "medium",
+    };
+  };
+
+  const handleScanFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setScanning(true);
+    setScanInfo(null);
+    setError(null);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const scan = await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
+      if (!scan.ok) {
+        setScanInfo({ error: scan.note_he || "לא הצלחתי לקרוא את הדף." });
+      } else {
+        const uiRows = scan.rows.map(scanRowToUiRow);
+        setRows(uiRows.length ? uiRows : [emptyRow()]);
+        if (scan.patient?.sex === "male" || scan.patient?.sex === "female") setSex(scan.patient.sex);
+        setScanInfo({ stats: scan.stats, note: scan.note_he, ageText: scan.patient?.age_text || "" });
+      }
+    } catch (err) {
+      console.error(err);
+      setScanInfo({ error: err.message || "שגיאה בסריקת הדף." });
+    } finally {
+      setScanning(false);
+      if (scanFileRef.current) scanFileRef.current.value = "";
+    }
+  };
 
   const updateRow = (i, field, val) =>
     setRows((r) => r.map((row, idx) => (idx === i ? { ...row, [field]: val } : row)));
