@@ -34,6 +34,7 @@
 
 import { numericGuard, redactUnsourcedNumbers } from '../antihallucination/numericGuard.js';
 import { extractNumbers } from '../antihallucination/factBlock.js';
+import { validateScope } from '../antihallucination/validators.js';
 
 /** השדות בפלט האבחון שהרופא/ה קורא/ת בפועל. */
 const NARRATIVE_FIELDS = ['summary', 'analysis', 'guideline'];
