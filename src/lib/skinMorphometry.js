@@ -145,6 +145,7 @@ export async function measureLesionFromImage(imgEl, { pxPerMm = null } = {}) {
   return {
     ok: true,
     scale_unknown: !pxPerMm,
+    image_width_px: w,
     diameter_px: diamPx,
     diameter_mm: pxPerMm ? round2(diamPx / pxPerMm) : null,
     asymmetry_index: asymmetryIndex(mask, w, h),
