@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
+import { runSkinFastAnalysis } from "@/lib/medscan/engines/skinFastPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import ExamFindingsInput from "@/components/ExamFindingsInput";
@@ -47,42 +48,19 @@ export default function SkinAnalysis() {
     setError(null);
     const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
     try {
-      const res = await runDiagnosisPipeline({
+      // ⚡ צינור-עור מהיר: קריאה מורפולוגית אחת + ניקוד דרמוסקופי בקוד + השוואה למאגר.
+      const res = await runSkinFastAnalysis({
         files,
-        entityName: "SkinCase",
-        analysisType: "skin",
-        domainRole: "דרמטולוג מומחה",
         clinicalContext: fullContext,
         language: lang,
         pediatric,
-        matchingInstructions: `1. בחן את הנגע בצורה שיטתית: מורפולוגיה (מקולרי/פפולרי/נודולרי/וסיקולרי), צבע, גודל, גבולות, פיזור, סימטריה.
-2. השווה את הממצאים מול המאפיינים המרכזיים של כל מחלה במאגר — גם חיובי וגם שלילי.
-3. השתמש בכלל ABCDE להערכת נגעים פיגמנטיים: Asymmetry, Border, Color, Diameter, Evolution.
-4. שים לב לסימני דגל אדום: גבולות לא סדירים, צבע לא אחיד, כיב, דימום, גדילה מהירה.
-5. אל תניח "שפיר" כברירת מחדל — שקול כל מקרה ברצינות, במיוחד מלנומה וקרצינומות.`,
-        diagnosisInstructions: `1. התבסס על תוצאות שלב ההתאמה — המחלות התואמות ביותר מופיעות למעלה עם דרגת הביטחון שלהן.
-2. נתח מורפולוגיה מפורטת: סוג נגע, צבע, גודל משוער, גבולות, פיזור, סימטריה.
-3. בצע הערכת ABCDE לנגעים פיגמנטיים.
-4. הסבר מדוע האבחנה הראשית תואמת את המקרה מהמאגר, ומדוע אבחנות אחרות נשללו.
-5. השתמש בתמונות הייחוס להשוואה ויזואלית מול המקרים התואמים.
-6. ציין רמת דחיפות והמלצות — ביופסיה, הפניה למומחה, טיפול ראשוני.`,
         onStage: setStage,
       });
       setResult(res);
 
-      // שכבת הפרשנות המעוגנת — רצה אחרי הצינור הקיים ובנפרד ממנו.
-      // כישלון כאן לעולם לא מפיל את הפענוח שהמשתמש כבר קיבל.
-      if (res?.structuredInterpretation) {
-        setGroundedLoading(true);
-        runGroundedVisionInterpretation({
-          modality: "skin",
-          engineResult: res.structuredInterpretation,
-          clinicalContext: fullContext,
-        })
-          .then(setGrounded)
-          .catch((e) => { console.error("grounded interpretation failed", e); setGrounded(null); })
-          .finally(() => setGroundedLoading(false));
-      }
+      // הצינור הישן והפרשנות המעוגנת נשמרים בקוד אך אינם בשימוש במסלול המהיר.
+      void runDiagnosisPipeline;
+      void runGroundedVisionInterpretation;
     } catch (err) {
       console.error(err);
       setError(err.message || t("analysis.error_fallback"));
