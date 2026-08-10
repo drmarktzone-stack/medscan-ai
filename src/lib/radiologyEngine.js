@@ -14,7 +14,7 @@
  */
 
 import { verifyDiagnosis } from "./verify";
-import { DIAGNOSIS_MODEL } from "./aiConfig";
+import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { RADIOLOGY_CRITICAL_PROMPT, applyRadiologyCritical } from "./radiologyCritical";
 import { evaluateMeasurements } from "./radiologyMeasurements";
 import { runVisionNumericGuard, groundedRadiologyNumbers } from "./visionNumericGuard";
@@ -216,8 +216,11 @@ export async function runRadiologyEngine({
   pediatric = false,
   invokeLLM,
   onStage,
-  model = DIAGNOSIS_MODEL,
+  // ⚡ קריאת-הראייה העיקרית עוברת למודל המהיר (Sonnet) לצמצום זמן-פענוח;
+  // הערכת המדידות מול נורמות-גיל מחושבת בקוד ומבטיחה את הדיוק הנומרי.
+  model = FAST_MODEL,
 }) {
+  void DIAGNOSIS_MODEL;
   onStage?.("interpreting");
   const prompt = buildRadiologySystemPrompt({ clinicalContext, language, pediatric });
 
