@@ -123,7 +123,12 @@ export default function ECGAnalysis() {
       // מנוע-המדידה הדטרמיניסטי רץ במקביל לצינור (לא בטור) — כדי לא להאריך את זמן הפענוח. מוצג בכרטיס נפרד.
       setMicroLoading(true);
       const invokePerc = createVisionInvokeLLM({ purpose: "ecg_perception" });
-      runEcgMicroReading({ fileUrls: uploadedUrls, invokeLLM: invokePerc })
+      runEcgMicroReading({
+        fileUrls: uploadedUrls,
+        invokeLLM: invokePerc,
+        ageYears: patientMeta.age ? Number(patientMeta.age) : undefined,
+        sex: patientMeta.sex || undefined,
+      })
         .then((micro) => setMicroReading(micro))
         .catch((e) => console.error("micro reading failed", e))
         .finally(() => setMicroLoading(false));
@@ -330,6 +335,22 @@ export default function ECGAnalysis() {
                   </div>
                 ))}
               </div>
+              {microReading.interpretation && (
+                <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                  {microReading.interpretation.rhythm?.rhythm_he && (
+                    <div className="text-sm font-bold text-slate-800">קצב: {microReading.interpretation.rhythm.rhythm_he}</div>
+                  )}
+                  {(microReading.interpretation.morphology || []).map((f, i) => (
+                    <div key={i} className={`rounded-lg px-3 py-2 text-xs border ${f.severity === "urgent" ? "bg-red-50 text-red-800 border-red-200" : "bg-amber-50 text-amber-800 border-amber-200"}`}>
+                      <span className="font-semibold">{f.finding_he}</span> — {f.meaning_he}
+                    </div>
+                  ))}
+                  {(microReading.interpretation.interval_warnings || []).map((w, i) => (
+                    <div key={`w${i}`} className="text-[11px] text-amber-700">• {w}</div>
+                  ))}
+                  <div className="text-[11px] text-slate-500">{microReading.interpretation.summary_he}</div>
+                </div>
+              )}
               {Array.isArray(m.notes) && m.notes.length > 0 && (
                 <ul className="mt-3 space-y-1 text-[11px] text-amber-700">
                   {m.notes.map((n, i) => <li key={i}>• {n}</li>)}
