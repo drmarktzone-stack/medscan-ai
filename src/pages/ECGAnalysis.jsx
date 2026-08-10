@@ -223,6 +223,27 @@ export default function ECGAnalysis() {
             <ClinicalContextForm onChange={setClinicalContext} onMeta={setPatientMeta} />
             <ExamFindingsInput onChange={setExamFindings} fields={ECG_EXAM_FIELDS} title="הקשר קליני (תסמינים/תרופות/אלקטרוליטים)" />
             <PediatricToggle value={pediatric} onChange={setPediatric} />
+
+            <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+              <div>
+                <p className="text-sm font-semibold">השוואה לתרשים קודם (אופציונלי)</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">העלה תרשים ישן של אותו מטופל כדי לזהות שינוי. אין תרשים קודם? דלג — יפוענח התרשים הנוכחי בלבד.</p>
+              </div>
+              <ImageUploader
+                files={priorFiles}
+                onFilesChange={handlePriorChange}
+                label="תרשים קודם להשוואה"
+                hint="ECG קודם של אותו מטופל (תמונה/קובץ)"
+                imageUrls={priorUrls}
+                onImageUrlsChange={setPriorUrls}
+              />
+              {priorUploading && (
+                <div className="text-[11px] text-slate-500 flex items-center gap-2">
+                  <Loader2 className="w-3 h-3 animate-spin" /> מעלה תרשים קודם…
+                </div>
+              )}
+            </div>
+
             <Button
               onClick={handleAnalyze}
               disabled={loading || uploading}
@@ -239,7 +260,7 @@ export default function ECGAnalysis() {
                   {stageLabel}
                 </span>
               ) : (
-                t("analysis.ecg_button")
+                priorUrls.length > 0 ? "פענח והשווה" : t("analysis.ecg_button")
               )}
             </Button>
           </>
