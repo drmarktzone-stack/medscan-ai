@@ -39,8 +39,8 @@ export function buildCasesForMatching(cases) {
     if (c.diagnosis) entry += ` — ${c.diagnosis}`;
     if (c.category) entry += ` [${c.category}]`;
     if (c.urgent) entry += " ⚠דחוף";
-    if (c.key_features) entry += ` | מאפיינים: ${trunc(c.key_features, 180)}`;
-    if (c.diagnostic_criteria) entry += ` | קריטריונים: ${trunc(c.diagnostic_criteria, 180)}`;
+    // שלב-האחזור רץ על מאפיינים בלבד (קל ומהיר); הקריטריונים המלאים נבדקים בשלב-האימות על המובילים בלבד.
+    if (c.key_features) entry += ` | ${trunc(c.key_features, 130)}`;
     return entry;
   }).join("\n");
 }
