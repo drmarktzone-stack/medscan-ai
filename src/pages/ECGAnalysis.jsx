@@ -120,18 +120,15 @@ export default function ECGAnalysis() {
     setComparison(null);
     setMicroReading(null);
     try {
-      // מנוע-מדידה דטרמיניסטי: תפיסה גיאומטרית → חישוב בקוד, ואז הזרקה לאבחון כעובדות.
+      // מנוע-המדידה הדטרמיניסטי רץ במקביל לצינור (לא בטור) — כדי לא להאריך את זמן הפענוח. מוצג בכרטיס נפרד.
       setMicroLoading(true);
-      let measuredBlock = "";
-      try {
-        const invokePerc = createVisionInvokeLLM({ purpose: "ecg_perception" });
-        const micro = await runEcgMicroReading({ fileUrls: uploadedUrls, invokeLLM: invokePerc });
-        setMicroReading(micro);
-        if (micro?.measured) measuredBlock = buildMeasuredBlock(micro.measured);
-      } catch (e) { console.error("micro reading failed", e); }
-      finally { setMicroLoading(false); }
+      const invokePerc = createVisionInvokeLLM({ purpose: "ecg_perception" });
+      runEcgMicroReading({ fileUrls: uploadedUrls, invokeLLM: invokePerc })
+        .then((micro) => setMicroReading(micro))
+        .catch((e) => console.error("micro reading failed", e))
+        .finally(() => setMicroLoading(false));
 
-      const fullContext = [clinicalContext, examFindings, measuredBlock].filter(Boolean).join("\n");
+      const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
 
       const res = await runDiagnosisPipeline({
         files,
