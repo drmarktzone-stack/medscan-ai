@@ -9,6 +9,7 @@
  */
 
 import { groundedInvoke } from '../gate/groundedInvoke.js';
+import { resolveMode } from '../runtimeMode.js';
 import { runRulesEngine } from '../rules/rulesEngine.js';
 import {
   extractObservationsFor,
@@ -86,7 +87,7 @@ export async function runGroundedVisionInterpretation({
   engineResult,
   patient = {},
   clinicalContext = null,
-  mode = 'clinical',
+  mode = resolveMode(),
   withLiterature = true,
 }) {
   if (!MODALITY_LABEL[modality]) throw new Error(`Unknown modality: ${modality}`);
