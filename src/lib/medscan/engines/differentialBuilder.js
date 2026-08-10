@@ -13,6 +13,7 @@
  */
 
 import { groundedInvoke } from '../gate/groundedInvoke.js';
+import { resolveMode } from '../runtimeMode.js';
 import { runRulesEngine } from '../rules/rulesEngine.js';
 import { normalizeLabs, toPatientFacts, toAgeDays } from '../deterministic/labNormalize.js';
 import { loadReferenceRanges } from '../deterministic/refRanges.js';
@@ -67,7 +68,7 @@ export async function runDifferentialBuilder({
   findings = [],
   labs = [],
   presentation = null,
-  mode = 'clinical',
+  mode = resolveMode(),
   withLiterature = true,
 }) {
   const ageDays = toAgeDays(patient);
