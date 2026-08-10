@@ -62,8 +62,10 @@ t("STEMI תחתון → severity urgent, top=STEMI, מותאם לתיק KB עם 
   const r = assembleEcgResult(reading, KB, { sex: "male", fileUrl: "http://x/ecg.png" });
   assert(r.severity === "urgent", "STEMI → urgent, got " + r.severity);
   assert(/STEMI/i.test(r.summary), "summary mentions STEMI: " + r.summary);
-  assert(r.matchedCases[0] && /Inferior/i.test(r.matchedCases[0].diagnosis), "top KB match inferior STEMI: " + JSON.stringify(r.matchedCases[0]));
-  assert(r.matchedCases[0].image_url === "http://x/inf.png", "reference image attached");
+  // Displayed diagnosis is the tool's OWN finding, not a KB case name.
+  assert(r.matchedCases[0] && r.matchedCases[0].diagnosis === "STEMI pattern", "chip shows the finding, not a KB name: " + JSON.stringify(r.matchedCases[0]));
+  assert(/STEMI/.test(r.matchedCases[0].title), "title is the finding name_he");
+  assert(r.matchedCases[0].image_url === "http://x/inf.png", "reference image attached on strong match");
   const cro = r.structuredInterpretation.structured.critical_rule_out;
   assert(cro.some(x => x.pattern_key === "stemi" && x.status === "met"), "STEMI in critical_rule_out");
   assert(r.findings.length === 1, "bounding box carried");
@@ -122,6 +124,32 @@ t("assembleEcgResult תמיד מחזיר את כל השדות שה-UI צורך",
   }
   assert(r.structuredInterpretation.structured, "structured nested present");
   assert(r.imageUrl === "http://x/ecg.png", "imageUrl set");
+});
+
+t("רגרסיה: HR 77 + גל J מפוקפק → לא מסווג כהיפותרמיה, ואין שם-KB סותר בצ'יפ", () => {
+  const reading = mkReading({
+    measured: { measurable: true, intervals: { pr_ms: 160, qrs_ms: 92, qt_ms: 380 }, rate: { hr_bpm: 77, rr_ms: 779 }, qtc: { bazett: 430 }, axis: { degrees: 40, label_he: "ציר תקין" } },
+    interpretation: { rhythm: { rhythm_he: "קצב סינוס תקין", sinus: true }, conduction: { type: "narrow" }, interval_warnings: [], summary_he: "" },
+    obs: { regular: true, p_before_each_qrs: true, st_elevation_leads: [], st_depression_leads: [], t_inversion_leads: [], pathological_q_leads: [], osborn_j_wave: true },
+    ageYears: 40,
+  });
+  const keys = reading.pathologyMatch.candidates.map(c => c.key);
+  assert(!keys.includes("hypothermia_osborn"), "HR 77 must NOT trigger hypothermia: " + keys.join(","));
+  const r = assembleEcgResult(reading, [{ title: "היפותרמיה", diagnosis: "Bradycardia secondary to Hypothermia", image_url: "http://x/hypo.png" }], { sex: "male", fileUrl: "http://x/e.png" });
+  const dEnglish = (r.matchedCases[0]?.diagnosis) || "";
+  assert(!/hypothermia/i.test(dEnglish), "no hypothermia KB name leaks into the chip: " + dEnglish);
+});
+
+t("רגרסיה: ממצא דטרמיניסטי מוצג גם כשאין התאמת-KB חזקה (אין תמונה, אבל יש ממצא)", () => {
+  const reading = mkReading({
+    measured: { measurable: true, intervals: { pr_ms: 240, qrs_ms: 90, qt_ms: 360 }, rate: { hr_bpm: 70, rr_ms: 857 }, qtc: { bazett: 402 }, axis: { degrees: 45, label_he: "ציר תקין" } },
+    interpretation: { rhythm: { rhythm_he: "קצב סינוס" }, conduction: { type: "narrow" }, interval_warnings: [], summary_he: "" },
+    obs: { regular: true, p_before_each_qrs: true, st_elevation_leads: [], st_depression_leads: [], t_inversion_leads: [], pathological_q_leads: [] },
+    ageYears: 50,
+  });
+  const r = assembleEcgResult(reading, [], { sex: "male", fileUrl: "http://x/e.png" });
+  assert(r.matchedCases.some(c => /AV/i.test(c.diagnosis) || /חסם/.test(c.title)), "1st-deg AVB shown as finding");
+  assert(r.matchedCases.every(c => c.image_url === undefined), "no KB → no reference image, but finding still present");
 });
 
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);
