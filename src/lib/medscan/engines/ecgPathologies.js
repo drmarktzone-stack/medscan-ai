@@ -452,9 +452,13 @@ export const ECG_PATHOLOGIES = [
     severity: "yellow",
     source_anchor: "Osborn (J) waves + bradycardia + tremor artifact in hypothermia",
     evaluate(f) {
-      if (f.osborn_j_wave === true) {
+      // Osborn waves are clinically meaningful with hypothermia, which is bradycardic.
+      // GATE: require bradycardia (HR<60) — or unknown HR — so a normal-rate ECG
+      // (e.g. HR 77) cannot be labelled hypothermia off a single dubious J-wave.
+      const bradyOrUnknown = !isNum(f.hr) || f.hr < 60;
+      if (f.osborn_j_wave === true && bradyOrUnknown) {
         return { matched: true, score: 70, severity: "yellow",
-          criteria: [{ text: "גל Osborn/J", ok: true }, { text: "ברדיקרדיה", ok: isNum(f.hr) ? f.hr < 60 : null }],
+          criteria: [{ text: "גל Osborn/J", ok: true }, { text: `ברדיקרדיה (HR ${isNum(f.hr) ? f.hr : "?"})`, ok: isNum(f.hr) ? f.hr < 60 : null }],
           note_he: "דפוס היפותרמיה — מדוד חום-ליבה; חמם בזהירות ונטר קצב." };
       }
       return null;
