@@ -38,23 +38,35 @@ export function measuredBlockText(measured) {
   return `מדידות שחושבו בקוד: ${parts.join(" | ") || "—"}.`;
 }
 
-/** Closest ECGCase per matched pattern (keyword overlap on the English diagnosis). */
+/** Tokens describing a pathology candidate (for finding a KB reference image). */
+function candTokens(c) {
+  return [...tok(c.name_en), ...tok(c.name_he), ...tok(c.category), ...tok(c.territory)].filter((w) => !STOP.has(w));
+}
+
+/**
+ * Build the matched-cases list. CRITICAL: the displayed title/diagnosis is the
+ * tool's OWN deterministic finding — NEVER a fuzzy KB case name (that bug turned
+ * "HR 77, normal sinus" into the chip "Bradycardia secondary to Hypothermia").
+ * A KB case only contributes a *reference image*, and only on a strong match
+ * (≥2 shared tokens). No strong match → no image, but the finding is still shown.
+ */
 export function matchKbCases(candidates, cases) {
   const out = [];
   for (const c of candidates || []) {
-    const ct = tok(c.name_en).filter((w) => !STOP.has(w));
+    const ct = new Set(candTokens(c));
     let best = null;
     for (const cs of cases || []) {
-      const dset = new Set([...tok(cs.diagnosis), ...tok(cs.title)]);
-      const overlap = ct.filter((w) => dset.has(w)).length;
-      if (overlap > 0 && (!best || overlap > best.overlap)) best = { cs, overlap };
+      const dset = [...tok(cs.diagnosis), ...tok(cs.title)].filter((w) => !STOP.has(w));
+      const overlap = dset.filter((w) => ct.has(w)).length;
+      if (overlap >= 2 && (!best || overlap > best.overlap)) best = { cs, overlap };
     }
     out.push({
-      title: best ? best.cs.title : c.name_he,
-      diagnosis: best ? best.cs.diagnosis : c.name_en,
+      title: c.name_he,
+      diagnosis: c.name_en,
       confidence: Math.round(c.score || 0),
       reasoning: `${(c.criteria || []).map((x) => `${x.ok === false ? "✗" : x.ok === null ? "?" : "✓"} ${x.text}`).join(" · ")}${c.note_he ? " — " + c.note_he : ""}`,
       image_url: best ? best.cs.image_url : undefined,
+      kb_reference: best ? best.cs.title : undefined,
     });
   }
   return out;
