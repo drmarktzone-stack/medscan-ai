@@ -112,9 +112,9 @@ ${casesForMatching}
 ## חלק ב׳ — התאמה
 ${matchingInstructions}
 
-- התאם את המדידות שחלצת מול המאפיינים של כל מקרה במאגר.
-- לכל מקרה החזר ציון ביטחון 0-100 והסבר קצר המבוסס על המדידות.
-- דרג מהתואם ביותר לפחות. החזר רק את 12 ההתאמות הטובות ביותר.
+- התאם את המדידות והממצאים שחלצת מול **המאפיינים המרכזיים וגם קריטריוני-האבחון** של כל מקרה במאגר. שני אלה מסופקים לך לכל מקרה — השתמש בשניהם.
+- לכל מקרה החזר ציון ביטחון 0-100 והסבר קצר המבוסס על המדידות ועל התאמת/אי-התאמת הקריטריונים.
+- דרג מהתואם ביותר לפחות. החזר רק את 15 ההתאמות הטובות ביותר.
 - אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות, במיוחד מצבים מסכני חיים.
 ${langDirective}`,
     file_urls: fileUrls,
@@ -216,7 +216,7 @@ ${langDirective}`,
   }
 
   // ---------- Resolve top matched cases (full detail + reference images) ----------
-  const topMatchIds = matches.slice(0, 5).map((m) => m.case_id);
+  const topMatchIds = matches.slice(0, 8).map((m) => m.case_id);
   const topCases = topMatchIds
     .map((id) => allCases.find((c) => c.id === id))
     .filter(Boolean);
@@ -246,7 +246,7 @@ ${langDirective}`,
   // ---------- Stage 2: Criteria Verification + Diagnosis ----------
   onStage?.("verifying");
 
-  const matchesSummary = matches.slice(0, 5).map((m, i) =>
+  const matchesSummary = matches.slice(0, 8).map((m, i) =>
     `${i + 1}. ${m.title} — ${m.diagnosis || ""} (ביטחון התאמה: ${m.confidence}%): ${m.reasoning}`
   ).join("\n");
 
