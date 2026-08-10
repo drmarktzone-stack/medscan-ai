@@ -49,6 +49,7 @@ t("תרשים תקין → severity normal, ללא ממצא, urgency Normal, מ�
   assert(r.structuredInterpretation.structured.rhythm_and_rate.heart_rate_bpm === 75, "HR carried");
   assert(/בגבולות הנורמה/.test(r.analysis), "analysis states normal");
   assert(r.measurements.length >= 4, "measurements list built");
+  assert(/HR 75/.test(r.summary) && /ללא ממצא פתולוגי/.test(r.summary), "informative normal headline: " + r.summary);
 });
 
 t("STEMI תחתון → severity urgent, top=STEMI, מותאם לתיק KB עם תמונת-ייחוס, critical_rule_out", () => {
@@ -138,6 +139,22 @@ t("רגרסיה: HR 77 + גל J מפוקפק → לא מסווג כהיפותר�
   const r = assembleEcgResult(reading, [{ title: "היפותרמיה", diagnosis: "Bradycardia secondary to Hypothermia", image_url: "http://x/hypo.png" }], { sex: "male", fileUrl: "http://x/e.png" });
   const dEnglish = (r.matchedCases[0]?.diagnosis) || "";
   assert(!/hypothermia/i.test(dEnglish), "no hypothermia KB name leaks into the chip: " + dEnglish);
+});
+
+t("התאמת-KB אמינה: LBBB → מצרף תמונת-ייחוס נכונה דרך hints", () => {
+  const kb = [
+    { title: "קצב סינוס תקין", diagnosis: "Normal Sinus Rhythm", image_url: "http://x/nsr.png" },
+    { title: "חסם צרור הולכה שמאלי", diagnosis: "LBBB complete", image_url: "http://x/lbbb.png" },
+  ];
+  const reading = mkReading({
+    measured: { measurable: true, intervals: { pr_ms: 160, qrs_ms: 145, qt_ms: 420 }, rate: { hr_bpm: 72, rr_ms: 833 }, qtc: { bazett: 460 }, axis: { degrees: -10, label_he: "ציר תקין" } },
+    interpretation: { rhythm: { rhythm_he: "קצב סינוס" }, conduction: { type: "LBBB", he: "חסם צרור שמאלי (LBBB)", discordance_expected: true, severity: "yellow" }, interval_warnings: [], summary_he: "" },
+    obs: { regular: true, p_before_each_qrs: true, st_elevation_leads: [], st_depression_leads: [], t_inversion_leads: [], pathological_q_leads: [], v1_qrs_pattern: "dominant_s", lateral_broad_notched_r: true },
+    ageYears: 60,
+  });
+  const r = assembleEcgResult(reading, kb, { sex: "male", fileUrl: "http://x/e.png" });
+  const lbbbRow = r.matchedCases.find(c => c.title.includes("LBBB"));
+  assert(lbbbRow && lbbbRow.image_url === "http://x/lbbb.png", "LBBB reference image attached: " + JSON.stringify(lbbbRow));
 });
 
 t("רגרסיה: ממצא דטרמיניסטי מוצג גם כשאין התאמת-KB חזקה (אין תמונה, אבל יש ממצא)", () => {
