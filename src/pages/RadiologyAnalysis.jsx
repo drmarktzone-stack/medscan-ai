@@ -62,48 +62,21 @@ export default function RadiologyAnalysis() {
     setError(null);
     const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
     try {
-      const res = await runDiagnosisPipeline({
+      // ⚡ צינור-רדיולוגיה מהיר: קריאה שיטתית אחת (מודליות→ABCDE→אפיון),
+      // ואז כל ההרכבה בקוד (הערכת-מדידות מול נורמות-גיל + השוואה למאגר).
+      // מחליף את הצינור הרב-קריאתי (3-4 קריאות Opus טוריות ≈ 5 דקות).
+      const res = await runRadiologyFastAnalysis({
         files,
-        entityName: "RadiologyCase",
-        analysisType: "radiology",
-        domainRole: "רדיולוג מומחה",
         clinicalContext: fullContext,
         language: lang,
         pediatric,
-        matchingInstructions: `1. זהה את סוג הבדיקה הרדיולוגית (רנטגן, CT, MRI, אולטראסאונד) ואת האזור האנטומי המצולם.
-2. סרוק את הצילום בצורה שיטתית מלמעלה למטה ומצד לצד — אל תדלג על אזורים.
-3. הערך צפיפות רקמות, מבנה אנטומי, סימטריה, וכל חריגה מהתקין.
-4. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
-5. שים לב במיוחד לממצאים מסכני חיים: פנאומוטורקס, פנאומופריטונאום, דיסקציה אאורטה, דימום תוך-גולגולתי, תסחיף ריאתי, שברים מרוסקים.
-6. אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות.`,
-        diagnosisInstructions: `1. התבסס על תוצאות שלב ההתאמה — המקרים התואמים ביותר מופיעים למעלה עם דרגת הביטחון שלהם.
-2. תאר את סוג הבדיקה, האזור האנטומי, ואיכות הצילום (חשיפה, חדות, זווית).
-3. נתח ממצאים מורפולוגיים מפורטים: צפיפות, גודל, צורה, מיקום, גבולות, השפעה על מבנים סמוכים.
-4. הסבר מדוע האבחנה הראשית תואמת את המקרה מהמאגר, ומדוע אבחנות אחרות נשללו.
-5. השתמש בתמונות הייחוס להשוואה ויזואלית מול המקרים התואמים.
-6. ציין רמת דחיפות והמלצות — המשך בירור, בדיקות השלמה (CT עם חומר ניגוד, MRI, אולטראסאונד), הפניה למומחה.`,
         onStage: setStage,
       });
       setResult(res);
 
-      // שכבת הפרשנות המעוגנת — רצה **אחרי** הצינור הקיים ובנפרד ממנו.
-      // כישלון כאן לעולם לא מפיל את הפענוח שהמשתמש כבר קיבל.
-      // הצינור מחזיר את תוצר המנוע תחת structuredInterpretation.
-      // (הצינור כבר זורק על abstain, אז מה שמגיע לכאן תמיד קריא.)
-      if (res?.structuredInterpretation) {
-        setGroundedLoading(true);
-        runGroundedVisionInterpretation({
-          modality: "radiology",
-          engineResult: res.structuredInterpretation,
-          clinicalContext: fullContext,
-        })
-          .then(setGrounded)
-          .catch((e) => {
-            console.error("grounded interpretation failed", e);
-            setGrounded(null);
-          })
-          .finally(() => setGroundedLoading(false));
-      }
+      // הצינור הישן והפרשנות המעוגנת נשמרים בקוד אך אינם בשימוש במסלול המהיר.
+      void runDiagnosisPipeline;
+      void runGroundedVisionInterpretation;
     } catch (err) {
       console.error(err);
       setError(err.message || t("analysis.error_fallback"));
