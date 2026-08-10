@@ -17,15 +17,6 @@ const tools = [
     color: "#3b82f6",
   },
   {
-    titleKey: "השוואת א.ק.ג",
-    descKey: "השוואת תרשים חדש מול קודמים לזיהוי שינוי",
-    icon: GitCompare,
-    path: "/ecg-compare",
-    gradient: "from-blue-500 to-cyan-400",
-    bg: "bg-blue-50",
-    color: "#3b82f6",
-  },
-  {
     titleKey: "home.skin_title",
     descKey: "home.skin_desc",
     icon: Stethoscope,
