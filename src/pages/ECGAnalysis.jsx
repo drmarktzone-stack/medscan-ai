@@ -372,13 +372,14 @@ export default function ECGAnalysis() {
           </div>
         )}
 
-        {comparisonLoading && (
+        {/* שונבה השוואת-אק"ג (תרשים קודם) הוסרה מהממשק לפי בקשה. */}
+        {false && comparisonLoading && (
           <div className="flex items-center justify-center gap-2 text-xs text-slate-500 py-4">
             <Loader2 className="w-4 h-4 animate-spin" /> משווה מול התרשים הקודם…
           </div>
         )}
 
-        {comparison && (() => {
+        {false && comparison && (() => {
           const llm = comparison.llm || {};
           const urg = comparison.urgency || llm.urgency || "Normal";
           const urgColor = urg === "Emergency" ? "bg-red-100 text-red-700" : urg === "Urgent" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700";
