@@ -78,6 +78,8 @@ export const ECG_PERCEPTION_SCHEMA = {
         t_inversion_leads: { type: "array", items: { type: "string" } },
         pathological_q_leads: { type: "array", items: { type: "string" } },
         pr_depression: { type: "boolean" },
+        v1_qrs_pattern: { type: "string", description: "צורת QRS ב-V1: 'dominant_s' (S עמוק/דומיננטי) / 'rsr_prime' (RSR' דמוי-M) / 'other'" },
+        lateral_broad_notched_r: { type: "boolean", description: "גל R רחב/מחורץ (דמוי-M) בלידים הלטרליים I/aVL/V5-6" },
       },
     },
   },
@@ -93,7 +95,7 @@ const PERCEPTION_PROMPT = `אתה מודד גיאומטרי של תרשים ECG.
 4. **נקודות-ציון:** בחר מקטע ייצוגי אחד (עדיף ליד II או רצועת הקצב), ודווח את מיקום-ה-X בפיקסלים של: תחילת P, סוף P, תחילת QRS (Q), נקודת J (סוף QRS), סוף גל T, ומרחק ה-R–R בפיקסלים. מה שאינו ברור — null. **אל תנחש.**
 5. **ציר:** דווח את היטל ה-QRS הנטו במ"מ בליד I ובליד aVF (חיובי/שלילי) — לחישוב הציר בקוד.
 6. אם התמונה אינה ECG או לא ניתן לזהות גריד/נקודות — סמן זאת ב-quality ואל תמציא קואורדינטות.
-7. **קצב ומורפולוגיה (תיאור, לא אבחנה):** דווח האם R–R סדיר והאם יש P תקין לפני כל QRS. דווח לידים עם עליית/ירידת ST (והגובה במ\"מ), היפוך T, גלי Q פתולוגיים, וירידת PR. זה תיאור של מה שנראה — לא שם-מחלה.
+7. **קצב ומורפולוגיה (תיאור, לא אבחנה):** דווח האם R–R סדיר והאם יש P תקין לפני כל QRS. דווח לידים עם עליית/ירידת ST (והגובה במ\"מ), היפוך T, גלי Q פתולוגיים, וירידת PR. כן דווח את צורת ה-QRS ב-V1 (S דומיננטי / RSR' דמוי-M) והאם יש R רחב-מחורץ בלידים הלטרליים — לזיהוי חסם צרור. זה תיאור של מה שנראה — לא שם-מחלה.
 
 החזר JSON לפי הסכמה בלבד.`;
 
@@ -153,6 +155,8 @@ export async function runEcgMicroReading({ fileUrls, invokeLLM, model = FAST_MOD
     t_inversion_leads: perception.morphology?.t_inversion_leads,
     pathological_q_leads: perception.morphology?.pathological_q_leads,
     pr_depression: perception.morphology?.pr_depression,
+    v1_qrs_pattern: perception.morphology?.v1_qrs_pattern,
+    lateral_broad_notched_r: perception.morphology?.lateral_broad_notched_r,
   };
   const interpretation = interpretFundamentals({ measured, observations, ageYears, sex });
 
