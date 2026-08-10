@@ -50,8 +50,27 @@ export function classifyRhythm({ hr_bpm, regular, p_before_each_qrs, band }) {
   return { rhythm_he: "קצב לא מסווג — נדרשת בדיקה ידנית", sinus: null, severity: "unknown" };
 }
 
+/**
+ * Conduction: bundle-branch block / IVCD from measured QRS width + V1/lateral
+ * morphology. Criteria are standard, well-established ECG knowledge.
+ * LBBB (and ventricular pacing) → "appropriate discordance": ST/T changes are
+ * EXPECTED and the usual STEMI thresholds do NOT apply (use Sgarbossa). This
+ * gate prevents the classic false-positive STEMI call on an LBBB.
+ */
+export function classifyConduction({ qrs_ms, v1_pattern, lateral_broad_r } = {}) {
+  if (qrs_ms == null) return { type: "unknown", he: null, discordance_expected: false, severity: "normal" };
+  if (qrs_ms < 120) return { type: "narrow", he: null, discordance_expected: false, severity: "normal" };
+  if (v1_pattern === "dominant_s" && lateral_broad_r) {
+    return { type: "LBBB", he: "חסם צרור שמאלי (LBBB)", discordance_expected: true, severity: "yellow" };
+  }
+  if (v1_pattern === "rsr_prime") {
+    return { type: "RBBB", he: "חסם צרור ימני (RBBB)", discordance_expected: false, severity: "yellow" };
+  }
+  return { type: "IVCD", he: "הרחבת QRS לא-ספציפית (IVCD)", discordance_expected: false, severity: "yellow" };
+}
+
 /** Morphology → clinical meaning (deterministic decision-support flags). */
-export function morphologyFindings(obs = {}) {
+export function morphologyFindings(obs = {}, { conduction } = {}) {
   const out = [];
   const stE = (obs.st_elevation_leads || []).filter((x) => (x?.mm ?? 0) >= 1);
   const stD = (obs.st_depression_leads || []).filter((x) => (x?.mm ?? 0) >= 0.5);
@@ -62,7 +81,13 @@ export function morphologyFindings(obs = {}) {
   if (stE.length >= 2) {
     const leads = stE.map((x) => x.lead).join(", ");
     const diffuse = stE.length >= 5;
-    if (diffuse && prDep) {
+    if (conduction?.discordance_expected) {
+      out.push({
+        finding_he: `עליית ST ב-${leads} בנוכחות ${conduction.he}`,
+        meaning_he: "בנוכחות חסם צרור/קצב רחב צפויה discordance מתאים — ספי-STEMI הרגילים אינם תקפים. להערכת איסכמיה יש להשתמש בקריטריוני Sgarbossa.",
+        severity: "yellow",
+      });
+    } else if (diffuse && prDep) {
       out.push({
         finding_he: `עלייה מפושטת ב-ST (${leads}) עם ירידת PR`,
         meaning_he: "דפוס העולה בקנה אחד עם קריטריוני פריקרדיטיס — טעון מתאם קליני, אינו אבחנה.",
@@ -124,16 +149,24 @@ export function interpretFundamentals({ measured, observations = {}, ageYears, s
   };
   const normals = flagEcgNormals(pseudoStructured, { ageYears, sex });
 
-  const morphology = morphologyFindings(observations);
+  const conduction = classifyConduction({
+    qrs_ms: measured?.intervals?.qrs_ms,
+    v1_pattern: observations.v1_qrs_pattern,
+    lateral_broad_r: observations.lateral_broad_notched_r,
+  });
+
+  const morphology = morphologyFindings(observations, { conduction });
 
   let severity = "normal";
   severity = bump(severity, rhythm.severity);
+  severity = bump(severity, conduction.severity);
   if (normals && normals.flags && normals.flags.length) severity = bump(severity, "yellow");
   for (const m of morphology) severity = bump(severity, m.severity);
 
   const anyAbnormal =
     (rhythm.sinus === false) ||
     rhythm.severity === "yellow" || rhythm.severity === "urgent" ||
+    (conduction.type && !(["narrow", "unknown"].includes(conduction.type))) ||
     (normals?.flags?.length || 0) > 0 ||
     morphology.length > 0;
 
@@ -144,6 +177,7 @@ export function interpretFundamentals({ measured, observations = {}, ageYears, s
   return {
     band: band ? { key: band.key, label_he: band.label_he } : null,
     rhythm,
+    conduction,
     axis: measured?.axis || null,
     interval_warnings: normals?.warnings || [],
     interval_flags: normals?.flags || [],
