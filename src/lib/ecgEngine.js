@@ -703,7 +703,10 @@ export async function runEcgEngine({
   sex,
   invokeLLM,
   onStage,
-  model = DIAGNOSIS_MODEL,
+  // ⚡ ברירת-המחדל הורדה מ-Opus ל-Sonnet: הקריאה המבנית היא תפיסה+מדידה,
+  // וכל המספרים הקריטיים מחושבים מחדש בקוד (grid/reconcile/normals). שלב הנרטיב
+  // הסופי (Stage 2 בצינור) נשאר על Opus — שם ההיגיון הקליני דרוש דיוק מרבי.
+  model = FAST_MODEL,
   qualityGate = true,
 }) {
   // ---- Pass 0: image-quality / artifact gate (anti-hallucination) ----
@@ -775,27 +778,16 @@ export async function runEcgEngine({
 
   if (needsScrutiny) {
     onStage?.("scrutinizing");
-    const [p2, ver] = await Promise.all([
-      // Independent second read (self-consistency)
-      invokeLLM({
-        prompt: systemPrompt + "\n\n(קריאה עצמאית נוספת לצורך בקרת עקביות — פענח מאפס.)",
-        file_urls: fileUrls,
-        response_json_schema: ECG_STRUCTURED_SCHEMA,
-        add_context_from_internet: false,
-        model,
-      }).catch(() => null),
-      // Adversarial verifier
-      invokeLLM({
-        prompt: buildVerifierPrompt(structured, language),
-        file_urls: fileUrls,
-        response_json_schema: VERIFIER_SCHEMA,
-        add_context_from_internet: false,
-        model: FAST_MODEL,
-      }).catch(() => null),
-    ]);
-    secondRead = p2;
-    verification = ver;
-    if (p2) consistencyAgree = findingsAgree(structured, p2);
+    // ⚡ בוטלה הקריאה העצמאית השנייה (קריאת-ראייה נוספת שלמה) לטובת מהירות —
+    // היא הכפילה את זמן הפענוח. נשמר המאמת-הנגדי המהיר (Sonnet) בלבד — שער
+    // הבטיחות מפני ביטחון-יתר. הדיוק הנומרי מובטח בלאו הכי על-ידי החישוב הדטרמיניסטי בקוד.
+    verification = await invokeLLM({
+      prompt: buildVerifierPrompt(structured, language),
+      file_urls: fileUrls,
+      response_json_schema: VERIFIER_SCHEMA,
+      add_context_from_internet: false,
+      model: FAST_MODEL,
+    }).catch(() => null);
   }
 
   // ---- Fuse into a final confidence + uncertainty verdict ----
