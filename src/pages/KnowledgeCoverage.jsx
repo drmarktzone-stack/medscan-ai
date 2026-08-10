@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Loader2, Database, ShieldCheck, FileWarning, Flag, ArrowLeft } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { loadKbStatus, KB_ENTITY_NAMES } from "@/lib/medscan/llmAdapter";
+import PilotModeToggle from "@/components/PilotModeToggle";
 
 /**
  * דשבורד כיסוי-ידע (verified / draft / flagged) לכל ישות.
@@ -98,6 +99,8 @@ export default function KnowledgeCoverage() {
                 </div>
               )}
             </div>
+
+            <PilotModeToggle />
 
             <div className="space-y-2">
               {(rows || []).map((r) => {
