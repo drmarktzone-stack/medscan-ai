@@ -308,6 +308,55 @@ export default function ECGAnalysis() {
           </div>
         )}
 
+        {microLoading && (
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 py-4">
+            <Loader2 className="w-4 h-4 animate-spin" /> מודד מקטעים בקוד (מנוע דטרמיניסטי)…
+          </div>
+        )}
+
+        {microReading?.measured?.measurable && (() => {
+          const m = microReading.measured;
+          const cells = [
+            { k: "HR", v: m.rate?.hr_bpm != null ? `${m.rate.hr_bpm}` : "—", u: "bpm" },
+            { k: "PR", v: m.intervals?.pr_ms != null ? `${m.intervals.pr_ms}` : "—", u: "ms" },
+            { k: "QRS", v: m.intervals?.qrs_ms != null ? `${m.intervals.qrs_ms}` : "—", u: "ms" },
+            { k: "QT", v: m.intervals?.qt_ms != null ? `${m.intervals.qt_ms}` : "—", u: "ms" },
+            { k: "QTc", v: m.qtc?.bazett != null ? `${m.qtc.bazett}` : "—", u: "ms" },
+            { k: "ציר", v: m.axis?.degrees != null ? `${m.axis.degrees}°` : "—", u: m.axis?.label_he || "" },
+          ];
+          return (
+            <div className="bg-white rounded-2xl border border-teal-200 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-100">
+                <ShieldCheck className="w-5 h-5 text-teal-600" />
+                <div>
+                  <h3 className="font-bold text-sm">מדידות מחושבות (מנוע דטרמיניסטי)</h3>
+                  <p className="text-[11px] text-slate-500">חושבו מקואורדינטות+כיול — לא הוערכו מהעין</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {cells.map((c, i) => (
+                  <div key={i} className="bg-slate-50 rounded-lg px-2 py-2 text-center">
+                    <div className="text-[10px] text-slate-500">{c.k}</div>
+                    <div className="text-lg font-extrabold text-slate-800 leading-tight">{c.v}</div>
+                    <div className="text-[10px] text-slate-400 truncate">{c.u}</div>
+                  </div>
+                ))}
+              </div>
+              {Array.isArray(m.notes) && m.notes.length > 0 && (
+                <ul className="mt-3 space-y-1 text-[11px] text-amber-700">
+                  {m.notes.map((n, i) => <li key={i}>• {n}</li>)}
+                </ul>
+              )}
+            </div>
+          );
+        })()}
+
+        {microReading && microReading.measured && microReading.measured.measurable === false && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800">
+            לא ניתן למדוד בקוד: כיול או נקודות-ציון לא זוהו בביטחון. צלם עם רשת ברורה וכיול 25mm/s. {(microReading.measured.notes || []).join(" ")}
+          </div>
+        )}
+
         {groundedLoading && (
           <div className="flex items-center justify-center gap-2 text-xs text-slate-500 py-4">
             <Loader2 className="w-4 h-4 animate-spin" />
