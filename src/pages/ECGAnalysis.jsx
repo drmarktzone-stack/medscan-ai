@@ -15,6 +15,8 @@ import BackButton from "@/components/BackButton";
 import { useI18n } from "@/lib/i18n";
 import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
 import { downscaleImageFile } from "@/lib/imageOptimize";
+import { runEcgComparison } from "@/lib/ecgCompare";
+import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
 
 export default function ECGAnalysis() {
   const { t, lang } = useI18n();
@@ -32,6 +34,11 @@ export default function ECGAnalysis() {
   const [examFindings, setExamFindings] = useState("");
   const [pediatric, setPediatric] = useState(false);
   const [patientMeta, setPatientMeta] = useState({});
+  const [priorFiles, setPriorFiles] = useState([]);
+  const [priorUrls, setPriorUrls] = useState([]);
+  const [priorUploading, setPriorUploading] = useState(false);
+  const [comparison, setComparison] = useState(null);
+  const [comparisonLoading, setComparisonLoading] = useState(false);
 
   const updateUploadedUrls = (urls) => {
     setUploadedUrls(urls);
