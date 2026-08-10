@@ -312,6 +312,55 @@ export default function ECGAnalysis() {
           </div>
         )}
 
+        {comparisonLoading && (
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 py-4">
+            <Loader2 className="w-4 h-4 animate-spin" /> משווה מול התרשים הקודם…
+          </div>
+        )}
+
+        {comparison && (() => {
+          const llm = comparison.llm || {};
+          const urg = comparison.urgency || llm.urgency || "Normal";
+          const urgColor = urg === "Emergency" ? "bg-red-100 text-red-700" : urg === "Urgent" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700";
+          const urgLabel = urg === "Emergency" ? "חירום" : urg === "Urgent" ? "דחוף" : "יציב";
+          return (
+            <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2"><Activity className="w-5 h-5 text-indigo-500" /><h3 className="font-bold text-sm">השוואה לתרשים קודם</h3></div>
+                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${urgColor}`}>{urgLabel}</span>
+              </div>
+              {llm.verdict_he && <p className="text-sm font-semibold mb-3">{llm.verdict_he}</p>}
+              {Array.isArray(llm.new_dangerous_findings) && llm.new_dangerous_findings.length > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
+                  <p className="text-xs font-bold text-red-700 mb-1">⚠ ממצאים מסוכנים חדשים</p>
+                  <ul className="list-disc pr-4 text-xs text-red-800 space-y-0.5">{llm.new_dangerous_findings.map((f, i) => <li key={i}>{f}</li>)}</ul>
+                </div>
+              )}
+              {Array.isArray(llm.changes) && llm.changes.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-xs font-bold text-slate-700 mb-1">שינויים שזוהו</p>
+                  <ul className="space-y-1.5">{llm.changes.map((c, i) => (
+                    <li key={i} className="text-xs text-slate-700 bg-slate-50 rounded-md px-2.5 py-1.5">
+                      <span className={`font-bold ${c.significance === "critical" ? "text-red-600" : c.significance === "significant" ? "text-amber-600" : "text-slate-500"}`}>[{c.significance}]</span> {c.description_he}
+                    </li>
+                  ))}</ul>
+                </div>
+              )}
+              {Array.isArray(llm.resolved_findings) && llm.resolved_findings.length > 0 && (
+                <p className="text-xs text-emerald-700 mb-2">ממצאים שנעלמו: {llm.resolved_findings.join(", ")}</p>
+              )}
+              {llm.clinical_significance_he && <p className="text-xs text-slate-600 mb-2">{llm.clinical_significance_he}</p>}
+              {Array.isArray(llm.recommended_next_steps_he) && llm.recommended_next_steps_he.length > 0 && (
+                <div className="text-xs text-slate-700"><span className="font-bold">המשך: </span>{llm.recommended_next_steps_he.join(" · ")}</div>
+              )}
+              {comparison.deterministic && comparison.deterministic.comparable === false && (
+                <p className="text-[11px] text-amber-600 mt-2">הערה: לתרשים הקודם אין קריאה מובנית — ההשוואה מבוססת-תמונה ומוגבלת.</p>
+              )}
+              {llm.disclaimer_he && <p className="text-[10px] text-slate-400 mt-3 pt-2 border-t border-slate-100">{llm.disclaimer_he}</p>}
+            </div>
+          );
+        })()}
+
         <DisclaimerBanner />
       </div>
     </div>
