@@ -157,17 +157,8 @@ export default function ECGAnalysis() {
 
       // שכבת הפרשנות המעוגנת — רצה אחרי הצינור הקיים ובנפרד ממנו.
       // כישלון כאן לעולם לא מפיל את הפענוח שהמשתמש כבר קיבל.
-      if (res?.structuredInterpretation) {
-        setGroundedLoading(true);
-        runGroundedVisionInterpretation({
-          modality: "ecg",
-          engineResult: res.structuredInterpretation,
-          clinicalContext: fullContext,
-        })
-          .then(setGrounded)
-          .catch((e) => { console.error("grounded interpretation failed", e); setGrounded(null); })
-          .finally(() => setGroundedLoading(false));
-      }
+      // ⚡ שכבת הפרשנות המעוגנת הושבתה זמנית לטובת מהירות (היא הוסיפה 2 קריאות Opus אחרי התוצאה). ניתן להחזיר.
+      void runGroundedVisionInterpretation;
 
       // השוואה לתרשים קודם — רץ אחרי שהפענוח הוצג, ורק אם הועלה תרשים קודם.
       if (priorUrls.length > 0 && res?.imageUrl) {
