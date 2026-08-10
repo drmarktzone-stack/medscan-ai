@@ -44,6 +44,59 @@ function candTokens(c) {
 }
 
 /**
+ * Explicit pathology-key → substrings appearing in the matching KB case's
+ * English diagnosis/title. Makes the "compare against the knowledge base"
+ * reference image attach to the RIGHT example reliably.
+ */
+const KB_HINTS = {
+  sinus_tachycardia: ["sinus tachycardia"],
+  sinus_bradycardia: ["sinus bradycardia"],
+  atrial_fibrillation: ["atrial fibrillation"],
+  first_degree_av_block: ["av block 1", "first-degree", "first degree av"],
+  lbbb: ["lbbb", "left bundle"],
+  rbbb: ["rbbb", "right bundle"],
+  preexcitation_short_pr: ["wpw", "pre-excit"],
+  wpw_preexcitation: ["wpw", "pre-excit"],
+  long_qt: ["long qt"],
+  short_qt: ["short qt"],
+  stemi: ["myocardial infarction", "stemi"],
+  stemi_in_lbbb_sgarbossa: ["sgarbossa", "lbbb"],
+  pericarditis_pattern: ["pericarditis"],
+  ischemia_st_depression: ["nstemi", "ischemi", "posterior"],
+  t_inversion: ["t-wave inversion", "wellens", "juvenile"],
+  pathological_q: ["old", "infarction", "q-wave"],
+  hyperkalemia: ["hyperkalemia"],
+  hypokalemia: ["hypokalemia"],
+  hypothermia_osborn: ["hypothermia", "osborn"],
+  low_voltage_effusion: ["effusion", "low voltage", "tamponade", "amyloid"],
+};
+const TERRITORY_WORD = { inferior: "inferior", anteroseptal: "anterior", anterior: "anterior", lateral: "lateral", high_lateral: "lateral" };
+
+/** Pick the best KB reference case for a candidate using explicit hints, then token overlap. */
+function pickKbCase(c, cases) {
+  const hints = [...(KB_HINTS[c.key] || [])];
+  if (c.territory && TERRITORY_WORD[c.territory]) hints.push(TERRITORY_WORD[c.territory]);
+  let best = null;
+  if (hints.length) {
+    for (const cs of cases || []) {
+      const text = `${cs.diagnosis || ""} ${cs.title || ""}`.toLowerCase();
+      const score = hints.reduce((n, h) => n + (text.includes(h) ? 1 : 0), 0);
+      if (score >= 1 && (!best || score > best.score)) best = { cs, score };
+    }
+  }
+  if (best) return best.cs;
+  // fallback: ≥2 token overlap
+  const ct = new Set(candTokens(c));
+  let fb = null;
+  for (const cs of cases || []) {
+    const dset = [...tok(cs.diagnosis), ...tok(cs.title)].filter((w) => !STOP.has(w));
+    const overlap = dset.filter((w) => ct.has(w)).length;
+    if (overlap >= 2 && (!fb || overlap > fb.overlap)) fb = { cs, overlap };
+  }
+  return fb ? fb.cs : null;
+}
+
+/**
  * Build the matched-cases list. CRITICAL: the displayed title/diagnosis is the
  * tool's OWN deterministic finding — NEVER a fuzzy KB case name (that bug turned
  * "HR 77, normal sinus" into the chip "Bradycardia secondary to Hypothermia").
@@ -53,20 +106,14 @@ function candTokens(c) {
 export function matchKbCases(candidates, cases) {
   const out = [];
   for (const c of candidates || []) {
-    const ct = new Set(candTokens(c));
-    let best = null;
-    for (const cs of cases || []) {
-      const dset = [...tok(cs.diagnosis), ...tok(cs.title)].filter((w) => !STOP.has(w));
-      const overlap = dset.filter((w) => ct.has(w)).length;
-      if (overlap >= 2 && (!best || overlap > best.overlap)) best = { cs, overlap };
-    }
+    const kb = pickKbCase(c, cases);
     out.push({
       title: c.name_he,
       diagnosis: c.name_en,
       confidence: Math.round(c.score || 0),
       reasoning: `${(c.criteria || []).map((x) => `${x.ok === false ? "✗" : x.ok === null ? "?" : "✓"} ${x.text}`).join(" · ")}${c.note_he ? " — " + c.note_he : ""}`,
-      image_url: best ? best.cs.image_url : undefined,
-      kb_reference: best ? best.cs.title : undefined,
+      image_url: kb ? kb.image_url : undefined,
+      kb_reference: kb ? kb.title : undefined,
     });
   }
   return out;
