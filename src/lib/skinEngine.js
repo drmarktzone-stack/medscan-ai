@@ -15,7 +15,7 @@
  */
 
 import { verifyDiagnosis } from "./verify";
-import { DIAGNOSIS_MODEL } from "./aiConfig";
+import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { sevenPointScore, abcdTds, chaosAndClues, malignancyRisk } from "./dermoscopyScore";
 import { allergensForDistribution } from "./allergyModule";
 
@@ -201,8 +201,11 @@ export async function runSkinEngine({
   pediatric = false,
   invokeLLM,
   onStage,
-  model = DIAGNOSIS_MODEL,
+  // ⚡ קריאת-הראייה העיקרית עוברת למודל המהיר (Sonnet) לצמצום זמן-פענוח;
+  // הניקוד הדרמוסקופי (7-point/ABCD/chaos) מחושב בקוד ומבטיח את הדיוק הנומרי.
+  model = FAST_MODEL,
 }) {
+  void DIAGNOSIS_MODEL;
   onStage?.("interpreting");
   const prompt = buildSkinSystemPrompt({ clinicalContext, language, pediatric });
 
