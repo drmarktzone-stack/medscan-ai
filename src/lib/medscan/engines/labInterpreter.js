@@ -17,6 +17,7 @@
  */
 
 import { groundedInvoke } from '../gate/groundedInvoke.js';
+import { resolveMode } from '../runtimeMode.js';
 import { runRulesEngine } from '../rules/rulesEngine.js';
 import { normalizeLabs, toPatientFacts, toAgeDays } from '../deterministic/labNormalize.js';
 import { loadReferenceRanges, getRegistryMeta } from '../deterministic/refRanges.js';
@@ -76,7 +77,7 @@ export async function runLabInterpreter({
   patient = {},
   labs = [],
   findings = [],
-  mode = 'clinical',
+  mode = resolveMode(),
   withLiterature = true,
 }) {
   const ageDays = toAgeDays(patient);
