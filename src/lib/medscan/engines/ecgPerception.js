@@ -13,6 +13,7 @@
 
 import { runMicroMeasure } from "./ecgMicroMeasure.js";
 import { interpretFundamentals } from "./ecgFundamentals.js";
+import { matchPathologies, featuresFromReading, buildPathologyBlock } from "./ecgPathologies.js";
 import { FAST_MODEL } from "@/lib/aiConfig";
 
 /** Perception-only schema. Pixel coordinates + calibration. No ms, no diagnosis. */
@@ -160,7 +161,13 @@ export async function runEcgMicroReading({ fileUrls, invokeLLM, model = FAST_MOD
   };
   const interpretation = interpretFundamentals({ measured, observations, ageYears, sex });
 
-  return { measured, perception, interpretation };
+  // התאמה דטרמיניסטית מול קטלוג הפתולוגיות — בקוד בלבד, ללא קריאת LLM נוספת.
+  // זה החלק ש"מוצא הסבר/דפוס" לכל סטייה — על בסיס המדידות שחושבו בקוד.
+  const pathologyMatch = matchPathologies(
+    featuresFromReading({ measured, interpretation, observations, ageYears, sex })
+  );
+
+  return { measured, perception, interpretation, pathologyMatch, pathologyBlock: buildPathologyBlock(pathologyMatch) };
 }
 
 /** Human/LLM-readable block of the code-computed measurements, for grounding + display. */
