@@ -385,6 +385,103 @@ export const ECG_PATHOLOGIES = [
     },
   },
   {
+    key: "hyperkalemia",
+    name_he: "היפרקלמיה — גלי T מחודדים",
+    name_en: "Hyperkalemia (peaked T)",
+    category: "electrolyte",
+    severity: "red",
+    source_anchor: "Peaked/tented T waves → widened QRS → P loss → sine wave (progressive hyperkalemia)",
+    evaluate(f) {
+      const t = leadsOf(f.peaked_t_leads);
+      if (t.length >= 2) {
+        const wide = isNum(f.qrs_ms) && f.qrs_ms >= 120;
+        return { matched: true, score: wide ? 82 : 68, severity: wide ? "red" : "yellow",
+          criteria: [
+            { text: `גלי T מחודדים ב-${t.join(", ")}`, ok: true },
+            { text: "QRS מתרחב", ok: wide },
+            { text: "אובדן גלי P", ok: f.p_before_qrs === false ? true : null },
+          ],
+          note_he: "דפוס היפרקלמיה — בדוק אשלגן דחוף; QRS רחב/אובדן P = מסכן-חיים, טיפול מיידי." };
+      }
+      return null;
+    },
+  },
+  {
+    key: "hypokalemia",
+    name_he: "היפוקלמיה — גלי U",
+    name_en: "Hypokalemia (U waves)",
+    category: "electrolyte",
+    severity: "yellow",
+    source_anchor: "ST depression, flat T, prominent U waves; risk of arrhythmia/long QU",
+    evaluate(f) {
+      const u = leadsOf(f.u_wave_leads);
+      if (u.length >= 1) {
+        return { matched: true, score: 62, severity: "yellow",
+          criteria: [{ text: `גלי U ב-${u.join(", ")}`, ok: true }],
+          note_he: "דפוס היפוקלמיה — בדוק אשלגן/מגנזיום; סיכון להפרעות קצב." };
+      }
+      return null;
+    },
+  },
+  {
+    key: "wpw_preexcitation",
+    name_he: "WPW — פרה-אקסיטציה (גל דלתא)",
+    name_en: "WPW / pre-excitation",
+    category: "conduction",
+    severity: "yellow",
+    source_anchor: "Short PR (<120ms) + delta wave + wide QRS",
+    evaluate(f) {
+      const shortPr = isNum(f.pr_ms) && f.pr_ms < (f.pr_lower || 120);
+      if (f.delta_wave === true && (shortPr || (isNum(f.qrs_ms) && f.qrs_ms >= 110))) {
+        return { matched: true, score: 80, severity: "yellow",
+          criteria: [
+            { text: "גל דלתא", ok: true },
+            { text: `PR קצר ${isNum(f.pr_ms) ? f.pr_ms + "ms" : ""}`, ok: shortPr },
+            { text: `QRS רחב ${isNum(f.qrs_ms) ? f.qrs_ms + "ms" : ""}`, ok: isNum(f.qrs_ms) ? f.qrs_ms >= 110 : null },
+          ],
+          note_he: "דפוס WPW — סיכון להפרעות קצב (בפרט AF פרה-מוגבר); הימנע מחוסמי-AV בהתקף רחב, הפניה לאלקטרופיזיולוגיה." };
+      }
+      return null;
+    },
+  },
+  {
+    key: "hypothermia_osborn",
+    name_he: "היפותרמיה — גלי Osborn/J",
+    name_en: "Hypothermia (Osborn waves)",
+    category: "other",
+    severity: "yellow",
+    source_anchor: "Osborn (J) waves + bradycardia + tremor artifact in hypothermia",
+    evaluate(f) {
+      if (f.osborn_j_wave === true) {
+        return { matched: true, score: 70, severity: "yellow",
+          criteria: [{ text: "גל Osborn/J", ok: true }, { text: "ברדיקרדיה", ok: isNum(f.hr) ? f.hr < 60 : null }],
+          note_he: "דפוס היפותרמיה — מדוד חום-ליבה; חמם בזהירות ונטר קצב." };
+      }
+      return null;
+    },
+  },
+  {
+    key: "low_voltage_effusion",
+    name_he: "מתח נמוך / חילוף חשמלי — שקול תפליט קרום",
+    name_en: "Low voltage / electrical alternans",
+    category: "pericardial",
+    severity: "yellow",
+    source_anchor: "Low QRS voltage ± electrical alternans → pericardial effusion / tamponade",
+    evaluate(f) {
+      if (f.electrical_alternans === true) {
+        return { matched: true, score: 72, severity: "red",
+          criteria: [{ text: "חילוף חשמלי", ok: true }, { text: "מתח נמוך", ok: f.low_voltage === true }],
+          note_he: "חילוף חשמלי — חשד תפליט קרום גדול/טמפונדה. אקו-לב דחוף." };
+      }
+      if (f.low_voltage === true) {
+        return { matched: true, score: 50, severity: "yellow",
+          criteria: [{ text: "מתח QRS נמוך", ok: true }],
+          note_he: "מתח נמוך — שקול תפליט קרום/פריקרד, השמנה, COPD, אמילואיד, מיקסדמה." };
+      }
+      return null;
+    },
+  },
+  {
     key: "pathological_q",
     name_he: "גלי Q פתולוגיים — שקול אוטם ישן",
     name_en: "Pathological Q — old infarct",
@@ -483,6 +580,13 @@ export function featuresFromReading({ measured, interpretation, observations, ag
     pr_depression: observations?.pr_depression,
     v1_pattern: observations?.v1_qrs_pattern,
     lateral_broad_r: observations?.lateral_broad_notched_r,
+    peaked_t_leads: observations?.peaked_t_leads || [],
+    u_wave_leads: observations?.u_wave_leads || [],
+    delta_wave: observations?.delta_wave,
+    osborn_j_wave: observations?.osborn_j_wave,
+    low_voltage: observations?.low_voltage,
+    electrical_alternans: observations?.electrical_alternans,
+    tall_r_v1: observations?.tall_r_v1,
     age_years: ageYears,
     sex,
     pr_upper: bandNorms.pr_upper,
