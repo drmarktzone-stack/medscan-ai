@@ -340,6 +340,16 @@ export default function ECGAnalysis() {
                   {microReading.interpretation.rhythm?.rhythm_he && (
                     <div className="text-sm font-bold text-slate-800">קצב: {microReading.interpretation.rhythm.rhythm_he}</div>
                   )}
+                  {microReading.interpretation.conduction?.he && (
+                    <div className="text-sm font-bold text-slate-800">
+                      הולכה: {microReading.interpretation.conduction.he}
+                      {microReading.interpretation.conduction.discordance_expected && (
+                        <span className="block text-[11px] font-normal text-amber-700 mt-0.5">
+                          ⚠ בנוכחות חסם צרור צפויה discordance מתאים — ספי-STEMI הרגילים אינם תקפים; להערכת איסכמיה יש להשתמש בקריטריוני Sgarbossa.
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {(microReading.interpretation.morphology || []).map((f, i) => (
                     <div key={i} className={`rounded-lg px-3 py-2 text-xs border ${f.severity === "urgent" ? "bg-red-50 text-red-800 border-red-200" : "bg-amber-50 text-amber-800 border-amber-200"}`}>
                       <span className="font-semibold">{f.finding_he}</span> — {f.meaning_he}
