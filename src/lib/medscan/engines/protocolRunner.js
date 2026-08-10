@@ -19,6 +19,7 @@
  */
 
 import { groundedInvoke } from '../gate/groundedInvoke.js';
+import { resolveMode } from '../runtimeMode.js';
 import { runCalculators } from '../deterministic/calculators.js';
 import { toAgeDays } from '../deterministic/labNormalize.js';
 import { runRulesEngine } from '../rules/rulesEngine.js';
@@ -75,7 +76,7 @@ export async function runProtocolStep({
   currentStepId = null,
   state = {},
   doseRecords = [],
-  mode = 'clinical',
+  mode = resolveMode(),
 }) {
   const ageDays = toAgeDays(patient);
   const pt = { ...patient, age_days: ageDays };
