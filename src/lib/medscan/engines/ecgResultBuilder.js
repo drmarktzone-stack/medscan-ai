@@ -250,9 +250,15 @@ export function assembleEcgResult(reading, allCases, { sex, fileUrl } = {}) {
   const structuredInterpretation = buildStructured(reading, { sex, urgency });
 
   const top = pathologyMatch.candidates[0];
-  const summary = top
-    ? `${top.name_he}${top.territory ? " — " + top.territory : ""}`
-    : (reading.interpretation?.summary_he || "בגבולות הנורמה / ללא ממצא חד-משמעי");
+  let summary;
+  if (top) {
+    summary = `${top.name_he}${top.territory ? " — " + top.territory : ""}`;
+  } else {
+    // Normal read — give an informative, confident headline (not just "within normal limits").
+    const hr = reading.measured?.rate?.hr_bpm;
+    const rhythm = reading.interpretation?.rhythm?.rhythm_he || "קצב סינוס";
+    summary = `${rhythm}${isNum(hr) ? ` · HR ${hr}` : ""} · ללא ממצא פתולוגי מגדיר`;
+  };
 
   const guideline = (pathologyMatch.mustNotMiss[0]?.note_he)
     || top?.note_he
