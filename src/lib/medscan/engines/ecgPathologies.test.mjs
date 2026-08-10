@@ -101,6 +101,35 @@ t("היפוך T ילדי (V1-V3, גיל<16) — מסומן כתקין-לגיל",
   assert(m2.candidates.find(x=>x.key==="t_inversion").severity === "yellow", "adult lateral T inv yellow");
 });
 
+t("היפרקלמיה — גלי T מחודדים ב-≥2 לידים", () => {
+  const m = matchPathologies({ peaked_t_leads: ["V2","V3","V4"], qrs_ms: 130, p_before_qrs: false });
+  assert(has(m, "hyperkalemia"), "peaked T + wide QRS → hyperkalemia");
+  assert(m.candidates.find(c=>c.key==="hyperkalemia").severity === "red", "wide QRS hyperK is red");
+});
+
+t("WPW — גל דלתא + PR קצר", () => {
+  const m = matchPathologies({ delta_wave: true, pr_ms: 100, qrs_ms: 120 });
+  assert(has(m, "wpw_preexcitation"), "delta + short PR → WPW");
+});
+
+t("היפותרמיה — גל Osborn", () => {
+  const m = matchPathologies({ osborn_j_wave: true, hr: 45 });
+  assert(has(m, "hypothermia_osborn"), "Osborn → hypothermia");
+});
+
+t("חילוף חשמלי — דגל אדום (טמפונדה)", () => {
+  const m = matchPathologies({ electrical_alternans: true, low_voltage: true });
+  assert(has(m, "low_voltage_effusion"), "alternans → effusion");
+  assert(m.candidates.find(c=>c.key==="low_voltage_effusion").severity === "red", "alternans red");
+});
+
+t("תרשים תקין — סימני-ההיכר החדשים לא מדליקים דבר", () => {
+  const m = matchPathologies({ hr: 72, pr_ms: 150, qrs_ms: 90, qtc_ms: 410, p_before_qrs: true, rhythm_regular: true,
+    conduction_type: "narrow", peaked_t_leads: [], u_wave_leads: [], delta_wave: false, osborn_j_wave: false,
+    low_voltage: false, electrical_alternans: false });
+  assert(m.candidates.length === 0, "normal stays clean: " + m.candidates.map(c=>c.key).join(","));
+});
+
 t("buildPathologyBlock — ריק → הודעת 'בגבולות הנורמה'", () => {
   const s = buildPathologyBlock(matchPathologies({ hr: 70, pr_ms: 150, qrs_ms: 90, qtc_ms: 410, p_before_qrs:true, rhythm_regular:true, conduction_type:"narrow" }));
   assert(/לא זוהה דפוס/.test(s), "empty block message");
