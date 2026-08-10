@@ -358,6 +358,18 @@ export default function ECGAnalysis() {
                   {(microReading.interpretation.interval_warnings || []).map((w, i) => (
                     <div key={`w${i}`} className="text-[11px] text-amber-700">• {w}</div>
                   ))}
+                  {(microReading.pathologyMatch?.candidates || []).length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-slate-100">
+                      <div className="text-[11px] font-bold text-slate-600 mb-1">דפוסים שקריטריוניהם התקיימו (מנוע דטרמיניסטי):</div>
+                      {microReading.pathologyMatch.candidates.slice(0, 6).map((c, i) => (
+                        <div key={`p${i}`} className={`rounded-lg px-3 py-2 text-xs border mb-1 ${c.severity === "red" ? "bg-red-50 text-red-800 border-red-200" : c.severity === "normal" ? "bg-slate-50 text-slate-700 border-slate-200" : "bg-amber-50 text-amber-800 border-amber-200"}`}>
+                          <span className="font-semibold">{c.name_he}</span>
+                          <span className="opacity-70"> — {c.criteria.map((x) => `${x.ok === false ? "✗" : x.ok === null ? "?" : "✓"} ${x.text}`).join(" · ")}</span>
+                          {c.note_he && <span className="block text-[10.5px] opacity-80 mt-0.5">{c.note_he}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="text-[11px] text-slate-500">{microReading.interpretation.summary_he}</div>
                 </div>
               )}
