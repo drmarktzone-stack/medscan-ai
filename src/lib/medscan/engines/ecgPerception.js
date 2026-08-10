@@ -81,6 +81,25 @@ export const ECG_PERCEPTION_SCHEMA = {
         pr_depression: { type: "boolean" },
         v1_qrs_pattern: { type: "string", description: "צורת QRS ב-V1: 'dominant_s' (S עמוק/דומיננטי) / 'rsr_prime' (RSR' דמוי-M) / 'other'" },
         lateral_broad_notched_r: { type: "boolean", description: "גל R רחב/מחורץ (דמוי-M) בלידים הלטרליים I/aVL/V5-6" },
+        peaked_t_leads: { type: "array", items: { type: "string" }, description: "לידים עם גלי T גבוהים-מחודדים-צרים (peaked) — חשד היפרקלמיה" },
+        u_wave_leads: { type: "array", items: { type: "string" }, description: "לידים עם גלי U בולטים — חשד היפוקלמיה" },
+        delta_wave: { type: "boolean", description: "גל דלטא (עלייה מטושטשת בתחילת QRS) — חשד פרה-אקסיטציה/WPW" },
+        osborn_j_wave: { type: "boolean", description: "גל Osborn/J (זיז בנקודת J) — חשד היפותרמיה" },
+        low_voltage: { type: "boolean", description: "מתח נמוך (QRS <5מ\"מ בגפיים / <10מ\"מ בחזה)" },
+        electrical_alternans: { type: "boolean", description: "חילוף משרעת QRS מפעמה לפעימה — חשד תפוקת קרום/טפונדה" },
+        tall_r_v1: { type: "boolean", description: "R דומיננטי/גבוה ב-V1 (R>S) — שקול RVH/אוטם אחורי/WPW" },
+      },
+    },
+    findings: {
+      type: "array",
+      description: "אזורי ממצא חריג על התמונה (תיבות-תחום באחוזים 0-100). ריק אם אין ממצא חריג ברור.",
+      items: {
+        type: "object",
+        properties: {
+          label: { type: "string" },
+          x: { type: "number" }, y: { type: "number" }, width: { type: "number" }, height: { type: "number" },
+        },
+        required: ["label", "x", "y", "width", "height"],
       },
     },
   },
@@ -97,6 +116,8 @@ const PERCEPTION_PROMPT = `אתה מודד גיאומטרי של תרשים ECG.
 5. **ציר:** דווח את היטל ה-QRS הנטו במ"מ בליד I ובליד aVF (חיובי/שלילי) — לחישוב הציר בקוד.
 6. אם התמונה אינה ECG או לא ניתן לזהות גריד/נקודות — סמן זאת ב-quality ואל תמציא קואורדינטות.
 7. **קצב ומורפולוגיה (תיאור, לא אבחנה):** דווח האם R–R סדיר והאם יש P תקין לפני כל QRS. דווח לידים עם עליית/ירידת ST (והגובה במ\"מ), היפוך T, גלי Q פתולוגיים, וירידת PR. כן דווח את צורת ה-QRS ב-V1 (S דומיננטי / RSR' דמוי-M) והאם יש R רחב-מחורץ בלידים הלטרליים — לזיהוי חסם צרור. זה תיאור של מה שנראה — לא שם-מחלה.
+8. **סימני-היכר נוספים (תיאור, דווח רק אם נראים בבירור):** גלי T מחודדים (peaked_t_leads), גלי U בולטים (u_wave_leads), גל דלטא (delta_wave), גל Osborn/J (osborn_j_wave), מתח נמוך (low_voltage), חילוף חשמלי (electrical_alternans), ו-R דומיננטי ב-V1 (tall_r_v1).
+9. **תיבות-תחום:** אם יש ממצא חריג ברור, סמן אזורים ב-findings (x,y,width,height באחוזים 0-100 + label קצר). אין ממצא → מערך ריק.
 
 החזר JSON לפי הסכמה בלבד.`;
 
@@ -158,6 +179,13 @@ export async function runEcgMicroReading({ fileUrls, invokeLLM, model = FAST_MOD
     pr_depression: perception.morphology?.pr_depression,
     v1_qrs_pattern: perception.morphology?.v1_qrs_pattern,
     lateral_broad_notched_r: perception.morphology?.lateral_broad_notched_r,
+    peaked_t_leads: perception.morphology?.peaked_t_leads,
+    u_wave_leads: perception.morphology?.u_wave_leads,
+    delta_wave: perception.morphology?.delta_wave,
+    osborn_j_wave: perception.morphology?.osborn_j_wave,
+    low_voltage: perception.morphology?.low_voltage,
+    electrical_alternans: perception.morphology?.electrical_alternans,
+    tall_r_v1: perception.morphology?.tall_r_v1,
   };
   const interpretation = interpretFundamentals({ measured, observations, ageYears, sex });
 
