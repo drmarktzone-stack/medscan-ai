@@ -87,10 +87,34 @@ export default function ECGAnalysis() {
     }
   };
 
+  const handlePriorChange = async (newFiles) => {
+    setPriorFiles(newFiles);
+    setComparison(null);
+    if (newFiles.length > 0) {
+      setPriorUploading(true);
+      try {
+        const urls = await Promise.all(
+          newFiles.map(async (f) => {
+            const optimized = await downscaleImageFile(f, { autoLandscape: true });
+            return base44.integrations.Core.UploadFile({ file: optimized });
+          })
+        );
+        setPriorUrls(urls.map((r) => r.file_url));
+      } catch (err) {
+        console.error("prior upload failed", err);
+      } finally {
+        setPriorUploading(false);
+      }
+    } else {
+      setPriorUrls([]);
+    }
+  };
+
   const handleAnalyze = async () => {
     if (uploadedUrls.length === 0 && files.length === 0) return;
     setLoading(true);
     setError(null);
+    setComparison(null);
     const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
     try {
       const res = await runDiagnosisPipeline({
@@ -130,6 +154,21 @@ export default function ECGAnalysis() {
           .then(setGrounded)
           .catch((e) => { console.error("grounded interpretation failed", e); setGrounded(null); })
           .finally(() => setGroundedLoading(false));
+      }
+
+      // השוואה לתרשים קודם — רץ אחרי שהפענוח הוצג, ורק אם הועלה תרשים קודם.
+      if (priorUrls.length > 0 && res?.imageUrl) {
+        setComparisonLoading(true);
+        const invokeCompare = createVisionInvokeLLM({ purpose: "ecg_compare" });
+        runEcgComparison({
+          newItem: { structured: res.structuredInterpretation?.structured || null, image_url: res.imageUrl, label: "נוכחי" },
+          priorItems: priorUrls.map((u, i) => ({ structured: null, image_url: u, label: `קודם ${i + 1}` })),
+          invokeLLM: invokeCompare,
+          language: lang,
+        })
+          .then(setComparison)
+          .catch((e) => { console.error("ecg comparison failed", e); setComparison(null); })
+          .finally(() => setComparisonLoading(false));
       }
       sessionStorage.removeItem("ecg_file_urls");
     } catch (err) {
