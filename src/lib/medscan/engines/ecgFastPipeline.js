@@ -77,18 +77,20 @@ export async function runEcgFastAnalysis({
   onStage?.("verifying");
   const result = assembleEcgResult(reading, allCases, { sex: patientSex, fileUrl: file_url });
 
-  // ---- persist in the BACKGROUND (do not block the result the doctor sees) ----
-  // Saving the record is non-fatal and off the critical path — fire-and-forget so
-  // the reading returns as soon as the deterministic assembly is done.
-  base44.entities.Analysis.create({
-    type: "ecg",
-    image_url: file_url,
-    result: result.analysis,
-    severity: result.severity,
-    summary: result.summary,
-    structured_json: JSON.stringify({ structured: result.structuredInterpretation.structured, pathologyMatch: reading.pathologyMatch }),
-    patient_ref: patientRef || undefined,
-  }).then((rec) => { result.analysisId = rec?.id; }).catch(() => { /* non-fatal */ });
+  // ---- persist (non-fatal; kept awaited so analysisId is ready for PDF export + feedback) ----
+  // This is a fast round-trip and never the bottleneck — the single vision call is.
+  try {
+    const rec = await base44.entities.Analysis.create({
+      type: "ecg",
+      image_url: file_url,
+      result: result.analysis,
+      severity: result.severity,
+      summary: result.summary,
+      structured_json: JSON.stringify({ structured: result.structuredInterpretation.structured, pathologyMatch: reading.pathologyMatch }),
+      patient_ref: patientRef || undefined,
+    });
+    result.analysisId = rec?.id;
+  } catch { /* persistence is non-fatal */ }
 
   onStage?.("");
   return result;
