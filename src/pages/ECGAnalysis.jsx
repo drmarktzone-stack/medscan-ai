@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
+import { runEcgFastAnalysis } from "@/lib/medscan/engines/ecgFastPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import ExamFindingsInput, { ECG_EXAM_FIELDS } from "@/components/ExamFindingsInput";
@@ -120,50 +121,32 @@ export default function ECGAnalysis() {
     setComparison(null);
     setMicroReading(null);
     try {
-      // מנוע-המדידה הדטרמיניסטי רץ במקביל לצינור (לא בטור) — כדי לא להאריך את זמן הפענוח. מוצג בכרטיס נפרד.
-      setMicroLoading(true);
-      const invokePerc = createVisionInvokeLLM({ purpose: "ecg_perception" });
-      runEcgMicroReading({
-        fileUrls: uploadedUrls,
-        invokeLLM: invokePerc,
-        ageYears: patientMeta.age ? Number(patientMeta.age) : undefined,
-        sex: patientMeta.sex || undefined,
-      })
-        .then((micro) => setMicroReading(micro))
-        .catch((e) => console.error("micro reading failed", e))
-        .finally(() => setMicroLoading(false));
-
       const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
 
-      const res = await runDiagnosisPipeline({
+      // ⚡ צינור-אק"ג מהיר: קריאת-תפיסה אחת בלבד, ואז כל הפענוח מחושב בקוד
+      // (מדידות → יסודות → התאמת-פתולוגיות מול קריטריונים → השוואה למאגר).
+      // מחליף את הצינור הרב-קריאתי הישן (3-4 קריאות Opus טוריות ≈ 5 דקות).
+      setMicroLoading(true);
+      const res = await runEcgFastAnalysis({
         files,
         preUploadedUrls: uploadedUrls,
-        entityName: "ECGCase",
-        analysisType: "ecg",
-        domainRole: "קרדיולוג מומחה",
         clinicalContext: fullContext,
         language: lang,
-        pediatric,
         patientAgeYears: patientMeta.age ? Number(patientMeta.age) : undefined,
         patientSex: patientMeta.sex || undefined,
         patientRef: patientMeta.patient_ref || undefined,
-        matchingInstructions: `1. בחן את התרשים בצורה שיטתית: קצב, רגולריות, גלי P, מרווח PR, קומפלקס QRS, מקטע ST, גלי T, מקטע QT, ציר חשמלי.
-2. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
-3. שים לב במיוחד למצבים מסכני חיים: STEMI, VT, VF, חסמים מלאים, היפרקלמיה.
-4. אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות.`,
-        diagnosisInstructions: `1. התבסס על תוצאות שלב ההתאמה — המקרים התואמים ביותר מופיעים למעלה עם דרגת הביטחון שלהם.
-2. נתח ביסודיות: קצב, רגולריות, גלי P, מרווח PR, QRS, מקטע ST, גל T, QT, ציר חשמלי.
-3. הסבר מדוע האבחנה הראשית תואמת את המקרה מהמאגר, ומדוע אבחנות אחרות נשללו.
-4. השתמש בתמונות הייחוס להשוואה ויזואלית מול המקרים התואמים.
-5. אם יש ספק, ציין זאת במפורש והמלץ על בדיקות נוספות.`,
         onStage: setStage,
       });
       setResult(res);
+      if (res.microReading) setMicroReading(res.microReading);
+      setMicroLoading(false);
 
-      // שכבת הפרשנות המעוגנת — רצה אחרי הצינור הקיים ובנפרד ממנו.
-      // כישלון כאן לעולם לא מפיל את הפענוח שהמשתמש כבר קיבל.
-      // ⚡ שכבת הפרשנות המעוגנת הושבתה זמנית לטובת מהירות (היא הוסיפה 2 קריאות Opus אחרי התוצאה). ניתן להחזיר.
+      // הצינור הישן והפרשנות המעוגנת נשמרים בקוד אך אינם בשימוש במסלול-האק"ג המהיר.
+      void runDiagnosisPipeline;
       void runGroundedVisionInterpretation;
+      void createVisionInvokeLLM;
+      void runEcgMicroReading;
+      void buildMeasuredBlock;
 
       // השוואה לתרשים קודם — רץ אחרי שהפענוח הוצג, ורק אם הועלה תרשים קודם.
       if (priorUrls.length > 0 && res?.imageUrl) {
@@ -185,6 +168,7 @@ export default function ECGAnalysis() {
       setError(err.message || t("analysis.error_fallback"));
     } finally {
       setLoading(false);
+      setMicroLoading(false);
       setStage("");
     }
   };
