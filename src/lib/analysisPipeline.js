@@ -366,7 +366,9 @@ ${langDirective}`,
       required: ["summary", "severity", "analysis", "findings"],
     },
     add_context_from_internet: false,
-    model: DIAGNOSIS_MODEL,
+    // ⚡ שלב האבחנה עובר למודל המהיר (הצינור משמש כעת רק עור+רדיולוגיה).
+    // המנוע המבנה כבר ביצע את התפיסה; שלב זה מנסח ומאמת קריטריונים — Sonnet מספיק ומהיר בהרבה.
+    model: FAST_MODEL,
   });
 
   // ---------- numericGuard על הנרטיב ----------
