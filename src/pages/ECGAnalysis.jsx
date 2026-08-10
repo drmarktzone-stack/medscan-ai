@@ -17,6 +17,7 @@ import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGro
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { runEcgComparison } from "@/lib/ecgCompare";
 import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+import { runEcgMicroReading, buildMeasuredBlock } from "@/lib/medscan/engines/ecgPerception";
 
 export default function ECGAnalysis() {
   const { t, lang } = useI18n();
@@ -39,6 +40,8 @@ export default function ECGAnalysis() {
   const [priorUploading, setPriorUploading] = useState(false);
   const [comparison, setComparison] = useState(null);
   const [comparisonLoading, setComparisonLoading] = useState(false);
+  const [microReading, setMicroReading] = useState(null);
+  const [microLoading, setMicroLoading] = useState(false);
 
   const updateUploadedUrls = (urls) => {
     setUploadedUrls(urls);
@@ -115,8 +118,21 @@ export default function ECGAnalysis() {
     setLoading(true);
     setError(null);
     setComparison(null);
-    const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
+    setMicroReading(null);
     try {
+      // מנוע-מדידה דטרמיניסטי: תפיסה גיאומטרית → חישוב בקוד, ואז הזרקה לאבחון כעובדות.
+      setMicroLoading(true);
+      let measuredBlock = "";
+      try {
+        const invokePerc = createVisionInvokeLLM({ purpose: "ecg_perception" });
+        const micro = await runEcgMicroReading({ fileUrls: uploadedUrls, invokeLLM: invokePerc });
+        setMicroReading(micro);
+        if (micro?.measured) measuredBlock = buildMeasuredBlock(micro.measured);
+      } catch (e) { console.error("micro reading failed", e); }
+      finally { setMicroLoading(false); }
+
+      const fullContext = [clinicalContext, examFindings, measuredBlock].filter(Boolean).join("\n");
+
       const res = await runDiagnosisPipeline({
         files,
         preUploadedUrls: uploadedUrls,
