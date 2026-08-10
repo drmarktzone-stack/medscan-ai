@@ -16,6 +16,7 @@
  */
 
 import { groundedInvoke } from '../gate/groundedInvoke.js';
+import { resolveMode } from '../runtimeMode.js';
 import { runRulesEngine } from '../rules/rulesEngine.js';
 import { runCalculators } from '../deterministic/calculators.js';
 import { toAgeDays } from '../deterministic/labNormalize.js';
@@ -66,7 +67,7 @@ export async function runPatientContext({
   patient = {},
   currentValues = [],
   recentEvents = [],
-  mode = 'clinical',
+  mode = resolveMode(),
   withLiterature = true,
 }) {
   const ageDays = toAgeDays(patient);
