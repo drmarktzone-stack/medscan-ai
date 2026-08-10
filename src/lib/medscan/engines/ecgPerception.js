@@ -12,6 +12,7 @@
  */
 
 import { runMicroMeasure } from "./ecgMicroMeasure.js";
+import { interpretFundamentals } from "./ecgFundamentals.js";
 import { FAST_MODEL } from "@/lib/aiConfig";
 
 /** Perception-only schema. Pixel coordinates + calibration. No ms, no diagnosis. */
@@ -60,6 +61,25 @@ export const ECG_PERCEPTION_SCHEMA = {
         net_aVF_mm: { type: "number", description: "היטל QRS נטו בליד aVF, במ\"מ" },
       },
     },
+    rhythm: {
+      type: "object",
+      description: "תיאור קצב — תצפית, לא אבחנה.",
+      properties: {
+        regular: { type: "boolean", description: "האם מרווחי R–R סדירים" },
+        p_before_each_qrs: { type: "boolean", description: "האם גל P תקין לפני כל QRS" },
+      },
+    },
+    morphology: {
+      type: "object",
+      description: "תיאור מורפולוגי — מה נצפה, לא שם-מחלה.",
+      properties: {
+        st_elevation_leads: { type: "array", items: { type: "object", properties: { lead: { type: "string" }, mm: { type: "number" } } }, description: "לידים עם עליית ST והגובה במ\"מ" },
+        st_depression_leads: { type: "array", items: { type: "object", properties: { lead: { type: "string" }, mm: { type: "number" } } } },
+        t_inversion_leads: { type: "array", items: { type: "string" } },
+        pathological_q_leads: { type: "array", items: { type: "string" } },
+        pr_depression: { type: "boolean" },
+      },
+    },
   },
   required: ["quality", "calibration"],
 };
@@ -73,6 +93,7 @@ const PERCEPTION_PROMPT = `אתה מודד גיאומטרי של תרשים ECG.
 4. **נקודות-ציון:** בחר מקטע ייצוגי אחד (עדיף ליד II או רצועת הקצב), ודווח את מיקום-ה-X בפיקסלים של: תחילת P, סוף P, תחילת QRS (Q), נקודת J (סוף QRS), סוף גל T, ומרחק ה-R–R בפיקסלים. מה שאינו ברור — null. **אל תנחש.**
 5. **ציר:** דווח את היטל ה-QRS הנטו במ"מ בליד I ובליד aVF (חיובי/שלילי) — לחישוב הציר בקוד.
 6. אם התמונה אינה ECG או לא ניתן לזהות גריד/נקודות — סמן זאת ב-quality ואל תמציא קואורדינטות.
+7. **קצב ומורפולוגיה (תיאור, לא אבחנה):** דווח האם R–R סדיר והאם יש P תקין לפני כל QRS. דווח לידים עם עליית/ירידת ST (והגובה במ\"מ), היפוך T, גלי Q פתולוגיים, וירידת PR. זה תיאור של מה שנראה — לא שם-מחלה.
 
 החזר JSON לפי הסכמה בלבד.`;
 
@@ -81,7 +102,7 @@ const PERCEPTION_PROMPT = `אתה מודד גיאומטרי של תרשים ECG.
  * @param {{fileUrls:string[], invokeLLM:Function, model?:string, ageDays?:number}} args
  * @returns {Promise<{abstain?:boolean, abstain_reason_he?:string, measured?:object, perception?:object}>}
  */
-export async function runEcgMicroReading({ fileUrls, invokeLLM, model = FAST_MODEL }) {
+export async function runEcgMicroReading({ fileUrls, invokeLLM, model = FAST_MODEL, ageYears, sex }) {
   if (!invokeLLM || !Array.isArray(fileUrls) || fileUrls.length === 0) {
     return { abstain: true, abstain_reason_he: "אין תמונה או מנוע." };
   }
@@ -124,7 +145,18 @@ export async function runEcgMicroReading({ fileUrls, invokeLLM, model = FAST_MOD
     },
   });
 
-  return { measured, perception };
+  const observations = {
+    regular: perception.rhythm?.regular,
+    p_before_each_qrs: perception.rhythm?.p_before_each_qrs,
+    st_elevation_leads: perception.morphology?.st_elevation_leads,
+    st_depression_leads: perception.morphology?.st_depression_leads,
+    t_inversion_leads: perception.morphology?.t_inversion_leads,
+    pathological_q_leads: perception.morphology?.pathological_q_leads,
+    pr_depression: perception.morphology?.pr_depression,
+  };
+  const interpretation = interpretFundamentals({ measured, observations, ageYears, sex });
+
+  return { measured, perception, interpretation };
 }
 
 /** Human/LLM-readable block of the code-computed measurements, for grounding + display. */
