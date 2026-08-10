@@ -14,6 +14,7 @@ import GroundedInterpretation from "@/components/GroundedInterpretation";
 import BackButton from "@/components/BackButton";
 import { useI18n } from "@/lib/i18n";
 import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
+import { downscaleImageFile } from "@/lib/imageOptimize";
 
 export default function ECGAnalysis() {
   const { t, lang } = useI18n();
@@ -62,8 +63,12 @@ export default function ECGAnalysis() {
     if (newFiles.length > 0) {
       setUploading(true);
       try {
+        // הקטנה למהירות + סיבוב אוטומטי של תרשים מצולם לאורך → לרוחב, לפני העלאה.
         const urls = await Promise.all(
-          newFiles.map((f) => base44.integrations.Core.UploadFile({ file: f }))
+          newFiles.map(async (f) => {
+            const optimized = await downscaleImageFile(f, { autoLandscape: true });
+            return base44.integrations.Core.UploadFile({ file: optimized });
+          })
         );
         const fileUrls = urls.map((r) => r.file_url);
         updateUploadedUrls(fileUrls);
