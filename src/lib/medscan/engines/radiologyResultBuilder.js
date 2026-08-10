@@ -20,13 +20,18 @@ function likelihoodToConf(l) {
 
 /** Best KB case for a diagnosis string (token overlap ≥2 on the English diagnosis/title). */
 export function matchRadiologyKb(text, cases) {
-  const ct = new Set(tok(text).filter((w) => !STOP.has(w)));
+  const ctArr = tok(text).filter((w) => !STOP.has(w));
+  const ct = new Set(ctArr);
   if (ct.size === 0) return null;
+  // Radiology diagnoses are often a single specific term ("Pneumothorax",
+  // "Appendicitis"). Scale the required overlap with query specificity: a short
+  // 1–2-word diagnosis needs 1 strong shared term; longer queries need ≥2.
+  const needed = ctArr.length <= 2 ? 1 : 2;
   let best = null;
   for (const cs of cases || []) {
     const dset = [...tok(cs.diagnosis), ...tok(cs.title)].filter((w) => !STOP.has(w));
     const overlap = dset.filter((w) => ct.has(w)).length;
-    if (overlap >= 2 && (!best || overlap > best.overlap)) best = { cs, overlap };
+    if (overlap >= needed && (!best || overlap > best.overlap)) best = { cs, overlap };
   }
   return best ? best.cs : null;
 }
