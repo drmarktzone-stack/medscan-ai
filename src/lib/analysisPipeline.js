@@ -216,7 +216,7 @@ ${langDirective}`,
   }
 
   // ---------- Resolve top matched cases (full detail + reference images) ----------
-  const topMatchIds = matches.slice(0, 8).map((m) => m.case_id);
+  const topMatchIds = matches.slice(0, 5).map((m) => m.case_id);
   const topCases = topMatchIds
     .map((id) => allCases.find((c) => c.id === id))
     .filter(Boolean);
@@ -246,7 +246,7 @@ ${langDirective}`,
   // ---------- Stage 2: Criteria Verification + Diagnosis ----------
   onStage?.("verifying");
 
-  const matchesSummary = matches.slice(0, 8).map((m, i) =>
+  const matchesSummary = matches.slice(0, 5).map((m, i) =>
     `${i + 1}. ${m.title} — ${m.diagnosis || ""} (ביטחון התאמה: ${m.confidence}%): ${m.reasoning}`
   ).join("\n");
 
@@ -299,7 +299,7 @@ ${diagnosisInstructions}
 זהה אזורים בתמונה 1 בהם יש ממצא חריג או משמעותי. לכל אזור החזר תיבת תחום (bounding box) בקואורדינטות נורמליזציה — אחוזים (0-100): x, y, width, height, label. אם אין ממצא חריג ברור, החזר מערך ריק.
 
 ## פלט נדרש
-- **criteria_analysis**: עבור כל אחד מהמקרים התואמים המובילים (עד 8) — מערך קריטריונים עם סטטוס (met / not_met / indeterminate) וראיה, ציון criteria_confidence (0-100), והמלצה (מאושר / סביר / אפשרי / נשלל).
+- **criteria_analysis**: עבור כל אחד מ-5 המקרים התואמים המובילים — מערך קריטריונים עם סטטוס (met / not_met / indeterminate) וראיה, ציון criteria_confidence (0-100), והמלצה (מאושר / סביר / אפשרי / נשלל).
 - **summary**: סיכום תמציתי של הממצא העיקרי (משפט אחד).
 - **severity**: רמת חומרה — normal / mild / moderate / severe / urgent.
 - **guideline**: המלצת טיפול/הפניה מקצועית תמציתית וספציפית.
