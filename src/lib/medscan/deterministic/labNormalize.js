@@ -127,9 +127,23 @@ export function normalizeLabs({ labs = [], patient = {} } = {}) {
       : { status: RANGE_STATUS.UNKNOWN_RANGE, low: null, high: null, unit: null,
           note_he: 'לא ניתן לפתור טווח ללא גיל.' };
 
-    // טווח שהוזן ידנית ע"י המשתמש (מגיליון המעבדה) גובר — הוא המדויק ביותר
-    const manualLow = Number.isFinite(Number(lab.ref_low)) ? Number(lab.ref_low) : null;
-    const manualHigh = Number.isFinite(Number(lab.ref_high)) ? Number(lab.ref_high) : null;
+    // טווח שהוזן ידנית ע"י המשתמש (מגיליון המעבדה) גובר — הוא המדויק ביותר.
+    //
+    // ⚠ שער-בטיחות קריטי: חילוץ אוטומטי מגיליון המעבדה מקודד "אין גבול" כ-0,
+    // ולעיתים מחזיר 0/0 כשלא הצליח לפענח את הטווח (נפוץ בשומנים שבהם הטווח
+    // מודפס כסף חד-צדדי: "<200", ">40"). טווח 0/0 שהתקבל כך הופך כל ערך חיובי
+    // ל"גבוה" — זו בדיוק התקלה של HDL 34 שסומן "גבוה". לכן:
+    //   · תקרה של 0 אינה גבול-עליון אמיתי לאף מדד → מבוטלת.
+    //   · רצפת 0 ללא תקרה = אין גבול כלל → מבוטלת (המקרה 0/0).
+    //   · תקרה ≤ רצפה (טווח הפוך/מנוון) → נזרק, נופלים לטווח-הזרע.
+    //   · גבולות שליליים אמיתיים (למשל Base Excess ‎-2..2) נשמרים.
+    let manualLow = Number.isFinite(Number(lab.ref_low)) ? Number(lab.ref_low) : null;
+    let manualHigh = Number.isFinite(Number(lab.ref_high)) ? Number(lab.ref_high) : null;
+    if (manualHigh === 0) manualHigh = null;                 // תקרה של 0 = אין גבול-עליון
+    if (manualLow === 0 && manualHigh === null) manualLow = null; // 0/0 = אין טווח בכלל
+    if (manualLow !== null && manualHigh !== null && manualHigh <= manualLow) {
+      manualLow = null; manualHigh = null;                   // טווח הפוך/מנוון — לא אמין
+    }
     const usingManual = manualLow !== null || manualHigh !== null;
 
     let value = rawValue;
