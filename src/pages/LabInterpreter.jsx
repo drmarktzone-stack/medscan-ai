@@ -167,6 +167,25 @@ export default function LabInterpreter() {
 
   const canRun = filledRows.length > 0 && ageValue !== "" && incompleteRows.length === 0;
 
+  // השוואה דטרמיניסטית (בקוד) בין הבדיקה הנוכחית לקודמות — לפי שם המדד.
+  const normName = (s) => (s || "").trim().toLowerCase();
+  const comparison = (priorRows.length ? filledRows : []).map((cur) => {
+    const priors = priorRows.filter((p) => normName(p.analyte) === normName(cur.analyte) && String(p.value).trim() !== "");
+    if (!priors.length) return null;
+    const curNum = Number(cur.value);
+    const lastPrior = priors[priors.length - 1];
+    const pNum = Number(lastPrior.value);
+    let trend = null;
+    if (isFinite(curNum) && isFinite(pNum)) trend = curNum > pNum ? "up" : curNum < pNum ? "down" : "same";
+    return {
+      analyte: cur.analyte,
+      unit: cur.unit,
+      current: cur.value,
+      priors: priors.map((p) => ({ value: p.value, label: p._label })),
+      trend,
+    };
+  }).filter(Boolean);
+
   const handleRun = async () => {
     setLoading(true);
     setError(null);
