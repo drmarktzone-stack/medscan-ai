@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { FlaskConical, Loader2, Plus, X, ShieldCheck, AlertTriangle, ScanLine, Upload, Info } from "lucide-react";
+import { FlaskConical, Loader2, Plus, X, ShieldCheck, AlertTriangle, ScanLine, Upload, Info, Camera, GitCompare, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
@@ -33,7 +33,15 @@ export default function LabInterpreter() {
   const [error, setError] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [scanInfo, setScanInfo] = useState(null);
-  const scanFileRef = useRef(null);
+  const scanFileRef = useRef(null);   // העלאת קבצים (רבים, ללא מצלמה)
+  const scanCamRef = useRef(null);    // צילום במצלמה
+
+  // בדיקות קודמות להשוואה (של אותו מטופל)
+  const [priorRows, setPriorRows] = useState([]);
+  const [priorScanning, setPriorScanning] = useState(false);
+  const [priorInfo, setPriorInfo] = useState(null);
+  const priorFileRef = useRef(null);
+  const priorCamRef = useRef(null);
 
   // המרת שורת-סריקה לשורת-טופס. ערך לא-קריא → ריק (לא מנוחש).
   const scanRowToUiRow = (sr) => {
