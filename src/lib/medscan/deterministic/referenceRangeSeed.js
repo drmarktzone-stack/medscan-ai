@@ -294,6 +294,98 @@ export const SEED_RANGES = [
   },
   { analyte: 'urine_wbc', label_he: 'לויקוציטים בשתן', unit: '/HPF', bands: [b(0, OPEN, null, 5)] },
   { analyte: 'urine_rbc', label_he: 'אריתרוציטים בשתן', unit: '/HPF', bands: [b(0, OPEN, null, 3)] },
+
+  /* ══════════════════════════════════════════════════════════════════
+   *  הרחבה — בדיקות נפוצות שחסרו טווח. כולן טיוטה-לאימות.
+   *  לא נכללו מדדים תלויי-התבגרות/מין חזקים (LH/FSH/אסטרוגן/טסטו/IGF-1/GH/
+   *  17OHP/IgG-A-M/IgE/AFP/רנין) — הם דורשים טבלאות תלויות-גיל/מין נפרדות.
+   * ═══════════════════════════════════════════════════════════════════ */
+
+  /* ספירת דם — אינדקסים ודיפרנציאל */
+  { analyte: 'rbc', label_he: 'ספירת אריתרוציטים', unit: '10^12/L',
+    bands: [b(0, 30, 4.1, 6.1), b(31, 365, 3.8, 5.4), b(366, 4380, 4.0, 5.3), b(4381, OPEN, 4.2, 5.9)] },
+  { analyte: 'mch', label_he: 'המוגלובין ממוצע לתא', unit: 'pg',
+    bands: [b(0, 30, 31, 37), b(31, 365, 24, 30), b(366, OPEN, 25, 33)] },
+  { analyte: 'mchc', label_he: 'ריכוז המוגלובין ממוצע', unit: 'g/dL', bands: [b(0, OPEN, 32, 36)] },
+  { analyte: 'rdw', label_he: 'פיזור גודל תאים', unit: '%', bands: [b(0, OPEN, 11.5, 14.5)] },
+  { analyte: 'mpv', label_he: 'נפח טסית ממוצע', unit: 'fL', bands: [b(0, OPEN, 7.5, 11.5)] },
+  { analyte: 'neutrophils_pct', label_he: 'נויטרופילים (%)', unit: '%',
+    note_he: 'אחוזים משתנים מאוד עם הגיל; הספירה המוחלטת (ANC) אמינה יותר.',
+    bands: [b(0, OPEN, 30, 75)] },
+  { analyte: 'lymphocytes_pct', label_he: 'לימפוציטים (%)', unit: '%',
+    note_he: 'לימפוציטוזיס פיזיולוגי בינקות — הטווח רחב בכוונה.', bands: [b(0, OPEN, 20, 60)] },
+  { analyte: 'monocytes_pct', label_he: 'מונוציטים (%)', unit: '%', bands: [b(0, OPEN, 2, 12)] },
+  { analyte: 'eosinophils_abs', label_he: 'אאוזינופילים (מוחלט)', unit: '10^9/L', bands: [b(0, OPEN, null, 0.5)] },
+  { analyte: 'eosinophils_pct', label_he: 'אאוזינופילים (%)', unit: '%', bands: [b(0, OPEN, null, 6)] },
+  { analyte: 'basophils_pct', label_he: 'בזופילים (%)', unit: '%', bands: [b(0, OPEN, null, 2)] },
+  { analyte: 'bands', label_he: 'תאי מוט (Bands)', unit: '%', bands: [b(0, OPEN, null, 10)] },
+  { analyte: 'blasts', label_he: 'תאי בלסט', unit: '%',
+    note_he: '⚠ בלסטים בדם היקפי אינם תקינים — כל נוכחות דורשת בירור דחוף.', bands: [b(0, OPEN, null, 0)] },
+
+  /* קרישה */
+  { analyte: 'pt', label_he: 'זמן פרותרומבין', unit: 'sec', bands: [b(0, OPEN, 11, 14)] },
+  { analyte: 'ptt', label_he: 'PTT', unit: 'sec', bands: [b(0, 30, 25, 45), b(31, OPEN, 25, 38)] },
+  { analyte: 'd_dimer', label_he: 'D-dimer', unit: 'ng/mL', bands: [b(0, OPEN, null, 500)] },
+
+  /* כימיה וכליה */
+  { analyte: 'anion_gap', label_he: 'Anion gap', unit: 'mmol/L', bands: [b(0, OPEN, 4, 12)] },
+  { analyte: 'osmolality_serum', label_he: 'אוסמולריות בדם', unit: 'mOsm/kg', bands: [b(0, OPEN, 275, 295)] },
+  { analyte: 'calcium_ionized', label_he: 'סידן מיונן', unit: 'mmol/L', bands: [b(0, 30, 1.05, 1.37), b(31, OPEN, 1.12, 1.32)] },
+
+  /* אנדוקרינולוגיה (יציבי-גיל יחסית) */
+  { analyte: 'ft3', label_he: 'FT3', unit: 'pg/mL', bands: [b(0, OPEN, 2.3, 4.2)] },
+  { analyte: 'anti_tpo', label_he: 'נוגדני TPO', unit: 'IU/mL',
+    note_he: 'שלילי <35 (תלוי-שיטה).', bands: [b(0, OPEN, null, 35)] },
+  { analyte: 'cortisol', label_he: 'קורטיזול', unit: 'µg/dL',
+    note_he: 'טווח בוקר (AM). ערכי ערב נמוכים בהרבה.', bands: [b(0, OPEN, 5, 23)] },
+  { analyte: 'acth', label_he: 'ACTH', unit: 'pg/mL', bands: [b(0, OPEN, 7, 63)] },
+  { analyte: 'prolactin', label_he: 'פרולקטין', unit: 'ng/mL',
+    note_he: 'טווח משמd בין המינים — טיוטה גסה.', bands: [b(0, OPEN, 3, 25)] },
+  { analyte: 'pth', label_he: 'PTH', unit: 'pg/mL', bands: [b(0, OPEN, 15, 65)] },
+  { analyte: 'insulin', label_he: 'אינסולין', unit: 'µIU/mL', note_he: 'בצום.', bands: [b(0, OPEN, 2, 25)] },
+  { analyte: 'c_peptide', label_he: 'C-peptide', unit: 'ng/mL', bands: [b(0, OPEN, 0.8, 3.9)] },
+
+  /* ויטמינים ומינרלים */
+  { analyte: 'transferrin', label_he: 'טרנספרין', unit: 'mg/dL', bands: [b(0, OPEN, 200, 360)] },
+  { analyte: 'transferrin_sat', label_he: 'רוויון טרנספרין', unit: '%', bands: [b(0, OPEN, 20, 50)] },
+  { analyte: 'zinc', label_he: 'אבץ', unit: 'µg/dL', bands: [b(0, OPEN, 60, 120)] },
+  { analyte: 'lead', label_he: 'עופרת', unit: 'µg/dL',
+    note_he: '⚠ ערך-ייחוס CDC <3.5. כל ערך מוגבר מחייב התייחסות.', bands: [b(0, OPEN, null, 3.5)] },
+
+  /* אימונולוגיה וראומטולוגיה (ספי-שליליות; תלוי-שיטה) */
+  { analyte: 'c3', label_he: 'משלים C3', unit: 'mg/dL', bands: [b(0, OPEN, 80, 170)] },
+  { analyte: 'c4', label_he: 'משלים C4', unit: 'mg/dL', bands: [b(0, OPEN, 14, 40)] },
+  { analyte: 'anti_dsdna', label_he: 'Anti-dsDNA', unit: 'IU/mL', note_he: 'שלילי <30 (תלוי-שיטה).', bands: [b(0, OPEN, null, 30)] },
+  { analyte: 'rf', label_he: 'גורם ראומטי', unit: 'IU/mL', bands: [b(0, OPEN, null, 14)] },
+  { analyte: 'anti_ccp', label_he: 'Anti-CCP', unit: 'U/mL', bands: [b(0, OPEN, null, 20)] },
+  { analyte: 'anti_ttg_iga', label_he: 'Anti-tTG IgA', unit: 'U/mL',
+    note_he: '⚠ סף תלוי-שיטה מאוד — יש לאמת מול המעבדה. בדוק IgA כללי.', bands: [b(0, OPEN, null, 7)] },
+
+  /* סרולוגיה */
+  { analyte: 'aso', label_he: 'ASO', unit: 'IU/mL', note_he: 'עולה בגיל בית-הספר; טיוטה גסה.', bands: [b(0, OPEN, null, 200)] },
+
+  /* מטבולי */
+  { analyte: 'ketones_blood', label_he: 'קטונים בדם', unit: 'mmol/L', bands: [b(0, OPEN, null, 0.6)] },
+  { analyte: 'sweat_chloride', label_he: 'מבחן זיעה', unit: 'mmol/L',
+    note_he: '<30 תקין; 30–59 גבולי; ≥60 מאבחן CF.', bands: [b(0, OPEN, null, 29)] },
+
+  /* גזים בדם */
+  { analyte: 'po2', label_he: 'pO2', unit: 'mmHg', bands: [b(0, OPEN, 80, 100)] },
+  { analyte: 'base_excess', label_he: 'Base excess', unit: 'mmol/L', bands: [b(0, OPEN, -2, 3)] },
+  { analyte: 'o2_sat_lab', label_he: 'רוויון חמצן (מעבדה)', unit: '%', bands: [b(0, OPEN, 95, 100)] },
+
+  /* סמנים קרדיאליים */
+  { analyte: 'troponin', label_he: 'טרופונין', unit: 'ng/L',
+    note_he: '⚠ סף תלוי-ערכה לחלוטין (hs-cTn ~14 במבוגר) — לאמת מול המעבדה.', bands: [b(0, OPEN, null, 14)] },
+  { analyte: 'bnp', label_he: 'BNP', unit: 'pg/mL', bands: [b(0, OPEN, null, 100)] },
+  { analyte: 'ck_mb', label_he: 'CK-MB', unit: 'ng/mL', bands: [b(0, OPEN, null, 5)] },
+
+  /* נוזל שדרה ושתן */
+  { analyte: 'csf_rbc', label_he: 'אריתרוציטים ב-CSF', unit: '/µL', note_he: 'דיקור טראומטי מעלה כוזב.', bands: [b(0, OPEN, null, 5)] },
+  { analyte: 'csf_glucose_ratio', label_he: 'יחס גלוקוז CSF/דם', unit: '', bands: [b(0, OPEN, 0.6, 1.0)] },
+  { analyte: 'csf_lactate', label_he: 'לקטט ב-CSF', unit: 'mmol/L', bands: [b(0, OPEN, null, 2.1)] },
+  { analyte: 'urine_ph', label_he: 'pH שתן', unit: '', bands: [b(0, OPEN, 4.5, 8.0)] },
+  { analyte: 'urine_specific_gravity', label_he: 'משקל סגולי', unit: '', bands: [b(0, OPEN, 1.003, 1.030)] },
 ];
 
 /**
