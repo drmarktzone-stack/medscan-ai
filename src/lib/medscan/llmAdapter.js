@@ -14,7 +14,7 @@
  */
 
 import { base44 } from '@/api/base44Client';
-import { DIAGNOSIS_MODEL, FAST_MODEL } from '@/lib/aiConfig';
+import { DIAGNOSIS_MODEL, FAST_MODEL, VISION_MODEL } from '@/lib/aiConfig';
 
 /**
  * ⚠ מזהי הדגמים הם מזהי **Base44**, לא מזהי Anthropic API.
@@ -98,14 +98,15 @@ export function createVisionInvokeLLM({ purpose = 'vision', onCall = null } = {}
 
     onCall?.({
       purpose,
-      model: model ?? DIAGNOSIS_MODEL,
+      model: model ?? VISION_MODEL,
       promptLength: String(args.prompt ?? '').length,
       fileCount: (args.file_urls ?? []).length,
     });
 
     return base44.integrations.Core.InvokeLLM({
       ...args,
-      model: model ?? DIAGNOSIS_MODEL,
+      // קריאת-התמונה רצה על מודל-הראייה (VISION_MODEL) — אלא אם המנוע נקב מודל מפורש.
+      model: model ?? VISION_MODEL,
       // נכפה כאן ולא נסמך על הקורא: הקשר מהאינטרנט מכניס טענות
       // שאינן ניתנות לעקיבה לתמונה ולא לידע המאומת.
       add_context_from_internet: false,
