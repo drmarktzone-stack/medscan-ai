@@ -142,6 +142,46 @@ export function finalizeScan(raw) {
   };
 }
 
+/**
+ * מפענח מחרוזת טווח-ייחוס מודפסת → {low, high}. דטרמיניסטי, בלי LLM.
+ * תומך בחד-צדדי ("<200", ">40", "עד 5", "up to 5") ודו-צדדי ("40-60", "0.3–1.2").
+ */
+export function parseRangeText(txt) {
+  const s = String(txt ?? '').trim().replace(/,/g, '').replace(/\s+/g, ' ');
+  if (!s) return { low: null, high: null };
+  const num = '(-?\\d+(?:\\.\\d+)?)';
+  let m;
+  // גבול עליון בלבד
+  if ((m = s.match(new RegExp(`^[<≤]\\s*=?\\s*${num}`)))) return { low: null, high: Number(m[1]) };
+  if ((m = s.match(new RegExp(`^(?:up to|עד|לכל היותר|max|maximum)\\s*:?\\s*${num}`, 'i')))) return { low: null, high: Number(m[1]) };
+  // גבול תחתון בלבד
+  if ((m = s.match(new RegExp(`^[>≥]\\s*=?\\s*${num}`)))) return { low: Number(m[1]), high: null };
+  if ((m = s.match(new RegExp(`^(?:מעל|לפחות|min|minimum)\\s*:?\\s*${num}`, 'i')))) return { low: Number(m[1]), high: null };
+  // טווח דו-צדדי (מקף, en/em dash, "to", "עד") — תומך גם במספרים שליליים
+  if ((m = s.match(new RegExp(`${num}\\s*(?:-|–|—|to|עד)\\s*${num}`, 'i')))) {
+    const lo = Number(m[1]); const hi = Number(m[2]);
+    if (Number.isFinite(lo) && Number.isFinite(hi) && hi > lo) return { low: lo, high: hi };
+  }
+  return { low: null, high: null };
+}
+
+/**
+ * קובע ref_low/ref_high לשורה: מעדיף מספרים מפורשים; אם חסרים — נופל
+ * לפענוח דטרמיניסטי של ref_range_text. 0 כגבול-עליון מטופל ב-labNormalize.
+ */
+function parseRefBounds(r) {
+  let low = Number.isFinite(Number(r.ref_low)) ? Number(r.ref_low) : null;
+  let high = Number.isFinite(Number(r.ref_high)) ? Number(r.ref_high) : null;
+  const text = (r.ref_range_text || '').trim();
+  // אם ה-LLM לא מילא גבולות מספריים (או מילא 0/0 מנוון) — נסה לפענח מהטקסט.
+  const degenerate = (low === null || low === 0) && (high === null || high === 0);
+  if (text && degenerate) {
+    const p = parseRangeText(text);
+    if (p.low !== null || p.high !== null) { low = p.low; high = p.high; }
+  }
+  return { ref_low: low, ref_high: high, ref_range_text: text || null };
+}
+
 /** Deterministic canonical matching + review flagging. No model here. */
 export function mapScanRows(rows = []) {
   return (rows || [])
