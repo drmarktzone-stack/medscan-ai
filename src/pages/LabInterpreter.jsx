@@ -660,40 +660,42 @@ export default function LabInterpreter() {
               </div>
             </div>
 
-            {/* טבלת הנרמול — מה סומן ומה לא, ולמה */}
+            {/* תוצאות מקובצות לפאנלי-דם, עם הדגשת חריגות */}
             {result.normalized?.length > 0 && (
               <div>
-                <h4 className="text-xs font-bold text-slate-700 mb-2">ערכים לאחר נרמול</h4>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-[11px]">
-                    <thead>
-                      <tr className="text-slate-400 text-right">
-                        <th className="font-medium pb-1">מדד</th>
-                        <th className="font-medium pb-1">ערך</th>
-                        <th className="font-medium pb-1">סימון</th>
-                        <th className="font-medium pb-1">מקור הטווח</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {result.normalized.map((n, i) => (
-                        <tr key={i} className="border-t border-slate-50">
-                          <td className="py-1">{n.label_he}</td>
-                          <td className="py-1">{n.value}{n.unit ? ` ${n.unit}` : ""}</td>
-                          <td className="py-1">
-                            {n.flag === "high" && <span className="text-red-600 font-semibold">גבוה</span>}
-                            {n.flag === "low" && <span className="text-blue-600 font-semibold">נמוך</span>}
-                            {n.flag === "normal" && <span className="text-emerald-600">תקין</span>}
-                            {n.flag === "unknown_range" && (
-                              <span className="text-slate-400">לא נבדק</span>
-                            )}
-                          </td>
-                          <td className="py-1 text-slate-400">
-                            {n.range_source ?? (n.flag === "unknown_range" ? "אין טווח" : "—")}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <h4 className="text-xs font-bold text-slate-700 mb-2">תוצאות לפי פאנלים</h4>
+                <div className="space-y-3">
+                  {groupByPanel(result.normalized).map((panel) => (
+                    <div key={panel.cat} className="rounded-xl border border-slate-100 overflow-hidden">
+                      <div className="bg-slate-50 px-3 py-1.5 text-[11px] font-bold text-slate-600 flex items-center justify-between">
+                        <span>{panel.label}</span>
+                        {panel.rows.some((r) => r.flag === "high" || r.flag === "low") && (
+                          <span className="text-[10px] text-amber-600 font-semibold">● יש חריגות</span>
+                        )}
+                      </div>
+                      <table className="w-full text-[11px]">
+                        <tbody>
+                          {panel.rows.map((n, i) => {
+                            const abn = n.flag === "high" || n.flag === "low";
+                            const bg = n.flag === "high" ? "bg-red-50" : n.flag === "low" ? "bg-blue-50" : "";
+                            return (
+                              <tr key={i} className={`border-t border-slate-50 ${bg}`}>
+                                <td className={`py-1 px-3 ${abn ? "font-semibold" : ""}`}>{n.label_he}</td>
+                                <td className={`py-1 px-2 ${n.flag === "high" ? "text-red-700 font-bold" : n.flag === "low" ? "text-blue-700 font-bold" : ""}`}>{n.value}{n.unit ? ` ${n.unit}` : ""}</td>
+                                <td className="py-1 px-2 whitespace-nowrap">
+                                  {n.flag === "high" && <span className="text-red-600 font-bold">↑ גבוה</span>}
+                                  {n.flag === "low" && <span className="text-blue-600 font-bold">↓ נמוך</span>}
+                                  {n.flag === "normal" && <span className="text-emerald-600">תקין</span>}
+                                  {n.flag === "unknown_range" && <span className="text-slate-400">לא נבדק</span>}
+                                </td>
+                                <td className="py-1 px-2 text-slate-400 text-[10px]">{n.range_source ?? (n.flag === "unknown_range" ? "אין טווח" : "—")}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
                 </div>
                 {result.missing_ranges?.length > 0 && (
                   <p className="text-[10px] text-amber-700 mt-2 leading-relaxed">
