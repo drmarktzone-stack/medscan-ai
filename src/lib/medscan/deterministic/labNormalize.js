@@ -122,8 +122,11 @@ export function normalizeLabs({ labs = [], patient = {} } = {}) {
       continue;
     }
 
+    // פתירת הטווח לפי המפתח הקנוני (לא לפי השם הגולמי) — אחרת שם מורכב
+    // כמו "CHOLESTEROL- HDL" זוהה בקטלוג אך לא ימצא את טווח הייחוס שמפתחו 'hdl'.
+    const rangeKey = known?.key ?? lab.analyte;
     const range = Number.isFinite(ageDays)
-      ? resolveRange({ analyte: lab.analyte, ageDays, sex })
+      ? resolveRange({ analyte: rangeKey, ageDays, sex })
       : { status: RANGE_STATUS.UNKNOWN_RANGE, low: null, high: null, unit: null,
           note_he: 'לא ניתן לפתור טווח ללא גיל.' };
 
