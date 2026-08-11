@@ -81,10 +81,10 @@ const CATALOG = [
   // בהקשר קליני (לימפופניה, חסר חיסוני) המספר המוחלט הוא הקובע.
   { key: 'lymphocytes_abs', he: 'לימפוציטים (מוחלט)', en: 'ALC', syn: ['ALC', 'absolute lymphocyte count', 'Lymphocytes', 'לימפוציטים', 'lymphocyte count'], unit: '10^9/L', cat: 'hematology' },
   { key: 'lymphocytes_pct', he: 'לימפוציטים (%)', en: 'Lymphocytes %', syn: ['לימפוציטים אחוז'], unit: '%', cat: 'hematology' },
-  { key: 'monocytes_pct', he: 'מונוציטים (%)', en: 'Monocytes %', syn: ['מונוציטים'], unit: '%', cat: 'hematology' },
-  { key: 'eosinophils_abs', he: 'אאוזינופילים (מוחלט)', en: 'AEC', syn: ['אאוזינופילים'], unit: '10^9/L', cat: 'hematology' },
+  { key: 'monocytes_pct', he: 'מונוציטים (%)', en: 'Monocytes %', syn: ['מונוציטים', 'monocytes', 'mono'], unit: '%', cat: 'hematology' },
+  { key: 'eosinophils_abs', he: 'אאוזינופילים (מוחלט)', en: 'AEC', syn: ['אאוזינופילים', 'eosinophils', 'eosinophil count'], unit: '10^9/L', cat: 'hematology' },
   { key: 'eosinophils_pct', he: 'אאוזינופילים (%)', en: 'Eosinophils %', syn: ['eos'], unit: '%', cat: 'hematology' },
-  { key: 'basophils_pct', he: 'בזופילים (%)', en: 'Basophils %', syn: ['בזופילים'], unit: '%', cat: 'hematology' },
+  { key: 'basophils_pct', he: 'בזופילים (%)', en: 'Basophils %', syn: ['בזופילים', 'basophils', 'baso'], unit: '%', cat: 'hematology' },
   { key: 'reticulocytes', he: 'רטיקולוציטים', en: 'Reticulocytes', syn: ['retic', 'רטיקס'], unit: '%', cat: 'hematology' },
   { key: 'blasts', he: 'תאי בלסט', en: 'Blasts', syn: ['בלסטים', 'blast cells'], unit: '%', cat: 'hematology' },
   { key: 'blood_smear', he: 'משטח דם היקפי', en: 'Peripheral smear', syn: ['משטח', 'smear', 'מורפולוגיה'], type: RESULT_TYPES.TEXT, cat: 'hematology' },
@@ -120,10 +120,10 @@ const CATALOG = [
   { key: 'osmolality_serum', he: 'אוסמולריות בדם', en: 'Serum osmolality', syn: ['osmolality'], unit: 'mOsm/kg', cat: 'renal' },
 
   /* ── כבד וחלבונים ──────────────────────────────────────────────────── */
-  { key: 'alt', he: 'ALT', en: 'ALT (SGPT)', syn: ['SGPT', 'ALT'], unit: 'U/L', cat: 'liver' },
-  { key: 'ast', he: 'AST', en: 'AST (SGOT)', syn: ['SGOT', 'AST'], unit: 'U/L', cat: 'liver' },
+  { key: 'alt', he: 'ALT', en: 'ALT (SGPT)', syn: ['SGPT', 'ALT', 'GPT', 'ALT GPT', 'ALT(GPT)', 'SGPT ALT'], unit: 'U/L', cat: 'liver' },
+  { key: 'ast', he: 'AST', en: 'AST (SGOT)', syn: ['SGOT', 'AST', 'GOT', 'AST GOT', 'AST(GOT)', 'SGOT AST'], unit: 'U/L', cat: 'liver' },
   { key: 'ggt', he: 'GGT', en: 'GGT', syn: ['GGT', 'גמא GT'], unit: 'U/L', cat: 'liver' },
-  { key: 'alp', he: 'פוספטאזה אלקלית', en: 'ALP', syn: ['ALP', 'אלקליין'], unit: 'U/L', cat: 'liver' },
+  { key: 'alp', he: 'פוספטאזה אלקלית', en: 'ALP', syn: ['ALP', 'אלקליין', 'alkaline phosphatase', 'alk phosphatase', 'alk phos', 'ALKP', 'ALK. PHOSPHATASE'], unit: 'U/L', cat: 'liver' },
   { key: 'bilirubin_total', he: 'בילירובין כללי', en: 'Total bilirubin', syn: ['בילירובין', 'TBIL'], unit: 'mg/dL', cat: 'liver' },
   { key: 'bilirubin_direct', he: 'בילירובין ישיר', en: 'Direct bilirubin', syn: ['DBIL', 'conjugated'], unit: 'mg/dL', cat: 'liver' },
   { key: 'albumin', he: 'אלבומין', en: 'Albumin', syn: ['ALB', 'אלבומין'], unit: 'g/dL', cat: 'liver' },
@@ -137,10 +137,11 @@ const CATALOG = [
   /* ── שומנים וגלוקוז ────────────────────────────────────────────────── */
   { key: 'glucose', he: 'גלוקוז', en: 'Glucose', syn: ['סוכר', 'GLU'], unit: 'mg/dL', cat: 'chemistry' },
   { key: 'hba1c', he: 'HbA1c', en: 'HbA1c', syn: ['A1C', 'המוגלובין מסוכרר'], unit: '%', cat: 'endocrine' },
-  { key: 'cholesterol_total', he: 'כולסטרול כללי', en: 'Total cholesterol', syn: ['כולסטרול'], unit: 'mg/dL', cat: 'lipids' },
-  { key: 'ldl', he: 'LDL', en: 'LDL cholesterol', syn: ['LDL'], unit: 'mg/dL', cat: 'lipids' },
-  { key: 'hdl', he: 'HDL', en: 'HDL cholesterol', syn: ['HDL'], unit: 'mg/dL', cat: 'lipids' },
-  { key: 'triglycerides', he: 'טריגליצרידים', en: 'Triglycerides', syn: ['TG', 'טריגליצרידים'], unit: 'mg/dL', cat: 'lipids' },
+  { key: 'cholesterol_total', he: 'כולסטרול כללי', en: 'Total cholesterol', syn: ['כולסטרול', 'cholesterol', 'chol', 'total cholesterol', 'cholesterol total'], unit: 'mg/dL', cat: 'lipids' },
+  { key: 'ldl', he: 'LDL', en: 'LDL cholesterol', syn: ['LDL', 'LDL-C', 'LDLC', 'LDL cholesterol', 'cholesterol LDL', 'cholesterol-LDL', 'CHOLESTEROL-LDL calc', 'LDL calc', 'LDL calculated', 'CHOLESTEROL-LDL'], unit: 'mg/dL', cat: 'lipids' },
+  { key: 'hdl', he: 'HDL', en: 'HDL cholesterol', syn: ['HDL', 'HDL-C', 'HDLC', 'HDL cholesterol', 'cholesterol HDL', 'cholesterol-HDL', 'CHOLESTEROL-HDL'], unit: 'mg/dL', cat: 'lipids' },
+  { key: 'non_hdl_cholesterol', he: 'כולסטרול לא-HDL', en: 'Non-HDL cholesterol', syn: ['non HDL', 'nonHDL', 'non-HDL cholesterol', 'non HDL cholesterol', 'NON-HDL_CHOLESTEROL'], unit: 'mg/dL', cat: 'lipids' },
+  { key: 'triglycerides', he: 'טריגליצרידים', en: 'Triglycerides', syn: ['TG', 'טריגליצרידים', 'triglyceride'], unit: 'mg/dL', cat: 'lipids' },
 
   /* ── סמני דלקת ─────────────────────────────────────────────────────── */
   { key: 'crp', he: 'CRP', en: 'C-reactive protein', syn: ['CRP', 'חלבון מגיב C'], unit: 'mg/L', cat: 'inflammation' },
@@ -150,8 +151,8 @@ const CATALOG = [
 
   /* ── אנדוקרינולוגיה ────────────────────────────────────────────────── */
   { key: 'tsh', he: 'TSH', en: 'TSH', syn: ['TSH'], unit: 'mIU/L', cat: 'endocrine' },
-  { key: 'ft4', he: 'FT4', en: 'Free T4', syn: ['FT4', 'T4 חופשי'], unit: 'ng/dL', cat: 'endocrine' },
-  { key: 'ft3', he: 'FT3', en: 'Free T3', syn: ['FT3', 'T3 חופשי'], unit: 'pg/mL', cat: 'endocrine' },
+  { key: 'ft4', he: 'FT4', en: 'Free T4', syn: ['FT4', 'T4 חופשי', 'T4 FREE', 'FREE T4', 'T4-FREE'], unit: 'ng/dL', cat: 'endocrine' },
+  { key: 'ft3', he: 'FT3', en: 'Free T3', syn: ['FT3', 'T3 חופשי', 'T3 FREE', 'FREE T3', 'T3-FREE'], unit: 'pg/mL', cat: 'endocrine' },
   { key: 'anti_tpo', he: 'נוגדני TPO', en: 'Anti-TPO', syn: ['TPO', 'אנטי TPO'], unit: 'IU/mL', cat: 'endocrine' },
   { key: 'cortisol', he: 'קורטיזול', en: 'Cortisol', syn: ['קורטיזול'], unit: 'µg/dL', cat: 'endocrine' },
   { key: 'acth', he: 'ACTH', en: 'ACTH', syn: ['ACTH'], unit: 'pg/mL', cat: 'endocrine' },
@@ -175,6 +176,7 @@ const CATALOG = [
   { key: 'folate', he: 'חומצה פולית', en: 'Folate', syn: ['פולאט', 'folic acid'], unit: 'ng/mL', cat: 'vitamins' },
   { key: 'iron', he: 'ברזל', en: 'Iron', syn: ['Fe', 'ברזל'], unit: 'µg/dL', cat: 'vitamins' },
   { key: 'transferrin_sat', he: 'רוויון טרנספרין', en: 'Transferrin saturation', syn: ['TSAT'], unit: '%', cat: 'vitamins' },
+  { key: 'transferrin', he: 'טרנספרין', en: 'Transferrin', syn: ['transferrin'], unit: 'mg/dL', cat: 'vitamins' },
   { key: 'tibc', he: 'TIBC', en: 'TIBC', syn: ['TIBC'], unit: 'µg/dL', cat: 'vitamins' },
   { key: 'zinc', he: 'אבץ', en: 'Zinc', syn: ['Zn'], unit: 'µg/dL', cat: 'vitamins' },
   { key: 'lead', he: 'עופרת', en: 'Lead', syn: ['Pb', 'עופרת'], unit: 'µg/dL', cat: 'vitamins' },
