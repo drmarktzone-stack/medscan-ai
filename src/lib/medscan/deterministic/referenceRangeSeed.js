@@ -340,7 +340,7 @@ export const SEED_RANGES = [
     note_he: 'טווח בוקר (AM). ערכי ערב נמוכים בהרבה.', bands: [b(0, OPEN, 5, 23)] },
   { analyte: 'acth', label_he: 'ACTH', unit: 'pg/mL', bands: [b(0, OPEN, 7, 63)] },
   { analyte: 'prolactin', label_he: 'פרולקטין', unit: 'ng/mL',
-    note_he: 'טווח משמd בין המינים — טיוטה גסה.', bands: [b(0, OPEN, 3, 25)] },
+    note_he: 'טווח משתנה בין המינים — טיוטה גסה.', bands: [b(0, OPEN, 3, 25)] },
   { analyte: 'pth', label_he: 'PTH', unit: 'pg/mL', bands: [b(0, OPEN, 15, 65)] },
   { analyte: 'insulin', label_he: 'אינסולין', unit: 'µIU/mL', note_he: 'בצום.', bands: [b(0, OPEN, 2, 25)] },
   { analyte: 'c_peptide', label_he: 'C-peptide', unit: 'ng/mL', bands: [b(0, OPEN, 0.8, 3.9)] },
