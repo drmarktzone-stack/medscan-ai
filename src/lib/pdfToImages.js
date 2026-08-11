@@ -13,9 +13,15 @@
  */
 
 import * as pdfjsLib from "pdfjs-dist";
-import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+// העובד מוטבע (inline) כ-blob בתוך ה-bundle — אין קובץ .mjs נפרד שהשרת
+// עלול להגיש עם MIME שגוי (הסיבה הנפוצה לכשל pdf.js ב-production).
+import PdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?worker&inline";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+try {
+  pdfjsLib.GlobalWorkerOptions.workerPort = new PdfjsWorker();
+} catch (e) {
+  console.error("pdf.js worker init failed", e);
+}
 
 const isPdf = (file) =>
   !!file && (file.type === "application/pdf" || /\.pdf$/i.test(file.name || ""));
