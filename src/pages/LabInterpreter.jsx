@@ -10,7 +10,7 @@ import { base44 } from "@/api/base44Client";
 import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
 import { runLabScan } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
-import { pdfToImages, isPdf } from "@/lib/pdfToImages";
+import { pdfToImages, pdfExtractText, isPdf } from "@/lib/pdfToImages";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
 import { RESULT_TYPES, CATALOG_SIZE } from "@/lib/medscan/deterministic/analyteCatalog";
 
@@ -62,34 +62,53 @@ export default function LabInterpreter() {
     };
   };
 
-  // קובץ → רשימת תמונות לסריקה. PDF → מומר לתמונות עמוד-אחר-עמוד (pdf.js);
-  // תמונה → מוקטנת. כך הסורק קורא כל פורמט (PDF טקסטואלי או סרוק, JPG, PNG, צילום-מסך).
-  const fileToScanImages = async (file) => {
-    if (isPdf(file)) {
-      const pages = await pdfToImages(file);
-      if (pages.length) return pages;
-      return [file]; // fail-open: נשלח את ה-PDF כמות ו אם הרנדור נכשל.
+  // ספיגת תוצאת-סריקה בודדת לתוך אובייקט-מיזוג.
+  const absorb = (scan, merged) => {
+    if (scan && scan.ok) {
+      merged.ok = true;
+      merged.rows.push(...(scan.rows || []));
+      merged.stats.total += scan.stats?.total || 0;
+      merged.stats.readable += scan.stats?.readable || 0;
+      merged.stats.needs_review += scan.stats?.needs_review || 0;
+      if (!merged.patient.sex && (scan.patient?.sex === "male" || scan.patient?.sex === "female")) merged.patient.sex = scan.patient.sex;
+      if (!merged.patient.age_text && scan.patient?.age_text) merged.patient.age_text = scan.patient.age_text;
     }
-    return [await downscaleImageFile(file)];
+    return merged;
   };
 
-  // סריקת קובץ בודד (כולל PDF רב-עמודי) → ממזג את כל העמודים לתוצאה אחת.
+  const scanImageFile = async (imgFile) => {
+    const { file_url } = await base44.integrations.Core.UploadFile({ file: imgFile });
+    return runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
+  };
+
+  // סריקת קובץ בודד — קורא כל פורמט:
+  //  PDF טקסטואלי → חילוץ-טקסט ישיר (הכי מדויק/אמין) → פינוי לרנדור-לתמונה;
+  //  PDF סרוק → רנדור עמוד-אחר-עמוד → ראייה; תמונה → ראייה.
   const scanOneFile = async (file) => {
-    const images = await fileToScanImages(file);
     const merged = { ok: false, rows: [], patient: {}, stats: { total: 0, readable: 0, needs_review: 0 } };
-    for (const img of images) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: img });
-      const scan = await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
-      if (scan.ok) {
-        merged.ok = true;
-        merged.rows.push(...(scan.rows || []));
-        merged.stats.total += scan.stats?.total || 0;
-        merged.stats.readable += scan.stats?.readable || 0;
-        merged.stats.needs_review += scan.stats?.needs_review || 0;
-        if (!merged.patient.sex && (scan.patient?.sex === "male" || scan.patient?.sex === "female")) merged.patient.sex = scan.patient.sex;
-        if (!merged.patient.age_text && scan.patient?.age_text) merged.patient.age_text = scan.patient.age_text;
+
+    if (isPdf(file)) {
+      // 1) ניסיון חילוץ-טקסט ישיר (ל-PDF דיגיטלי כמו תדפיסי כללית).
+      let text = "";
+      try { text = await pdfExtractText(file); } catch { text = ""; }
+      if (text && /\d/.test(text) && text.length > 40) {
+        try { absorb(await runLabScan({ text, invokeLLM: scanInvoke }), merged); } catch { /* ימשיך ל-fallback */ }
+        if (merged.ok) return merged;
       }
+      // 2) fallback: רנדור עמודים לתמונות → ראייה.
+      let pages = [];
+      try { pages = await pdfToImages(file); } catch { pages = []; }
+      for (const img of pages) {
+        try { absorb(await scanImageFile(img), merged); } catch { /* דלג על עמוד שנכשל */ }
+      }
+      return merged;
     }
+
+    // תמונה — הקטנה + ראייה.
+    try {
+      const img = await downscaleImageFile(file);
+      absorb(await scanImageFile(img), merged);
+    } catch { /* נכשל */ }
     return merged;
   };
 
