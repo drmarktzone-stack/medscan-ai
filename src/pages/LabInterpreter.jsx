@@ -8,7 +8,7 @@ import BackButton from "@/components/BackButton";
 import AnalytePicker from "@/components/AnalytePicker";
 import { base44 } from "@/api/base44Client";
 import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
-import { runLabScan } from "@/lib/labScanEngine";
+import { runLabScan, finalizeScan, LAB_SCAN_SCHEMA } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { pdfToImages, pdfExtractText, isPdf } from "@/lib/pdfToImages";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
@@ -81,41 +81,42 @@ export default function LabInterpreter() {
     return runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
   };
 
-  // סריקת קובץ בודד — קורא כל פורמט:
-  //  PDF טקסטואלי → חילוץ-טקסט ישיר (הכי מדויק/אמין) → פינוי לרנדור-לתמונה;
-  //  PDF סרוק → רנדור עמוד-אחר-עמוד → ראייה; תמונה → ראייה.
+  // סריקת קובץ בודד — קורא כל פורמט (PDF טקסטואלי/סרוק, JPG, PNG, צילום-מסך).
+  // סדר לפי אמינות:
+  //  1) ExtractDataFromUploadedFile — חילוץ בצד-השרת של Base44 (קורא PDF ותמונות, ללא pdf.js בדפדפן).
+  //  2) ראייה (vision) על אותו קובץ.
+  //  3) PDF בלבד — חילוץ-טקסט בצד-הלקוח (pdf.js) → פענוח-טקסט.
   const scanOneFile = async (file) => {
     const merged = { ok: false, rows: [], patient: {}, stats: { total: 0, readable: 0, needs_review: 0 } };
 
-    if (isPdf(file)) {
-      // 1) ניסיון חילוץ-טקסט ישיר (ל-PDF דיגיטלי כמו תדפיסי כללית).
-      let text = "";
-      try { text = await pdfExtractText(file); } catch { text = ""; }
-      if (text && /\d/.test(text) && text.length > 40) {
-        try { absorb(await runLabScan({ text, invokeLLM: scanInvoke }), merged); } catch { /* ימשיך ל-fallback */ }
-        if (merged.ok) return merged;
-      }
-      // 2) fallback: רנדור עמודים לתמונות → ראייה.
-      let pages = [];
-      try { pages = await pdfToImages(file); } catch { pages = []; }
-      for (const img of pages) {
-        try { absorb(await scanImageFile(img), merged); } catch { /* דלג על עמוד שנכשל */ }
-      }
-      if (merged.ok) return merged;
-      // 3) מוצא-אחרון: אם pdf.js לא זמין בכלל — שולחים את ה-PDF כמותו למודל
-      // (חלק מהמודלים קוראים PDF ישירות). לא תלוי ב-pdf.js.
-      try {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        absorb(await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke }), merged);
-      } catch { /* נכשל */ }
-      return merged;
-    }
-
-    // תמונה — הקטנה + ראייה.
+    // העלאה אחת (תמונות מוקטנות; PDF כמותו).
+    let file_url = null;
     try {
-      const img = await downscaleImageFile(file);
-      absorb(await scanImageFile(img), merged);
-    } catch { /* נכשל */ }
+      const toUpload = isPdf(file) ? file : await downscaleImageFile(file);
+      const up = await base44.integrations.Core.UploadFile({ file: toUpload });
+      file_url = up?.file_url || null;
+    } catch { return merged; }
+    if (!file_url) return merged;
+
+    // 1) חילוץ בצד-השרת (האמין ביותר — ללא תלות ב-pdf.js בדפדפן).
+    try {
+      const res = await base44.integrations.Core.ExtractDataFromUploadedFile({ file_url, json_schema: LAB_SCAN_SCHEMA });
+      const raw = res?.output ?? res?.details ?? null;
+      if (raw) absorb(finalizeScan(raw), merged);
+      if (merged.ok) return merged;
+    } catch { /* ממשיך ל-fallback */ }
+
+    // 2) ראייה על אותו קובץ.
+    try { absorb(await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke }), merged); } catch { /* ממשיך */ }
+    if (merged.ok) return merged;
+
+    // 3) PDF — חילוץ-טקסט בצד-הלקוח → פענוח-טקסט.
+    if (isPdf(file)) {
+      try {
+        const text = await pdfExtractText(file);
+        if (text && /\d/.test(text) && text.length > 40) absorb(await runLabScan({ text, invokeLLM: scanInvoke }), merged);
+      } catch { /* נכשל */ }
+    }
     return merged;
   };
 
