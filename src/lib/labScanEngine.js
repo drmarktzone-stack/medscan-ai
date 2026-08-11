@@ -79,13 +79,18 @@ const SCAN_PROMPT = `אתה קורא/ת בזהירות דף תוצאות מעב�
  * @param {string} [p.model]
  * @returns {Promise<{ok:boolean, is_lab_report:boolean, patient:object, rows:object[], stats:object, note_he:string}>}
  */
-export async function runLabScan({ fileUrls = [], invokeLLM, model } = {}) {
-  if (!fileUrls.length) return { ok: false, reason: "no_file", note_he: "לא סופק קובץ לסריקה." };
+export async function runLabScan({ fileUrls = [], text = "", invokeLLM, model } = {}) {
+  const hasText = typeof text === "string" && text.trim().length > 0;
+  if (!fileUrls.length && !hasText) return { ok: false, reason: "no_file", note_he: "לא סופק קובץ לסריקה." };
   if (typeof invokeLLM !== "function") return { ok: false, reason: "no_invoker", note_he: "מנוע הסריקה אינו זמין." };
 
+  // מסלול טקסט: כש-PDF טקסטואלי חולץ בצד-הלקוח — מפענחים את הטקסט ישירות
+  // (מדויק ואמין יותר מ-OCR על תמונה). אחרת — מסלול הראייה על התמונה.
   const raw = await invokeLLM({
-    prompt: SCAN_PROMPT,
-    file_urls: fileUrls,
+    prompt: hasText
+      ? `${SCAN_PROMPT}\n\n## טקסט שחולץ מדף-המעבדה (פענח/י את הטבלה מתוך הטקסט הבא; הטקסט עברי RTL — שים/י לב לסדר):\n"""\n${text}\n"""`
+      : SCAN_PROMPT,
+    ...(hasText ? {} : { file_urls: fileUrls }),
     response_json_schema: LAB_SCAN_SCHEMA,
     model,
   });
