@@ -306,10 +306,13 @@ const CATALOG = [
   { key: 'ldh_tumor', he: 'LDH (סמן גידול)', en: 'LDH (tumor marker)', syn: [], unit: 'U/L', cat: 'tumor' },
 ];
 
-/** מנרמל מחרוזת לצורך התאמה. */
+/** מנרמל מחרוזת לצורך התאמה.
+ * מסיר גם נקודות וסוגריים כדי ש-"ALK. PHOSPHATASE", "AST (GOT)" ו-"ALT (GPT)"
+ * יותאמו למדד הקנוני (אחרת הסוגריים/הנקודה שוברים את ההתאמה). */
 function norm(s) {
   return String(s ?? '').trim().toLowerCase()
     .replace(/[״"'׳`]/g, '')
+    .replace(/[().]/g, '')
     .replace(/[\s_-]+/g, '');
 }
 
@@ -336,7 +339,24 @@ export const ALL_ANALYTES = CATALOG.map((a) => ({
 export function resolveAnalyte(input) {
   const n = norm(input);
   if (!n) return null;
-  return INDEX.get(n) ?? null;
+  const direct = INDEX.get(n);
+  if (direct) return direct;
+
+  // נפילה מודעת-סיומת: ספירות מובדלות מדווחות לעיתים כ"X Abs" / "X #"
+  // (ספירה מוחלטת) או "X %" (אחוז). ממפים לאח הנכון לפי הסיומת.
+  const isPct = /(%|percent|percentage)$/.test(n);
+  const isAbs = /(abs|absolute|abscount|count|#)$/.test(n);
+  if (isPct || isAbs) {
+    const base = n.replace(/(%|percent|percentage|abs|absolute|abscount|count|#)+$/g, '');
+    const baseHit = base && INDEX.get(base);
+    if (baseHit) {
+      const stem = String(baseHit.key).replace(/_(abs|pct)$/, '');
+      const wantKey = isPct ? `${stem}_pct` : `${stem}_abs`;
+      const sibling = ALL_ANALYTES.find((a) => a.key === wantKey);
+      return sibling ?? baseHit;
+    }
+  }
+  return null;
 }
 
 /** מפתח קנוני להתאמת LabPattern. אם לא זוהה — המחרוזת המנורמלת. */
