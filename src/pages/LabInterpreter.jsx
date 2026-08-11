@@ -260,14 +260,30 @@ export default function LabInterpreter() {
             <strong> ערכים לא-קריאים יישארו ריקים למילוי ידני</strong> — המערכת לא מנחשת מספרים.
             כל ערך טעון אישורך לפני הניתוח.
           </p>
-          <input ref={scanFileRef} type="file" accept="image/*,application/pdf" capture="environment" className="hidden" onChange={handleScanFile} />
-          <button
-            onClick={() => scanFileRef.current?.click()}
-            disabled={scanning}
-            className="w-full h-11 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50/50 text-teal-700 text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
-          >
-            {scanning ? <><Loader2 className="w-4 h-4 animate-spin" /> סורק וקורא ערכים…</> : <><Upload className="w-4 h-4" /> העלה דף מעבדה / צלם</>}
-          </button>
+          {/* שני מסלולי-העלאה: העלאת קבצים (רבים, כולל PDF) או צילום במצלמה. */}
+          <input ref={scanFileRef} type="file" accept="image/*,application/pdf" multiple className="hidden" onChange={handleScanFile} />
+          <input ref={scanCamRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleScanFile} />
+          {scanning ? (
+            <div className="w-full h-11 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50/50 text-teal-700 text-sm font-semibold flex items-center justify-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" /> סורק וקורא ערכים…
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => scanFileRef.current?.click()}
+                className="h-11 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50/50 text-teal-700 text-sm font-semibold flex items-center justify-center gap-2"
+              >
+                <Upload className="w-4 h-4" /> העלאת קבצים
+              </button>
+              <button
+                onClick={() => scanCamRef.current?.click()}
+                className="h-11 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50/50 text-teal-700 text-sm font-semibold flex items-center justify-center gap-2"
+              >
+                <Camera className="w-4 h-4" /> צילום במצלמה
+              </button>
+            </div>
+          )}
+          <p className="text-[10px] text-slate-400 mt-1.5 text-center">אפשר לבחור כמה קבצים בבת-אחת — כל הבדיקות של אותו מטופל ימוזגו לטופס אחד.</p>
           {scanInfo?.error && (
             <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2 text-[11px] text-amber-800 leading-relaxed">{scanInfo.error}</div>
           )}
