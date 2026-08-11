@@ -61,32 +61,94 @@ export default function LabInterpreter() {
     };
   };
 
-  const handleScanFile = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // סריקת קובץ בודד → שורות + מטא-דאטה.
+  const scanOneFile = async (file) => {
+    const optimized = await downscaleImageFile(file);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file: optimized });
+    return runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
+  };
+
+  // סריקת מספר קבצים של אותו מטופל — ממזגת את כל המדדים לטופס אחד.
+  const scanFiles = async (fileList) => {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
     setScanning(true);
     setScanInfo(null);
     setError(null);
     try {
-      const optimized = await downscaleImageFile(file);
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: optimized });
-      const scan = await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
-      if (!scan.ok) {
-        setScanInfo({ error: scan.note_he || "לא הצלחתי לקרוא את הדף." });
+      const allRows = [];
+      const totals = { total: 0, readable: 0, needs_review: 0 };
+      let sexDetected = null, ageText = "", failed = 0;
+      for (const file of files) {
+        try {
+          const scan = await scanOneFile(file);
+          if (scan.ok) {
+            allRows.push(...scan.rows.map(scanRowToUiRow));
+            totals.total += scan.stats?.total || 0;
+            totals.readable += scan.stats?.readable || 0;
+            totals.needs_review += scan.stats?.needs_review || 0;
+            if (!sexDetected && (scan.patient?.sex === "male" || scan.patient?.sex === "female")) sexDetected = scan.patient.sex;
+            if (!ageText && scan.patient?.age_text) ageText = scan.patient.age_text;
+          } else { failed++; }
+        } catch { failed++; }
+      }
+      if (!allRows.length) {
+        setScanInfo({ error: "לא הצלחתי לקרוא ערכים מהקבצים. נסה צילום חד יותר או מילוי ידני." });
       } else {
-        const uiRows = scan.rows.map(scanRowToUiRow);
-        setRows(uiRows.length ? uiRows : [emptyRow()]);
-        if (scan.patient?.sex === "male" || scan.patient?.sex === "female") setSex(scan.patient.sex);
-        setScanInfo({ stats: scan.stats, note: scan.note_he, ageText: scan.patient?.age_text || "" });
+        // מצרפים לשורות שכבר מולאו (סריקות קודמות או הקלדה ידנית) — לא דורסים.
+        const existing = rows.filter((r) => r.analyte.trim() && String(r.value).trim() !== "");
+        const merged = [...existing, ...allRows];
+        setRows(merged.length ? merged : [emptyRow()]);
+        if (sexDetected) setSex(sexDetected);
+        setScanInfo({ stats: totals, note: `נסרקו ${files.length - failed}/${files.length} קבצים${failed ? ` (אחד או יותר לא נקרא)` : ""}. אמת/י את הערכים לפני הניתוח.`, ageText });
       }
     } catch (err) {
       console.error(err);
-      setScanInfo({ error: err.message || "שגיאה בסריקת הדף." });
+      setScanInfo({ error: err.message || "שגיאה בסריקת הקבצים." });
     } finally {
       setScanning(false);
       if (scanFileRef.current) scanFileRef.current.value = "";
+      if (scanCamRef.current) scanCamRef.current.value = "";
     }
   };
+  const handleScanFile = (e) => scanFiles(e.target.files);
+
+  // סריקת בדיקות קודמות להשוואה — נשמרות בנפרד (לא נכנסות לטופס הנוכחי).
+  const scanPriorFiles = async (fileList) => {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    setPriorScanning(true);
+    setPriorInfo(null);
+    try {
+      const collected = [];
+      let idx = priorRows.reduce((mx, r) => Math.max(mx, r._priorIndex || 0), 0);
+      let failed = 0;
+      for (const file of files) {
+        idx += 1;
+        try {
+          const scan = await scanOneFile(file);
+          if (scan.ok) {
+            const label = scan.patient?.age_text ? `קודמת ${idx} (${scan.patient.age_text})` : `קודמת ${idx}`;
+            scan.rows.map(scanRowToUiRow).forEach((r) => collected.push({ ...r, _priorIndex: idx, _label: label }));
+          } else { failed++; }
+        } catch { failed++; }
+      }
+      if (!collected.length) {
+        setPriorInfo({ error: "לא נקראו ערכים מהבדיקות הקודמות." });
+      } else {
+        setPriorRows((prev) => [...prev, ...collected]);
+        setPriorInfo({ note: `נוספו ${files.length - failed} בדיקות קודמות להשוואה.` });
+      }
+    } catch (err) {
+      setPriorInfo({ error: err.message || "שגיאה בסריקת הבדיקות הקודמות." });
+    } finally {
+      setPriorScanning(false);
+      if (priorFileRef.current) priorFileRef.current.value = "";
+      if (priorCamRef.current) priorCamRef.current.value = "";
+    }
+  };
+  const handlePriorFile = (e) => scanPriorFiles(e.target.files);
+  const clearPriors = () => { setPriorRows([]); setPriorInfo(null); };
 
   const updateRow = (i, field, val) =>
     setRows((r) => r.map((row, idx) => (idx === i ? { ...row, [field]: val } : row)));
