@@ -45,8 +45,9 @@ export const LAB_SCAN_SCHEMA = {
           value: { type: ["number", "null"], description: "The numeric result ONLY if clearly legible. If not clearly legible, or non-numeric, return null. NEVER guess or infer a number." },
           value_text: { type: "string", description: "For qualitative/textual results (e.g. 'Positive','Negative','Not detected') as printed; else empty." },
           unit: { type: "string", description: "Unit exactly as printed (e.g. 'g/dL','10^9/L'); empty if not printed/legible." },
-          ref_low: { type: ["number", "null"], description: "Lower reference bound as printed if legible; else null." },
-          ref_high: { type: ["number", "null"], description: "Upper reference bound as printed if legible; else null." },
+          ref_low: { type: ["number", "null"], description: "Lower reference bound as a NUMBER if printed (e.g. the 40 in '40-60', or the X in '>X'). One-sided upper limits ('<200','up to 5','עד 5') have NO lower bound -> null. NEVER use 0 to mean 'absent' — use null." },
+          ref_high: { type: ["number", "null"], description: "Upper reference bound as a NUMBER if printed (e.g. the 60 in '40-60', the 200 in '<200', the 5 in 'up to 5'/'עד 5'). One-sided lower limits ('>40') have NO upper bound -> null. NEVER use 0 to mean 'absent' — use null." },
+          ref_range_text: { type: "string", description: "The reference range EXACTLY as printed, verbatim (e.g. '<200', '>40', '40-60', 'up to 5', 'עד 5', '0.3-1.2'); empty if none printed. This raw text is parsed deterministically as a fallback." },
           flag_printed: { type: "string", description: "Any H/L/* abnormal flag printed next to the value; else empty." },
           confidence: { type: "string", enum: ["high", "medium", "low", "unreadable"], description: "Your legibility confidence for THIS row's value. Use 'unreadable' (with value=null) when you cannot read the number reliably." },
         },
@@ -59,7 +60,14 @@ export const LAB_SCAN_SCHEMA = {
 
 const SCAN_PROMPT = `אתה קורא/ת בזהירות דף תוצאות מעבדה (צילום מודפס, צילום-מסך, PDF, או כתב-יד).
 
-חלץ/י כל שורת-בדיקה שנראית בדף: שם הבדיקה בדיוק כפי שמודפס (analyte_raw), הערך (value), היחידה (unit), וטווח-הייחוס (ref_low/ref_high) אם מודפסים.
+חלץ/י כל שורת-בדיקה שנראית בדף: שם הבדיקה בדיוק כפי שמודפס (analyte_raw), הערך (value), היחידה (unit), וטווח-הייחוס אם מודפס.
+
+## טווח-הייחוס (קריטי — שגיאות כאן גורמות לסימון שגוי של גבוה/נמוך):
+- מלא/י תמיד גם את ref_range_text — מחרוזת הטווח בדיוק כפי שמודפסת (למשל "<200", ">40", "40-60", "עד 5").
+- טווח דו-צדדי "X-Y" → ref_low=X, ref_high=Y.
+- גבול עליון בלבד: "<200", "≤200", "עד 200", "up to 200" → ref_high=200, ref_low=null.
+- גבול תחתון בלבד: ">40", "≥40" → ref_low=40, ref_high=null.
+- **לעולם אל תשתמש/י ב-0 כדי לציין "אין גבול".** אם אין גבול — null. (0 כגבול-עליון הופך כל ערך ל"גבוה".)
 
 חוק-ברזל למניעת טעויות (קריטי):
 - החזר/י ערך מספרי **רק אם הוא קריא בבירור**. אם ספרה מטושטשת, חתוכה, או לא ודאית — החזר/י value=null ו-confidence="unreadable". **אסור לנחש מספר.** עדיף שדה ריק מאשר מספר שגוי.
@@ -156,8 +164,7 @@ export function mapScanRows(rows = []) {
         value: numericLegible ? Number(r.value) : null,
         value_text: hasQualitative ? r.value_text.trim() : "",
         unit: (r.unit || "").trim(),
-        ref_low: Number.isFinite(Number(r.ref_low)) ? Number(r.ref_low) : null,
-        ref_high: Number.isFinite(Number(r.ref_high)) ? Number(r.ref_high) : null,
+        ...parseRefBounds(r),
         flag_printed: (r.flag_printed || "").trim(),
         confidence: r.confidence || "medium",
         needs_review,
