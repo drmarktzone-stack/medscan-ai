@@ -101,6 +101,13 @@ export default function LabInterpreter() {
       for (const img of pages) {
         try { absorb(await scanImageFile(img), merged); } catch { /* דלג על עמוד שנכשל */ }
       }
+      if (merged.ok) return merged;
+      // 3) מוצא-אחרון: אם pdf.js לא זמין בכלל — שולחים את ה-PDF כמותו למודל
+      // (חלק מהמודלים קוראים PDF ישירות). לא תלוי ב-pdf.js.
+      try {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        absorb(await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke }), merged);
+      } catch { /* נכשל */ }
       return merged;
     }
 
