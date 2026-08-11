@@ -299,6 +299,63 @@ export default function LabInterpreter() {
           )}
         </div>
 
+        {/* בדיקות קודמות להשוואה */}
+        <div className="bg-white rounded-2xl border border-indigo-200 p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <GitCompare className="w-4 h-4 text-indigo-600" />
+            <h3 className="text-sm font-bold">בדיקות קודמות להשוואה (אופציונלי)</h3>
+          </div>
+          <p className="text-[11px] text-slate-500 leading-relaxed mb-3">העלה/י בדיקות מעבדה קודמות של אותו מטופל — המערכת תשווה מדד-מול-מדד ותציג מגמה.</p>
+          <input ref={priorFileRef} type="file" accept="image/*,application/pdf" multiple className="hidden" onChange={handlePriorFile} />
+          <input ref={priorCamRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePriorFile} />
+          {priorScanning ? (
+            <div className="w-full h-11 rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/50 text-indigo-700 text-sm font-semibold flex items-center justify-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" /> קורא בדיקות קודמות…
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={() => priorFileRef.current?.click()} className="h-11 rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/50 text-indigo-700 text-sm font-semibold flex items-center justify-center gap-2">
+                <Upload className="w-4 h-4" /> העלאת קבצים
+              </button>
+              <button onClick={() => priorCamRef.current?.click()} className="h-11 rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/50 text-indigo-700 text-sm font-semibold flex items-center justify-center gap-2">
+                <Camera className="w-4 h-4" /> צילום
+              </button>
+            </div>
+          )}
+          {priorInfo?.error && (
+            <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2 text-[11px] text-amber-800">{priorInfo.error}</div>
+          )}
+          {priorRows.length > 0 && (
+            <div className="mt-2 flex items-center justify-between text-[11px] text-indigo-700">
+              <span>{priorInfo?.note || `${priorRows.length} ערכים קודמים נטענו`}</span>
+              <button onClick={clearPriors} className="underline">נקה</button>
+            </div>
+          )}
+        </div>
+
+        {/* טבלת השוואה לקודמות (דטרמיניסטית) */}
+        {comparison.length > 0 && (
+          <div className="bg-white rounded-2xl border border-indigo-100 p-4">
+            <h3 className="text-sm font-bold mb-2 flex items-center gap-2"><GitCompare className="w-4 h-4 text-indigo-500" /> השוואה לבדיקות קודמות</h3>
+            <div className="space-y-1.5">
+              {comparison.map((c, i) => (
+                <div key={i} className="flex items-center justify-between text-xs bg-slate-50 rounded-lg px-3 py-2">
+                  <span className="font-semibold text-slate-700">{c.analyte}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-400">{c.priors.map((p) => p.value).join(" → ")}</span>
+                    <span className="text-slate-300">→</span>
+                    <span className="font-bold text-slate-800">{c.current}{c.unit ? ` ${c.unit}` : ""}</span>
+                    {c.trend === "up" && <ArrowUp className="w-3.5 h-3.5 text-red-500" />}
+                    {c.trend === "down" && <ArrowDown className="w-3.5 h-3.5 text-blue-500" />}
+                    {c.trend === "same" && <Minus className="w-3.5 h-3.5 text-slate-400" />}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-slate-400 mt-2">מגמה חישובית בלבד (עולה/יורד מול הבדיקה הקודמת האחרונה). אינה פרשנות קלינית.</p>
+          </div>
+        )}
+
         {/* פרטי המטופל */}
         <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
           <h3 className="text-sm font-bold">פרטי המטופל</h3>
