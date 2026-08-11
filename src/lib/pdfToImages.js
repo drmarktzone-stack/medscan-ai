@@ -66,4 +66,32 @@ export async function pdfToImages(file, { maxPages = 10, targetWidth = 1600, qua
   }
 }
 
+/**
+ * Extract the embedded text of a (digital) PDF, page by page. No canvas.
+ * Returns "" for scanned/image PDFs (no text layer) or on failure — the caller
+ * then falls back to rendering pages to images + OCR.
+ * @param {File} file
+ * @returns {Promise<string>}
+ */
+export async function pdfExtractText(file, { maxPages = 12 } = {}) {
+  if (!isPdf(file)) return "";
+  try {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf, isEvalSupported: false }).promise;
+    const n = Math.min(pdf.numPages || 1, maxPages);
+    let text = "";
+    for (let i = 1; i <= n; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map((x) => (x.str || "")).join(" ") + "\n";
+      if (page.cleanup) page.cleanup();
+    }
+    try { await pdf.cleanup?.(); } catch { /* ignore */ }
+    return text.trim();
+  } catch (e) {
+    console.error("pdfExtractText failed", e);
+    return "";
+  }
+}
+
 export { isPdf };
