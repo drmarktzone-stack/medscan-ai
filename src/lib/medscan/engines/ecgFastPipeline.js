@@ -18,7 +18,7 @@
 
 import { base44 } from "@/api/base44Client";
 import { downscaleImageFile } from "@/lib/imageOptimize";
-import { FAST_MODEL } from "@/lib/aiConfig";
+import { VISION_MODEL } from "@/lib/aiConfig";
 import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
 import { runEcgMicroReading } from "./ecgPerception.js";
 import { assembleEcgResult } from "./ecgResultBuilder.js";
@@ -42,7 +42,7 @@ export async function runEcgFastAnalysis({
   patientRef,
   onStage,
   invokeLLM,           // optional override (tests)
-  model = FAST_MODEL,  // single call runs on the fast vision model — code does the reasoning
+  model = VISION_MODEL,  // קריאת-התמונה על מודל-הראייה (Gemini) — המספרים מחושבים בקוד
 }) {
   onStage?.("uploading");
   const [fileUrls, allCases] = await Promise.all([
