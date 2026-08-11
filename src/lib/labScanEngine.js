@@ -95,23 +95,33 @@ export async function runLabScan({ fileUrls = [], text = "", invokeLLM, model } 
     model,
   });
 
+  return finalizeScan(raw);
+}
+
+/**
+ * Turn a raw scan/extract object ({is_lab_report?, patient?, rows[]}) into the
+ * final scan result. Shared by BOTH the vision path and the server-side
+ * ExtractDataFromUploadedFile path.
+ */
+export function finalizeScan(raw) {
   if (!raw || raw.is_lab_report === false) {
     return {
       ok: false,
       is_lab_report: false,
       rows: [],
-      note_he: "התמונה אינה נראית כדף מעבדה. צלם/י דף תוצאות ברור, או הזן/י ידנית.",
+      note_he: "הקובץ אינו נראה כדף מעבדה. העלה/י דף תוצאות ברור, או הזן/י ידנית.",
     };
   }
-
   const rows = mapScanRows(raw.rows || []);
+  if (!rows.length) {
+    return { ok: false, is_lab_report: raw.is_lab_report !== false, rows: [], note_he: "לא זוהו שורות-בדיקה בקובץ." };
+  }
   const stats = {
     total: rows.length,
     readable: rows.filter((r) => !r.needs_review).length,
     needs_review: rows.filter((r) => r.needs_review).length,
     unmatched: rows.filter((r) => !r.canonical_key).length,
   };
-
   return {
     ok: true,
     is_lab_report: true,
