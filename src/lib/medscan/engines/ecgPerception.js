@@ -14,7 +14,7 @@
 import { runMicroMeasure } from "./ecgMicroMeasure.js";
 import { interpretFundamentals } from "./ecgFundamentals.js";
 import { matchPathologies, featuresFromReading, buildPathologyBlock } from "./ecgPathologies.js";
-import { FAST_MODEL } from "@/lib/aiConfig";
+import { VISION_MODEL } from "@/lib/aiConfig";
 
 /** Perception-only schema. Pixel coordinates + calibration. No ms, no diagnosis. */
 export const ECG_PERCEPTION_SCHEMA = {
@@ -126,7 +126,7 @@ const PERCEPTION_PROMPT = `אתה מודד גיאומטרי של תרשים ECG.
  * @param {{fileUrls:string[], invokeLLM:Function, model?:string, ageDays?:number}} args
  * @returns {Promise<{abstain?:boolean, abstain_reason_he?:string, measured?:object, perception?:object}>}
  */
-export async function runEcgMicroReading({ fileUrls, invokeLLM, model = FAST_MODEL, ageYears, sex }) {
+export async function runEcgMicroReading({ fileUrls, invokeLLM, model = VISION_MODEL, ageYears, sex }) {
   if (!invokeLLM || !Array.isArray(fileUrls) || fileUrls.length === 0) {
     return { abstain: true, abstain_reason_he: "אין תמונה או מנוע." };
   }
