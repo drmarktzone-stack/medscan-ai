@@ -10,6 +10,7 @@ import { base44 } from "@/api/base44Client";
 import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
 import { runLabScan } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
+import { pdfToImages, isPdf } from "@/lib/pdfToImages";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
 import { RESULT_TYPES, CATALOG_SIZE } from "@/lib/medscan/deterministic/analyteCatalog";
 
@@ -61,11 +62,35 @@ export default function LabInterpreter() {
     };
   };
 
-  // סריקת קובץ בודד → שורות + מטא-דאטה.
+  // קובץ → רשימת תמונות לסריקה. PDF → מומר לתמונות עמוד-אחר-עמוד (pdf.js);
+  // תמונה → מוקטנת. כך הסורק קורא כל פורמט (PDF טקסטואלי או סרוק, JPG, PNG, צילום-מסך).
+  const fileToScanImages = async (file) => {
+    if (isPdf(file)) {
+      const pages = await pdfToImages(file);
+      if (pages.length) return pages;
+      return [file]; // fail-open: נשלח את ה-PDF כמות ו אם הרנדור נכשל.
+    }
+    return [await downscaleImageFile(file)];
+  };
+
+  // סריקת קובץ בודד (כולל PDF רב-עמודי) → ממזג את כל העמודים לתוצאה אחת.
   const scanOneFile = async (file) => {
-    const optimized = await downscaleImageFile(file);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file: optimized });
-    return runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
+    const images = await fileToScanImages(file);
+    const merged = { ok: false, rows: [], patient: {}, stats: { total: 0, readable: 0, needs_review: 0 } };
+    for (const img of images) {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file: img });
+      const scan = await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
+      if (scan.ok) {
+        merged.ok = true;
+        merged.rows.push(...(scan.rows || []));
+        merged.stats.total += scan.stats?.total || 0;
+        merged.stats.readable += scan.stats?.readable || 0;
+        merged.stats.needs_review += scan.stats?.needs_review || 0;
+        if (!merged.patient.sex && (scan.patient?.sex === "male" || scan.patient?.sex === "female")) merged.patient.sex = scan.patient.sex;
+        if (!merged.patient.age_text && scan.patient?.age_text) merged.patient.age_text = scan.patient.age_text;
+      }
+    }
+    return merged;
   };
 
   // סריקת מספר קבצים של אותו מטופל — ממזגת את כל המדדים לטופס אחד.
