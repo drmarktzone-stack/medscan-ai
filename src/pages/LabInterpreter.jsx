@@ -12,7 +12,26 @@ import { runLabScan, finalizeScan, LAB_SCAN_SCHEMA } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { pdfToImages, pdfExtractText, isPdf } from "@/lib/pdfToImages";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
-import { RESULT_TYPES, CATALOG_SIZE } from "@/lib/medscan/deterministic/analyteCatalog";
+import { RESULT_TYPES, CATALOG_SIZE, resolveAnalyte } from "@/lib/medscan/deterministic/analyteCatalog";
+
+// קיבוץ תוצאות לפאנלי-דם מוכרים (אחרי הפענוח).
+const PANEL_LABELS = {
+  hematology: "ספירת דם ומשטח (CBC)", coagulation: "תפקודי קרישה", chemistry: "כימיה ואלקטרוליטים",
+  renal: "תפקודי כליה", liver: "תפקודי כבד", endocrine: "אנדוקרינולוגיה", metabolic: "מטבולי",
+  lipids: "פרופיל שומנים", inflammation: "דלקת/זיהום", vitamins: "ויטמינים ומינרלים", bloodgas: "גזים בדם",
+  cardiac: "סמנים לבביים", tumor: "סמני גידול", serology: "סרולוגיה", immunology: "אימונולוגיה",
+  microbiology: "מיקרוביולוגיה", genetics: "גנטיקה", csf: "נוזל שדרה (CSF)", urine: "בדיקת שתן", other: "אחר",
+};
+const PANEL_ORDER = ["hematology","coagulation","chemistry","renal","liver","endocrine","metabolic","lipids","inflammation","vitamins","bloodgas","cardiac","tumor","serology","immunology","microbiology","genetics","csf","urine","other"];
+
+function groupByPanel(normalized) {
+  const grouped = {};
+  for (const n of normalized || []) {
+    const cat = resolveAnalyte(n.canonical_key || n.analyte)?.cat || "other";
+    (grouped[cat] ??= []).push(n);
+  }
+  return PANEL_ORDER.filter((c) => grouped[c]?.length).map((c) => ({ cat: c, label: PANEL_LABELS[c] || c, rows: grouped[c] }));
+}
 
 const scanInvoke = createVisionInvokeLLM({ purpose: "lab_scan" });
 
