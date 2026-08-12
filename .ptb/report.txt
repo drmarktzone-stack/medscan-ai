@@ -1,0 +1,49 @@
+=== PCA explained variance (top6) ===
+PC1:36.7%, PC2:10.0%, PC3:8.4%, PC4:7.3%, PC5:6.3%, PC6:5.0%
+PC1 top loadings: III_ptp(+0.23), AVF_ptp(+0.22), III_rms(+0.22), V1_ptp(+0.22), AVF_rms(+0.22), V2_ptp(+0.21)
+PC2 top loadings: AVL_ptp(+0.29), AVL_rms(+0.27), V3_ptp(-0.25), V4_rms(-0.25), V3_rms(-0.25), III_ptp(+0.25)
+PC3 top loadings: II_ptp(-0.40), II_rms(-0.37), AVF_ptp(-0.32), I_rms(+0.32), I_ptp(+0.30), AVF_rms(-0.28)
+
+=== clusters (size | superclass composition | purity) ===
+C0: n=19 | CD:8, HYP:8, MI:2, STTC:1 | purity=0.42 (dom=CD)
+C1: n=27 | HYP:9, CD:7, MI:6, STTC:4, NORM:1 | purity=0.33 (dom=HYP)
+C2: n=115 | NORM:39, CD:28, STTC:21, MI:18, HYP:9 | purity=0.34 (dom=NORM)
+C3: n=116 | HYP:42, STTC:24, MI:22, CD:20, NORM:8 | purity=0.36 (dom=HYP)
+C4: n=39 | HYP:13, MI:7, STTC:7, NORM:6, CD:6 | purity=0.33 (dom=HYP)
+C5: n=171 | NORM:46, MI:44, STTC:41, CD:30, HYP:10 | purity=0.27 (dom=NORM)
+C6: n=6 | HYP:5, STTC:1 | purity=0.83 (dom=HYP)
+C7: n=7 | HYP:4, MI:1, STTC:1, CD:1 | purity=0.57 (dom=HYP)
+
+=== cross-cutting clusters (n>=25, no single label >=50%) ===
+
+CLUSTER C5: n=171, purity=0.27
+ labels: {'NORM': 46, 'MI': 44, 'STTC': 41, 'CD': 30, 'HYP': 10}
+ top_codes: [('NORM', 46), ('NDT', 24), ('ASMI', 20), ('IMI', 15), ('LAFB', 12), ('NST_', 7)]
+ signature(z): II_ptp=-0.72sd, AVF_ptp=-0.70sd, II_rms=-0.67sd, AVF_rms=-0.67sd, V5_ptp=-0.64sd, AVR_ptp=-0.61sd, III_ptp=-0.60sd, V5_rms=-0.59sd
+ median_real: {'II_ptp': 0.857, 'AVF_ptp': 0.677, 'II_rms': 0.11, 'AVF_rms': 0.084, 'V5_ptp': 1.446, 'AVR_ptp': 0.807, 'III_ptp': 0.811, 'V5_rms': 0.169}
+
+CLUSTER C4: n=39, purity=0.33
+ labels: {'NORM': 6, 'MI': 7, 'STTC': 7, 'CD': 6, 'HYP': 13}
+ top_codes: [('LVH', 11), ('NORM', 6), ('NDT', 4), ('IMI', 3), ('ASMI', 3), ('EL', 2)]
+ signature(z): II_rms=+1.91sd, AVF_rms=+1.78sd, II_ptp=+1.76sd, AVF_ptp=+1.66sd, III_rms=+1.16sd, AVR_rms=+1.15sd, III_ptp=+1.15sd, AVR_ptp=+1.03sd
+ median_real: {'II_rms': 0.306, 'AVF_rms': 0.276, 'II_ptp': 2.156, 'AVF_ptp': 1.944, 'III_rms': 0.256, 'AVR_rms': 0.19, 'III_ptp': 1.857, 'AVR_ptp': 1.418}
+
+CLUSTER C1: n=27, purity=0.33
+ labels: {'NORM': 1, 'MI': 6, 'STTC': 4, 'CD': 7, 'HYP': 9}
+ top_codes: [('LVH', 9), ('ASMI', 2), ('IMI', 2), ('NDT', 2), ('LAFB', 2), ('IRBBB', 2)]
+ signature(z): AVL_ptp=+2.11sd, I_ptp=+1.88sd, AVL_rms=+1.87sd, III_ptp=+1.65sd, I_rms=+1.63sd, III_rms=+1.45sd, AVF_ptp=+0.73sd, AVR_ptp=+0.65sd
+ median_real: {'AVL_ptp': 2.103, 'I_ptp': 1.976, 'AVL_rms': 0.265, 'III_ptp': 2.294, 'I_rms': 0.262, 'III_rms': 0.289, 'AVF_ptp': 1.497, 'AVR_ptp': 1.31}
+
+CLUSTER C2: n=115, purity=0.34
+ labels: {'NORM': 39, 'MI': 18, 'STTC': 21, 'CD': 28, 'HYP': 9}
+ top_codes: [('NORM', 39), ('IRBBB', 13), ('ASMI', 10), ('LAFB', 10), ('NDT', 9), ('LVH', 7)]
+ signature(z): I_ptp=-0.59sd, I_rms=-0.55sd, AVL_ptp=-0.48sd, AVL_rms=-0.41sd, V2_ptp=-0.40sd, V1_rms=-0.40sd, V2_rms=-0.38sd, V1_ptp=-0.38sd
+ median_real: {'I_ptp': 0.883, 'I_rms': 0.107, 'AVL_ptp': 0.656, 'AVL_rms': 0.086, 'V2_ptp': 1.863, 'V1_rms': 0.156, 'V2_rms': 0.258, 'V1_ptp': 1.208}
+
+CLUSTER C3: n=116, purity=0.36
+ labels: {'NORM': 8, 'MI': 22, 'STTC': 24, 'CD': 20, 'HYP': 42}
+ top_codes: [('LVH', 39), ('ASMI', 9), ('IMI', 9), ('NDT', 9), ('NORM', 8), ('IRBBB', 6)]
+ signature(z): V5_ptp=+0.57sd, V4_ptp=+0.47sd, V5_rms=+0.45sd, I_ptp=+0.39sd, V6_ptp=+0.38sd, AVF_rms=-0.37sd, AVF_ptp=-0.30sd, V4_rms=+0.29sd
+ median_real: {'V5_ptp': 2.624, 'V4_ptp': 2.905, 'V5_rms': 0.294, 'I_ptp': 1.396, 'V6_ptp': 2.098, 'AVF_rms': 0.107, 'AVF_ptp': 0.897, 'V4_rms': 0.309}
+
+saved analysis_out.json  n= 500
