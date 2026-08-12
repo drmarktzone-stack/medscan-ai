@@ -1,12 +1,7 @@
 import csv,ast,json,collections
 scls={}
 with open('.ptb/scp_statements.csv') as f:
-    for row in csv.DictReader(f):
-        scls[row['']]=row['diagnostic_class'] if 'diagnostic_class' in row else row.get('diagnostic_class','')
-# reload properly (first col header is empty)
-scls={}
-with open('.ptb/scp_statements.csv') as f:
-    r=csv.reader(f); hdr=next(r)
+    r=csv.reader(f); next(r)
     for row in r: scls[row[0]]=row[5]
 buckets=collections.defaultdict(list)
 with open('.ptb/ptbxl_database.csv') as f:
@@ -24,5 +19,4 @@ for sc in ('NORM','MI','STTC','CD','HYP'):
     b=buckets[sc]; b.sort(key=lambda x:(not x['validated'],x['ecg_id']))
     sel+=b[:100]
 json.dump(sel,open('.ptb/sample500.json','w'))
-print('total',len(sel),{k:len(v) for k,v in buckets.items()})
-print('selected per class',collections.Counter(x['superclass'] for x in sel))
+print('total_selected',len(sel),'per_class',dict(collections.Counter(x['superclass'] for x in sel)))
