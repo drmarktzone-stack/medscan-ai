@@ -1,0 +1,54 @@
+N analyzed = 4667
+regional_ratio: mean 0.847 sd 0.123  (inf+lat mean ptp / global mean ptp)
+
+=== PHENOMENON-POSITIVE (bottom tertile regional_ratio, thr=0.801) ===
+n_pos=1556  n_neg=3111
+superclass POS: {'MI': '431 (28%)', 'STTC': '428 (28%)', 'NORM': '378 (24%)', 'CD': '294 (19%)', 'HYP': '25 (2%)'}
+superclass NEG: {'NORM': '821 (26%)', 'STTC': '770 (25%)', 'MI': '769 (25%)', 'CD': '676 (22%)', 'HYP': '75 (2%)'}
+top_codes POS: [('NORM', 378), ('NDT', 217), ('IMI', 154), ('ASMI', 148), ('CLBBB', 89), ('NST_', 77), ('LAFB', 67), ('IVCD', 47)]
+age: POS mean=68.19 (n=1556)  NEG mean=69.15 (n=3111)
+bmi: POS mean=24.7 (n=710)  NEG mean=25.19 (n=1649)
+hr: POS mean=77.11 (n=1546)  NEG mean=75.5 (n=3082)
+axis_deg: POS mean=0.71 (n=1556)  NEG mean=8.22 (n=3111)
+g: POS mean=1.55 (n=1556)  NEG mean=1.5 (n=3111)
+sex POS: {'0': '908 (58%)', '1': '648 (42%)'}  NEG: {'1': '1807 (58%)', '0': '1304 (42%)'}
+heart_axis POS: {'': '978 (63%)', 'MID': '249 (16%)', 'LAD': '216 (14%)', 'ALAD': '72 (5%)', 'AXL': '14 (1%)', 'RAD': '13 (1%)', 'ARAD': '8 (1%)', 'AXR': '6 (0%)'}
+heart_axis NEG: {'': '1911 (61%)', 'LAD': '533 (17%)', 'MID': '432 (14%)', 'ALAD': '163 (5%)', 'AXL': '32 (1%)', 'RAD': '26 (1%)', 'ARAD': '10 (0%)', 'AXR': '4 (0%)'}
+
+per-lead normalized ptp (ptp/global) — POS mean vs NEG mean:
+  I: POS 0.652  NEG 0.822 <=
+  II: POS 0.661  NEG 0.808 <=
+  III: POS 0.577  NEG 0.791 <=
+  AVR: POS 0.590  NEG 0.715 <=
+  AVL: POS 0.518  NEG 0.701 <=
+  AVF: POS 0.525  NEG 0.681 <=
+  V1: POS 1.079  NEG 0.878
+  V2: POS 1.823  NEG 1.259
+  V3: POS 1.871  NEG 1.331
+  V4: POS 1.630  NEG 1.423
+  V5: POS 1.177  NEG 1.396 <=
+  V6: POS 0.897  NEG 1.196 <=
+
+=== CONTROL: regional_ratio vs covariates ===
+  corr(regional_ratio, bmi) = 0.066  (n=2359)
+  corr(regional_ratio, age) = 0.044  (n=4667)
+  corr(regional_ratio, axis_deg) = 0.039  (n=4667)
+  corr(regional_ratio, g) = -0.046  (n=4667)
+  multivariate R^2 (bmi+age+axis+sex -> regional_ratio) = 0.040  on n=2359
+  residual regional_ratio: POS mean=-0.138  NEG mean=0.059  (gap in SDs=1.61)
+
+=== SHAPE-SPACE (each lead ptp/global; size axis removed) clustering ===
+  Cshape0: n=732 inf_ratio=0.56 lat_ratio=0.86 purity=0.31 labels={'NORM': 152, 'MI': 196, 'STTC': 227, 'CD': 147, 'HYP': 10}
+  Cshape1: n=435 inf_ratio=0.78 lat_ratio=1.07 purity=0.36 labels={'NORM': 60, 'MI': 158, 'STTC': 124, 'CD': 81, 'HYP': 12}
+  Cshape2: n=745 inf_ratio=0.60 lat_ratio=1.00 purity=0.30 labels={'NORM': 171, 'MI': 221, 'STTC': 208, 'CD': 131, 'HYP': 14}
+  Cshape3: n=450 inf_ratio=0.58 lat_ratio=0.74 purity=0.32 labels={'NORM': 75, 'MI': 144, 'STTC': 95, 'CD': 127, 'HYP': 9}
+  Cshape4: n=393 inf_ratio=1.04 lat_ratio=0.93 purity=0.40 labels={'MI': 156, 'STTC': 56, 'CD': 149, 'HYP': 5, 'NORM': 27}
+  Cshape5: n=561 inf_ratio=0.57 lat_ratio=1.20 purity=0.28 labels={'NORM': 129, 'MI': 122, 'STTC': 156, 'CD': 132, 'HYP': 22}
+  Cshape6: n=784 inf_ratio=0.88 lat_ratio=0.84 purity=0.45 labels={'NORM': 356, 'MI': 111, 'STTC': 167, 'CD': 133, 'HYP': 17}
+  Cshape7: n=567 inf_ratio=0.70 lat_ratio=1.04 purity=0.40 labels={'NORM': 229, 'MI': 92, 'STTC': 165, 'CD': 70, 'HYP': 11}
+
+>>> Lowest inferior+lateral SHAPE cluster: Cshape3 n=450 (10%) purity=0.32
+    labels: {'NORM': 75, 'MI': 144, 'STTC': 95, 'CD': 127, 'HYP': 9}
+    inf_ratio=0.58 lat_ratio=0.74  -> regional attenuation persists in shape-space & crosses diagnoses
+
+DONE N= 4667
