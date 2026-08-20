@@ -30,6 +30,7 @@ import {
   loadReferenceRangePayload,
   writeAudit,
 } from '../llmAdapter.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 const ENGINE_PROMPT = `אתה מפרש **תוצאות מעבדה שכבר נורמלו** ודפוסים שכבר הותאמו.
 
@@ -79,6 +80,7 @@ export async function runLabInterpreter({
   findings = [],
   mode = resolveMode(),
   withLiterature = true,
+  locale = 'he',
 }) {
   const ageDays = toAgeDays(patient);
   const pt = { ...patient, age_days: ageDays };
@@ -95,13 +97,13 @@ export async function runLabInterpreter({
   // גיל חסר חוסם — כמעט כל טווח ברפואת ילדים תלוי-גיל
   const blocking = warnings.filter((w) => w.severity === 'block');
   if (blocking.length) {
-    return {
+    return finalizeLocale({
       status: 'input_error',
       blocking_warnings: blocking,
       warnings,
       normalized,
       message_he: blocking.map((b) => b.message_he).join(' '),
-    };
+    }, locale);
   }
 
   const patientFacts = toPatientFacts(normalized);
@@ -224,7 +226,7 @@ export async function runLabInterpreter({
 
   await writeAudit({ engine: 'lab_interpreter', envelope });
 
-  return {
+  return finalizeLocale({
     ...envelope,
     normalized,
     warnings,
@@ -233,7 +235,7 @@ export async function runLabInterpreter({
     calculator_refusals: refusals,
     reference_range_meta: rangeMeta,
     evidence_meta: evidence.meta,
-  };
+  }, locale);
 }
 
 /**

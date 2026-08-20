@@ -17,6 +17,7 @@
  */
 
 import { resolveStep } from './protocolTree.js';
+import { t, finalizeLocale } from '../i18n/localize.js';
 
 export const PATHWAY_CATEGORIES = Object.freeze([
   'acute',
@@ -516,6 +517,7 @@ export function matchPediatricPathway({
   category = null,
   currentStepId = null,
   catalog = PEDIATRIC_PATHWAYS,
+  locale = 'he',
 } = {}) {
   const skipped = [];
   const scored = [];
@@ -564,23 +566,22 @@ export function matchPediatricPathway({
 
   const matched = scored[0]?.pathway ?? null;
   if (!matched) {
-    return {
+    return finalizeLocale({
       matched: null,
       active_step: null,
       candidates,
       skipped,
       protocol_view: null,
       broken_branches: [],
-      error_he: q
-        ? 'לא הותאם מסלול בירור לטקסט ולגיל שסופקו.'
-        : 'לא סופקה שאילתה להתאמת מסלול.',
-    };
+      i18n_error_key: q ? 'pathway.no_match' : 'pathway.no_query',
+      error_he: q ? t(locale, 'pathway.no_match') : t(locale, 'pathway.no_query'),
+    }, locale);
   }
 
   const protocol_view = toProtocolView(matched);
   const resolved = resolveStep(protocol_view, currentStepId);
 
-  return {
+  return finalizeLocale({
     matched,
     active_step: resolved.step,
     candidates,
@@ -588,7 +589,7 @@ export function matchPediatricPathway({
     protocol_view,
     broken_branches: resolved.brokenBranches ?? [],
     error_he: resolved.error_he,
-  };
+  }, locale);
 }
 
 /**

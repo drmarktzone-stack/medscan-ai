@@ -9,6 +9,8 @@
  * ============================================================================
  */
 
+import { finalizeLocale } from "../i18n/localize.js";
+
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
 const STOP = new Set(["with", "and", "the", "acute", "chronic", "left", "right", "wall", "syndrome", "disease", "pediatric", "bilateral"]);
@@ -166,7 +168,7 @@ const UNCERTAINTY_REASON = {
 };
 
 /** Assemble the full UI result. Pure (no persistence). */
-export function assembleRadiologyResult(engineResult, allCases, { fileUrl } = {}) {
+export function assembleRadiologyResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
   const { severity, urgency } = mapRadiologySeverity(st);
   const matches = buildRadiologyMatches(st, allCases);
@@ -188,7 +190,7 @@ export function assembleRadiologyResult(engineResult, allCases, { fileUrl } = {}
     value: `${m.value}${m.unit || ""}${m.verdict && m.verdict !== "normal" ? (m.verdict === "above_normal" ? " (↑)" : " (↓)") : ""}`,
   }));
 
-  return {
+  return finalizeLocale({
     summary,
     severity,
     analysis: buildRadiologyAnalysisMd(engineResult, matches),
@@ -201,5 +203,5 @@ export function assembleRadiologyResult(engineResult, allCases, { fileUrl } = {}
     ecgInterpretation: null,
     structuredInterpretation: engineResult,
     numericIntegrity: null,
-  };
+  }, locale);
 }

@@ -329,6 +329,38 @@ export function serumOsmolality({ na, glucose_mg_dl, bun_mg_dl }) {
 }
 
 /**
+ * גובה מטרה לפי ממוצע הורים (Tanner). נוסחה אריתמטית, לא אחוזון WHO.
+ * זכר: (אב + אם + 13) / 2 ס״מ. נקבה: (אב + אם − 13) / 2 ס״מ.
+ */
+export function midParentalHeight({ father_cm, mother_cm, sex }) {
+  if (![father_cm, mother_cm].every(isNum) || father_cm <= 0 || mother_cm <= 0) {
+    return failure('growth.mid_parental_height', 'נדרשים גובה האב והאם בס״מ.');
+  }
+  const s = String(sex ?? '').toLowerCase();
+  const male = ['m', 'male', 'זכר', 'boy', 'בן'].includes(s);
+  const female = ['f', 'female', 'נקבה', 'girl', 'בת'].includes(s);
+  if (!male && !female) {
+    return failure('growth.mid_parental_height', 'נדרש מין (זכר/נקבה) לנוסחת Mid-Parental Height.');
+  }
+  const offset = male ? 13 : -13;
+  const cm = (Number(father_cm) + Number(mother_cm) + offset) / 2;
+  return {
+    ok: true,
+    ...result({
+      key: 'growth.mid_parental_height',
+      label_he: 'גובה מטרה (Mid-Parental Height)',
+      value: round(cm, 1),
+      unit: 'cm',
+      formula_source: male
+        ? '(father_cm + mother_cm + 13) / 2 (Tanner)'
+        : '(father_cm + mother_cm - 13) / 2 (Tanner)',
+      inputs: { father_cm: +father_cm, mother_cm: +mother_cm, sex: male ? 'male' : 'female' },
+      notes_he: ['טווח מקובל ±8.5 ס״מ הוא כלל אצבע קליני — לא סף אבחנה במנוע זה.'],
+    }),
+  };
+}
+
+/**
  * מריץ אוסף מחשבונים ומחזיר רק את המוצלחים כפריטי D#,
  * לצד רשימת הסירובים (שמוצגת לרופא/ה — סירוב הוא מידע).
  */
@@ -348,6 +380,7 @@ export function runCalculators(requests = []) {
       case 'corrected_sodium':   res = correctedSodium(req.params); break;
       case 'corrected_calcium':  res = correctedCalcium(req.params); break;
       case 'serum_osmolality':   res = serumOsmolality(req.params); break;
+      case 'mid_parental_height': res = midParentalHeight(req.params); break;
       default:
         refusals.push({ key: req.type, message_he: `מחשבון לא מוכר: ${req.type}` });
         continue;

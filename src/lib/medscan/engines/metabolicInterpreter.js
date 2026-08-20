@@ -13,6 +13,7 @@ import { runCalculators } from '../deterministic/calculators.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
 import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
 import { DISCLAIMER_HE } from '../schemas/output.schemas.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 export const DRAFT = 'draft_needs_verification';
 
@@ -384,11 +385,12 @@ export function runMetabolicInterpreter({
   amino_acids = [],
   findings = [],
   mode = 'development',
+  locale = 'he',
 } = {}) {
   const ageDays = toAgeDays(patient);
   const hasAny = [...labs, ...nbs, ...organic_acids, ...amino_acids].length || (findings ?? []).some(Boolean);
   if (!hasAny) {
-    return fail('no_metabolic_input', { message_he: 'לא סופקו סקר ילודים, אמינוגרם, חומצות אורגניות, מעבדה או ממצאים.' });
+    return finalizeLocale(fail('no_metabolic_input', { message_he: 'לא סופקו סקר ילודים, אמינוגרם, חומצות אורגניות, מעבדה או ממצאים.' }), locale);
   }
 
   const { flags, rows } = collectMetabolicFlags({ labs, nbs, organic_acids, amino_acids, findings });
@@ -434,7 +436,7 @@ export function runMetabolicInterpreter({
 
   const factBlock = buildFactBlock({ kbItems, deterministic, patientData, mode });
 
-  return {
+  return finalizeLocale({
     ok: true,
     engine: 'metabolic_interpreter',
     verification_status: DRAFT,
@@ -456,5 +458,5 @@ export function runMetabolicInterpreter({
       'אין מינונים במנוע זה. ניהול משבר לפי פרוטוקול מחלקתי מאומת.',
     ],
     unknowns_he: matched.length ? [] : ['לא הותאם דפוס IEM מהדגלים שסופקו — אין משמעות של "סקר תקין" אם הדגלים חלקיים.'],
-  };
+  }, locale);
 }

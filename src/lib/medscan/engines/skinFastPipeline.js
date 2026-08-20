@@ -62,7 +62,7 @@ export async function runSkinFastAnalysis({
   }
 
   onStage?.("verifying");
-  const result = assembleSkinResult(engineResult, allCases, { fileUrl: file_url });
+  const result = assembleSkinResult(engineResult, allCases, { fileUrl: file_url, locale: language });
 
   try {
     const rec = await base44.entities.Analysis.create({

@@ -15,6 +15,7 @@ import { SEED_RANGES } from '../deterministic/referenceRangeSeed.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
 import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
 import { DISCLAIMER_HE } from '../schemas/output.schemas.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 export const DRAFT = 'draft_needs_verification';
 
@@ -233,6 +234,7 @@ export function runCsfInterpreter({
   labs = [],
   findings = [],
   mode = 'development',
+  locale = 'he',
 } = {}) {
   const ageDays = toAgeDays(patient);
   const wbc = pickNum(csf.wbc, csf.csf_wbc, csf.WBC);
@@ -257,7 +259,7 @@ export function runCsfInterpreter({
     (findings ?? []).some(Boolean);
 
   if (!hasAny) {
-    return fail('no_csf_input', { message_he: 'לא סופקו ערכי LP / CSF או צביעת גראם.' });
+    return finalizeLocale(fail('no_csf_input', { message_he: 'לא סופקו ערכי LP / CSF או צביעת גראם.' }), locale);
   }
 
   const wbcBlood = pickNum(blood.wbc, blood.WBC, csf.blood_wbc);
@@ -452,7 +454,7 @@ export function runCsfInterpreter({
     unknowns.push('לא הותאם דפוס CSF דטרמיניסטי — ערך בודד אינו אבחנה.');
   }
 
-  return {
+  return finalizeLocale({
     ok: true,
     engine: 'csf_interpreter',
     verification_status: DRAFT,
@@ -490,5 +492,5 @@ export function runCsfInterpreter({
       'אין מינונים או שמות אנטיביוטיקה. טיפול אמפירי לפי פרוטוקול מחלקתי מאומת בלבד.',
     ],
     unknowns_he: unknowns,
-  };
+  }, locale);
 }

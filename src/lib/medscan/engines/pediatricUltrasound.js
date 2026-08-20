@@ -12,6 +12,7 @@ import { toAgeDays } from '../deterministic/labNormalize.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
 import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
 import { DISCLAIMER_HE } from '../schemas/output.schemas.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 export const DRAFT = 'draft_needs_verification';
 
@@ -255,6 +256,7 @@ export function runPediatricUltrasound({
   hips = null,
   cranial = null,
   mode = 'development',
+  locale = 'he',
 } = {}) {
   const ageDays = toAgeDays(patient);
   const hipInputs = hipList(hips);
@@ -291,12 +293,12 @@ export function runPediatricUltrasound({
     const reason = grafErrors.some((e) => e.reason === 'missing_alpha')
       ? 'missing_alpha'
       : 'no_ultrasound_input';
-    return fail(reason, {
+    return finalizeLocale(fail(reason, {
       message_he:
         reason === 'missing_alpha'
           ? 'חסרה זווית Alpha לסיווג Graf — לא מנחשים מפיקסלים.'
           : 'לא סופקו מדידות Graf או אנוטציות US מוח.',
-    });
+    }), locale);
   }
 
   const kbItems = [
@@ -399,7 +401,7 @@ export function runPediatricUltrasound({
 
   const factBlock = buildFactBlock({ kbItems, deterministic, patientData, mode });
 
-  return {
+  return finalizeLocale({
     ok: true,
     engine: 'pediatric_ultrasound',
     verification_status: DRAFT,
@@ -426,5 +428,5 @@ export function runPediatricUltrasound({
     unknowns_he: grafResults.some((g) => g.type === 'IIa_or_IIb')
       ? ['גיל חסר — לא הובחן Graf IIa מול IIb.']
       : [],
-  };
+  }, locale);
 }

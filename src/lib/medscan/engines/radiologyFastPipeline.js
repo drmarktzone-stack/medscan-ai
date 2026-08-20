@@ -68,7 +68,7 @@ export async function runRadiologyFastAnalysis({
 
   // ---- deterministic assembly (pure, unit-tested) ----
   onStage?.("verifying");
-  const result = assembleRadiologyResult(engineResult, allCases, { fileUrl: file_url });
+  const result = assembleRadiologyResult(engineResult, allCases, { fileUrl: file_url, locale: language });
 
   // ---- persist (non-fatal; awaited so analysisId is ready for export + feedback) ----
   try {

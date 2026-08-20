@@ -26,6 +26,7 @@ import {
   loadReferenceRangePayload,
   writeAudit,
 } from '../llmAdapter.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 const ENGINE_PROMPT = `אתה בונה **אבחנה מבדלת מדורגת** מממצאים שסופקו.
 
@@ -70,15 +71,17 @@ export async function runDifferentialBuilder({
   presentation = null,
   mode = resolveMode(),
   withLiterature = true,
+  locale = 'he',
 }) {
   const ageDays = toAgeDays(patient);
   const pt = { ...patient, age_days: ageDays };
 
   if (!findings.length && !labs.length) {
-    return {
+    return finalizeLocale({
       status: 'input_error',
+      i18n_key: 'ddx.empty',
       message_he: 'לא הוזנו ממצאים או תוצאות מעבדה. אין ממה לבנות אבחנה מבדלת.',
-    };
+    }, locale);
   }
 
   // ── נרמול מעבדה (אם הוזנה) ───────────────────────────────────────────
@@ -94,11 +97,11 @@ export async function runDifferentialBuilder({
 
     const blocking = labWarnings.filter((w) => w.severity === 'block');
     if (blocking.length) {
-      return {
+      return finalizeLocale({
         status: 'input_error',
         blocking_warnings: blocking,
         message_he: blocking.map((b) => b.message_he).join(' '),
-      };
+      }, locale);
     }
   }
 
@@ -172,7 +175,7 @@ export async function runDifferentialBuilder({
 
   await writeAudit({ engine: 'differential', envelope: final });
 
-  return {
+  return finalizeLocale({
     ...final,
     must_not_miss_enforced: enforced,
     uncovered_red_items: uncoveredRed,
@@ -180,5 +183,5 @@ export async function runDifferentialBuilder({
     missing_ranges: missingRanges,
     lab_warnings: labWarnings,
     evidence_meta: evidence.meta,
-  };
+  }, locale);
 }

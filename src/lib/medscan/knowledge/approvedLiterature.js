@@ -3,7 +3,7 @@
  *
  * פלט דיאגנוסטי / המלצה חייב להצביע על פרק וסעיף במקור מאושר:
  * Nelson, חוזר משרד הבריאות, AES, ILAE, OMIM, Orphanet, ACR,
- * DSM-5-TR, AAP, ICHD-3 או Rome IV.
+ * DSM-5-TR, AAP, ICHD-3, Rome IV, WHO או CDC.
  * אין כאן תוכן מועתק — רק מזהי עוגן + פירוק לפרק/סעיף.
  */
 
@@ -20,6 +20,8 @@ export const APPROVED_LITERATURE_PREFIXES = Object.freeze([
   'aap.',
   'ichd.',
   'rome.',
+  'who.',
+  'cdc.',
 ]);
 
 /** טיוטות שצורתן ספרותית אך טרם אומתו מול המקור. */
@@ -43,6 +45,8 @@ const CORPORA = Object.freeze([
   { prefix: 'aap.', corpus: 'aap', label_he: 'American Academy of Pediatrics (AAP)', kind: 'guideline' },
   { prefix: 'ichd.', corpus: 'ichd', label_he: 'ICHD-3', kind: 'guideline' },
   { prefix: 'rome.', corpus: 'rome', label_he: 'Rome IV', kind: 'guideline' },
+  { prefix: 'who.', corpus: 'who', label_he: 'World Health Organization (WHO)', kind: 'guideline' },
+  { prefix: 'cdc.', corpus: 'cdc', label_he: 'CDC', kind: 'guideline' },
 ]);
 
 export function isApprovedLiteratureAnchor(anchor) {

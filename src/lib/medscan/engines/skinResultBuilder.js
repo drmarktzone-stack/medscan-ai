@@ -8,6 +8,8 @@
  * ============================================================================
  */
 
+import { finalizeLocale } from "../i18n/localize.js";
+
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
 const STOP = new Set(["with", "and", "the", "acute", "chronic", "skin", "lesion", "rash", "disease", "syndrome", "pediatric"]);
@@ -124,7 +126,7 @@ const UNCERTAINTY_REASON = {
   medium: "אבחנות מתחרות עם ביטחון דומה — מומלץ בירור/מעקב.",
 };
 
-export function assembleSkinResult(engineResult, allCases, { fileUrl } = {}) {
+export function assembleSkinResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
   const { severity, urgency } = mapSkinSeverity(engineResult);
   const matches = buildSkinMatches(st, allCases);
@@ -140,7 +142,7 @@ export function assembleSkinResult(engineResult, allCases, { fileUrl } = {}) {
     uncertainty = { level: engineResult.uncertaintyLevel, reason: UNCERTAINTY_REASON[engineResult.uncertaintyLevel] || UNCERTAINTY_REASON.medium };
   }
 
-  return {
+  return finalizeLocale({
     summary,
     severity,
     analysis: buildSkinAnalysisMd(engineResult, matches),
@@ -153,5 +155,5 @@ export function assembleSkinResult(engineResult, allCases, { fileUrl } = {}) {
     ecgInterpretation: null,
     structuredInterpretation: engineResult,
     numericIntegrity: null,
-  };
+  }, locale);
 }

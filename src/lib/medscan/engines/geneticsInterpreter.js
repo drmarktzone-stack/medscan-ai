@@ -12,6 +12,7 @@ import { toAgeDays } from '../deterministic/labNormalize.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
 import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
 import { DISCLAIMER_HE } from '../schemas/output.schemas.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 export const DRAFT = 'draft_needs_verification';
 
@@ -407,12 +408,13 @@ export function runGeneticsInterpreter({
   features = [],
   findings = [],
   mode = 'development',
+  locale = 'he',
 } = {}) {
   const hasAny = (features ?? []).some(Boolean) || (findings ?? []).some(Boolean);
   if (!hasAny) {
-    return fail('no_genetics_input', {
+    return finalizeLocale(fail('no_genetics_input', {
       message_he: 'לא סופקו תווי דיסמורפיזם או ממצאים מורפולוגיים.',
-    });
+    }), locale);
   }
 
   const ageDays = toAgeDays(patient);
@@ -440,7 +442,7 @@ export function runGeneticsInterpreter({
 
   const factBlock = buildFactBlock({ kbItems, deterministic: [], patientData, mode });
 
-  return {
+  return finalizeLocale({
     ok: true,
     engine: 'genetics_interpreter',
     verification_status: DRAFT,
@@ -464,5 +466,5 @@ export function runGeneticsInterpreter({
       ...(matched.length ? [] : ['לא הותאמה תסמונת (≥2 תווים תומכים) — אין משמעות של "תקין".']),
       ...(unknown_tokens.length ? [`תווים לא-קנוניים (לא פוענחו): ${unknown_tokens.join(', ')}`] : []),
     ],
-  };
+  }, locale);
 }

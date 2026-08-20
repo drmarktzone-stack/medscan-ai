@@ -9,6 +9,7 @@ import { toAgeDays } from '../deterministic/labNormalize.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
 import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
 import { DISCLAIMER_HE } from '../schemas/output.schemas.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 export const DRAFT = 'draft_needs_verification';
 
@@ -214,13 +215,14 @@ export function runChronicSymptomsEngine({
   attacks = null,
   duration_hours = null,
   mode = 'development',
+  locale = 'he',
 } = {}) {
   const ageDays = toAgeDays(patient);
   const tokens = tokenSet(findings, features);
   const wantAbd = domain === 'abdominal' || hasAny(tokens, ['abdominal pain', 'כאב בטן', 'ibs', 'fap']) || features.abdominal_pain === true;
   const wantHa = domain === 'headache' || hasAny(tokens, ['headache', 'migraine', 'כאב ראש', 'מיגרנה']) || features.headache === true;
   if (!wantAbd && !wantHa && !(findings ?? []).length && !Object.values(features ?? {}).some(Boolean)) {
-    return fail('no_chronic_input', { message_he: 'לא סופקו תלונות כאב בטן או כאב ראש כרוניים.' });
+    return finalizeLocale(fail('no_chronic_input', { message_he: 'לא סופקו תלונות כאב בטן או כאב ראש כרוניים.' }), locale);
   }
 
   const rome = wantAbd ? matchRomeIv({ findings, features, labs, duration_months }) : null;
@@ -356,7 +358,7 @@ export function runChronicSymptomsEngine({
 
   const factBlock = buildFactBlock({ kbItems, deterministic: [], patientData, mode });
 
-  return {
+  return finalizeLocale({
     ok: true,
     engine: 'chronic_symptoms',
     verification_status: DRAFT,
@@ -388,5 +390,5 @@ export function runChronicSymptomsEngine({
       'דגל אדום חוסם סיווג תפקודי/ראשוני מרגיע.',
     ],
     unknowns_he: matched.length ? [] : ['לא מולאו קריטריוני Rome/ICHD ולא סומנו דגלים — אין שלילה.'],
-  };
+  }, locale);
 }

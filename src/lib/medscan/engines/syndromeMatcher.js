@@ -10,6 +10,7 @@ import { toAgeDays } from '../deterministic/labNormalize.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
 import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
 import { DISCLAIMER_HE } from '../schemas/output.schemas.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 export const DRAFT = 'draft_needs_verification';
 
@@ -482,6 +483,7 @@ export function runSyndromeMatcher({
   audio = null,
   features = {},
   mode = 'development',
+  locale = 'he',
 } = {}) {
   const hasAny =
     (findings ?? []).some(Boolean) ||
@@ -495,7 +497,7 @@ export function runSyndromeMatcher({
     audio ||
     Object.keys(features ?? {}).length;
   if (!hasAny) {
-    return fail('no_syndrome_input', { message_he: 'לא סופקו תלונות, מעבדה, ממצאי עור/דימות או סימנים חיוניים.' });
+    return finalizeLocale(fail('no_syndrome_input', { message_he: 'לא סופקו תלונות, מעבדה, ממצאי עור/דימות או סימנים חיוניים.' }), locale);
   }
 
   const { matched, nearMiss, collected } = matchSyndromes({
@@ -542,7 +544,7 @@ export function runSyndromeMatcher({
 
   const factBlock = buildFactBlock({ kbItems, deterministic, patientData, mode });
 
-  return {
+  return finalizeLocale({
     ok: true,
     engine: 'syndrome_matcher',
     verification_status: DRAFT,
@@ -565,5 +567,5 @@ export function runSyndromeMatcher({
       'פריחה כללית אינה פורפורה. משך חום לא מתועד אינו משלים Kawasaki.',
     ],
     unknowns_he: matched.length ? [] : ['לא הותאמה טריאדה/קריטריון מלא — אין משמעות של "שלילה".'],
-  };
+  }, locale);
 }

@@ -7,18 +7,20 @@
  * קלט: PCM `{ samples: Float32Array|number[], sampleRate: number }`
  */
 
+import { t, finalizeLocale } from '../i18n/localize.js';
+
 const DRAFT = 'draft_needs_verification';
 
 /** פסי סריקה בלבד — לא ספי אבחנה. */
 export const AUDIO_BANDS = Object.freeze({
-  stridor: { hz: [150, 1000], label_he: 'Stridor (פס גבוה יחסי)' },
-  wheeze: { hz: [100, 800], label_he: 'Wheeze (פס מוזיקלי יחסי)' },
-  crackles: { hz: [200, 2000], label_he: 'Crackles (פס טרנזיינט גבוה)' },
-  choking_croup_cough: { hz: [80, 400], label_he: 'שיעול חנקני/קרופי (פס נמוך-בינוני)' },
+  stridor: { hz: [150, 1000], i18n_key: 'audio.stridor', label_he: 'Stridor (פס גבוה יחסי)' },
+  wheeze: { hz: [100, 800], i18n_key: 'audio.wheeze', label_he: 'Wheeze (פס מוזיקלי יחסי)' },
+  crackles: { hz: [200, 2000], i18n_key: 'audio.crackles', label_he: 'Crackles (פס טרנזיינט גבוה)' },
+  choking_croup_cough: { hz: [80, 400], i18n_key: 'audio.choking_croup_cough', label_he: 'שיעול חנקני/קרופי (פס נמוך-בינוני)' },
 });
 
-function fail(reason, extra = {}) {
-  return { ok: false, reason, verification_status: 'unavailable', ...extra };
+function fail(reason, extra = {}, locale = 'he') {
+  return finalizeLocale({ ok: false, reason, verification_status: 'unavailable', ...extra }, locale);
 }
 
 function asFloatSamples(samples) {
@@ -74,28 +76,32 @@ function burstIndex(samples, sampleRate) {
 }
 
 /**
- * @param {{ samples: ArrayLike<number>, sampleRate: number }} signal
+ * @param {{ samples: ArrayLike<number>, sampleRate: number, locale?: string }} signal
  */
 export function preprocessAudio(signal = {}) {
+  const locale = signal.locale ?? 'he';
   const sampleRate = Number(signal.sampleRate);
   const samples = asFloatSamples(signal.samples);
   if (!Number.isFinite(sampleRate) || sampleRate < 2000) {
-    return fail('invalid_sample_rate');
+    return fail('invalid_sample_rate', {}, locale);
   }
   if (!samples || samples.length < Math.round(sampleRate * 0.15)) {
-    return fail('audio_too_short');
+    return fail('audio_too_short', {}, locale);
   }
 
   const nyquist = sampleRate / 2;
   const total = bandPower(samples, sampleRate, 40, Math.min(nyquist - 1, 2500));
-  if (!(total > 0)) return fail('no_spectral_energy');
+  if (!(total > 0)) return fail('no_spectral_energy', {}, locale);
 
   const bands = {};
   for (const [key, spec] of Object.entries(AUDIO_BANDS)) {
     const lo = spec.hz[0];
     const hi = Math.min(spec.hz[1], nyquist - 1);
     if (hi <= lo) {
-      bands[key] = { relative_energy: null, elevated: false, skipped: 'nyquist', label_he: spec.label_he };
+      bands[key] = {
+        relative_energy: null, elevated: false, skipped: 'nyquist',
+        i18n_key: spec.i18n_key, label_he: t(locale, spec.i18n_key),
+      };
       continue;
     }
     const p = bandPower(samples, sampleRate, lo, hi);
@@ -104,7 +110,8 @@ export function preprocessAudio(signal = {}) {
       hz: [lo, hi],
       relative_energy: Math.round(rel * 1000) / 1000,
       elevated: rel >= 0.22,
-      label_he: spec.label_he,
+      i18n_key: spec.i18n_key,
+      label_he: t(locale, spec.i18n_key),
       verification_status: DRAFT,
     };
   }
@@ -119,17 +126,16 @@ export function preprocessAudio(signal = {}) {
     .filter(([, v]) => v.elevated)
     .map(([k]) => k);
 
-  return {
+  return finalizeLocale({
     ok: true,
     sampleRate,
     duration_s: Math.round((samples.length / sampleRate) * 1000) / 1000,
     bands,
     elevated_bands: elevated,
     verification_status: DRAFT,
-    note_he:
-      'אנרגיה יחסית בפסים בלבד. אינו מזהה Stridor/Wheeze/Crackles כקביעה קלינית ' +
-      'ואינו מחליף האזנה. טיוטה לאימות.',
-  };
+    i18n_key: 'audio.note',
+    note_he: t(locale, 'audio.note'),
+  }, locale);
 }
 
 export function audioFeaturesToPatientFacts(features) {

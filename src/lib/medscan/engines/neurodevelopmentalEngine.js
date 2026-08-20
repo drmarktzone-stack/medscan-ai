@@ -9,6 +9,7 @@ import { toAgeDays } from '../deterministic/labNormalize.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
 import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
 import { DISCLAIMER_HE } from '../schemas/output.schemas.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 export const DRAFT = 'draft_needs_verification';
 
@@ -213,6 +214,7 @@ export function runNeurodevelopmentalEngine({
   onset_before_12 = null,
   impairment = null,
   mode = 'development',
+  locale = 'he',
 } = {}) {
   const ageDays = toAgeDays(patient);
   const hasAny =
@@ -223,7 +225,7 @@ export function runNeurodevelopmentalEngine({
     isNum(Number(vanderbilt.hyperactivity_positives)) ||
     (settings ?? []).length;
   if (!hasAny) {
-    return fail('no_neurodev_input', { message_he: 'לא סופקו קריטריונים, M-CHAT או Vanderbilt.' });
+    return finalizeLocale(fail('no_neurodev_input', { message_he: 'לא סופקו קריטריונים, M-CHAT או Vanderbilt.' }), locale);
   }
 
   const asd = matchAsdCriteria({ findings, features, mchat_total, ageDays });
@@ -318,7 +320,7 @@ export function runNeurodevelopmentalEngine({
 
   const factBlock = buildFactBlock({ kbItems, deterministic, patientData, mode });
 
-  return {
+  return finalizeLocale({
     ok: true,
     engine: 'neurodevelopmental',
     verification_status: DRAFT,
@@ -350,5 +352,5 @@ export function runNeurodevelopmentalEngine({
       'אין המלצת תרופות או מינונים במנוע זה.',
     ],
     unknowns_he: matched.length ? [] : ['לא מולאו די קריטריונים לסקר חיובי — אין משמעות של "שלילת ASD/ADHD".'],
-  };
+  }, locale);
 }

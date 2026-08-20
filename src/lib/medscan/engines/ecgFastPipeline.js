@@ -75,7 +75,7 @@ export async function runEcgFastAnalysis({
 
   // ---- deterministic assembly (pure, unit-tested) ----
   onStage?.("verifying");
-  const result = assembleEcgResult(reading, allCases, { sex: patientSex, fileUrl: file_url });
+  const result = assembleEcgResult(reading, allCases, { sex: patientSex, fileUrl: file_url, locale: language });
 
   // ---- persist (non-fatal; kept awaited so analysisId is ready for PDF export + feedback) ----
   // This is a fast round-trip and never the bottleneck — the single vision call is.

@@ -12,6 +12,7 @@ import { toAgeDays } from '../deterministic/labNormalize.js';
 import { buildFactBlock } from '../antihallucination/factBlock.js';
 import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
 import { DISCLAIMER_HE } from '../schemas/output.schemas.js';
+import { finalizeLocale } from '../i18n/localize.js';
 
 export const DRAFT = 'draft_needs_verification';
 
@@ -542,20 +543,21 @@ export function runEegInterpreter({
   findings = [],
   state = null,
   mode = 'development',
+  locale = 'he',
 } = {}) {
   const ageDays = toAgeDays(patient);
   const hasSignal = signal && (signal.samples || signal.channels);
   const hasAnn = annotations && Object.keys(annotations).length > 0;
   const hasFindings = (findings ?? []).some(Boolean);
   if (!hasSignal && !hasAnn && !hasFindings) {
-    return fail('no_eeg_input', { message_he: 'לא סופק אות EEG, אנוטציות או ממצאים. אין מה לפענח.' });
+    return finalizeLocale(fail('no_eeg_input', { message_he: 'לא סופק אות EEG, אנוטציות או ממצאים. אין מה לפענח.' }), locale);
   }
 
   let bands = null;
   if (hasSignal) {
     const chan = signal.channels?.[0] ?? signal;
     bands = preprocessEeg(chan, { ageDays, state });
-    if (hasSignal && !hasAnn && !hasFindings && !bands.ok) return bands;
+    if (hasSignal && !hasAnn && !hasFindings && !bands.ok) return finalizeLocale(bands, locale);
   }
 
   const { matched, notes } = matchEegPatterns({ annotations, bands: bands?.ok ? bands : null, ageDays, findings });
@@ -572,7 +574,7 @@ export function runEegInterpreter({
   const factBlock = buildFactBlock({ kbItems, patientData, mode });
   const emergency = red_flags.length > 0;
 
-  return {
+  return finalizeLocale({
     ok: true,
     engine: 'eeg_interpreter',
     verification_status: DRAFT,
@@ -595,5 +597,5 @@ export function runEegInterpreter({
     factBlock,
     disclaimer_he: DISCLAIMER_HE,
     unknowns_he: matched.length ? [] : ['לא הותאמה תבנית פתולוגית מהקלט שסופק — אין משמעות של "תקין".'],
-  };
+  }, locale);
 }

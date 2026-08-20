@@ -47,6 +47,13 @@ import { runPediatricUltrasound } from '../src/lib/medscan/engines/pediatricUltr
 import { runSyndromeMatcher } from '../src/lib/medscan/engines/syndromeMatcher.js';
 import { runNeurodevelopmentalEngine } from '../src/lib/medscan/engines/neurodevelopmentalEngine.js';
 import { runChronicSymptomsEngine } from '../src/lib/medscan/engines/chronicSymptomsEngine.js';
+import {
+  runToxicologyEngine, runTraumaEngine, runGrowthImmunizationEngine,
+} from '../src/lib/medscan/engines/expertModules.js';
+import { runInfantNutritionAndDevelopment } from '../src/lib/medscan/engines/infantNutritionAndDevelopment.js';
+import { dirFor } from '../src/lib/medscan/i18n/locale.js';
+import { assembleSkinResult } from '../src/lib/medscan/engines/skinResultBuilder.js';
+import { matchPediatricPathway } from '../src/lib/medscan/engines/pediatricPathways.js';
 
 /* ── מיני-runner ─────────────────────────────────────────────────────── */
 let passed = 0, failed = 0;
@@ -1784,6 +1791,241 @@ test('DSM/AAP/ICHD/Rome הם עוגנים ספרותיים מעוצבים', () =
   const ichd = parseLiteratureCitation('ichd.3.migraine');
   assertEq(ichd.corpus, 'ichd');
   assertEq(isApprovedLiteratureAnchor('rome.iv.pediatric_fap'), true);
+});
+
+section('טוקסיקולוגיה, PECARN, גדילה וחיסונים');
+
+test('Tox: קלט ריק נכשל סגור', () => {
+  const r = runToxicologyEngine({});
+  assertEq(r.ok, false);
+});
+
+test('Tox: טוקסידרום אופיואידי + סוללת כפתור; אין NAC/מינון', () => {
+  const r = runToxicologyEngine({
+    vitals: { gcs: 10, pupils: 'miosis', rr_flag: 'low', hr_flag: 'low' },
+    findings: ['button battery'],
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('tox.opioid'));
+  assert(r.matched_patterns.includes('tox.button_battery'));
+  assert(r.emergency);
+  const blob = JSON.stringify(r).toLowerCase();
+  assert(!/n-acetyl|nac |mg\/kg\/h|מיקרוגרם/.test(blob), 'הוזכר אנטידוט/מינון');
+  const guard = runAnchorGuards({ output: engineOutput(r), factBlock: r.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('PECARN: גיל <2 + GCS≤14 → CT; גיל ≥2 בלי סיכון → לא CT', () => {
+  const high = runTraumaEngine({
+    patient: { age_days: 400 },
+    gcs: 12,
+    features: { head_trauma: true },
+    mode: 'development',
+  });
+  assertEq(high.pecarn.pecarn_action, 'ct');
+  assert(high.matched_patterns.includes('trauma.pecarn.ct'));
+
+  const low = runTraumaEngine({
+    patient: { age_days: 2000 },
+    gcs: 15,
+    features: { head_trauma: true },
+    mode: 'development',
+  });
+  assertEq(low.pecarn.pecarn_action, 'no_ct');
+  assert(low.factBlock.anchors.has('needs_verification.aap.pecarn.head_ct'));
+});
+
+test('Lund-Browder: ראש+קדמת גוף ביילוד ≈ 32%', () => {
+  const r = runTraumaEngine({
+    patient: { age_days: 0 },
+    burn_regions: { head: 1, anterior_trunk: 1 },
+    mode: 'development',
+  });
+  assertEq(r.burn.tbsa_pct, 32);
+});
+
+test('Growth: Z≤-2 מטבלת LMS → סקר FTT; בלי LMS אין Z מומצא', () => {
+  const lmsTable = [{
+    metric: 'wfa', sex: 'male', age_min_days: 0, age_max_days: 4000,
+    L: 1, M: 10, S: 0.1, source: 'test-lms',
+  }];
+  const ftt = runGrowthImmunizationEngine({
+    patient: { age_days: 365, sex: 'male' },
+    weight_kg: 8,
+    lmsTable,
+    father_cm: 180,
+    mother_cm: 160,
+    mode: 'development',
+  });
+  assertEq(ftt.z_score, -2);
+  assert(ftt.matched_patterns.includes('growth.ftt_screen'));
+  assert(ftt.factBlock.facts.some((f) => f.kind === 'deterministic' && /176/.test(f.text)));
+
+  const noLms = runGrowthImmunizationEngine({
+    patient: { age_days: 365, sex: 'male' },
+    weight_kg: 8,
+    immunization: { delayed: true },
+    mode: 'development',
+  });
+  assertEq(noLms.z_score, null);
+  assert(noLms.matched_patterns.includes('vax.catch_up'));
+  assert(noLms.recommended_tests.some((t) => /Catch-up|חוזר/.test(t.test_he)));
+});
+
+section('תמ"ל ואבני דרך');
+
+test('Formula: 150 מ״ל/ק״ג; CMPA→eHF; אנפילקסיס→AAF', () => {
+  const vol = runInfantNutritionAndDevelopment({
+    patient: { age_months: 3, weight_kg: 5 },
+    feeds_per_day: 6,
+    mode: 'development',
+  });
+  assertEq(vol.volume.daily_ml, 750);
+  assertEq(vol.volume.per_feed_ml, 125);
+
+  const ehf = runInfantNutritionAndDevelopment({
+    patient: { age_months: 4, weight_kg: 6 },
+    findings: ['cow milk allergy'],
+    mode: 'development',
+  });
+  assertEq(ehf.formula, 'ehf');
+
+  const aaf = runInfantNutritionAndDevelopment({
+    patient: { age_months: 5, weight_kg: 6 },
+    features: { anaphylaxis: true },
+    mode: 'development',
+  });
+  assertEq(aaf.formula, 'aaf');
+  assert(aaf.red_flags.some((f) => f.flag_key === 'nutrition.anaphylaxis'));
+  const guard = runAnchorGuards({ output: engineOutput(aaf), factBlock: aaf.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('Milestones: 18 חודשים בלי הליכה/מילים → עיכוב והפניה', () => {
+  const r = runInfantNutritionAndDevelopment({
+    patient: { age_months: 18 },
+    can_do: ['social smile', 'head control', 'sits'],
+    mode: 'development',
+  });
+  assert(r.milestones.delayed);
+  assert(r.recommended_tests.some((t) => /התפתחות|Child development|تطور/.test(t.test_he) || t.i18n_key === 'refer.cdu'));
+  assert(r.red_flags.some((f) => f.flag_key === 'dev.delay'));
+});
+
+section('i18n — עברית / אנגלית / ערבית');
+
+test('i18n: he ברירת מחדל RTL; en LTR; ar RTL עם תרגום טוקסידרום', () => {
+  const he = runToxicologyEngine({
+    vitals: { gcs: 10, pupils: 'miosis', rr_flag: 'low' },
+    mode: 'development',
+    locale: 'he',
+  });
+  assertEq(he.locale, 'he');
+  assertEq(he.dir, 'rtl');
+  assert(he.kbItems.some((k) => /אופיואיד/.test(k.title_he)));
+
+  const en = runToxicologyEngine({
+    vitals: { gcs: 10, pupils: 'miosis', rr_flag: 'low' },
+    mode: 'development',
+    locale: 'en',
+  });
+  assertEq(en.locale, 'en');
+  assertEq(en.dir, 'ltr');
+  assertEq(dirFor('en'), 'ltr');
+  assert(en.kbItems.some((k) => /Opioid/.test(k.title_he)));
+  assert(en.disclaimer_he.includes('decision support'));
+
+  const ar = runToxicologyEngine({
+    vitals: { gcs: 10, pupils: 'miosis', rr_flag: 'low' },
+    mode: 'development',
+    locale: 'ar',
+  });
+  assertEq(ar.locale, 'ar');
+  assertEq(ar.dir, 'rtl');
+  assert(ar.kbItems.some((k) => /أفيون/.test(k.title_he)));
+});
+
+test('i18n: תמ"ל eHF, PECARN ו-FTT מעוגנים בכל שלוש השפות', () => {
+  for (const loc of ['he', 'en', 'ar']) {
+    const f = runInfantNutritionAndDevelopment({
+      patient: { age_months: 4, weight_kg: 6 },
+      findings: ['cow milk allergy'],
+      locale: loc,
+      mode: 'development',
+    });
+    assertEq(f.locale, loc);
+    assertEq(f.dir, loc === 'en' ? 'ltr' : 'rtl');
+    assertEq(f.formula, 'ehf');
+    const title = f.kbItems.find((k) => k.pattern_key === 'formula.ehf')?.title_he || '';
+    if (loc === 'he') assert(/מפורק/.test(title), title);
+    if (loc === 'en') assert(/hydrolyzed/i.test(title), title);
+    if (loc === 'ar') assert(/محلل/.test(title), title);
+  }
+
+  const pecarnEn = runTraumaEngine({
+    patient: { age_days: 400 },
+    gcs: 12,
+    features: { head_trauma: true },
+    locale: 'en',
+    mode: 'development',
+  });
+  assertEq(pecarnEn.locale, 'en');
+  assert(pecarnEn.kbItems.some((k) => /PECARN|head CT/i.test(k.title_he)));
+
+  const fttAr = runGrowthImmunizationEngine({
+    patient: { age_days: 365, sex: 'male' },
+    weight_kg: 8,
+    lmsTable: [{
+      metric: 'wfa', sex: 'male', age_min_days: 0, age_max_days: 4000,
+      L: 1, M: 10, S: 0.1, source: 'test-lms',
+    }],
+    locale: 'ar',
+    mode: 'development',
+  });
+  assertEq(fttAr.locale, 'ar');
+  assertEq(fttAr.dir, 'rtl');
+  assert(fttAr.kbItems.some((k) => /فشل النمو/.test(k.title_he)));
+});
+
+test('i18n: עור/שמע/מסלול נלסון נושאים locale+dir; אנגלית מתרגמת כותרות', () => {
+  const skinEn = assembleSkinResult({
+    structured: {
+      dermatological_descriptors: { primary_lesions: ['macule'] },
+      differential_diagnoses: [],
+      primary_impression: 'x',
+      clinical_urgency: 'Normal',
+      critical_red_flags: ['flag'],
+      recommended_next_steps: [],
+    },
+    warnings: [],
+    dermoscopy: { risk: { level: 'moderate', reasons: ['network'] } },
+    suspected_allergens: [],
+  }, [], { locale: 'en' });
+  assertEq(skinEn.locale, 'en');
+  assertEq(skinEn.dir, 'ltr');
+  assert(/Dermoscopic score/.test(skinEn.analysis), skinEn.analysis.slice(0, 200));
+
+  const sr = 8000;
+  const n = sr;
+  const samples = new Float32Array(n);
+  for (let i = 0; i < n; i++) samples[i] = Math.sin((2 * Math.PI * 400 * i) / sr);
+  const audioEn = preprocessAudio({ samples, sampleRate: sr, locale: 'en' });
+  assertEq(audioEn.locale, 'en');
+  assertEq(audioEn.dir, 'ltr');
+  assert(/does not identify/.test(audioEn.note_he), audioEn.note_he);
+
+  const pathAr = matchPediatricPathway({ query: '', locale: 'ar' });
+  assertEq(pathAr.locale, 'ar');
+  assertEq(pathAr.dir, 'rtl');
+  assert(/استعلام/.test(pathAr.error_he), pathAr.error_he);
+});
+
+test('WHO/CDC הם עוגנים ספרותיים מעוצבים', () => {
+  const who = parseLiteratureCitation('needs_verification.who.growth.zscore');
+  assertEq(who.corpus, 'who');
+  const cdc = parseLiteratureCitation('cdc.development.milestones');
+  assertEq(cdc.corpus, 'cdc');
+  assertEq(isApprovedLiteratureAnchor('cdc.development.milestones'), true);
 });
 
 /* ── סיכום ────────────────────────────────────────────────────────────── */
