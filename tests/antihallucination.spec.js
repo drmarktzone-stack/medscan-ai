@@ -53,7 +53,6 @@ import {
 import { runInfantNutritionAndDevelopment } from '../src/lib/medscan/engines/infantNutritionAndDevelopment.js';
 import { dirFor } from '../src/lib/medscan/i18n/locale.js';
 import { assembleSkinResult } from '../src/lib/medscan/engines/skinResultBuilder.js';
-import { matchPediatricPathway } from '../src/lib/medscan/engines/pediatricPathways.js';
 
 /* ── מיני-runner ─────────────────────────────────────────────────────── */
 let passed = 0, failed = 0;
