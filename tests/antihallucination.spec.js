@@ -53,6 +53,7 @@ import {
 import { runInfantNutritionAndDevelopment } from '../src/lib/medscan/engines/infantNutritionAndDevelopment.js';
 import { dirFor } from '../src/lib/medscan/i18n/locale.js';
 import { assembleSkinResult } from '../src/lib/medscan/engines/skinResultBuilder.js';
+import { runDoctorPedAI } from '../src/lib/medscan/doctorped/index.js';
 
 /* ── מיני-runner ─────────────────────────────────────────────────────── */
 let passed = 0, failed = 0;
@@ -2025,6 +2026,42 @@ test('WHO/CDC הם עוגנים ספרותיים מעוצבים', () => {
   const cdc = parseLiteratureCitation('cdc.development.milestones');
   assertEq(cdc.corpus, 'cdc');
   assertEq(isApprovedLiteratureAnchor('cdc.development.milestones'), true);
+});
+
+section('DoctorPedAI — זרימה מאוחדת, טריאז׳ הורים והפניות');
+
+test('DoctorPedAI: סוללת כפתור בזרימה מאוחדת — חירום בלי מינון', () => {
+  const r = runDoctorPedAI({
+    persona: 'clinician',
+    integrationMode: 'unified',
+    patient: { age_years: 2 },
+    findings: ['button battery'],
+    presentation: 'button battery',
+    mode: 'development',
+  });
+  assert(r.emergency);
+  assert(r.triggered_modules.includes('toxicology'));
+  const guard = runAnchorGuards({ output: engineOutput({ ...r, factBlock: r.factBlock }), factBlock: r.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('DoctorPedAI: הורה en/ar — locale+dir וללא mg/dose', () => {
+  const en = runDoctorPedAI({
+    persona: 'parent', integrationMode: 'unified',
+    patient: { age_days: 40 }, findings: ['fever'], presentation: 'fever',
+    locale: 'en', mode: 'development',
+  });
+  assertEq(en.locale, 'en');
+  assertEq(en.dir, 'ltr');
+  assert(en.hides_mg);
+  assert(en.emergency);
+  const ar = runDoctorPedAI({
+    persona: 'parent', integrationMode: 'unified',
+    patient: { age_days: 40 }, findings: ['fever'], presentation: 'fever',
+    locale: 'ar', mode: 'development',
+  });
+  assertEq(ar.dir, 'rtl');
+  assert(/طوارئ/.test(ar.parent_plan_he + ar.disclaimer_he + JSON.stringify(ar.red_flags)));
 });
 
 /* ── סיכום ────────────────────────────────────────────────────────────── */

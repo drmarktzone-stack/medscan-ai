@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
-    "test": "node tests/architecture.spec.js && node tests/ingestion.spec.js && node tests/antihallucination.spec.js && node tests/hardening.spec.js && node src/lib/medscan/engines/pediatricPathways.test.mjs",
+    "test": "node tests/architecture.spec.js && node tests/ingestion.spec.js && node tests/antihallucination.spec.js && node tests/hardening.spec.js && node src/lib/medscan/engines/pediatricPathways.test.mjs && node src/lib/medscan/doctorped/doctorped.test.mjs",
     "verify": "npm run lint && npm test && npm run build"
   },
   "dependencies": {

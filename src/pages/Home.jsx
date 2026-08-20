@@ -8,6 +8,24 @@ import { useI18n } from "@/lib/i18n";
 
 const tools = [
   {
+    titleKey: "home.doctorped_title",
+    descKey: "home.doctorped_desc",
+    icon: Stethoscope,
+    path: "/doctorped",
+    gradient: "from-cyan-600 to-sky-400",
+    bg: "bg-cyan-50",
+    color: "#0e7490",
+  },
+  {
+    titleKey: "home.parent_title",
+    descKey: "home.parent_desc",
+    icon: Heart,
+    path: "/parent",
+    gradient: "from-rose-500 to-orange-400",
+    bg: "bg-rose-50",
+    color: "#f43f5e",
+  },
+  {
     titleKey: "home.ecg_title",
     descKey: "home.ecg_desc",
     icon: Activity,
@@ -112,7 +130,7 @@ export default function Home() {
           </div>
         </div>
         <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
-          MedScan AI
+          {t("home.brand")}
         </h1>
         <p className="text-muted-foreground mt-3 max-w-md mx-auto text-sm leading-relaxed">
           {t("home.subtitle")}

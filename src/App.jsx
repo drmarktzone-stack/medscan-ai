@@ -33,6 +33,8 @@ import Evaluation from '@/pages/Evaluation';
 import ECGValidation from '@/pages/ECGValidation';
 import SkinValidation from '@/pages/SkinValidation';
 import KnowledgeCoverage from '@/pages/KnowledgeCoverage';
+import DoctorPedWorkbench from '@/pages/DoctorPedWorkbench';
+import ParentPortal from '@/pages/ParentPortal';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -81,6 +83,8 @@ const AuthenticatedApp = () => {
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/evaluation" element={<Evaluation />} />
           <Route path="/knowledge-coverage" element={<KnowledgeCoverage />} />
+          <Route path="/doctorped" element={<DoctorPedWorkbench />} />
+          <Route path="/parent" element={<ParentPortal />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
