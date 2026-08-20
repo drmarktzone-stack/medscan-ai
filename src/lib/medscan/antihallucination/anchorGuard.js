@@ -105,7 +105,7 @@ export function validateLiteratureAnchors(output, factBlock) {
         path: where,
         message_he:
           `הפלט ב-${where} אינו מעוגן לפרק/סעיף במקור מאושר ` +
-          `(Nelson Textbook, חוזר משרד הבריאות, AES, ILAE, OMIM, Orphanet או ACR). ` +
+          `(Nelson Textbook, חוזר משרד הבריאות, AES, ILAE, OMIM, Orphanet, ACR, DSM-5-TR, AAP, ICHD-3 או Rome IV). ` +
           `פלט דיאגנוסטי או המלצה ללא עיגון נחסם.`,
       });
       return;
@@ -118,7 +118,7 @@ export function validateLiteratureAnchors(output, factBlock) {
         path: where,
         anchors: list,
         message_he:
-          `העוגנים ב-${where} אינם ממקור מאושר (Nelson / חוזר משרד הבריאות / AES / ILAE / OMIM / Orphanet / ACR) ` +
+          `העוגנים ב-${where} אינם ממקור מאושר (Nelson / חוזר משרד הבריאות / AES / ILAE / OMIM / Orphanet / ACR / DSM / AAP / ICHD / Rome) ` +
           `(${list.join(', ')}). ציטוט ממקור אחר אינו מחליף עיגון מאושר.`,
       });
       return;

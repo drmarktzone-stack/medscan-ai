@@ -2,7 +2,8 @@
  * DoctorPedAI — עוגני ספרות מאושרת
  *
  * פלט דיאגנוסטי / המלצה חייב להצביע על פרק וסעיף במקור מאושר:
- * Nelson, חוזר משרד הבריאות, AES, ILAE, OMIM, Orphanet או ACR.
+ * Nelson, חוזר משרד הבריאות, AES, ILAE, OMIM, Orphanet, ACR,
+ * DSM-5-TR, AAP, ICHD-3 או Rome IV.
  * אין כאן תוכן מועתק — רק מזהי עוגן + פירוק לפרק/סעיף.
  */
 
@@ -15,6 +16,10 @@ export const APPROVED_LITERATURE_PREFIXES = Object.freeze([
   'omim.',
   'orphanet.',
   'acr.',
+  'dsm.',
+  'aap.',
+  'ichd.',
+  'rome.',
 ]);
 
 /** טיוטות שצורתן ספרותית אך טרם אומתו מול המקור. */
@@ -34,6 +39,10 @@ const CORPORA = Object.freeze([
   { prefix: 'omim.', corpus: 'omim', label_he: 'OMIM', kind: 'catalog' },
   { prefix: 'orphanet.', corpus: 'orphanet', label_he: 'Orphanet', kind: 'catalog' },
   { prefix: 'acr.', corpus: 'acr', label_he: 'American College of Radiology (ACR)', kind: 'guideline' },
+  { prefix: 'dsm.', corpus: 'dsm', label_he: 'DSM-5-TR', kind: 'guideline' },
+  { prefix: 'aap.', corpus: 'aap', label_he: 'American Academy of Pediatrics (AAP)', kind: 'guideline' },
+  { prefix: 'ichd.', corpus: 'ichd', label_he: 'ICHD-3', kind: 'guideline' },
+  { prefix: 'rome.', corpus: 'rome', label_he: 'Rome IV', kind: 'guideline' },
 ]);
 
 export function isApprovedLiteratureAnchor(anchor) {

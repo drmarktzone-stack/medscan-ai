@@ -28,6 +28,7 @@ export function collectRedKbItems(grounding = {}) {
     ...(grounding.matchedPatterns ?? []),
     ...(grounding.firedRules ?? []),
     ...(grounding.associations ?? []),
+    ...(grounding.matchedSyndromes ?? []),
   ].filter((i) => i.suspicion === 'red');
 
   return items.map((i) => ({

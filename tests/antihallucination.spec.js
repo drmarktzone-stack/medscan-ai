@@ -44,6 +44,9 @@ import { runMetabolicInterpreter } from '../src/lib/medscan/engines/metabolicInt
 import { runGeneticsInterpreter } from '../src/lib/medscan/engines/geneticsInterpreter.js';
 import { runCsfInterpreter } from '../src/lib/medscan/engines/csfInterpreter.js';
 import { runPediatricUltrasound } from '../src/lib/medscan/engines/pediatricUltrasound.js';
+import { runSyndromeMatcher } from '../src/lib/medscan/engines/syndromeMatcher.js';
+import { runNeurodevelopmentalEngine } from '../src/lib/medscan/engines/neurodevelopmentalEngine.js';
+import { runChronicSymptomsEngine } from '../src/lib/medscan/engines/chronicSymptomsEngine.js';
 
 /* ── מיני-runner ─────────────────────────────────────────────────────── */
 let passed = 0, failed = 0;
@@ -1533,6 +1536,254 @@ test('ACR הוא עוגן ספרותי מעוצב', () => {
   assertEq(acr.chapter, 'pediatric');
   assertEq(acr.section, 'ddh');
   assert(acr.display_he.includes('American College of Radiology'));
+});
+
+section('טריאדות / סינדרומים רב-ערוציים — Nelson');
+
+test('Syndrome: קלט ריק נכשל סגור', () => {
+  const r = runSyndromeMatcher({});
+  assertEq(r.ok, false);
+  assertEq(r.reason, 'no_syndrome_input');
+});
+
+test('Syndrome: Cushing triad מסימנים חיוניים + נשימה לא סדירה', () => {
+  const r = runSyndromeMatcher({
+    vitals: { hr_flag: 'low', bp_flag: 'high', irregular_respiration: true },
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('triad.cushing'));
+  assert(r.emergency);
+  assert(r.matched.some((p) => p.criteria_match_pct === 100));
+  assert(r.factBlock.anchors.has('needs_verification.nelson.neurology.raised_icp'));
+  const guard = runAnchorGuards({ output: engineOutput(r), factBlock: r.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test("Syndrome: Samter, Charcot, Reynolds", () => {
+  const samter = runSyndromeMatcher({
+    findings: ['asthma', 'aspirin sensitivity', 'nasal polyps'],
+    mode: 'development',
+  });
+  assert(samter.matched_patterns.includes('triad.samter'));
+
+  const charcot = runSyndromeMatcher({
+    findings: ['RUQ pain', 'jaundice', 'fever'],
+    mode: 'development',
+  });
+  assert(charcot.matched_patterns.includes('triad.charcot'));
+  assert(!charcot.matched_patterns.includes('pentad.reynolds'));
+
+  const reynolds = runSyndromeMatcher({
+    findings: ['RUQ pain', 'jaundice', 'fever', 'hypotension', 'altered mental'],
+    mode: 'development',
+  });
+  assert(reynolds.matched_patterns.includes('pentad.reynolds'));
+  assert(reynolds.emergency);
+});
+
+test('Syndrome: HUS ממעבדה (labInterpreter.normalized) + HSP מעור + Toxo מדימות', () => {
+  const hus = runSyndromeMatcher({
+    labInterpreter: {
+      normalized: [
+        { analyte: 'hemoglobin', flag: 'low' },
+        { analyte: 'LDH', flag: 'high' },
+        { analyte: 'platelets', flag: 'low' },
+        { analyte: 'creatinine', flag: 'high' },
+      ],
+    },
+    findings: ['schistocytes'],
+    mode: 'development',
+  });
+  assert(hus.matched_patterns.includes('triad.hus'));
+  assert(hus.feature_channels.maha.includes('lab') || hus.features.includes('maha'));
+
+  const hsp = runSyndromeMatcher({
+    skin: { findings: ['palpable purpura'] },
+    complaints: ['arthralgia', 'abdominal pain'],
+    mode: 'development',
+  });
+  assert(hsp.matched_patterns.includes('triad.hsp'));
+  assert(!hsp.matched_patterns.includes('triad.hus'));
+
+  const toxo = runSyndromeMatcher({
+    findings: ['chorioretinitis'],
+    radiology: { findings: ['hydrocephalus', 'intracranial calcifications'] },
+    mode: 'development',
+  });
+  assert(toxo.matched_patterns.includes('triad.congenital_toxoplasmosis'));
+});
+
+test('Syndrome: Kawasaki מלא (חום ≥5 + 4/5); פריחה כללית אינה משלימה', () => {
+  const kd = runSyndromeMatcher({
+    features: { fever_days: 6 },
+    findings: [
+      'bilateral conjunctivitis',
+      'strawberry tongue',
+      'cervical lymphadenopathy',
+      'polymorphous rash',
+    ],
+    mode: 'development',
+  });
+  assert(kd.matched_patterns.includes('criteria.kawasaki'));
+  assert(kd.factBlock.anchors.has('needs_verification.nelson.id.kawasaki'));
+
+  const incomplete = runSyndromeMatcher({
+    findings: ['fever', 'rash'],
+    mode: 'development',
+  });
+  assert(!incomplete.matched_patterns.includes('criteria.kawasaki'));
+});
+
+test('Syndrome: rulesEngine במצב development מכניס טריאדה ל-kbItems; clinical לא', () => {
+  const dev = runRulesEngine({
+    findings: ['bradycardia', 'hypertension', 'irregular respiration'],
+    mode: 'development',
+  });
+  assert(dev.matchedSyndromes.some((s) => s.pattern_key === 'triad.cushing'));
+  assert(dev.kbItems.some((i) => i.pattern_key === 'triad.cushing'));
+
+  const clin = runRulesEngine({
+    findings: ['bradycardia', 'hypertension', 'irregular respiration'],
+    mode: 'clinical',
+  });
+  assert(clin.matchedSyndromes.some((s) => s.pattern_key === 'triad.cushing'));
+  assert(!clin.kbItems.some((i) => i.pattern_key === 'triad.cushing'));
+});
+
+section('נוירו-התפתחות — DSM-5-TR / M-CHAT / Vanderbilt');
+
+test('Neurodev: קלט ריק נכשל סגור', () => {
+  const r = runNeurodevelopmentalEngine({});
+  assertEq(r.ok, false);
+});
+
+test('Neurodev: ASD — 3/3 תחום A + 2/4 תחום B + הפניה התפתחותית', () => {
+  const r = runNeurodevelopmentalEngine({
+    patient: { age_months: 24 },
+    findings: [
+      'no eye contact', 'social emotional reciprocity', 'peer relationships',
+      'hand flapping', 'sensory hyperreactivity',
+    ],
+    mode: 'development',
+  });
+  assert(r.asd.screens_positive);
+  assert(r.matched_patterns.includes('neurodev.asd_screen'));
+  assert(r.recommended_tests.some((t) => /התפתחותי/.test(t.test_he)));
+  assert(r.factBlock.anchors.has('needs_verification.dsm.neurodevelopmental.asd'));
+  assert(r.factBlock.anchors.has('needs_verification.aap.autism.screening'));
+  const guard = runAnchorGuards({ output: engineOutput(r), factBlock: r.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('Neurodev: M-CHAT-R 8 = סיכון גבוה; 2 = לא', () => {
+  const high = runNeurodevelopmentalEngine({ mchat_total: 8, patient: { age_months: 20 }, mode: 'development' });
+  assert(high.matched_patterns.includes('neurodev.mchat_high'));
+  const low = runNeurodevelopmentalEngine({ mchat_total: 2, patient: { age_months: 20 }, mode: 'development' });
+  assert(!low.matched_patterns.includes('neurodev.mchat_high'));
+  assert(!low.asd.screens_positive);
+});
+
+test('Neurodev: ADHD — ≥6 חוסר קשב + שני הקשרים; הקשר יחיד לא מספיק', () => {
+  const items = [
+    'careless mistakes', 'sustained attention', 'does not listen',
+    'follow through', 'easily distracted', 'forgetful',
+  ];
+  const pos = runNeurodevelopmentalEngine({
+    patient: { age_years: 8 },
+    findings: items,
+    settings: ['home', 'school'],
+    mode: 'development',
+  });
+  assert(pos.adhd.screens_positive);
+  assert(pos.matched_patterns.includes('neurodev.adhd_screen'));
+  assert(pos.recommended_tests.some((t) => /Vanderbilt|ראייה/.test(t.test_he)));
+  assert(pos.factBlock.anchors.has('needs_verification.dsm.neurodevelopmental.adhd'));
+
+  const oneSetting = runNeurodevelopmentalEngine({
+    patient: { age_years: 8 },
+    findings: items,
+    settings: ['home'],
+    mode: 'development',
+  });
+  assert(!oneSetting.adhd.screens_positive);
+});
+
+section('תלונות כרוניות — Rome IV ו-ICHD-3');
+
+test('Chronic: קלט ריק נכשל סגור', () => {
+  const r = runChronicSymptomsEngine({});
+  assertEq(r.ok, false);
+});
+
+test('Chronic: Rome IV FAP מול דגלים אדומים (IBD/צליאק)', () => {
+  const fap = runChronicSymptomsEngine({
+    patient: { age_years: 10 },
+    findings: ['abdominal pain'],
+    duration_months: 3,
+    mode: 'development',
+  });
+  assert(fap.rome.fap_direction);
+  assert(fap.matched_patterns.includes('chronic.rome_fap'));
+  assertEq(fap.emergency, false);
+
+  const organic = runChronicSymptomsEngine({
+    patient: { age_years: 12 },
+    findings: ['abdominal pain', 'blood in stool', 'weight loss', 'nocturnal pain'],
+    duration_months: 4,
+    labs: [{ analyte: 'CRP', flag: 'high' }],
+    mode: 'development',
+  });
+  assert(organic.rome.organic_pathway);
+  assert(!organic.rome.fap_direction);
+  assert(organic.red_flags.some((f) => f.flag_key === 'chronic.abdominal_red_flag'));
+  assert(organic.recommended_tests.some((t) => /צליאק|tTG/.test(t.test_he)));
+  assert(organic.recommended_tests.some((t) => /קלפרוטקטין|ESR/.test(t.test_he)));
+  const guard = runAnchorGuards({ output: engineOutput(organic), factBlock: organic.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('Chronic: Rome IV IBS כשיש זיקה ליציאות ובלי דגלים', () => {
+  const r = runChronicSymptomsEngine({
+    findings: ['abdominal pain', 'related to defecation', 'change in frequency'],
+    duration_months: 2,
+    mode: 'development',
+  });
+  assert(r.rome.ibs_direction);
+  assert(r.matched_patterns.includes('chronic.rome_ibs'));
+});
+
+test('Chronic: ICHD-3 מיגרנה מול דגל משני (הקאות בוקר)', () => {
+  const mig = runChronicSymptomsEngine({
+    findings: ['headache', 'pulsating', 'worse with activity', 'nausea'],
+    attacks: 6,
+    duration_hours: 4,
+    mode: 'development',
+  });
+  assert(mig.ichd.migraine_direction);
+  assert(mig.matched_patterns.includes('chronic.ichd_migraine'));
+  assert(mig.factBlock.anchors.has('needs_verification.ichd.3.migraine'));
+
+  const secondary = runChronicSymptomsEngine({
+    findings: ['headache', 'morning vomiting', 'wakes from sleep', 'focal deficit'],
+    attacks: 6,
+    duration_hours: 4,
+    mode: 'development',
+  });
+  assert(secondary.ichd.secondary_pathway);
+  assert(!secondary.ichd.migraine_direction);
+  assert(secondary.red_flags.some((f) => /נוירולוג|הקאות בוקר|מעיר/.test(f.action_he)));
+  const guard = runAnchorGuards({ output: engineOutput(secondary), factBlock: secondary.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('DSM/AAP/ICHD/Rome הם עוגנים ספרותיים מעוצבים', () => {
+  const dsm = parseLiteratureCitation('needs_verification.dsm.neurodevelopmental.asd');
+  assertEq(dsm.corpus, 'dsm');
+  const aap = parseLiteratureCitation('needs_verification.aap.adhd.guidelines');
+  assertEq(aap.corpus, 'aap');
+  const ichd = parseLiteratureCitation('ichd.3.migraine');
+  assertEq(ichd.corpus, 'ichd');
+  assertEq(isApprovedLiteratureAnchor('rome.iv.pediatric_fap'), true);
 });
 
 /* ── סיכום ────────────────────────────────────────────────────────────── */
