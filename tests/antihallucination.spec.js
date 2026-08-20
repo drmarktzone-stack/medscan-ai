@@ -29,6 +29,16 @@ import {
   getPediatricPathway,
   matchPediatricPathway,
 } from '../src/lib/medscan/engines/pediatricPathways.js';
+import { extractDermatologyFeatures } from '../src/lib/medscan/vision/dermatologyFeatures.js';
+import { extractRadiologyFeatures } from '../src/lib/medscan/vision/radiologyFeatures.js';
+import { ingestMedicalVisionReport } from '../src/lib/medscan/vision/medicalVisionApi.js';
+import { preprocessAudio } from '../src/lib/medscan/audio/audioPreprocess.js';
+import { extractEcgWaveformFeatures } from '../src/lib/medscan/signal/ecgWaveformFeatures.js';
+import {
+  parseLiteratureCitation,
+  isApprovedLiteratureAnchor,
+} from '../src/lib/medscan/knowledge/approvedLiterature.js';
+import { toPatientFacts } from '../src/lib/medscan/deterministic/labNormalize.js';
 
 /* ── מיני-runner ─────────────────────────────────────────────────────── */
 let passed = 0, failed = 0;
@@ -796,6 +806,247 @@ test('דפוס טיוטה עדיין נחסם כשמסלול רץ במקביל',
   });
   assertEq(r.matchedPatterns.length, 0, 'דפוס טיוטה חדר כשמסלול היה ברקע');
   assertEq(r.kbItems.length, 0, 'kbItems אינו ריק במצב קליני עם טיוטות בלבד');
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * אינטגרציה — Lab / Dermatology / Radiology / Audio / ECG / Nelson
+ * ═══════════════════════════════════════════════════════════════════════ */
+section('אינטגרציה — צינורות מדיה, מעבדה ועיגון נלסון/חוזר');
+
+function makeRgba(w, h, pixel) {
+  const data = new Uint8ClampedArray(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const [r, g, b] = pixel(x, y);
+      const i = (y * w + x) * 4;
+      data[i] = r;
+      data[i + 1] = g;
+      data[i + 2] = b;
+      data[i + 3] = 255;
+    }
+  }
+  return { width: w, height: h, data };
+}
+
+test('Lab: דפוס מאומת נכנס ל-FactBlock עם פרק/סעיף נלסון והמלצת מעבדה ללא עוגן נחסמת', () => {
+  const labs = [
+    { analyte: 'CRP', flag: 'high', value: 140, unit: 'mg/L' },
+    { analyte: 'WBC', flag: 'high', value: 22.4, unit: '10^9/L' },
+  ];
+  const r = runRulesEngine({
+    kb: { labPatterns: [VERIFIED_PATTERN] },
+    patient: { age_days: 1000 },
+    labs,
+    findings: [],
+    mode: 'clinical',
+  });
+  assert(r.matchedPatterns.length >= 1, 'דפוס המעבדה המאומת לא הותאם');
+  const fb = buildFactBlock({
+    kbItems: r.kbItems,
+    patientData: toPatientFacts(labs.map((l) => ({
+      key: l.analyte, label_he: l.analyte, value: l.value, unit: l.unit, flag: l.flag,
+    }))),
+    mode: 'clinical',
+  });
+  const f1 = fb.facts.find((x) => x.kind === 'kb');
+  assert(f1?.literature_citation?.chapter === 'test', 'פרק נלסון לא פוענח');
+  assert(f1?.literature_citation?.section === 'inflammation', 'סעיף נלסון לא פוענח');
+  assert(fb.text.includes('Nelson Textbook of Pediatrics'), 'FactBlock לא מציג את נלסון');
+
+  const unanchoredTest = runAnchorGuards({
+    output: goodOutput({
+      recommended_tests: [{ test_he: 'משטח גרון', fact_refs: ['F1'] }],
+    }),
+    factBlock: fb,
+  });
+  assert(
+    unanchoredTest.blocking.some((v) => v.code === 'missing_literature_anchor'),
+    'המלצת מעבדה ללא עוגן נלסון/חוזר לא נחסמה',
+  );
+
+  const anchoredTest = runAnchorGuards({
+    output: goodOutput({
+      recommended_tests: [{
+        test_he: 'משטח גרון',
+        fact_refs: ['F1'],
+        source_anchor: 'nelson.test.inflammation',
+      }],
+    }),
+    factBlock: fb,
+  });
+  assertEq(anchoredTest.blocking.length, 0, 'המלצת מעבדה מעוגנת נחסמה בטעות');
+});
+
+test('Dermatology: חילוץ גבולות, צבע, פיזור ולוויינים מתמונת ImageData', () => {
+  const img = makeRgba(80, 80, (x, y) => {
+    const dx = x - 40;
+    const dy = y - 40;
+    if (dx * dx + dy * dy < 14 * 14) return [30, 20, 15];
+    const sx = x - 62;
+    const sy = y - 28;
+    if (sx * sx + sy * sy < 4 * 4) return [25, 18, 12];
+    return [220, 185, 160];
+  });
+  const feat = extractDermatologyFeatures(img);
+  assert(feat.ok, `מדידת עור נכשלה: ${feat.reason}`);
+  assert(feat.borders?.compactness != null, 'חסר compactness של גבול');
+  assert(feat.color?.cluster_count >= 1, 'לא חולצו אשכולות צבע');
+  assert(feat.distribution?.occupied_quadrants >= 1, 'לא חולץ פיזור');
+  assert((feat.satellite_lesions?.count ?? 0) >= 1, 'נגע לווייני לא זוהה');
+  assertEq(feat.diameter_mm, null, 'הומצא קוטר במ״מ בלי סולם');
+});
+
+test('Dermatology: תמונה לא-תקינה נכשלת סגור ולא ממציאה מאפיינים', () => {
+  const feat = extractDermatologyFeatures({ width: 2, height: 2, data: new Uint8ClampedArray(16) });
+  assertEq(feat.ok, false);
+  assert(feat.reason, 'חסרה סיבת כישלון');
+});
+
+test('Radiology: מבנה גרמי, מרקם לוסנטי וצפיפויות יחסיות ללא HU/מ״מ', () => {
+  const img = makeRgba(64, 64, (x, y) => {
+    if (x >= 28 && x <= 36) return [230, 230, 230]; // עמוד שדרה בהיר
+    if (x < 22 || x > 42) return [20, 20, 25]; // שדות ריאה כהים
+    return [90, 90, 95];
+  });
+  const feat = extractRadiologyFeatures(img);
+  assert(feat.ok, `מדידת רדיולוגיה נכשלה: ${feat.reason}`);
+  assert(feat.bone_structure?.connected_components >= 1, 'מבנה גרמי לא זוהה');
+  assert(feat.densities?.dense_like > 0, 'חסרה צפיפות יחסית');
+  assert(feat.densities?.lucent_like > 0, 'חסר שבר לוסנטי');
+  assertEq(feat.densities?.unit, 'relative_pixel_fraction');
+  assert(feat.pulmonary_infiltrate_texture?.verification_status === 'draft_needs_verification');
+  assertEq(feat.densities?.unit === 'HU', false, 'דווח unit=HU');
+  assert(!('hu' in (feat.densities || {})), 'שדה hu מספרי הומצא');
+});
+
+test('Medical Vision API: ממצאים מוצלבים מול אבחנה מבדלת; דוח ריק נחסם', () => {
+  const closed = ingestMedicalVisionReport(null);
+  assertEq(closed.ok, false);
+
+  const report = {
+    modality: 'dermatology',
+    findings: [{ label_he: 'נגע אנולרי עם קשקש היקפי', location: 'זרוע' }],
+    features: { borders: { irregular: true }, color: { variegated: false }, satellite_lesions: { count: 1 } },
+  };
+  const ingested = ingestMedicalVisionReport(report, {
+    differential: [
+      {
+        diagnosis: 'Tinea corporis annular scale',
+        supporting_features: 'נגע אנולרי קשקש',
+        source_anchors: ['nelson.test.inflammation'],
+      },
+      {
+        diagnosis: 'Kawasaki disease',
+        supporting_features: 'חום פריחה',
+        source_anchors: ['nelson.id.kawasaki'],
+      },
+    ],
+  });
+  assert(ingested.ok, 'קליטת דוח Medical Vision נכשלה');
+  assert(ingested.supported_diagnoses.some((d) => /Tinea/i.test(d)), 'הצלבה לא תמכה באבחנה התואמת');
+  assert(ingested.differential_without_vision_support.some((d) => /Kawasaki/i.test(d)), 'אבחנה לא-נתמכת לא סומנה');
+  assertEq(ingested.verification_status, 'draft_needs_verification');
+});
+
+test('Audio: פס wheeze/stridor מזוהה יחסית; אות קצר נכשל סגור', () => {
+  const sr = 8000;
+  const n = sr; // שנייה
+  const samples = new Float32Array(n);
+  for (let i = 0; i < n; i++) samples[i] = Math.sin((2 * Math.PI * 400 * i) / sr);
+  const out = preprocessAudio({ samples, sampleRate: sr });
+  assert(out.ok, `עיבוד שמע נכשל: ${out.reason}`);
+  assert(out.bands.wheeze.relative_energy > 0, 'אין אנרגיה בפס wheeze');
+  assert(out.verification_status === 'draft_needs_verification');
+  assert(out.note_he.includes('אינו מזהה'), 'חסרה הסתייגות אי-אבחנה');
+
+  const tooShort = preprocessAudio({ samples: new Float32Array(10), sampleRate: sr });
+  assertEq(tooShort.ok, false);
+  const noRate = preprocessAudio({ samples });
+  assertEq(noRate.ok, false);
+});
+
+test('ECG: QTc מחושב מנקודות ציון; ST/T ו-SVT הם סמני סריקה בלבד', () => {
+  const fromFid = extractEcgWaveformFeatures({
+    calibration: { small_box_px: 10, paper_speed_mm_s: 25, gain_mm_mv: 10 },
+    fiducials: { p_onset_x: 0, qrs_onset_x: 40, qrs_offset_x: 65, t_offset_x: 150, rr_px: 200 },
+    ageYears: 8,
+  });
+  assert(fromFid.ok, `חילוץ ECG נכשל: ${fromFid.reason}`);
+  assertEq(fromFid.qtc.bazett, 492);
+  assertEq(fromFid.qtc.prolonged_for_age, true);
+  assertEq(fromFid.intervals.pr_ms, 160);
+
+  const sr = 250;
+  const samples = new Float32Array(sr * 3);
+  const period = Math.round(sr * 0.4); // 150 bpm
+  for (let i = 0; i < samples.length; i++) {
+    const phase = i % period;
+    samples[i] = phase < 6 ? 1 - Math.abs(phase - 3) / 3 : 0;
+  }
+  const wave = extractEcgWaveformFeatures({ samples, sampleRate: sr, ageYears: 14, regular: true, qrs_ms: 80 });
+  assert(wave.ok, `חילוץ גל נכשל: ${wave.reason}`);
+  assert(wave.svt_pattern.verification_status === 'draft_needs_verification');
+  assert(wave.svt_pattern.tachycardia_for_age === true, 'טכיקרדיה לגיל לא סומנה');
+  assert(wave.svt_pattern.flagged === true, 'תבנית SVT אפשרית לא סומנה כסריקה');
+  assert(wave.st_t.ok === true || wave.st_t.reason, 'חסר פלט ST/T');
+
+  const closed = extractEcgWaveformFeatures({});
+  assertEq(closed.ok, false);
+});
+
+test('Nelson/MOH: FactBlock מציג פרק וסעיף; פלט לא-מעוגן נחסם', () => {
+  const nelson = parseLiteratureCitation('nelson.test.inflammation');
+  assertEq(nelson.corpus, 'nelson');
+  assertEq(nelson.chapter, 'test');
+  assertEq(nelson.section, 'inflammation');
+  assert(isApprovedLiteratureAnchor('nelson.test.inflammation'));
+  assertEq(isApprovedLiteratureAnchor('pubmed:123'), false);
+
+  const moh = parseLiteratureCitation('needs_verification.moh.immunization.schedule');
+  assertEq(moh.corpus, 'moh');
+  assertEq(moh.chapter, 'immunization');
+  assertEq(moh.section, 'schedule');
+  assertEq(moh.draft, true);
+
+  const fb = makeFactBlock();
+  assert(fb.facts[0].literature_citation.display_he.includes('פרק test'));
+
+  const pubmedOnly = runAnchorGuards({
+    output: goodOutput({
+      directions: [goodDirection({ source_anchors: ['pmid:12345'] })],
+      claims: [{
+        claim_id: 'K1', claim_type: 'FACT', text_he: 'דפוס דלקת',
+        fact_refs: ['F1'], source_anchors: ['nelson.test.inflammation'],
+      }],
+    }),
+    factBlock: fb,
+  });
+  assert(
+    pubmedOnly.blocking.some((v) => v.code === 'unapproved_literature_corpus' || v.code === 'fabricated_anchor'),
+    'עוגן PubMed-only לא נחסם',
+  );
+
+  const missing = runAnchorGuards({
+    output: goodOutput({
+      directions: [goodDirection({ source_anchors: [] })],
+    }),
+    factBlock: fb,
+  });
+  assert(
+    missing.blocking.some((v) => v.code === 'missing_literature_anchor'),
+    'כיוון ללא עוגן ספרות לא נחסם',
+  );
+
+  const incomplete = runAnchorGuards({
+    output: goodOutput({
+      directions: [goodDirection({ source_anchors: ['nelson.test'] })],
+    }),
+    factBlock: { ...fb, anchors: new Set([...fb.anchors, 'nelson.test']) },
+  });
+  assert(
+    incomplete.blocking.some((v) => v.code === 'incomplete_literature_locator'),
+    'עוגן בלי סעיף לא נחסם',
+  );
 });
 
 /* ── סיכום ────────────────────────────────────────────────────────────── */

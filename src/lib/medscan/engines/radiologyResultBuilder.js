@@ -125,6 +125,16 @@ export function buildRadiologyAnalysisMd(engineResult, matches) {
     lines.push("");
   }
 
+  const morph = engineResult?.morphology;
+  if (morph?.ok) {
+    lines.push(`## מאפייני הדמיה (מדידה דטרמיניסטית, יחסית)`);
+    lines.push(`- **צפיפויות (שבר פיקסלים):** לוסנטי ${morph.densities?.lucent_like ?? "—"} / בינוני ${morph.densities?.intermediate_like ?? "—"} / צפוף ${morph.densities?.dense_like ?? "—"}`);
+    lines.push(`- **מבנה גרמי (רכיבים מחוברים):** ${morph.bone_structure?.connected_components ?? "—"}`);
+    lines.push(`- **מרקם לוסנטי (טיוטת תסנין):** ${morph.pulmonary_infiltrate_texture?.elevated ? "מוגבר" : "לא מוגבר"}`);
+    if (morph.note_he) lines.push(`- ${morph.note_he}`);
+    lines.push("");
+  }
+
   const flags = (st.critical_red_flags || []).filter(Boolean);
   if (flags.length) {
     lines.push(`## 🚩 דגלים אדומים`);

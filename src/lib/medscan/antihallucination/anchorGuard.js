@@ -17,6 +17,7 @@
  */
 
 import { collectProseStrings } from './numericGuard.js';
+import { isLiteratureShapedAnchor, parseLiteratureCitation } from '../knowledge/approvedLiterature.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
  * 1. עוגנים — כל source_anchor חייב להיפתר לפריט שקיים
@@ -63,6 +64,104 @@ export function validateAnchors(output, factBlock, knownTopicKeys = null) {
     check([f.source_anchor], 'red_flags');
   }
   check([output?.source_anchor], 'root');
+
+  violations.push(...validateLiteratureAnchors(output, factBlock));
+
+  return violations;
+}
+
+function collectAnchors(item) {
+  if (!item || typeof item !== 'object') return [];
+  const out = [];
+  for (const a of item.source_anchors ?? []) if (a) out.push(a);
+  if (item.source_anchor) out.push(item.source_anchor);
+  return out;
+}
+
+function isMeasurementOnlyClaim(claim, factBlock) {
+  if (claim?.claim_type !== 'FACT') return false;
+  const refs = claim.fact_refs ?? [];
+  if (!refs.length) return false;
+  return refs.every((r) => {
+    const f = factBlock?.index?.get(r);
+    return f && (f.kind === 'patient' || f.kind === 'deterministic');
+  });
+}
+
+/**
+ * כל כיוון דיאגנוסטי / המלצה טיפולית / המלצת מעבדה חייב עוגן
+ * נלסון (פרק+סעיף) או חוזר משרד הבריאות. פלט ללא עיגון — נחסם.
+ */
+export function validateLiteratureAnchors(output, factBlock) {
+  const violations = [];
+
+  const requireLiterature = (anchors, where, { allowMeasurementFact = false } = {}) => {
+    const list = (anchors ?? []).filter(Boolean);
+    if (!list.length) {
+      if (allowMeasurementFact) return;
+      violations.push({
+        code: 'missing_literature_anchor',
+        severity: 'block',
+        path: where,
+        message_he:
+          `הפלט ב-${where} אינו מעוגן לפרק/סעיף ב-Nelson Textbook of Pediatrics ` +
+          `או לחוזר משרד הבריאות. פלט דיאגנוסטי או המלצה ללא עיגון נחסם.`,
+      });
+      return;
+    }
+    const shaped = list.filter(isLiteratureShapedAnchor);
+    if (!shaped.length) {
+      violations.push({
+        code: 'unapproved_literature_corpus',
+        severity: 'block',
+        path: where,
+        anchors: list,
+        message_he:
+          `העוגנים ב-${where} אינם מנלסון או מחוזר משרד הבריאות ` +
+          `(${list.join(', ')}). ציטוט ממקור אחר אינו מחליף עיגון מאושר.`,
+      });
+      return;
+    }
+    for (const a of shaped) {
+      const citation = parseLiteratureCitation(a);
+      if (!citation || !citation.chapter || !citation.section) {
+        violations.push({
+          code: 'incomplete_literature_locator',
+          severity: 'block',
+          path: where,
+          anchor: a,
+          message_he:
+            `העוגן "${a}" ב-${where} אינו מצביע על פרק וסעיף ספציפיים.`,
+        });
+      }
+    }
+  };
+
+  for (const d of output?.directions ?? []) {
+    requireLiterature(collectAnchors(d), `directions.${d.direction_id}`);
+  }
+  for (const d of output?.differential ?? []) {
+    requireLiterature(collectAnchors(d), `differential.${d.direction_id}`);
+  }
+  for (const t of output?.recommended_tests ?? []) {
+    requireLiterature(collectAnchors(t), 'recommended_tests');
+  }
+  for (const r of output?.dynamic_recommendations ?? []) {
+    requireLiterature(collectAnchors(r), 'dynamic_recommendations');
+  }
+  for (const m of output?.monitoring ?? []) {
+    if (m?.recommendation_he || m?.action_he) {
+      requireLiterature(collectAnchors(m), 'monitoring');
+    }
+  }
+  for (const c of output?.claims ?? []) {
+    if (!c?.claim_type || c.claim_type === 'UNKNOWN') continue;
+    if (c.claim_type === 'FACT' || c.claim_type === 'ANALYSIS' || c.claim_type === 'RECOMMENDATION') {
+      requireLiterature(collectAnchors(c), `claims.${c.claim_id}`, {
+        allowMeasurementFact: isMeasurementOnlyClaim(c, factBlock),
+      });
+    }
+  }
 
   return violations;
 }

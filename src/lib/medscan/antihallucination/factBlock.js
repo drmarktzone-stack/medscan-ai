@@ -26,6 +26,8 @@
  * במקום לניתן-לגילוי.
  */
 
+import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
+
 /** רק ידע מאומת נכנס לפלט קליני. טיוטה נכנסת רק במצב פיתוח, ומסומנת. */
 export const VERIFICATION_POLICY = {
   clinical: ['verified'],
@@ -95,6 +97,9 @@ function renderKbFact(item) {
   if (item.category) parts.push(`קטגוריית מסלול: ${item.category}`);
   if (item.local_protocol_ref) parts.push(`פרוטוקול מקומי: ${item.local_protocol_ref}`);
   if (item.summary_he) parts.push(item.summary_he);
+  if (item.literature_citation?.display_he) {
+    parts.push(`ספרות: ${item.literature_citation.display_he}`);
+  }
 
   return parts.filter(Boolean).join(' | ');
 }
@@ -136,11 +141,14 @@ export function buildFactBlock({
   // ── F# : עובדות KB ──────────────────────────────────────────────────────
   admitted.forEach((item, i) => {
     const draft = (item.verification_status ?? 'draft_needs_verification') !== 'verified';
+    const withLit = attachLiteratureCitation(item);
     register({
       id: `F${i + 1}`,
       kind: 'kb',
-      text: renderKbFact(item),
+      text: renderKbFact(withLit),
       source_anchor: item.source_anchor ?? item.topic_key ?? null,
+      literature_citation: withLit.literature_citation ?? null,
+      literature_ok: Boolean(withLit.literature_ok),
       entity_key:
         item.rule_key ?? item.pattern_key ?? item.assoc_key ?? item.flag_key ??
         item.pathway_key ?? item.protocol_key ?? item.topic_key ?? null,
@@ -276,6 +284,7 @@ export function renderFactBlockText(facts, mode = 'clinical') {
     for (const f of group) {
       const meta = [];
       if (f.source_anchor) meta.push(`מקור: ${f.source_anchor}`);
+      if (f.literature_citation?.display_he) meta.push(f.literature_citation.display_he);
       if (f.is_draft) meta.push('⚠ טיוטה לא-מאומתת');
       const metaText = meta.length ? ` {${meta.join(' | ')}}` : '';
       lines.push(`[${f.id}]${metaText} ${f.text}`);
