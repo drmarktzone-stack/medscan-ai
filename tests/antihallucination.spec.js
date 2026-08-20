@@ -41,6 +41,9 @@ import {
 import { toPatientFacts } from '../src/lib/medscan/deterministic/labNormalize.js';
 import { runEegInterpreter, preprocessEeg } from '../src/lib/medscan/engines/eegInterpreter.js';
 import { runMetabolicInterpreter } from '../src/lib/medscan/engines/metabolicInterpreter.js';
+import { runGeneticsInterpreter } from '../src/lib/medscan/engines/geneticsInterpreter.js';
+import { runCsfInterpreter } from '../src/lib/medscan/engines/csfInterpreter.js';
+import { runPediatricUltrasound } from '../src/lib/medscan/engines/pediatricUltrasound.js';
 
 /* ── מיני-runner ─────────────────────────────────────────────────────── */
 let passed = 0, failed = 0;
@@ -1284,6 +1287,252 @@ test('AES/ILAE/OMIM הם עוגנים ספרותיים מעוצבים', () => {
   assertEq(ilae.corpus, 'ilae');
   assertEq(isApprovedLiteratureAnchor('ilae.se.status_epilepticus'), true);
   assertEq(isApprovedLiteratureAnchor('needs_verification.ilae.se.status_epilepticus'), false);
+});
+
+section('גנטיקה / דיסמורפולוגיה — OMIM/Nelson, Karyotype/CMA/WES');
+
+test('Genetics: קלט ריק נכשל סגור', () => {
+  const r = runGeneticsInterpreter({});
+  assertEq(r.ok, false);
+  assertEq(r.reason, 'no_genetics_input');
+});
+
+test('Genetics: תווי דאון → Down + Karyotype, לא Turner; OMIM/Nelson ב-FactBlock', () => {
+  const r = runGeneticsInterpreter({
+    patient: { age_months: 4, sex: 'male' },
+    features: ['epicanthal folds', 'single palmar crease', 'low-set ears'],
+    mode: 'development',
+  });
+  assert(r.ok);
+  assert(r.matched_patterns.includes('genetics.down'));
+  assert(!r.matched_patterns.includes('genetics.turner'), 'Turner הוצע בזכר/פנוטיפ דאון');
+  assert(r.recommended_tests.some((t) => /Karyotype|קריוטיפ/.test(t.test_he)));
+  assert(!r.recommended_tests.some((t) => /WES/.test(t.test_he)), 'WES הוצע לדאון קלאסי');
+  assert(r.factBlock.anchors.has('needs_verification.omim.190685.down_syndrome'));
+  assert(r.factBlock.anchors.has('needs_verification.nelson.genetics.down_syndrome'));
+  const omim = parseLiteratureCitation('needs_verification.omim.190685.down_syndrome');
+  assertEq(omim.corpus, 'omim');
+  assertEq(omim.chapter, '190685');
+  const guard = runAnchorGuards({ output: engineOutput(r), factBlock: r.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('Genetics: Turner רק בנקבה/מין לא-ידוע, לא בזכר', () => {
+  const female = runGeneticsInterpreter({
+    patient: { sex: 'female', age_years: 8 },
+    features: ['webbed neck', 'short stature', 'widely spaced nipples'],
+    mode: 'development',
+  });
+  assert(female.matched_patterns.includes('genetics.turner'));
+  assert(female.recommended_tests.some((t) => /Karyotype|קריוטיפ/.test(t.test_he)));
+
+  const male = runGeneticsInterpreter({
+    patient: { sex: 'male', age_years: 8 },
+    features: ['webbed neck', 'short stature', 'widely spaced nipples'],
+    mode: 'development',
+  });
+  assert(!male.matched_patterns.includes('genetics.turner'));
+});
+
+test('Genetics: תו אחד אינו מאבחן; וויליאמס לא מהתווים הכלליים', () => {
+  const one = runGeneticsInterpreter({
+    features: ['hypertelorism'],
+    mode: 'development',
+  });
+  assertEq(one.matched_patterns.length, 0);
+
+  const generic = runGeneticsInterpreter({
+    features: ['low-set ears', 'hypertelorism', 'epicanthal folds', 'micrognathia', 'single palmar crease'],
+    mode: 'development',
+  });
+  assert(!generic.matched_patterns.includes('genetics.williams'));
+});
+
+test('Genetics: 22q/Noonan → CMA; פלט לא-מעוגן נחסם', () => {
+  const r = runGeneticsInterpreter({
+    patient: { age_months: 2 },
+    features: ['hypertelorism', 'micrognathia', 'cleft palate', 'conotruncal'],
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('genetics.del22q11'));
+  assert(r.recommended_tests.some((t) => /CMA/.test(t.test_he)));
+  assert(r.factBlock.anchors.has('needs_verification.omim.188400.digeorge'));
+  const unanchored = runAnchorGuards({
+    output: {
+      directions: [{ direction_id: 'X', diagnosis_direction_he: 'תסמונת גנטית', source_anchors: [] }],
+      claims: [],
+    },
+    factBlock: r.factBlock,
+  });
+  assert(unanchored.blocking.some((v) => v.code === 'missing_literature_anchor'));
+});
+
+section('CSF ילדים — טווחי גיל מה-seed, חיידקי/ויראלי/טראומטי');
+
+test('CSF: קלט ריק נכשל סגור', () => {
+  const r = runCsfInterpreter({});
+  assertEq(r.ok, false);
+  assertEq(r.reason, 'no_csf_input');
+});
+
+test('CSF: יילוד WBC 15 אינו דפוס חיידקי', () => {
+  const r = runCsfInterpreter({
+    patient: { age_days: 0 },
+    csf: {
+      wbc: 15, rbc: 1, protein: 90, glucose: 50,
+      neutrophils_pct: 40, lymphocytes_pct: 60,
+      gram_stain: 'no organisms',
+    },
+    blood: { glucose: 70 },
+    mode: 'development',
+  });
+  assert(r.ok);
+  assert(!r.matched_patterns.includes('csf.bacterial'));
+  assertEq(r.emergency, false);
+  assertEq(r.red_flags.length, 0);
+});
+
+test('CSF: ילד WBC 500 + PMN + יחס נמוך + גראם חיובי → חיידקי, דגל אמפירי בלי מינון', () => {
+  const r = runCsfInterpreter({
+    patient: { age_years: 4 },
+    csf: {
+      wbc: 500, rbc: 2, protein: 120, glucose: 20,
+      neutrophils_pct: 85, lymphocytes_pct: 10,
+      gram_stain: 'gram positive cocci',
+    },
+    blood: { glucose: 90 },
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('csf.bacterial'));
+  assert(r.emergency);
+  assert(r.red_flags.some((f) => f.flag_key === 'csf.bacterial_meningitis'));
+  assert(r.red_flags.some((f) => /אנטיביוטיקה אמפירית/.test(f.action_he)));
+  const blob = JSON.stringify(r);
+  assert(!/ceftriax|vanco|mg\/kg|מינוג/.test(blob.toLowerCase()), 'הוזכר מינון/שם תרופה');
+  assert(r.factBlock.anchors.has('needs_verification.nelson.infectious_disease.bacterial_meningitis'));
+  const guard = runAnchorGuards({ output: engineOutput(r), factBlock: r.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('CSF: תבנית לימפוציטית → ויראלי/אספטי, לא חיידקי', () => {
+  const r = runCsfInterpreter({
+    patient: { age_years: 6 },
+    csf: {
+      wbc: 80, rbc: 0, protein: 40, glucose: 55,
+      neutrophils_pct: 10, lymphocytes_pct: 80,
+      gram_stain: 'negative',
+    },
+    blood: { glucose: 80 },
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('csf.viral_aseptic'));
+  assert(!r.matched_patterns.includes('csf.bacterial'));
+  assertEq(r.emergency, false);
+});
+
+test('CSF: RBC גבוה + תיקון WBC → Traumatic Tap, לא שולל דלקת בלי כימיה', () => {
+  const r = runCsfInterpreter({
+    patient: { age_years: 3 },
+    csf: { wbc: 12, rbc: 10000, protein: 30, glucose: 60, gram_stain: 'no organisms' },
+    blood: { glucose: 90, wbc: 8000, rbc: 5_000_000 },
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('csf.traumatic_tap'));
+  assert(!r.matched_patterns.includes('csf.bacterial'));
+  assert(r.calculators.some((d) => d.key === 'csf_wbc_corrected'));
+});
+
+test('CSF: תינוק בן חודש — רצועת WBC 31–60 (סף 9), לא רצועת יילוד', () => {
+  const neonateLike = runCsfInterpreter({
+    patient: { age_days: 45 },
+    csf: {
+      wbc: 15, rbc: 0, protein: 50, glucose: 50,
+      neutrophils_pct: 70, lymphocytes_pct: 20,
+      gram_stain: 'no organisms',
+    },
+    blood: { glucose: 90 },
+    mode: 'development',
+  });
+  // 15 > 9 לגיל 45 ימים, עם PMN + יחס תקין (~0.56? 50/90=0.556 low) — יחס נמוך
+  assert(neonateLike.flags.wbc === 'high');
+});
+
+section('US ילדים — Graf DDH ו-IVH/PVL עם ACR/Nelson');
+
+test('US: קלט ריק / חסר Alpha נכשל סגור', () => {
+  const empty = runPediatricUltrasound({});
+  assertEq(empty.ok, false);
+  const noAlpha = runPediatricUltrasound({ hips: { beta_deg: 40 } });
+  assertEq(noAlpha.ok, false);
+  assertEq(noAlpha.reason, 'missing_alpha');
+});
+
+test('US: Graf Type I מול IIa לפי α וגיל', () => {
+  const mature = runPediatricUltrasound({
+    patient: { age_days: 60 },
+    hips: { alpha_deg: 62, beta_deg: 50 },
+    mode: 'development',
+  });
+  assert(mature.ok);
+  assertEq(mature.graf[0].type, 'I');
+  assertEq(mature.emergency, false);
+
+  const iia = runPediatricUltrasound({
+    patient: { age_days: 60 },
+    hips: { alpha_deg: 54, beta_deg: 60 },
+    mode: 'development',
+  });
+  assertEq(iia.graf[0].type, 'IIa');
+  assert(iia.factBlock.anchors.has('needs_verification.acr.pediatric.ddh'));
+  assert(iia.factBlock.anchors.has('needs_verification.nelson.orthopedics.developmental_dysplasia_hip'));
+  const guard = runAnchorGuards({ output: engineOutput(iia), factBlock: iia.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('US: Graf Type IV (פריקה) ו-IIb לפי גיל ≥12 שבועות', () => {
+  const iv = runPediatricUltrasound({
+    patient: { age_days: 90 },
+    hips: { dislocated: true, inverted_labrum: true },
+    mode: 'development',
+  });
+  assertEq(iv.graf[0].type, 'IV');
+
+  const iib = runPediatricUltrasound({
+    patient: { age_days: 100 },
+    hips: { alpha_deg: 54 },
+    mode: 'development',
+  });
+  assertEq(iib.graf[0].type, 'IIb');
+});
+
+test('US: IVH דרגה 4 ו-PVL → Red flag נוירוכירורגי/נאונטולוגי', () => {
+  const ivh = runPediatricUltrasound({
+    patient: { age_days: 5 },
+    cranial: { ivh_grade: 4 },
+    mode: 'development',
+  });
+  assert(ivh.emergency);
+  assert(ivh.red_flags.some((f) => f.flag_key === 'us.ivh_grade_3_4'));
+  assert(ivh.red_flags.some((f) => /נוירוכירורגי|נאונטולוג/.test(f.action_he)));
+  assert(ivh.factBlock.anchors.has('needs_verification.nelson.neonatology.ivh'));
+  assert(ivh.factBlock.anchors.has('needs_verification.acr.pediatric.neurosonography'));
+
+  const pvl = runPediatricUltrasound({
+    patient: { age_days: 21 },
+    cranial: { pvl: true },
+    mode: 'development',
+  });
+  assert(pvl.red_flags.some((f) => f.flag_key === 'us.pvl'));
+  const guard = runAnchorGuards({ output: engineOutput(ivh), factBlock: ivh.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('ACR הוא עוגן ספרותי מעוצב', () => {
+  const acr = parseLiteratureCitation('needs_verification.acr.pediatric.ddh');
+  assertEq(acr.corpus, 'acr');
+  assertEq(acr.chapter, 'pediatric');
+  assertEq(acr.section, 'ddh');
+  assert(acr.display_he.includes('American College of Radiology'));
 });
 
 /* ── סיכום ────────────────────────────────────────────────────────────── */

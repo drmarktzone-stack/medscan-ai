@@ -2,7 +2,7 @@
  * DoctorPedAI — עוגני ספרות מאושרת
  *
  * פלט דיאגנוסטי / המלצה חייב להצביע על פרק וסעיף במקור מאושר:
- * Nelson, חוזר משרד הבריאות, AES, ILAE, OMIM או Orphanet.
+ * Nelson, חוזר משרד הבריאות, AES, ILAE, OMIM, Orphanet או ACR.
  * אין כאן תוכן מועתק — רק מזהי עוגן + פירוק לפרק/סעיף.
  */
 
@@ -14,6 +14,7 @@ export const APPROVED_LITERATURE_PREFIXES = Object.freeze([
   'ilae.',
   'omim.',
   'orphanet.',
+  'acr.',
 ]);
 
 /** טיוטות שצורתן ספרותית אך טרם אומתו מול המקור. */
@@ -32,6 +33,7 @@ const CORPORA = Object.freeze([
   { prefix: 'ilae.', corpus: 'ilae', label_he: 'International League Against Epilepsy (ILAE)', kind: 'guideline' },
   { prefix: 'omim.', corpus: 'omim', label_he: 'OMIM', kind: 'catalog' },
   { prefix: 'orphanet.', corpus: 'orphanet', label_he: 'Orphanet', kind: 'catalog' },
+  { prefix: 'acr.', corpus: 'acr', label_he: 'American College of Radiology (ACR)', kind: 'guideline' },
 ]);
 
 export function isApprovedLiteratureAnchor(anchor) {
