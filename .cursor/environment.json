@@ -1,0 +1,17 @@
+{
+  "name": "MedScan AI (Base44)",
+  "install": "npm install",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "npm run dev -- --host",
+      "description": "Vite frontend dev server for the MedScan AI Base44 app (serves on port 5173)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "vite dev server",
+      "port": 5173
+    }
+  ]
+}
