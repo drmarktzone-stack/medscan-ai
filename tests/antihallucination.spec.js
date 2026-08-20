@@ -39,6 +39,8 @@ import {
   isApprovedLiteratureAnchor,
 } from '../src/lib/medscan/knowledge/approvedLiterature.js';
 import { toPatientFacts } from '../src/lib/medscan/deterministic/labNormalize.js';
+import { runEegInterpreter, preprocessEeg } from '../src/lib/medscan/engines/eegInterpreter.js';
+import { runMetabolicInterpreter } from '../src/lib/medscan/engines/metabolicInterpreter.js';
 
 /* ── מיני-runner ─────────────────────────────────────────────────────── */
 let passed = 0, failed = 0;
@@ -1047,6 +1049,241 @@ test('Nelson/MOH: FactBlock מציג פרק וסעיף; פלט לא-מעוגן �
     incomplete.blocking.some((v) => v.code === 'incomplete_literature_locator'),
     'עוגן בלי סעיף לא נחסם',
   );
+});
+
+section('EEG ילדים — תבניות פתולוגיות, דגלים אדומים ועיגון ILAE/AES/Nelson');
+
+function eegSine(freqHz, seconds = 4, sr = 128) {
+  const n = sr * seconds;
+  const samples = new Float32Array(n);
+  for (let i = 0; i < n; i++) samples[i] = Math.sin((2 * Math.PI * freqHz * i) / sr);
+  return { samples, sampleRate: sr };
+}
+
+function engineOutput(result) {
+  return {
+    directions: (result.differential ?? []).map((d) => ({
+      direction_id: d.direction_id,
+      diagnosis_direction_he: d.diagnosis_direction_he,
+      source_anchors: d.source_anchors,
+    })),
+    recommended_tests: result.recommended_tests ?? [],
+    claims: [],
+    red_flags: result.red_flags ?? [],
+  };
+}
+
+test('EEG: קלט ריק נכשל סגור', () => {
+  const r = runEegInterpreter({});
+  assertEq(r.ok, false);
+  assert(r.reason === 'no_eeg_input');
+});
+
+test('EEG: Delta בילוד הוא תואם-גיל ולא מסומן כפתולוגיה אוטומטית', () => {
+  const pre = preprocessEeg(eegSine(1.5), { ageDays: 7 });
+  assert(pre.ok, pre.reason);
+  assertEq(pre.dominant_band, 'delta');
+  assertEq(pre.unexpected_slowing_for_age, false);
+  const r = runEegInterpreter({
+    patient: { age_days: 7 },
+    signal: eegSine(1.5),
+    mode: 'development',
+  });
+  assert(r.ok);
+  assert(!r.matched_patterns.includes('eeg.focal_slowing'));
+  assert(!r.emergency);
+});
+
+test('EEG: Hypsarrhythmia → דגל אדום למיון/טיפול נמרץ + FactBlock עם Nelson/ILAE/AES', () => {
+  const r = runEegInterpreter({
+    patient: { age_months: 6 },
+    annotations: { hypsarrhythmia: true },
+    findings: ['infantile spasms'],
+    mode: 'development',
+  });
+  assert(r.ok);
+  assert(r.matched_patterns.includes('eeg.hypsarrhythmia'));
+  assert(r.emergency);
+  assert(r.red_flags.some((f) => /מיון|טיפול נמרץ/.test(f.action_he)));
+  assert(r.differential.some((d) => /West/i.test(d.diagnosis_direction_he)));
+  assert(r.differential.some((d) => /מבני/.test(d.diagnosis_direction_he)));
+  assert(r.recommended_tests.some((t) => /MRI/.test(t.test_he)));
+  assert(r.factBlock.anchors.has('needs_verification.nelson.neurology.infantile_spasms'));
+  assert(r.factBlock.anchors.has('needs_verification.ilae.syndrome.west'));
+  assert(r.factBlock.anchors.has('needs_verification.aes.guideline.infantile_spasms'));
+  assert(r.factBlock.text.includes('ILAE') || r.factBlock.text.includes('Nelson'));
+  const guard = runAnchorGuards({ output: engineOutput(r), factBlock: r.factBlock });
+  assertEq(guard.blocking.length, 0, `עוגן EEG נחסם: ${JSON.stringify(guard.blocking)}`);
+});
+
+test('EEG: Spike-and-Wave 3Hz → Absence ולא Status', () => {
+  const r = runEegInterpreter({
+    patient: { age_years: 7 },
+    annotations: { spike_wave: { present: true, frequency_hz: 3 } },
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('eeg.absence_3hz'));
+  assert(!r.matched_patterns.includes('eeg.status_epilepticus'));
+  assertEq(r.emergency, false);
+});
+
+test('EEG: Status Epilepticus (משך ≥5 דק) → התרעת חירום', () => {
+  const r = runEegInterpreter({
+    patient: { age_years: 4 },
+    annotations: { seizure_duration_min: 12 },
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('eeg.status_epilepticus'));
+  assert(r.emergency);
+  assert(r.red_flags.some((f) => f.flag_key === 'eeg.status_epilepticus'));
+});
+
+test('EEG: Burst-suppression / אנצפלופתיה → דגל אדום', () => {
+  const r = runEegInterpreter({
+    patient: { age_days: 10 },
+    annotations: { burst_suppression: true, background: 'disorganized' },
+    findings: ['encephalopathy'],
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('eeg.burst_suppression') || r.matched_patterns.includes('eeg.encephalopathy'));
+  assert(r.emergency);
+});
+
+test('EEG: ספייקים → אבחנה מבדלת שפירה מול נגע מבני; פלט לא-מעוגן נחסם', () => {
+  const r = runEegInterpreter({
+    patient: { age_years: 8 },
+    annotations: { spikes: true },
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('eeg.spikes'));
+  assert(r.differential.some((d) => /שפירה|Rolandic/i.test(d.diagnosis_direction_he)));
+  assert(r.differential.some((d) => /מבני/.test(d.diagnosis_direction_he)));
+  const unanchored = runAnchorGuards({
+    output: {
+      directions: [{ direction_id: 'X', diagnosis_direction_he: 'אפילפסיה', source_anchors: [] }],
+      claims: [],
+    },
+    factBlock: r.factBlock,
+  });
+  assert(unanchored.blocking.some((v) => v.code === 'missing_literature_anchor'));
+});
+
+test('EEG במצב clinical: טיוטה לא נכנסת כ-F# אך דגל החירום נשמר', () => {
+  const r = runEegInterpreter({
+    patient: { age_months: 6 },
+    annotations: { hypsarrhythmia: true },
+    mode: 'clinical',
+  });
+  assertEq(r.factBlock.facts.filter((f) => f.kind === 'kb').length, 0);
+  assert(r.red_flags.length >= 1);
+  assert(r.factBlock.facts.some((f) => f.kind === 'patient'));
+});
+
+section('מטבולי / סקר ילודים — IEM, OMIM/Orphanet/Nelson ודגלי משבר');
+
+test('Metabolic: קלט ריק נכשל סגור', () => {
+  const r = runMetabolicInterpreter({});
+  assertEq(r.ok, false);
+});
+
+test('Metabolic: PHE גבוה בסקר → PKU מעוגן OMIM/Orphanet/Nelson, בלי משבר', () => {
+  const r = runMetabolicInterpreter({
+    patient: { age_days: 5 },
+    nbs: [{ marker: 'phenylalanine', flag: 'positive' }],
+    amino_acids: [{ analyte: 'Phe', flag: 'high', value: null }],
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('iem.pku'));
+  assert(!r.matched_patterns.includes('iem.msud'));
+  assert(r.factBlock.anchors.has('needs_verification.omim.261600.pku'));
+  assert(r.factBlock.anchors.has('needs_verification.orphanet.716.pku'));
+  assert(r.factBlock.anchors.has('needs_verification.nelson.metabolism.pku'));
+  const ilae = parseLiteratureCitation('needs_verification.omim.261600.pku');
+  assertEq(ilae.corpus, 'omim');
+  assertEq(ilae.chapter, '261600');
+  assertEq(ilae.section, 'pku');
+  const guard = runAnchorGuards({ output: engineOutput(r), factBlock: r.factBlock });
+  assertEq(guard.blocking.length, 0, JSON.stringify(guard.blocking));
+});
+
+test('Metabolic: ערך בלי דגל אינו מאבחן PKU', () => {
+  const r = runMetabolicInterpreter({
+    patient: { age_days: 5 },
+    amino_acids: [{ analyte: 'phenylalanine', value: 1200, unit: 'umol/L' }],
+    mode: 'development',
+  });
+  assert(!r.matched_patterns.includes('iem.pku'), 'הומצא PKU מערך בלי דגל');
+});
+
+test('Metabolic: Leu+Ile גבוהים → MSUD', () => {
+  const r = runMetabolicInterpreter({
+    patient: { age_days: 8 },
+    amino_acids: [
+      { analyte: 'leucine', flag: 'high' },
+      { analyte: 'isoleucine', flag: 'high' },
+    ],
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('iem.msud'));
+  assert(r.red_flags.some((f) => f.flag_key === 'iem.msud'));
+});
+
+test('Metabolic: C8 גבוה → MCAD', () => {
+  const r = runMetabolicInterpreter({
+    patient: { age_days: 4 },
+    nbs: [{ marker: 'C8', result: 'positive' }],
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('iem.mcad'));
+});
+
+test('Metabolic: C3 + MMA + חמצת → Organic Acidemia', () => {
+  const r = runMetabolicInterpreter({
+    patient: { age_days: 6 },
+    nbs: [{ marker: 'C3', flag: 'high' }],
+    organic_acids: [{ analyte: 'methylmalonic', flag: 'high' }],
+    labs: [{ analyte: 'HCO3', flag: 'low', value: 8, unit: 'mmol/L' }],
+    findings: ['חמצת מטבולית', 'anion gap מוגבר'],
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('iem.organic_acidemia'));
+  assert(r.red_flags.some((f) => f.flag_key === 'metabolic.anion_gap_acidosis'));
+  assert(r.emergency);
+});
+
+test('Metabolic: היפראמונמיה + אפתיות בילוד → UCD ודגל PICU', () => {
+  const r = runMetabolicInterpreter({
+    patient: { age_days: 3 },
+    labs: [{ analyte: 'ammonia', flag: 'high' }],
+    amino_acids: [{ analyte: 'glutamine', flag: 'high' }],
+    findings: ['אפתיות'],
+    mode: 'development',
+  });
+  assert(r.matched_patterns.includes('iem.ucd'));
+  assert(r.red_flags.some((f) => f.flag_key === 'metabolic.hyperammonemia'));
+  assert(r.red_flags.some((f) => f.flag_key === 'metabolic.neonatal_lethargy'));
+  assert(r.emergency);
+  assert(r.red_flags.some((f) => /טיפול נמרץ/.test(f.action_he)));
+});
+
+test('Metabolic: היפוגליקמיה בילוד היא דגל אדום גם בלי דפוס IEM מלא', () => {
+  const r = runMetabolicInterpreter({
+    patient: { age_days: 2 },
+    labs: [{ analyte: 'glucose', flag: 'low' }],
+    mode: 'development',
+  });
+  assert(r.red_flags.some((f) => f.flag_key === 'metabolic.hypoglycemia'));
+  assert(r.emergency);
+});
+
+test('AES/ILAE/OMIM הם עוגנים ספרותיים מעוצבים', () => {
+  const aes = parseLiteratureCitation('needs_verification.aes.guideline.infantile_spasms');
+  assertEq(aes.corpus, 'aes');
+  assert(aes.display_he.includes('American Epilepsy Society'));
+  const ilae = parseLiteratureCitation('ilae.se.status_epilepticus');
+  assertEq(ilae.corpus, 'ilae');
+  assertEq(isApprovedLiteratureAnchor('ilae.se.status_epilepticus'), true);
+  assertEq(isApprovedLiteratureAnchor('needs_verification.ilae.se.status_epilepticus'), false);
 });
 
 /* ── סיכום ────────────────────────────────────────────────────────────── */

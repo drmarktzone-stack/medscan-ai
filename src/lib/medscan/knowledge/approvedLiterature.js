@@ -1,23 +1,38 @@
 /**
- * DoctorPedAI — עוגני ספרות מאושרת (Nelson Textbook / חוזרי משרד הבריאות)
+ * DoctorPedAI — עוגני ספרות מאושרת
  *
- * כל פלט דיאגנוסטי, המלצה טיפולית או מעבדתית חייב להצביע על פרק וסעיף
- * ספציפיים בנלסון, או על חוזר משרד הבריאות. ציטוט שאינו בצורת העוגן
- * הזו אינו "מקור" — הוא הזיה של סמכות.
- *
- * אין כאן תוכן קליני מועתק מהספר. רק מזהי עוגן + פירוק לפרק/סעיף.
+ * פלט דיאגנוסטי / המלצה חייב להצביע על פרק וסעיף במקור מאושר:
+ * Nelson, חוזר משרד הבריאות, AES, ILAE, OMIM או Orphanet.
+ * אין כאן תוכן מועתק — רק מזהי עוגן + פירוק לפרק/סעיף.
  */
 
-export const APPROVED_LITERATURE_PREFIXES = Object.freeze(['nelson.', 'nelson22.', 'moh.']);
-
-/** טיוטות שצורתן ספרותית (נלסון/חוזר) אך טרם אומתו מול המקור. */
-export const DRAFT_LITERATURE_PREFIXES = Object.freeze([
-  'needs_verification.nelson.',
-  'needs_verification.nelson22.',
-  'needs_verification.moh.',
+export const APPROVED_LITERATURE_PREFIXES = Object.freeze([
+  'nelson.',
+  'nelson22.',
+  'moh.',
+  'aes.',
+  'ilae.',
+  'omim.',
+  'orphanet.',
 ]);
 
+/** טיוטות שצורתן ספרותית אך טרם אומתו מול המקור. */
+export const DRAFT_LITERATURE_PREFIXES = Object.freeze(
+  APPROVED_LITERATURE_PREFIXES.map((p) => `needs_verification.${p}`),
+);
+
 const DRAFT_HEAD = 'needs_verification.';
+
+/** ארוך-לפני-קצר כדי ש-nelson22 לא ייבלע ב-nelson. */
+const CORPORA = Object.freeze([
+  { prefix: 'nelson22.', corpus: 'nelson22', label_he: 'Nelson Textbook of Pediatrics, 22e', kind: 'chapter' },
+  { prefix: 'nelson.', corpus: 'nelson', label_he: 'Nelson Textbook of Pediatrics', kind: 'chapter' },
+  { prefix: 'moh.', corpus: 'moh', label_he: 'חוזר משרד הבריאות', kind: 'circular' },
+  { prefix: 'aes.', corpus: 'aes', label_he: 'American Epilepsy Society (AES)', kind: 'guideline' },
+  { prefix: 'ilae.', corpus: 'ilae', label_he: 'International League Against Epilepsy (ILAE)', kind: 'guideline' },
+  { prefix: 'omim.', corpus: 'omim', label_he: 'OMIM', kind: 'catalog' },
+  { prefix: 'orphanet.', corpus: 'orphanet', label_he: 'Orphanet', kind: 'catalog' },
+]);
 
 export function isApprovedLiteratureAnchor(anchor) {
   const a = String(anchor ?? '').trim();
@@ -26,10 +41,6 @@ export function isApprovedLiteratureAnchor(anchor) {
   return APPROVED_LITERATURE_PREFIXES.some((p) => a.startsWith(p));
 }
 
-/**
- * עוגן בצורת נלסון/חוזר — כולל טיוטות `needs_verification.nelson.*` /
- * `needs_verification.moh.*`. אינו מאשר את *התוכן*, רק את צורת הציטוט.
- */
 export function isLiteratureShapedAnchor(anchor) {
   const a = String(anchor ?? '').trim();
   if (!a) return false;
@@ -37,17 +48,28 @@ export function isLiteratureShapedAnchor(anchor) {
   return DRAFT_LITERATURE_PREFIXES.some((p) => a.startsWith(p));
 }
 
+function matchCorpus(body) {
+  for (const c of CORPORA) {
+    if (body.startsWith(c.prefix)) {
+      return { ...c, rest: body.slice(c.prefix.length) };
+    }
+  }
+  return null;
+}
+
+function displayFor(corpus, chapter, section) {
+  if (corpus.kind === 'chapter') {
+    return `${corpus.label_he} — פרק ${chapter}, סעיף ${section}`;
+  }
+  if (corpus.kind === 'catalog') {
+    return `${corpus.label_he} ${chapter} — ${section}`;
+  }
+  return `${corpus.label_he} — ${chapter} / ${section}`;
+}
+
 /**
  * מפרק עוגן לפרק וסעיף.
- *
- * צורות נתמכות:
- *   nelson.{chapter}.{section}[.{rest}]
- *   nelson22.{chapter}.{section}
- *   moh.{circular}.{section}
- *   needs_verification.nelson.{chapter}.{section}
- *   needs_verification.moh.{circular}.{section}
- *
- * @returns {object|null}
+ * nelson.{chapter}.{section} · aes.{guideline}.{section} · omim.{id}.{name} וכו'.
  */
 export function parseLiteratureCitation(anchor) {
   const raw = String(anchor ?? '').trim();
@@ -55,60 +77,30 @@ export function parseLiteratureCitation(anchor) {
 
   const draft = raw.startsWith(DRAFT_HEAD);
   const body = draft ? raw.slice(DRAFT_HEAD.length) : raw;
+  const corpus = matchCorpus(body);
+  if (!corpus) return null;
 
-  let corpus = null;
-  let rest = body;
-  if (body.startsWith('nelson22.')) {
-    corpus = 'nelson22';
-    rest = body.slice('nelson22.'.length);
-  } else if (body.startsWith('nelson.')) {
-    corpus = 'nelson';
-    rest = body.slice('nelson.'.length);
-  } else if (body.startsWith('moh.')) {
-    corpus = 'moh';
-    rest = body.slice('moh.'.length);
-  } else {
-    return null;
-  }
-
-  const parts = rest.split('.').filter(Boolean);
-  if (!parts.length) return null;
-
+  const parts = corpus.rest.split('.').filter(Boolean);
+  if (parts.length < 2) return null;
   const chapter = parts[0];
-  const section = parts.length > 1 ? parts.slice(1).join('.') : null;
-  if (!section) return null;
-
-  const corpusLabelHe = corpus === 'moh'
-    ? 'חוזר משרד הבריאות'
-    : corpus === 'nelson22'
-      ? 'Nelson Textbook of Pediatrics, 22e'
-      : 'Nelson Textbook of Pediatrics';
-
-  const display_he = corpus === 'moh'
-    ? `${corpusLabelHe} — ${chapter} / ${section}`
-    : `${corpusLabelHe} — פרק ${chapter}, סעיף ${section}`;
+  const section = parts.slice(1).join('.');
 
   return {
     canonical: raw,
-    corpus,
+    corpus: corpus.corpus,
     chapter,
     section,
     draft,
     approved: !draft && isApprovedLiteratureAnchor(raw),
-    display_he,
+    display_he: displayFor(corpus, chapter, section),
     verification_status: draft ? 'draft_needs_verification' : 'verified_shape',
   };
 }
 
-/**
- * דורש שלפריט KB/פלט יהיה עוגן ספרותי עם פרק וסעיף.
- * כישלון → null (אין ניחוש של פרק).
- */
 export function requireLiteratureCitation(anchor) {
   return parseLiteratureCitation(anchor);
 }
 
-/** מוסיף שדה literature_citation לפריט KB אם העוגן ניתן לפירוק. */
 export function attachLiteratureCitation(item) {
   if (!item || typeof item !== 'object') return item;
   const anchor = item.source_anchor ?? item.topic_key ?? null;

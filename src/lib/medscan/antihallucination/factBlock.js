@@ -134,6 +134,7 @@ export function buildFactBlock({
     facts.push(fact);
     index.set(fact.id, fact);
     if (fact.source_anchor) anchors.add(fact.source_anchor);
+    for (const a of fact.extra_anchors ?? []) if (a) anchors.add(a);
     for (const n of extractNumbers(fact.text)) allowedNumbers.add(n);
     return fact;
   };
@@ -147,6 +148,7 @@ export function buildFactBlock({
       kind: 'kb',
       text: renderKbFact(withLit),
       source_anchor: item.source_anchor ?? item.topic_key ?? null,
+      extra_anchors: item.extra_anchors ?? [],
       literature_citation: withLit.literature_citation ?? null,
       literature_ok: Boolean(withLit.literature_ok),
       entity_key:
@@ -284,6 +286,7 @@ export function renderFactBlockText(facts, mode = 'clinical') {
     for (const f of group) {
       const meta = [];
       if (f.source_anchor) meta.push(`מקור: ${f.source_anchor}`);
+      if (f.extra_anchors?.length) meta.push(`מקורות נוספים: ${f.extra_anchors.join(', ')}`);
       if (f.literature_citation?.display_he) meta.push(f.literature_citation.display_he);
       if (f.is_draft) meta.push('⚠ טיוטה לא-מאומתת');
       const metaText = meta.length ? ` {${meta.join(' | ')}}` : '';

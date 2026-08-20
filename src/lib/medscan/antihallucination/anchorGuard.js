@@ -104,8 +104,9 @@ export function validateLiteratureAnchors(output, factBlock) {
         severity: 'block',
         path: where,
         message_he:
-          `הפלט ב-${where} אינו מעוגן לפרק/סעיף ב-Nelson Textbook of Pediatrics ` +
-          `או לחוזר משרד הבריאות. פלט דיאגנוסטי או המלצה ללא עיגון נחסם.`,
+          `הפלט ב-${where} אינו מעוגן לפרק/סעיף במקור מאושר ` +
+          `(Nelson Textbook, חוזר משרד הבריאות, AES, ILAE, OMIM או Orphanet). ` +
+          `פלט דיאגנוסטי או המלצה ללא עיגון נחסם.`,
       });
       return;
     }
@@ -117,7 +118,7 @@ export function validateLiteratureAnchors(output, factBlock) {
         path: where,
         anchors: list,
         message_he:
-          `העוגנים ב-${where} אינם מנלסון או מחוזר משרד הבריאות ` +
+          `העוגנים ב-${where} אינם ממקור מאושר (Nelson / חוזר משרד הבריאות / AES / ILAE / OMIM / Orphanet) ` +
           `(${list.join(', ')}). ציטוט ממקור אחר אינו מחליף עיגון מאושר.`,
       });
       return;
