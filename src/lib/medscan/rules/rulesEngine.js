@@ -9,7 +9,13 @@
  *   2. LabPatterns
  *   3. ClinicalRules
  *   4. Associations
+ *   5. Pediatric Pathways (ניתוב מסלול קהילה — מעל protocolTree)
  */
+
+import {
+  matchPediatricPathway,
+  pathwayToKbItem,
+} from '../engines/pediatricPathways.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
  * 1. RED FLAGS — קדימות מוחלטת
@@ -268,7 +274,16 @@ export function matchAssociations({ assocKb = [], findings = [], labs = [], pati
  * הרצה משולבת — הסדר הוא חלק מהבטיחות
  * ═══════════════════════════════════════════════════════════════════════ */
 
-export function runRulesEngine({ kb = {}, patient = {}, labs = [], findings = [], mode = 'clinical' }) {
+export function runRulesEngine({
+  kb = {},
+  patient = {},
+  labs = [],
+  findings = [],
+  mode = 'clinical',
+  query = null,
+  pathwayCategory = null,
+  currentPathwayStepId = null,
+} = {}) {
   const redFlagsResult = computeRedFlags({
     redFlagKb: kb.redFlags ?? [], patient, findings, labs, mode,
   });
@@ -276,12 +291,31 @@ export function runRulesEngine({ kb = {}, patient = {}, labs = [], findings = []
   const rulesResult = evaluateRules({ ruleKb: kb.rules ?? [], patient, labs, findings, mode });
   const assocResult = matchAssociations({ assocKb: kb.associations ?? [], findings, labs, patient, mode });
 
-  // פריטי ה-KB שיזינו את ה-FACT BLOCK — רק מה שהותאם בפועל
+  const pathwayQuery = buildPathwayQuery({ query, findings });
+  const pathwayMatch = matchPediatricPathway({
+    query: pathwayQuery,
+    age_days: patient.age_days,
+    category: pathwayCategory,
+    currentStepId: currentPathwayStepId,
+    catalog: kb.pathways,
+  });
+
+  // פריטי ה-KB שיזינו את ה-FACT BLOCK — רק מה שהותאם בפועל.
+  // מסלול טיוטה נדחף ל-kbItems רק במצב development; במצב clinical
+  // הסינון זהה לכללי/דפוסים — FactBlock/AnchorGuard לא רואים אותו.
   const kbItems = [
     ...patternsResult.matched.map((p) => ({ ...p, verification_status: p.verification_status })),
     ...rulesResult.fired,
     ...assocResult.matched,
   ];
+
+  const pathwayItem = pathwayToKbItem(pathwayMatch);
+  if (pathwayItem) {
+    const status = pathwayItem.verification_status ?? 'draft_needs_verification';
+    if (status !== 'flagged' && (mode !== 'clinical' || status === 'verified')) {
+      kbItems.push(pathwayItem);
+    }
+  }
 
   return {
     redFlags: redFlagsResult.redFlags,
@@ -291,9 +325,20 @@ export function runRulesEngine({ kb = {}, patient = {}, labs = [], findings = []
     firedRules: rulesResult.fired,
     nearMissRules: rulesResult.nearMiss,
     associations: assocResult.matched,
+    matchedPathway: pathwayMatch.matched,
+    activePathwayStep: pathwayMatch.active_step,
+    pathwayCandidates: pathwayMatch.candidates,
+    pathwaySkipped: pathwayMatch.skipped,
+    pathwayError_he: pathwayMatch.error_he,
     kbItems,
     isEmpty: kbItems.length === 0 && redFlagsResult.redFlags.length === 0,
   };
+}
+
+function buildPathwayQuery({ query, findings = [] }) {
+  const explicit = String(query ?? '').trim();
+  if (explicit) return explicit;
+  return (findings ?? []).filter(Boolean).join(' ');
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

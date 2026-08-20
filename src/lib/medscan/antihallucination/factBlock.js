@@ -89,6 +89,11 @@ function renderKbFact(item) {
     parts.push(`בירור מומלץ: ${item.recommended_workup_he.join('; ')}`);
   }
   if (item.action_he) parts.push(`פעולה: ${item.action_he}`);
+  if (item.active_step_id) {
+    parts.push(`שלב פעיל: ${item.active_step_title_he ?? item.active_step_id}`);
+  }
+  if (item.category) parts.push(`קטגוריית מסלול: ${item.category}`);
+  if (item.local_protocol_ref) parts.push(`פרוטוקול מקומי: ${item.local_protocol_ref}`);
   if (item.summary_he) parts.push(item.summary_he);
 
   return parts.filter(Boolean).join(' | ');
@@ -138,7 +143,7 @@ export function buildFactBlock({
       source_anchor: item.source_anchor ?? item.topic_key ?? null,
       entity_key:
         item.rule_key ?? item.pattern_key ?? item.assoc_key ?? item.flag_key ??
-        item.protocol_key ?? item.topic_key ?? null,
+        item.pathway_key ?? item.protocol_key ?? item.topic_key ?? null,
       kb_suspicion: item.suspicion ?? null,
       is_draft: draft,
       verification_status: item.verification_status ?? 'draft_needs_verification',

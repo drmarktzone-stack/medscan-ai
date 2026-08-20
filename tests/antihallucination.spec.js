@@ -24,6 +24,11 @@ import {
 import { normalizeLabs } from '../src/lib/medscan/deterministic/labNormalize.js';
 import { loadReferenceRanges, __resetRegistry } from '../src/lib/medscan/deterministic/refRanges.js';
 import { runRulesEngine } from '../src/lib/medscan/rules/rulesEngine.js';
+import { runAnchorGuards } from '../src/lib/medscan/antihallucination/anchorGuard.js';
+import {
+  getPediatricPathway,
+  matchPediatricPathway,
+} from '../src/lib/medscan/engines/pediatricPathways.js';
 
 /* ── מיני-runner ─────────────────────────────────────────────────────── */
 let passed = 0, failed = 0;
@@ -687,6 +692,110 @@ test('כלל שכמעט התקיים נשמר כמידע קליני', () => {
   assertEq(r.firedRules.length, 0);
   assertEq(r.nearMissRules.length, 1);
   assertEq(r.nearMissRules[0].matched_count, 2);
+});
+
+section('Pediatric Pathways — חיבור ל-rulesEngine / FactBlock / AnchorGuard');
+
+test('מסלול טיוטה מותאם ב-clinical אך אינו נכנס ל-kbItems', () => {
+  const r = runRulesEngine({
+    kb: {},
+    patient: { age_days: 2191 },
+    findings: ['חשד ל-ADHD'],
+    mode: 'clinical',
+  });
+  assertEq(r.matchedPathway?.pathway_key, 'community.adhd.workup');
+  assertEq(r.activePathwayStep?.step_id, 'adhd.intake');
+  assertEq(
+    r.kbItems.filter((i) => i.pathway_key).length,
+    0,
+    'מסלול טיוטה חדר ל-kbItems במצב קליני',
+  );
+});
+
+test('מסלול טיוטה ב-clinical נחסם גם ב-FactBlock אם הוזרק ידנית', () => {
+  const r = matchPediatricPathway({ query: 'ADHD', age_days: 2191 });
+  const item = {
+    ...r.matched,
+    title_he: r.matched.title_he,
+    conclusion_he: 'שלב',
+    verification_status: 'draft_needs_verification',
+  };
+  const fb = buildFactBlock({ kbItems: [item], mode: 'clinical' });
+  assertEq(fb.facts.filter((f) => f.kind === 'kb').length, 0, 'טיוטת מסלול חדרה ל-FACT BLOCK');
+  assert(fb.draftRejectedCount >= 1, 'הטיוטה לא נספרה');
+});
+
+test('מסלול מאומת נכנס ל-FACT BLOCK במצב קליני ונשמר העוגן', () => {
+  const verified = {
+    ...getPediatricPathway('community.adhd.workup'),
+    verification_status: 'verified',
+  };
+  const r = runRulesEngine({
+    kb: { pathways: [verified] },
+    patient: { age_days: 2191 },
+    findings: ['ADHD'],
+    mode: 'clinical',
+  });
+  const pathwayItems = r.kbItems.filter((i) => i.pathway_key === 'community.adhd.workup');
+  assertEq(pathwayItems.length, 1, 'מסלול מאומת לא נכנס ל-kbItems');
+  const fb = buildFactBlock({ kbItems: r.kbItems, mode: 'clinical' });
+  assert(fb.hasVerifiedClinicalContent, 'FactBlock לא זיהה ידע מאומת מהמסלול');
+  assert(fb.anchors.has(verified.source_anchor), 'עוגן המסלול לא נרשם');
+  const f = fb.facts.find((x) => x.kind === 'kb');
+  assertEq(f?.is_draft, false);
+  assertEq(f?.entity_key, 'community.adhd.workup');
+});
+
+test('במצב development טיוטת מסלול נכנסת ל-FACT BLOCK ומסומנת', () => {
+  const r = runRulesEngine({
+    kb: {},
+    patient: { age_days: 2191 },
+    findings: ['ADHD'],
+    mode: 'development',
+  });
+  assert(r.kbItems.some((i) => i.pathway_key === 'community.adhd.workup'));
+  const fb = buildFactBlock({ kbItems: r.kbItems, mode: 'development' });
+  const f = fb.facts.find((x) => x.kind === 'kb');
+  assertEq(f?.is_draft, true);
+  assert(fb.text.includes('טיוטה לא-מאומתת'), 'הטיוטה לא סומנה בטקסט');
+});
+
+test('AnchorGuard חוסם עוגן מסלול מומצא ומתיר עוגן שהגיע מ-FactBlock', () => {
+  const verified = {
+    ...getPediatricPathway('community.immunization.routine'),
+    verification_status: 'verified',
+  };
+  const r = runRulesEngine({
+    kb: { pathways: [verified] },
+    patient: { age_days: 400 },
+    findings: ['חיסוני שגרה'],
+    mode: 'clinical',
+  });
+  const fb = buildFactBlock({ kbItems: r.kbItems, mode: 'clinical' });
+  const fabricated = runAnchorGuards({
+    output: { claims: [{ claim_id: 'C1', source_anchors: ['nelson.fake.schedule'] }] },
+    factBlock: fb,
+  });
+  assert(fabricated.blocking.some((v) => v.code === 'fabricated_anchor'), 'עוגן מומצא לא נחסם');
+
+  const legit = runAnchorGuards({
+    output: { claims: [{ claim_id: 'C1', source_anchors: [verified.source_anchor] }] },
+    factBlock: fb,
+  });
+  assertEq(legit.blocking.length, 0, 'עוגן המסלול המאומת נחסם בטעות');
+});
+
+test('דפוס טיוטה עדיין נחסם כשמסלול רץ במקביל', () => {
+  const labs = [{ analyte: 'CRP', flag: 'high' }, { analyte: 'WBC', flag: 'high' }];
+  const r = runRulesEngine({
+    kb: { labPatterns: [DRAFT_PATTERN] },
+    patient: { age_days: 2191 },
+    labs,
+    findings: ['ADHD'],
+    mode: 'clinical',
+  });
+  assertEq(r.matchedPatterns.length, 0, 'דפוס טיוטה חדר כשמסלול היה ברקע');
+  assertEq(r.kbItems.length, 0, 'kbItems אינו ריק במצב קליני עם טיוטות בלבד');
 });
 
 /* ── סיכום ────────────────────────────────────────────────────────────── */
