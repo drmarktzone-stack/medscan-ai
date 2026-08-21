@@ -20,6 +20,8 @@ t('ארגז כלים כולל את מנועי MedScan במצב עצמאי', () =
   for (const need of ['labs', 'skin', 'ecg', 'toxicology', 'neurodev', 'milestones', 'trauma']) {
     assert(ids.includes(need), 'missing ' + need);
   }
+  const tox = listToolboxModules().find((m) => m.id === 'toxicology');
+  eq(tox.route, '/tox');
 });
 
 t('טריאז׳: תינוק עם חום → מיון; צינון ללא דגל בגיל ≥90י → ביתי', () => {
@@ -37,6 +39,7 @@ t('אנמנזה פעילה: ADHD בלי proceed לא מסיק', () => {
   });
   assert(r.awaiting_anamnesis, 'should wait for clarifying questions');
   assert((r.anamnesis.questions || []).length > 0);
+  assert(r.anamnesis.questions.every((q) => q.need), 'questions must expose need for the form');
 });
 
 t('סוללת כפתור → חירום + מנוע טוקסיקולוגיה; אין NAC', () => {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch, ListChecks, Database, GitCompare } from "lucide-react";
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical, UserCog, GitBranch, ListChecks, Database, Biohazard, Flame, Baby, Brain, Bone, Dna, Droplets, Waves, Mic, Pill } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -25,6 +25,20 @@ const tools = [
     bg: "bg-rose-50",
     color: "#f43f5e",
   },
+  { titleKey: "home.tox_title", descKey: "home.tox_desc", icon: Biohazard, path: "/tox", bg: "bg-orange-50", color: "#ea580c" },
+  { titleKey: "home.trauma_title", descKey: "home.trauma_desc", icon: Flame, path: "/trauma", bg: "bg-red-50", color: "#dc2626" },
+  { titleKey: "home.growth_title", descKey: "home.growth_desc", icon: Activity, path: "/growth", bg: "bg-lime-50", color: "#65a30d" },
+  { titleKey: "home.nutrition_title", descKey: "home.nutrition_desc", icon: Baby, path: "/nutrition", bg: "bg-amber-50", color: "#d97706" },
+  { titleKey: "home.neurodev_title", descKey: "home.neurodev_desc", icon: Brain, path: "/neurodev", bg: "bg-fuchsia-50", color: "#c026d3" },
+  { titleKey: "home.chronic_title", descKey: "home.chronic_desc", icon: Pill, path: "/chronic", bg: "bg-pink-50", color: "#db2777" },
+  { titleKey: "home.syndromes_title", descKey: "home.syndromes_desc", icon: GitBranch, path: "/syndromes", bg: "bg-violet-50", color: "#7c3aed" },
+  { titleKey: "home.metabolic_title", descKey: "home.metabolic_desc", icon: Droplets, path: "/metabolic", bg: "bg-teal-50", color: "#0d9488" },
+  { titleKey: "home.genetics_title", descKey: "home.genetics_desc", icon: Dna, path: "/genetics", bg: "bg-indigo-50", color: "#4f46e5" },
+  { titleKey: "home.csf_title", descKey: "home.csf_desc", icon: Droplets, path: "/csf", bg: "bg-sky-50", color: "#0284c7" },
+  { titleKey: "home.us_title", descKey: "home.us_desc", icon: Waves, path: "/us", bg: "bg-cyan-50", color: "#0891b2" },
+  { titleKey: "home.eeg_title", descKey: "home.eeg_desc", icon: Brain, path: "/eeg", bg: "bg-blue-50", color: "#2563eb" },
+  { titleKey: "home.audio_title", descKey: "home.audio_desc", icon: Mic, path: "/audio", bg: "bg-slate-50", color: "#475569" },
+  { titleKey: "home.referrals_title", descKey: "home.referrals_desc", icon: Bone, path: "/referrals", bg: "bg-yellow-50", color: "#ca8a04" },
   {
     titleKey: "home.ecg_title",
     descKey: "home.ecg_desc",

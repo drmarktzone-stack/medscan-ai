@@ -7,14 +7,22 @@ import BackButton from "@/components/BackButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
 import { runDoctorPedAI } from "@/lib/medscan/doctorped/index.js";
+import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
 
 const CHIPS = [
   { he: "חום", en: "fever", ar: "حمى" },
   { he: "שיעול", en: "cough", ar: "سعال" },
+  { he: "צינון", en: "cold", ar: "زكام" },
   { he: "פריחה", en: "rash", ar: "طفح" },
+  { he: "פריחה שאינה מלבינה", en: "non-blanching rash", ar: "طفح لا يبيض" },
   { he: "הקאות", en: "vomiting", ar: "قيء" },
+  { he: "שלשול", en: "diarrhea", ar: "إسهال" },
   { he: "כאב אוזן", en: "ear pain", ar: "ألم أذن" },
+  { he: "כאב בטן", en: "abdominal pain", ar: "ألم بطن" },
   { he: "ישנוניות", en: "lethargy", ar: "خمول" },
+  { he: "קושי בנשימה", en: "difficulty breathing", ar: "صعوبة تنفس" },
+  { he: "פרכוס", en: "seizure", ar: "نوبة" },
+  { he: "חבלת ראש", en: "head trauma", ar: "رض رأس" },
   { he: "סוללת כפתור", en: "button battery", ar: "بطارية زر" },
 ];
 
@@ -25,6 +33,7 @@ export default function ParentPortal() {
   const [mchat, setMchat] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [acked, setAcked] = useState(false);
 
   const chipLabel = (c) => (lang === "en" ? c.en : lang === "ar" ? c.ar : c.he);
   const toggle = (c) => {
@@ -34,8 +43,9 @@ export default function ParentPortal() {
 
   const handleRun = () => {
     setLoading(true);
+    setAcked(false);
     try {
-      setResult(runDoctorPedAI({
+      const next = runDoctorPedAI({
         persona: "parent",
         integrationMode: "unified",
         patient: { age_months: ageMonths ? Number(ageMonths) : undefined },
@@ -45,11 +55,16 @@ export default function ParentPortal() {
         questionnaires: mchat !== "" ? { mchat_total: Number(mchat) } : {},
         locale: lang,
         mode: "development",
-      }));
+      });
+      setResult(next);
+      persistDoctorPedEncounter({ result: next, locale: lang }).catch(() => {});
     } finally {
       setLoading(false);
     }
   };
+
+  const urgency = result?.triage?.urgency;
+  const emergency = Boolean(result?.emergency);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50/70 via-white to-slate-50">
@@ -71,29 +86,37 @@ export default function ParentPortal() {
               key={c.en}
               type="button"
               onClick={() => toggle(c)}
-              className={`text-xs px-3 py-1.5 rounded-full border ${selected.includes(c.en) ? "bg-rose-600 text-white border-rose-600" : "bg-white"}`}
+              className={`text-sm px-3 py-2 rounded-full border ${selected.includes(c.en) ? "bg-rose-600 text-white border-rose-600" : "bg-white"}`}
             >
               {chipLabel(c)}
             </button>
           ))}
         </div>
         <Input type="number" placeholder={t("dp.mchat")} value={mchat} onChange={(e) => setMchat(e.target.value)} />
-        <Button className="w-full" disabled={loading || selected.length === 0} onClick={handleRun}>
+        <Button className="w-full h-12 text-base" disabled={loading || selected.length === 0} onClick={handleRun}>
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("dp.parent_run")}
         </Button>
 
-        {result?.emergency && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-            <p className="font-bold text-red-800 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4" /> {t("dp.parent_ed")}
+        {emergency && (
+          <div className="bg-red-600 text-white rounded-2xl p-5 space-y-3">
+            <p className="font-extrabold text-xl flex items-center gap-2">
+              <AlertTriangle className="w-6 h-6" /> {t("dp.parent_ed")}
             </p>
-            <p className="text-sm mt-1">{result.parent_plan_he}</p>
+            <p className="text-sm">{result.parent_plan_he}</p>
+            {!acked && (
+              <Button className="w-full bg-white text-red-700 hover:bg-red-50" onClick={() => setAcked(true)}>
+                {t("dp.ack_emergency")}
+              </Button>
+            )}
           </div>
         )}
 
-        {result && !result.emergency && (
-          <div className="bg-white border rounded-xl p-4 space-y-2">
-            <p className="font-semibold text-sm">{result.parent_plan_he}</p>
+        {result && !emergency && (
+          <div className={`border rounded-xl p-4 space-y-2 ${urgency === "home_care" ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}>
+            <p className="font-semibold text-sm">
+              {urgency === "home_care" ? t("dp.parent_home") : t("dp.parent_hmo")}
+            </p>
+            <p className="text-sm">{result.parent_plan_he}</p>
             <p className="text-xs text-slate-600">{result.parent_note_he}</p>
             {result.medication_guide?.message_he && (
               <p className="text-xs">{result.medication_guide.message_he}</p>

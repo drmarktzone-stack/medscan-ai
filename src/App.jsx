@@ -9,6 +9,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import AppLayout from "@/components/AppLayout";
 import { I18nProvider } from '@/lib/i18n';
+import { PatientSessionProvider } from '@/lib/doctorped/patientSession';
 
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -35,6 +36,11 @@ import SkinValidation from '@/pages/SkinValidation';
 import KnowledgeCoverage from '@/pages/KnowledgeCoverage';
 import DoctorPedWorkbench from '@/pages/DoctorPedWorkbench';
 import ParentPortal from '@/pages/ParentPortal';
+import {
+  ToxicologyPage, TraumaPage, GrowthPage, NutritionPage, NeurodevPage,
+  ChronicPage, SyndromesPage, MetabolicPage, GeneticsPage, CsfPage,
+  UltrasoundPage, EegPage, AudioPage, ReferralsPage,
+} from '@/pages/doctorped/tools';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -85,6 +91,20 @@ const AuthenticatedApp = () => {
           <Route path="/knowledge-coverage" element={<KnowledgeCoverage />} />
           <Route path="/doctorped" element={<DoctorPedWorkbench />} />
           <Route path="/parent" element={<ParentPortal />} />
+          <Route path="/tox" element={<ToxicologyPage />} />
+          <Route path="/trauma" element={<TraumaPage />} />
+          <Route path="/growth" element={<GrowthPage />} />
+          <Route path="/nutrition" element={<NutritionPage />} />
+          <Route path="/neurodev" element={<NeurodevPage />} />
+          <Route path="/chronic" element={<ChronicPage />} />
+          <Route path="/syndromes" element={<SyndromesPage />} />
+          <Route path="/metabolic" element={<MetabolicPage />} />
+          <Route path="/genetics" element={<GeneticsPage />} />
+          <Route path="/csf" element={<CsfPage />} />
+          <Route path="/us" element={<UltrasoundPage />} />
+          <Route path="/eeg" element={<EegPage />} />
+          <Route path="/audio" element={<AudioPage />} />
+          <Route path="/referrals" element={<ReferralsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
@@ -96,6 +116,7 @@ function App() {
   return (
     <AuthProvider>
       <I18nProvider>
+        <PatientSessionProvider>
         <QueryClientProvider client={queryClientInstance}>
         <Router>
           <ScrollToTop />
@@ -103,6 +124,7 @@ function App() {
         </Router>
         <Toaster />
         </QueryClientProvider>
+        </PatientSessionProvider>
       </I18nProvider>
     </AuthProvider>
   )

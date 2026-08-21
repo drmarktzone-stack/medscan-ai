@@ -96,6 +96,7 @@ export function buildAnamnesisQuestions({
         open.push({
           id: q.id,
           cluster: cluster.id,
+          need: q.need,
           i18n_key: q.i18n_key,
           question_he: t(locale, q.i18n_key),
           verification_status: DRAFT,

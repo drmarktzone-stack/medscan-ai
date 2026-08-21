@@ -1,8 +1,6 @@
-# Lovable prompts (DoctorPedAI)
+# Lovable
 
-1. Open Lovable and connect this GitHub repo (`medscan-ai`).
-2. Paste the **entire** contents of `DOCTORPEDAI_FULL_BUILD.md` as the product / build prompt.
-3. Do not ask Lovable to rewrite `src/lib/medscan/**` clinical engines.
-4. After the build, run `npm test` and `npm run build` on this repo before publish.
-
-The markdown file is the prompt. Nothing else is required.
+1. הקוד הקליני והמסכים כבר בפרויקט.
+2. הדביקו את **כל** `LOVABLE_SUPABASE_LIVE.md` ב-Lovable.
+3. Lovable מחבר **Supabase** (נתונים חיים) — לא GitHub כמסד.
+4. אחרי חיבור: `npm test` ו-`npm run build`.

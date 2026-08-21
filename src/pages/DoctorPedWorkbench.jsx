@@ -1,48 +1,70 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Stethoscope, Loader2, AlertTriangle, ListChecks } from "lucide-react";
+import { Stethoscope, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import BackButton from "@/components/BackButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import PatientStrip from "@/components/doctorped/PatientStrip";
+import EngineResultPanel from "@/components/doctorped/EngineResultPanel";
 import { useI18n } from "@/lib/i18n";
+import { usePatientSession } from "@/lib/doctorped/patientSession";
 import { runDoctorPedAI, listToolboxModules } from "@/lib/medscan/doctorped/index.js";
-
-const splitList = (s) => s.split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
+import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
 
 export default function DoctorPedWorkbench() {
   const { t, lang } = useI18n();
-  const [ageValue, setAgeValue] = useState("");
-  const [ageUnit, setAgeUnit] = useState("years");
-  const [weight, setWeight] = useState("");
-  const [presentation, setPresentation] = useState("");
-  const [findingsText, setFindingsText] = useState("");
+  const { session, patch, patchFeature, patient, findings } = usePatientSession();
   const [proceed, setProceed] = useState(false);
+  const [answers, setAnswers] = useState({});
+  const [pupils, setPupils] = useState("");
+  const [rrFlag, setRrFlag] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [saveNote, setSaveNote] = useState(null);
   const toolbox = useMemo(() => listToolboxModules(), []);
 
-  const handleRun = () => {
+  const run = (extra = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const patient = {
-        [ageUnit === "days" ? "age_days" : ageUnit === "months" ? "age_months" : "age_years"]:
-          Number(ageValue),
-        weight_kg: weight ? Number(weight) : undefined,
+      const features = {
+        ...session.features,
+        vision_tested: session.features.vision_tested === true,
+        hearing_tested: session.features.hearing_tested === true,
+        gluten_containing_diet: session.features.gluten_containing_diet === true,
+        gluten_free_diet: session.features.gluten_free_diet === true,
+        growth_plotted: session.features.growth_plotted === true,
+        ...extra.features,
       };
-      setResult(runDoctorPedAI({
+      const next = runDoctorPedAI({
         persona: "clinician",
         integrationMode: "unified",
         patient,
-        presentation,
-        findings: splitList(findingsText),
+        presentation: session.presentation,
+        findings: extra.findings ?? findings,
+        features,
+        answers: { ...answers, ...extra.answers },
+        vitals: {
+          gcs: session.gcs !== "" ? Number(session.gcs) : undefined,
+          pupils: pupils || undefined,
+          rr_flag: rrFlag || undefined,
+        },
+        gcs: session.gcs !== "" ? Number(session.gcs) : undefined,
+        father_cm: session.fatherCm !== "" ? Number(session.fatherCm) : undefined,
+        mother_cm: session.motherCm !== "" ? Number(session.motherCm) : undefined,
         proceed,
         locale: lang,
         mode: "development",
-      }));
+      });
+      setResult(next);
+      if (next?.ok && !next.awaiting_anamnesis) {
+        persistDoctorPedEncounter({ result: next, locale: lang }).then((saved) => {
+          setSaveNote(saved?.backend === "supabase" ? t("dp.save_ok") : t("dp.save_local"));
+        }).catch(() => setSaveNote(t("dp.save_local")));
+      }
     } catch (e) {
       setError(e.message || t("dp.error"));
     } finally {
@@ -53,7 +75,7 @@ export default function DoctorPedWorkbench() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-50/60 via-white to-slate-50">
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
+        <div className="max-w-5xl mx-auto px-5 py-3 flex items-center gap-3">
           <BackButton />
           <Stethoscope className="w-5 h-5 text-cyan-700" />
           <h1 className="font-bold text-base flex-1">{t("dp.workbench_title")}</h1>
@@ -61,87 +83,105 @@ export default function DoctorPedWorkbench() {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
-        <p className="text-xs text-slate-600 leading-relaxed bg-cyan-50 border border-cyan-100 rounded-xl p-3">
-          {t("dp.workbench_intro")}
-        </p>
-
-        <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <Input type="number" placeholder={t("dp.age")} value={ageValue} onChange={(e) => setAgeValue(e.target.value)} />
-            <select className="h-10 rounded-md border px-2 text-sm" value={ageUnit} onChange={(e) => setAgeUnit(e.target.value)}>
-              <option value="days">{t("dp.days")}</option>
-              <option value="months">{t("dp.months")}</option>
-              <option value="years">{t("dp.years")}</option>
-            </select>
+      <div className="max-w-5xl mx-auto px-5 py-6 grid md:grid-cols-[minmax(0,1fr)_280px] gap-5">
+        <div className="space-y-5">
+          <p className="text-xs text-slate-600 leading-relaxed bg-cyan-50 border border-cyan-100 rounded-xl p-3">
+            {t("dp.workbench_intro")}
+          </p>
+          <PatientStrip />
+          <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
+            <textarea className="w-full min-h-[72px] rounded-md border p-2 text-sm" placeholder={t("dp.presentation")} value={session.presentation} onChange={(e) => patch({ presentation: e.target.value })} />
+            <textarea className="w-full min-h-[72px] rounded-md border p-2 text-sm" placeholder={t("dp.findings")} value={session.findingsText} onChange={(e) => patch({ findingsText: e.target.value })} />
+            <div className="grid grid-cols-2 gap-2">
+              <Input placeholder={t("dp.pupils")} value={pupils} onChange={(e) => setPupils(e.target.value)} />
+              <Input placeholder={t("dp.rr")} value={rrFlag} onChange={(e) => setRrFlag(e.target.value)} />
+              <Input type="number" placeholder={t("dp.father")} value={session.fatherCm} onChange={(e) => patch({ fatherCm: e.target.value })} />
+              <Input type="number" placeholder={t("dp.mother")} value={session.motherCm} onChange={(e) => patch({ motherCm: e.target.value })} />
+            </div>
+            <div className="flex flex-wrap gap-3 text-xs text-slate-600">
+              {["vision_tested", "hearing_tested", "gluten_containing_diet", "growth_plotted"].map((k) => (
+                <label key={k} className="flex items-center gap-1">
+                  <input type="checkbox" checked={session.features[k] === true} onChange={(e) => patchFeature(k, e.target.checked)} />
+                  {t(`dp.feat.${k}`)}
+                </label>
+              ))}
+            </div>
+            <label className="flex items-center gap-2 text-xs text-slate-600">
+              <input type="checkbox" checked={proceed} onChange={(e) => setProceed(e.target.checked)} />
+              {t("dp.proceed")}
+            </label>
+            <Button className="w-full" disabled={loading || !session.presentation.trim()} onClick={() => run()}>
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("dp.run")}
+            </Button>
           </div>
-          <Input type="number" placeholder={t("dp.weight")} value={weight} onChange={(e) => setWeight(e.target.value)} />
-          <textarea className="w-full min-h-[72px] rounded-md border p-2 text-sm" placeholder={t("dp.presentation")} value={presentation} onChange={(e) => setPresentation(e.target.value)} />
-          <textarea className="w-full min-h-[72px] rounded-md border p-2 text-sm" placeholder={t("dp.findings")} value={findingsText} onChange={(e) => setFindingsText(e.target.value)} />
-          <label className="flex items-center gap-2 text-xs text-slate-600">
-            <input type="checkbox" checked={proceed} onChange={(e) => setProceed(e.target.checked)} />
-            {t("dp.proceed")}
-          </label>
-          <Button className="w-full" disabled={loading || !presentation.trim()} onClick={handleRun}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("dp.run")}
-          </Button>
-        </div>
 
-        {error && <p className="text-sm text-red-700">{error}</p>}
+          {error && <p className="text-sm text-red-700">{error}</p>}
+          {saveNote && <p className="text-[11px] text-slate-500">{saveNote}</p>}
 
-        {result?.awaiting_anamnesis && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
-            <p className="text-sm font-semibold">{t("dp.anamnesis")}</p>
-            {(result.anamnesis?.questions ?? []).map((q) => (
-              <p key={q.id} className="text-xs text-amber-900">• {q.question_he}</p>
-            ))}
-          </div>
-        )}
+          {result?.awaiting_anamnesis && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
+              <p className="text-sm font-semibold">{t("dp.anamnesis")}</p>
+              {(result.anamnesis?.questions ?? []).map((q) => (
+                <div key={q.id} className="space-y-1">
+                  <p className="text-xs text-amber-900">{q.question_he}</p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant={answers[q.need] === true ? "default" : "outline"} onClick={() => setAnswers((a) => ({ ...a, [q.need]: true }))}>{t("dp.yes")}</Button>
+                    <Button size="sm" variant={answers[q.need] === false ? "default" : "outline"} onClick={() => setAnswers((a) => ({ ...a, [q.need]: false }))}>{t("dp.no")}</Button>
+                  </div>
+                </div>
+              ))}
+              <Button className="w-full" onClick={() => run({ answers })}>{t("dp.run")}</Button>
+            </div>
+          )}
 
-        {result?.triage && (
-          <div className={`rounded-xl p-4 border ${result.emergency ? "bg-red-50 border-red-200" : "bg-white border-slate-100"}`}>
-            <p className="text-sm font-bold flex items-center gap-2">
-              {result.emergency && <AlertTriangle className="w-4 h-4 text-red-600" />}
-              {t("dp.triage")}: {result.triage.urgency}
-            </p>
-            {(result.red_flags ?? []).slice(0, 6).map((f) => (
-              <p key={f.flag_key} className="text-xs mt-1">{f.action_he || f.label_he}</p>
-            ))}
-          </div>
-        )}
-
-        {result?.differential?.length > 0 && (
-          <div className="bg-white rounded-xl border p-4 space-y-2">
-            <p className="text-sm font-semibold flex items-center gap-2"><ListChecks className="w-4 h-4" />{t("dp.ddx")}</p>
-            {result.differential.slice(0, 8).map((d, i) => (
-              <p key={d.direction_id || i} className="text-xs">
-                {d.must_not_miss ? "⚠ " : ""}{d.diagnosis_direction_he}
+          {result?.triage && (
+            <div className={`rounded-xl p-4 border ${result.emergency ? "bg-red-50 border-red-200" : "bg-white border-slate-100"}`}>
+              <p className="text-sm font-bold flex items-center gap-2">
+                {result.emergency && <AlertTriangle className="w-4 h-4 text-red-600" />}
+                {t("dp.triage")}: {result.triage.urgency}
               </p>
-            ))}
-          </div>
-        )}
+            </div>
+          )}
 
-        {result?.referral_gate && Object.keys(result.referral_gate).length > 0 && (
-          <div className="bg-white rounded-xl border p-4 space-y-1">
-            <p className="text-sm font-semibold">{t("dp.referrals")}</p>
-            {Object.entries(result.referral_gate).map(([k, v]) => (
-              <p key={k} className="text-xs">{k}: {v.message_he}</p>
-            ))}
-          </div>
-        )}
+          {result?.triggered_modules?.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {result.triggered_modules.map((id) => {
+                const mod = toolbox.find((m) => m.id === id);
+                return (
+                  <Link key={id} to={mod?.route || "/doctorped"} className="text-xs px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200">
+                    {mod?.title_he || id}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
 
-        <div className="bg-white rounded-xl border p-4">
-          <p className="text-sm font-semibold mb-2">{t("dp.toolbox")}</p>
-          <div className="grid grid-cols-2 gap-2">
-            {toolbox.map((m) => (
-              <Link key={m.id} to={m.route} className="text-xs border rounded-lg p-2 hover:bg-slate-50">
-                {m.title_he || t(m.i18n_key)}
-              </Link>
-            ))}
-          </div>
+          {result && !result.awaiting_anamnesis && <EngineResultPanel result={result} />}
+
+          {result?.referral_gate && Object.keys(result.referral_gate).length > 0 && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-1">
+              <p className="text-sm font-semibold">{t("dp.referrals")}</p>
+              {Object.entries(result.referral_gate).map(([k, v]) => (
+                <p key={k} className="text-xs">{k}: {v.allowed ? t("dp.refer_ok") : v.message_he}</p>
+              ))}
+              <Link to="/referrals" className="text-xs underline">{t("home.referrals_title")}</Link>
+            </div>
+          )}
         </div>
 
-        <DisclaimerBanner />
+        <aside className="space-y-4">
+          <div className="bg-white rounded-xl border p-4">
+            <p className="text-sm font-semibold mb-2">{t("dp.toolbox")}</p>
+            <div className="grid grid-cols-1 gap-2">
+              {toolbox.map((m) => (
+                <Link key={m.id} to={m.route} className="text-xs border rounded-lg p-2 hover:bg-slate-50">
+                  {m.title_he || t(m.i18n_key)}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <DisclaimerBanner />
+        </aside>
       </div>
     </div>
   );
