@@ -42,7 +42,7 @@ export async function runEcgFastAnalysis({
   patientRef,
   onStage,
   invokeLLM,           // optional override (tests)
-  model = VISION_MODEL,  // קריאת-התמונה על מודל-הראייה (Gemini) — המספרים מחושבים בקוד
+  model = VISION_MODEL,  // קריאת-התמונה ב-Claude. המספרים מחושבים בקוד.
 }) {
   onStage?.("uploading");
   const [fileUrls, allCases] = await Promise.all([

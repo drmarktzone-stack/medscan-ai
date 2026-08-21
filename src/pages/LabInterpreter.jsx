@@ -117,7 +117,9 @@ export default function LabInterpreter() {
       const toUpload = isPdf(file) ? file : await downscaleImageFile(file);
       const up = await requireBase44Core("UploadFile")({ file: toUpload });
       file_url = up?.file_url || null;
-    } catch { return merged; }
+    } catch (e) {
+      return { ...merged, reason: e.message || "upload_failed" };
+    }
     if (!file_url) return merged;
 
     // 1) חילוץ בצד-השרת (האמין ביותר — ללא תלות ב-pdf.js בדפדפן).
@@ -152,7 +154,7 @@ export default function LabInterpreter() {
     try {
       const allRows = [];
       const totals = { total: 0, readable: 0, needs_review: 0 };
-      let sexDetected = null, ageText = "", failed = 0;
+      let sexDetected = null, ageText = "", failed = 0, lastReason = "";
       for (const file of files) {
         try {
           const scan = await scanOneFile(file);
@@ -163,11 +165,17 @@ export default function LabInterpreter() {
             totals.needs_review += scan.stats?.needs_review || 0;
             if (!sexDetected && (scan.patient?.sex === "male" || scan.patient?.sex === "female")) sexDetected = scan.patient.sex;
             if (!ageText && scan.patient?.age_text) ageText = scan.patient.age_text;
-          } else { failed++; }
-        } catch { failed++; }
+          } else {
+            failed++;
+            if (scan.reason) lastReason = scan.reason;
+          }
+        } catch (e) {
+          failed++;
+          lastReason = e.message || lastReason;
+        }
       }
       if (!allRows.length) {
-        setScanInfo({ error: "לא הצלחתי לקרוא ערכים מהקבצים. נסה צילום חד יותר או מילוי ידני." });
+        setScanInfo({ error: lastReason || "לא הצלחתי לקרוא ערכים מהקבצים. נסו צילום חד יותר, או מלאו ידנית — הפענוח הטקסטואלי עובד בלי סריקה." });
       } else {
         // מצרפים לשורות שכבר מולאו (סריקות קודמות או הקלדה ידנית) — לא דורסים.
         const existing = rows.filter((r) => r.analyte.trim() && String(r.value).trim() !== "");

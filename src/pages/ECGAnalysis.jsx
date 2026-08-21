@@ -85,6 +85,7 @@ export default function ECGAnalysis() {
         updateUploadedUrls(fileUrls);
       } catch (err) {
         console.error("Upload failed", err);
+        setError(err.message || t("analysis.error_fallback"));
       } finally {
         setUploading(false);
       }
@@ -106,6 +107,7 @@ export default function ECGAnalysis() {
         setPriorUrls(urls.map((r) => r.file_url));
       } catch (err) {
         console.error("prior upload failed", err);
+        setError(err.message || t("analysis.error_fallback"));
       } finally {
         setPriorUploading(false);
       }
@@ -202,6 +204,7 @@ export default function ECGAnalysis() {
           imageUrls={uploadedUrls}
           onImageUrlsChange={updateUploadedUrls}
         />
+        <p className="text-[11px] text-slate-500 leading-relaxed">{t("analysis.needs_base44")}</p>
 
         {(files.length > 0 || uploadedUrls.length > 0) && !result && (
           <>

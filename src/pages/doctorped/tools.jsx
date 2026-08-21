@@ -28,7 +28,48 @@ import {
 } from "@/lib/medscan/doctorped/index.js";
 
 const BURN_REGIONS = ["head", "neck", "anterior_trunk", "posterior_trunk", "upper_arm", "forearm", "hand", "buttocks", "genitalia", "thigh", "leg", "foot"];
+const BURN_HE = {
+  head: "ראש", neck: "צוואר", anterior_trunk: "גו קדמי", posterior_trunk: "גו אחורי",
+  upper_arm: "זרוע", forearm: "אמה", hand: "כף יד", buttocks: "ישבן",
+  genitalia: "גניטליה", thigh: "ירך", leg: "שוק", foot: "כף רגל",
+};
 const MILESTONES = ["social_smile", "head_control", "sits", "stands_or_pulls", "pincer_or_grasp", "babble_or_mama", "walks", "words", "two_word"];
+const MILESTONE_HE = {
+  social_smile: "חיוך חברתי", head_control: "שליטת ראש", sits: "ישיבה",
+  stands_or_pulls: "עמידה / משיכה לעמידה", pincer_or_grasp: "צביטה / אחיזה",
+  babble_or_mama: "מלמול / אמא", walks: "הליכה", words: "מילים", two_word: "צירוף שתי מילים",
+};
+const CHIP_HE = {
+  "button battery": "סוללת כפתור", magnets: "מגנטים", paracetamol: "פאראצטמול", ibuprofen: "איבופרופן",
+  cmpa: "חשד לחלב פרה", anaphylaxis: "אנפילקסיס", fpies: "FPIES", "projectile vomiting": "הקאה בקשת",
+  home: "בית", school: "גן / בית ספר",
+  "no eye contact": "אין קשר עין", "hand flapping": "נפנוף ידיים", "does not listen": "לא מקשיב", fidgets: "קופצני",
+  "abdominal pain": "כאב בטן", headache: "כאב ראש", "morning vomiting": "הקאה בוקר",
+  "wakes from sleep": "מעיר משינה", "blood in stool": "דם בצואה",
+  hypsarrhythmia: "היפסאריתמיה", spikes: "ספייקים", absence: "אבסנס",
+  burst_suppression: "burst suppression", status_epilepticus: "סטטוס אפילפטיקוס",
+};
+const NBS_CHIPS = [
+  { id: "phe:high", label: "פנילאלנין גבוה" },
+  { id: "leu:high", label: "לויצין גבוה" },
+  { id: "ammonia:high", label: "אמוניה גבוהה" },
+  { id: "c8:high", label: "C8 גבוה" },
+  { id: "c3:high", label: "C3 גבוה" },
+  { id: "glucose:low", label: "גלוקוז נמוך" },
+  { id: "hco3:low", label: "ביקרבונט נמוך" },
+];
+
+function aliasHe(id, aliases) {
+  const list = aliases?.[id];
+  if (Array.isArray(list)) {
+    const he = list.find((x) => /[\u0590-\u05FF]/.test(String(x)));
+    if (he) return he;
+  }
+  return CHIP_HE[id] || MILESTONE_HE[id] || BURN_HE[id] || id;
+}
+function chipOpts(ids, aliases) {
+  return ids.map((id) => ({ id, label: aliasHe(id, aliases) }));
+}
 
 function useRun() {
   const { lang } = useI18n();
@@ -38,7 +79,7 @@ function useRun() {
   const go = (fn) => {
     setLoading(true);
     try { setResult(fn({ locale: lang, patient: ctx.patient, findings: ctx.findings, mode: "development" })); }
-    catch (e) { setResult({ ok: false, reason: e.message }); }
+    catch (e) { setResult({ ok: false, reason: e.message, message_he: e.message }); }
     finally { setLoading(false); }
   };
   return { ...ctx, lang, result, setResult, loading, go };
@@ -66,7 +107,7 @@ export function ToxicologyPage() {
       <Input placeholder={t("dp.ingested_mg")} value={ingested} onChange={(e) => setIngested(e.target.value)} />
       <Input placeholder={t("dp.pupils")} value={pupils} onChange={(e) => setPupils(e.target.value)} />
       <Input placeholder={t("dp.rr")} value={rr} onChange={(e) => setRr(e.target.value)} />
-      <ChipToggle options={["button battery", "magnets", "paracetamol", "ibuprofen"].map((id) => ({ id, label: id }))} selected={extra} onToggle={setExtra} />
+      <ChipToggle options={chipOpts(["button battery", "magnets", "paracetamol", "ibuprofen"])} selected={extra} onToggle={setExtra} />
       <RunBar loading={u.loading} onClick={() => u.go((p) => runToxicologyEngine({
         ...p, findings: [...p.findings, ...extra], ingested_mg: ingested === "" ? null : Number(ingested),
         vitals: { gcs: u.session.gcs === "" ? undefined : Number(u.session.gcs), pupils, rr_flag: rr },
@@ -88,7 +129,7 @@ export function TraumaPage() {
       <div className="grid grid-cols-2 gap-2 text-xs">
         {BURN_REGIONS.map((r) => (
           <label key={r} className="flex items-center gap-1">
-            {r}
+            {BURN_HE[r] || r}
             <Input type="number" min="0" max="1" step="0.1" className="h-8" value={regions[r] ?? ""} onChange={(e) => setRegions((s) => ({ ...s, [r]: e.target.value }))} />
           </label>
         ))}
@@ -146,9 +187,9 @@ export function NutritionPage() {
     <ToolPageShell icon={Baby} titleKey="home.nutrition_title" introKey="home.nutrition_desc">
       <PatientStrip />
       <Input type="number" placeholder={t("dp.feeds")} value={feeds} onChange={(e) => setFeeds(e.target.value)} />
-      <ChipToggle options={["cmpa", "anaphylaxis", "fpies", "projectile vomiting"].map((id) => ({ id, label: id }))} selected={flags} onToggle={setFlags} />
+      <ChipToggle options={chipOpts(["cmpa", "anaphylaxis", "fpies", "projectile vomiting"])} selected={flags} onToggle={setFlags} />
       <p className="text-xs font-medium">{t("dp.milestones")}</p>
-      <ChipToggle options={MILESTONES.map((id) => ({ id, label: id }))} selected={canDo} onToggle={setCanDo} />
+      <ChipToggle options={chipOpts(MILESTONES)} selected={canDo} onToggle={setCanDo} />
       <RunBar loading={u.loading} onClick={() => u.go((p) => runInfantNutritionAndDevelopment({
         ...p, weight_kg: p.patient.weight_kg, feeds_per_day: Number(feeds) || 6,
         ga_weeks: p.patient.ga_weeks, can_do: canDo, findings: [...p.findings, ...flags],
@@ -169,8 +210,8 @@ export function NeurodevPage() {
     <ToolPageShell icon={Brain} titleKey="home.neurodev_title" introKey="home.neurodev_desc">
       <PatientStrip compact />
       <Input type="number" placeholder={t("dp.mchat")} value={mchat} onChange={(e) => setMchat(e.target.value)} />
-      <ChipToggle options={["home", "school"].map((id) => ({ id, label: id }))} selected={settings} onToggle={setSettings} />
-      <ChipToggle options={["no eye contact", "hand flapping", "does not listen", "fidgets"].map((id) => ({ id, label: id }))} selected={ticks} onToggle={setTicks} />
+      <ChipToggle options={chipOpts(["home", "school"])} selected={settings} onToggle={setSettings} />
+      <ChipToggle options={chipOpts(["no eye contact", "hand flapping", "does not listen", "fidgets"])} selected={ticks} onToggle={setTicks} />
       <RunBar loading={u.loading} onClick={() => u.go((p) => runNeurodevelopmentalEngine({
         ...p, findings: [...p.findings, ...ticks], mchat_total: mchat === "" ? null : Number(mchat), settings,
       }))} />
@@ -189,7 +230,7 @@ export function ChronicPage() {
   return (
     <ToolPageShell icon={Pill} titleKey="home.chronic_title" introKey="home.chronic_desc">
       <PatientStrip compact />
-      <ChipToggle options={["abdominal pain", "headache", "morning vomiting", "wakes from sleep", "blood in stool"].map((id) => ({ id, label: id }))} selected={flags} onToggle={setFlags} />
+      <ChipToggle options={chipOpts(["abdominal pain", "headache", "morning vomiting", "wakes from sleep", "blood in stool"])} selected={flags} onToggle={setFlags} />
       <div className="grid grid-cols-3 gap-2">
         <Input type="number" placeholder={t("dp.duration_m")} value={months} onChange={(e) => setMonths(e.target.value)} />
         <Input type="number" placeholder={t("dp.attacks")} value={attacks} onChange={(e) => setAttacks(e.target.value)} />
@@ -219,7 +260,7 @@ export function SyndromesPage() {
   return (
     <ToolPageShell icon={GitBranch} titleKey="home.syndromes_title" introKey="home.syndromes_desc">
       <PatientStrip compact />
-      <ChipToggle options={keys.map((id) => ({ id, label: id }))} selected={sel} onToggle={setSel} />
+      <ChipToggle options={chipOpts(keys, SYN_FEAT)} selected={sel} onToggle={setSel} />
       <RunBar loading={u.loading} onClick={() => u.go((p) => runSyndromeMatcher({
         ...p, findings: [...p.findings, ...sel], features: Object.fromEntries(sel.map((k) => [k, true])),
       }))} />
@@ -232,16 +273,19 @@ export function MetabolicPage() {
   const { t } = useI18n();
   const u = useRun();
   const [nbs, setNbs] = useState("");
+  const [chips, setChips] = useState([]);
   return (
     <ToolPageShell icon={Droplets} titleKey="home.metabolic_title" introKey="home.metabolic_desc">
       <PatientStrip compact />
+      <ChipToggle options={NBS_CHIPS} selected={chips} onToggle={setChips} />
       <textarea className="w-full min-h-[72px] rounded-md border p-2 text-sm" placeholder={t("dp.nbs")} value={nbs} onChange={(e) => setNbs(e.target.value)} />
       <RunBar loading={u.loading} onClick={() => {
-        const rows = splitList(nbs).map((tok) => {
-          const [analyte, flag = "high"] = tok.split(/[:\s]+/);
+        const tokens = [...chips, ...splitList(nbs)];
+        const rows = tokens.map((tok) => {
+          const [analyte, flag = "high"] = String(tok).split(/[:\s]+/);
           return { analyte, flag };
         });
-        u.go((p) => runMetabolicInterpreter({ ...p, nbs: rows, findings: [...p.findings, ...splitList(nbs)] }));
+        u.go((p) => runMetabolicInterpreter({ ...p, nbs: rows, findings: [...p.findings, ...tokens] }));
       }} />
       <EngineResultPanel result={u.result} />
     </ToolPageShell>
@@ -255,8 +299,12 @@ export function GeneticsPage() {
   return (
     <ToolPageShell icon={Dna} titleKey="home.genetics_title" introKey="home.genetics_desc">
       <PatientStrip compact />
-      <ChipToggle options={keys.map((id) => ({ id, label: id }))} selected={sel} onToggle={setSel} />
-      <RunBar loading={u.loading} onClick={() => u.go((p) => runGeneticsInterpreter({ ...p, findings: sel, features: sel }))} />
+      <ChipToggle options={chipOpts(keys, GEN_FEAT)} selected={sel} onToggle={setSel} />
+      <RunBar loading={u.loading} onClick={() => u.go((p) => runGeneticsInterpreter({
+        ...p,
+        findings: [...p.findings, ...sel],
+        features: Object.fromEntries(sel.map((k) => [k, true])),
+      }))} />
       <EngineResultPanel result={u.result} />
     </ToolPageShell>
   );
@@ -318,7 +366,7 @@ export function EegPage() {
   return (
     <ToolPageShell icon={Brain} titleKey="home.eeg_title" introKey="home.eeg_desc">
       <PatientStrip compact />
-      <ChipToggle options={["hypsarrhythmia", "spikes", "absence", "burst_suppression", "status_epilepticus"].map((id) => ({ id, label: id }))} selected={ann} onToggle={setAnn} />
+      <ChipToggle options={chipOpts(["hypsarrhythmia", "spikes", "absence", "burst_suppression", "status_epilepticus"])} selected={ann} onToggle={setAnn} />
       <Input type="number" placeholder={t("dp.seizure_min")} value={dur} onChange={(e) => setDur(e.target.value)} />
       <RunBar loading={u.loading} onClick={() => {
         const annotations = Object.fromEntries(ann.map((k) => [k, true]));

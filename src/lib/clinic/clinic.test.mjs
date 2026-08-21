@@ -10,7 +10,9 @@ import { toAgeDays } from '../medscan/deterministic/labNormalize.js';
 import {
   isValidNationalId, isValidLicenseNumber, isClinicianComplete, isParentComplete,
   isParentAllowedPath, postAuthPath, saveAccount, emptyAccount,
+  hasChosenRole, needsRoleSelection, ensureLocalClinicianStub,
 } from './account.js';
+import { reasonHe, displayText } from './engineDisplay.js';
 
 let pass = 0, fail = 0;
 const t = (n, fn) => { try { fn(); console.log('  ✓ ' + n); pass++; } catch (e) { console.log('  ✗ ' + n + '\n      ' + e.message); fail++; } };
@@ -136,13 +138,15 @@ t('הורה מוכן עם שם בלבד ונכנס רק לפורטל', () => {
   assert(isParentAllowedPath('/doctorped') === false);
 });
 
-t('רופא בלי רישיון אינו מוכן; עם פרטים מלאים נכנס למרפאה', () => {
+t('רופא בלי רישיון נכנס למרפאה; הכלים לא נחסמים', () => {
   const store = memoryStore();
   const incomplete = saveAccount({
     role: 'clinician', fullName: 'ד"ר בדיקה', clinicName: 'מרפאה',
   }, store);
   assert(isClinicianComplete(incomplete) === false);
-  assert(postAuthPath(incomplete) === '/register');
+  assert(postAuthPath(incomplete) === '/');
+  assert(hasChosenRole(incomplete) === true);
+  assert(needsRoleSelection(incomplete, { localClinic: false }) === false);
   const complete = saveAccount({
     role: 'clinician',
     fullName: 'ד"ר בדיקה',
@@ -155,6 +159,25 @@ t('רופא בלי רישיון אינו מוכן; עם פרטים מלאים נ
   assert(isClinicianComplete(complete) === true);
   assert(postAuthPath(complete) === '/');
   assert(emptyAccount().role === '');
+  assert(needsRoleSelection(emptyAccount(), { localClinic: false }) === true);
+  assert(needsRoleSelection(emptyAccount(), { localClinic: true }) === false);
+});
+
+t('מרפאה מקומית בלי חשבון מקבלת סטאב רופא ולא דורסת הורה', () => {
+  const store = memoryStore();
+  const stub = ensureLocalClinicianStub(store);
+  assert(stub.role === 'clinician');
+  assert(stub.fullName === 'רופא במחשב זה');
+  const parentStore = memoryStore();
+  saveAccount({ role: 'parent', fullName: 'הורה' }, parentStore);
+  const kept = ensureLocalClinicianStub(parentStore);
+  assert(kept.role === 'parent');
+});
+
+t('סיבות מנוע מוצגות בעברית ושדות אובייקט נקראים', () => {
+  assert(reasonHe('age_required').includes('גיל'));
+  assert(displayText({ title_he: 'דפוס PKU' }) === 'דפוס PKU');
+  assert(displayText(['a', { label_he: 'ב' }]).includes('ב'));
 });
 
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);

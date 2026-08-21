@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import PilotModeBanner from "@/components/PilotModeBanner";
 import LocalClinicBanner from "@/components/clinic/LocalClinicBanner";
+import ToolErrorBoundary from "@/components/clinic/ToolErrorBoundary";
 
 export default function AppLayout() {
   return (
@@ -10,7 +11,9 @@ export default function AppLayout() {
       <PilotModeBanner />
       <LocalClinicBanner />
       <main className="pb-32">
-        <Outlet />
+        <ToolErrorBoundary>
+          <Outlet />
+        </ToolErrorBoundary>
       </main>
       <BottomNav />
     </>

@@ -108,11 +108,34 @@ export function isAccountReady(account) {
   return false;
 }
 
+export function hasChosenRole(account) {
+  return ACCOUNT_ROLES.includes(normalizeAccount(account).role);
+}
+
+/** Hosted app without a role must pick parent vs clinician. Local clinic may run immediately. */
+export function needsRoleSelection(account, { localClinic = false } = {}) {
+  if (localClinic) return false;
+  return !hasChosenRole(account);
+}
+
+/**
+ * Local clinic on this computer: create a clinician stub so tools are not locked
+ * behind the license form. Never overwrite a saved parent account.
+ */
+export function ensureLocalClinicianStub(storage) {
+  const a = loadAccount(storage);
+  if (a.role === "parent" || a.role === "clinician") return a;
+  return saveAccount({
+    role: "clinician",
+    fullName: a.fullName || "רופא במחשב זה",
+  }, storage);
+}
+
 export function postAuthPath(account) {
   const a = normalizeAccount(account);
-  if (!a.role || !isAccountReady(a)) return "/register";
-  if (a.role === "parent") return "/parent";
-  return "/";
+  if (a.role === "parent") return isParentComplete(a) ? "/parent" : "/register";
+  if (a.role === "clinician") return "/";
+  return "/register";
 }
 
 export function isParentAllowedPath(pathname) {

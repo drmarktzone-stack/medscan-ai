@@ -266,6 +266,18 @@ export function canonicalFeature(raw) {
   return null;
 }
 
+/** Array of tokens, or `{ feature: true }` map from the clinic chips. */
+export function featureInputList(features) {
+  if (features == null || features === false) return [];
+  if (Array.isArray(features)) return features.filter((x) => x != null && x !== false);
+  if (typeof features === 'object') {
+    return Object.entries(features)
+      .filter(([, v]) => v === true || v === 'true' || v === 1)
+      .map(([k]) => k);
+  }
+  return [features];
+}
+
 /**
  * מאחד רשימת תווים / ממצאים לקבוצה קנונית.
  * אובייקט עם present:false נספר כהיעדר.
@@ -293,8 +305,8 @@ export function normalizeDysmorphicFeatures(features = [], findings = []) {
     }
     present.add(canon);
   };
-  for (const f of features ?? []) ingest(f);
-  for (const f of findings ?? []) ingest(f);
+  for (const f of featureInputList(features)) ingest(f);
+  for (const f of featureInputList(findings)) ingest(f);
   return { present, unknown_tokens: unknown };
 }
 
@@ -410,7 +422,7 @@ export function runGeneticsInterpreter({
   mode = 'development',
   locale = 'he',
 } = {}) {
-  const hasAny = (features ?? []).some(Boolean) || (findings ?? []).some(Boolean);
+  const hasAny = featureInputList(features).length > 0 || featureInputList(findings).length > 0;
   if (!hasAny) {
     return finalizeLocale(fail('no_genetics_input', {
       message_he: 'לא סופקו תווי דיסמורפיזם או ממצאים מורפולוגיים.',

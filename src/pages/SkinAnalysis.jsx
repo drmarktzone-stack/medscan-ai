@@ -96,6 +96,7 @@ export default function SkinAnalysis() {
           label={t("analysis.skin_upload_label")}
           hint={t("analysis.skin_upload_hint")}
         />
+        <p className="text-[11px] text-slate-500 leading-relaxed">{t("analysis.needs_base44")}</p>
 
         {files.length > 0 && !result && (
           <>

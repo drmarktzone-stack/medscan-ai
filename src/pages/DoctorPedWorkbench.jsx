@@ -199,10 +199,10 @@ export default function DoctorPedWorkbench() {
                 <Link to="/referrals" className="text-xs underline font-semibold">{t("home.referrals_title")}</Link>
               </div>
             )}
-            {result && !result.awaiting_anamnesis && (
+            {result && (
               <div id="clinic-draft-print" className="space-y-4">
                 <EngineResultPanel result={result} />
-                <PrintDraftButton />
+                {!result.awaiting_anamnesis ? <PrintDraftButton /> : null}
               </div>
             )}
           </div>

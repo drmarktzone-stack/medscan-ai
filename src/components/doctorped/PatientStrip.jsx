@@ -61,6 +61,16 @@ export default function PatientStrip({ compact = false }) {
           </Field>
         </div>
       )}
+      {compact ? (
+        <Field label={t("dp.findings")}>
+          <textarea
+            className="w-full min-h-[56px] rounded-xl border p-2 text-sm bg-white/50"
+            value={session.findingsText}
+            onChange={(e) => patch({ findingsText: e.target.value })}
+            placeholder={t("dp.findings")}
+          />
+        </Field>
+      ) : null}
     </div>
   );
 }

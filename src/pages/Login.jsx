@@ -1,25 +1,29 @@
 import React, { useState } from "react";
-import { Navigate, Link } from "react-router-dom";
+import { Navigate, Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import { disableLocalClinic } from "@/lib/clinic/localMode";
-import { isAccountReady, loadAccount, postAuthPath } from "@/lib/clinic/account";
-import AuthShell, { AuthTabs, AuthField, GoogleButton, OrDivider } from "@/components/clinic/AuthShell";
+import { hasChosenRole, loadAccount, postAuthPath } from "@/lib/clinic/account";
+import AuthShell, { AuthTabs, AuthField, GoogleButton, GuestContinue, OrDivider } from "@/components/clinic/AuthShell";
 
 export default function Login() {
   const { t } = useI18n();
-  const { isAuthenticated, isLocalClinic } = useAuth();
+  const { isAuthenticated, isLocalClinic, enterLocalClinic } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const account = loadAccount();
 
-  if (isAuthenticated && !isLocalClinic && isAccountReady(account)) {
+  if (isAuthenticated && !isLocalClinic && hasChosenRole(account)) {
     return <Navigate to={postAuthPath(account)} replace />;
+  }
+  if (isAuthenticated && !isLocalClinic && !hasChosenRole(account)) {
+    return <Navigate to="/register" replace />;
   }
 
   const afterAuth = () => {
@@ -83,6 +87,12 @@ export default function Login() {
           base44.auth.loginWithProvider("google", postAuthPath(loadAccount()));
         }}
         label={t("login.google")}
+      />
+      <GuestContinue
+        onClick={() => {
+          enterLocalClinic(true);
+          navigate("/");
+        }}
       />
       <p className="text-xs text-center text-slate-500 leading-relaxed">
         {t("login.no_account")}{" "}

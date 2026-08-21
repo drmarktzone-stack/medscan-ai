@@ -1307,6 +1307,16 @@ test('Genetics: קלט ריק נכשל סגור', () => {
   assertEq(r.reason, 'no_genetics_input');
 });
 
+test('Genetics: מפת תווים {key:true} מתנהגת כמו מערך', () => {
+  const r = runGeneticsInterpreter({
+    patient: { age_months: 4, sex: 'male' },
+    features: { epicanthal_folds: true, single_palmar_crease: true, low_set_ears: true },
+    mode: 'development',
+  });
+  assert(r.ok);
+  assert(r.matched_patterns.includes('genetics.down'));
+});
+
 test('Genetics: תווי דאון → Down + Karyotype, לא Turner; OMIM/Nelson ב-FactBlock', () => {
   const r = runGeneticsInterpreter({
     patient: { age_months: 4, sex: 'male' },

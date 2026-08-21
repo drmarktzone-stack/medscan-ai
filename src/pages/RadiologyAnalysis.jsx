@@ -113,6 +113,7 @@ export default function RadiologyAnalysis() {
           label={t("analysis.radiology_upload_label")}
           hint={t("analysis.radiology_upload_hint")}
         />
+        <p className="text-[11px] text-slate-500 leading-relaxed">{t("analysis.needs_base44")}</p>
 
         {files.length > 0 && !result && (
           <>
