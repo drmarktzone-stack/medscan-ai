@@ -23,7 +23,9 @@ export function resolveLocalClinicMode({
   }
   if (!appId) return true;
   if (base44Reachable === false) return true;
-  if ((env.DEV === true || env.DEV === 'true') && !token) return true;
+  // Hosted app id without a session token still opens the clinic on this computer.
+  // Image analysis still needs Base44; text engines do not.
+  if (!token) return true;
   return false;
 }
 

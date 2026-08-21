@@ -16,7 +16,7 @@
 
 import { base44 } from "@/api/base44Client";
 import { downscaleImageFile } from "@/lib/imageOptimize";
-import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
 import { runRadiologyEngine } from "@/lib/radiologyEngine";
 import { assembleRadiologyResult } from "./radiologyResultBuilder.js";
 
@@ -42,7 +42,7 @@ export async function runRadiologyFastAnalysis({
       ? Promise.resolve(preUploadedUrls)
       : Promise.all((files || []).map(async (f) => {
           const optimized = await downscaleImageFile(f);
-          const r = await base44.integrations.Core.UploadFile({ file: optimized });
+          const r = await requireBase44Core("UploadFile")({ file: optimized });
           return r.file_url;
         })),
     base44.entities.RadiologyCase.list("-created_date", 1000).catch(() => []),

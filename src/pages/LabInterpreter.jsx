@@ -7,7 +7,7 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import AnalytePicker from "@/components/AnalytePicker";
 import { base44 } from "@/api/base44Client";
-import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
 import { runLabScan, finalizeScan, LAB_SCAN_SCHEMA } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { pdfExtractText, isPdf } from "@/lib/pdfToImages";
@@ -96,7 +96,7 @@ export default function LabInterpreter() {
   };
 
   const scanImageFile = async (imgFile) => {
-    const { file_url } = await base44.integrations.Core.UploadFile({ file: imgFile });
+    const { file_url } = await requireBase44Core("UploadFile")({ file: imgFile });
     return runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
   };
 
@@ -112,7 +112,7 @@ export default function LabInterpreter() {
     let file_url = null;
     try {
       const toUpload = isPdf(file) ? file : await downscaleImageFile(file);
-      const up = await base44.integrations.Core.UploadFile({ file: toUpload });
+      const up = await requireBase44Core("UploadFile")({ file: toUpload });
       file_url = up?.file_url || null;
     } catch { return merged; }
     if (!file_url) return merged;

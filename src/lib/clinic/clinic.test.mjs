@@ -30,6 +30,15 @@ t('פיתוח בלי אסימון — מצב מקומי', () => {
   assert(resolveLocalClinicMode({ env: { DEV: true }, appId: 'x', token: null }) === true);
 });
 
+t('ייצור עם מזהה יישום בלי אסימון — עדיין מצב מקומי', () => {
+  assert(resolveLocalClinicMode({
+    env: { DEV: false },
+    appId: 'hosted',
+    token: null,
+    storage: memoryStore(),
+  }) === true);
+});
+
 t('אפליקציה מארחת עם אסימון — לא מדלגת על התחברות', () => {
   assert(resolveLocalClinicMode({
     env: { DEV: false },

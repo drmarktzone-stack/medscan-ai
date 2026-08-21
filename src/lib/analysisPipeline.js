@@ -6,7 +6,7 @@ import { runRadiologyEngine, buildRadiologyEvidenceBlock } from "./radiologyEngi
 import { runSkinEngine, buildSkinEvidenceBlock } from "./skinEngine";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { guardVisionNarrative } from "./medscan/engines/visionNarrativeGuard";
-import { createVisionInvokeLLM } from "./medscan/llmAdapter";
+import { createVisionInvokeLLM, requireBase44Core } from "./medscan/llmAdapter";
 import { downscaleImageFile } from "./imageOptimize";
 
 // ⚠ כל קריאות ה-LLM בצינור עוברות דרך המתאם ולא ישירות ל-SDK.
@@ -78,7 +78,7 @@ export async function runDiagnosisPipeline({
       ? Promise.resolve(preUploadedUrls)
       : Promise.all(files.map(async (f) => {
           const optimized = await downscaleImageFile(f); // מקטין מהירות; לא פוגע באיכות הפענוח
-          const r = await base44.integrations.Core.UploadFile({ file: optimized });
+          const r = await requireBase44Core("UploadFile")({ file: optimized });
           return r.file_url;
         })),
     base44.entities[entityName].list("-created_date", 1000),

@@ -218,6 +218,7 @@ export const translations = {
     "viewer.density_opacity": "שקיפות",
     "viewer.footer_note": "כל העיבוד מתבצע במכשיר. הקובץ שהועלה אינו משתנה, והפענוח רץ על המקור בלבד.",
     "analysis.error_fallback": "אירעה שגיאה במהלך הניתוח. נסה שנית.",
+    "analysis.needs_base44": "ניתוח תמונה דורש חיבור ליישום Base44. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בלי זה.",
 
     "uploader.primary": "ראשית",
     "uploader.add_more": "הוסף תמונות נוספות",
@@ -608,6 +609,7 @@ export const translations = {
     "viewer.density_opacity": "Opacity",
     "viewer.footer_note": "All processing runs on-device. The uploaded file is never modified, and interpretation runs on the original only.",
     "analysis.error_fallback": "An error occurred during analysis. Please try again.",
+    "analysis.needs_base44": "Image analysis needs a Base44 connection. Text tools (toxicology, trauma, growth, workbench) run without it.",
 
     "uploader.primary": "Primary",
     "uploader.add_more": "Add more images",
@@ -998,6 +1000,7 @@ export const translations = {
     "viewer.density_opacity": "الشفافية",
     "viewer.footer_note": "تجري كل المعالجة على الجهاز. لا يتغير الملف المرفوع، والتفسير يعمل على الأصل فقط.",
     "analysis.error_fallback": "حدث خطأ أثناء التحليل. يرجى المحاولة مرة أخرى.",
+    "analysis.needs_base44": "تحليل الصورة يحتاج اتصالاً بـ Base44. أدوات النص (سموم، رضح، نمو، منضدة الطبيب) تعمل بدونه.",
 
     "uploader.primary": "رئيسية",
     "uploader.add_more": "إضافة المزيد من الصور",

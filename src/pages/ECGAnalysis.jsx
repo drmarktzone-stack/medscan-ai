@@ -17,7 +17,7 @@ import { useI18n } from "@/lib/i18n";
 import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { runEcgComparison } from "@/lib/ecgCompare";
-import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
 import { runEcgMicroReading, buildMeasuredBlock } from "@/lib/medscan/engines/ecgPerception";
 
 export default function ECGAnalysis() {
@@ -78,7 +78,7 @@ export default function ECGAnalysis() {
         const urls = await Promise.all(
           newFiles.map(async (f) => {
             const optimized = await downscaleImageFile(f, { autoLandscape: true });
-            return base44.integrations.Core.UploadFile({ file: optimized });
+            return requireBase44Core("UploadFile")({ file: optimized });
           })
         );
         const fileUrls = urls.map((r) => r.file_url);
@@ -100,7 +100,7 @@ export default function ECGAnalysis() {
         const urls = await Promise.all(
           newFiles.map(async (f) => {
             const optimized = await downscaleImageFile(f, { autoLandscape: true });
-            return base44.integrations.Core.UploadFile({ file: optimized });
+            return requireBase44Core("UploadFile")({ file: optimized });
           })
         );
         setPriorUrls(urls.map((r) => r.file_url));

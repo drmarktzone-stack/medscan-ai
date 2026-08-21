@@ -16,6 +16,17 @@
 import { base44 } from '@/api/base44Client';
 import { DIAGNOSIS_MODEL, FAST_MODEL, VISION_MODEL } from '@/lib/aiConfig';
 
+const BASE44_REQUIRED_HE =
+  'ניתוח תמונה ושער השפה דורשים חיבור ליישום Base44. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בלי זה.';
+
+export function requireBase44Core(action) {
+  const fn = base44?.integrations?.Core?.[action];
+  if (typeof fn !== 'function') {
+    throw new Error(BASE44_REQUIRED_HE);
+  }
+  return fn.bind(base44.integrations.Core);
+}
+
 /**
  * ⚠ מזהי הדגמים הם מזהי **Base44**, לא מזהי Anthropic API.
  * הזמינים ב-workspace הזה: claude_opus_4_8 / 4_7 / 4_6, claude_sonnet_4_6.
@@ -61,7 +72,7 @@ export function createInvokeLLM({ fileUrls = null, onCall = null } = {}) {
     };
     if (fileUrls?.length) request.file_urls = fileUrls;
 
-    return base44.integrations.Core.InvokeLLM(request);
+    return requireBase44Core('InvokeLLM')(request);
   };
 }
 
@@ -103,7 +114,7 @@ export function createVisionInvokeLLM({ purpose = 'vision', onCall = null } = {}
       fileCount: (args.file_urls ?? []).length,
     });
 
-    return base44.integrations.Core.InvokeLLM({
+    return requireBase44Core('InvokeLLM')({
       ...args,
       // קריאת-התמונה רצה על מודל-הראייה (VISION_MODEL) — אלא אם המנוע נקב מודל מפורש.
       model: model ?? VISION_MODEL,
