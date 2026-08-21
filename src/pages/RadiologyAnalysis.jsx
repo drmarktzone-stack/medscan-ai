@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
+import { runRadiologyFastAnalysis } from "@/lib/medscan/engines/radiologyFastPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import ExamFindingsInput, { RADIOLOGY_EXAM_FIELDS } from "@/components/ExamFindingsInput";
