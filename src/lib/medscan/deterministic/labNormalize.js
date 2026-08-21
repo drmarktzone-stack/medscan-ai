@@ -261,11 +261,21 @@ export function toPatientFacts(normalized = []) {
   }));
 }
 
-/** גיל בימים מכל צורת קלט סבירה. */
+/** גיל בימים מכל צורת קלט סבירה. שנים + חודשים + ימים מחוברים יחד כשיותר משדה אחד מולא. */
 export function toAgeDays({ age_days, age_months, age_years, birth_date } = {}) {
-  if (Number.isFinite(Number(age_days))) return Number(age_days);
-  if (Number.isFinite(Number(age_months))) return Math.round(Number(age_months) * 30.4375);
-  if (Number.isFinite(Number(age_years))) return Math.round(Number(age_years) * 365.25);
+  const years = Number(age_years);
+  const months = Number(age_months);
+  const days = Number(age_days);
+  const hasY = String(age_years ?? "").trim() !== "" && Number.isFinite(years);
+  const hasM = String(age_months ?? "").trim() !== "" && Number.isFinite(months);
+  const hasD = String(age_days ?? "").trim() !== "" && Number.isFinite(days);
+  if (hasY || hasM || hasD) {
+    return Math.round(
+      (hasD ? days : 0) +
+      (hasM ? months * 30.4375 : 0) +
+      (hasY ? years * 365.25 : 0),
+    );
+  }
   if (birth_date) {
     const ms = Date.now() - new Date(birth_date).getTime();
     if (Number.isFinite(ms) && ms >= 0) return Math.floor(ms / 86400000);

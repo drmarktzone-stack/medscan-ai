@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
+import { parseAgeParts } from '../clinic/ageParts.js';
 
 const PatientSessionContext = createContext(null);
 
 const empty = {
-  ageValue: '',
-  ageUnit: 'years',
+  ageYears: '',
+  ageMonths: '',
+  ageDays: '',
   sex: '',
   weight: '',
   height: '',
@@ -18,15 +20,7 @@ const empty = {
 };
 
 export function buildPatient(session) {
-  const patient = {};
-  if (session.ageValue !== '') {
-    const n = Number(session.ageValue);
-    if (Number.isFinite(n)) {
-      if (session.ageUnit === 'days') patient.age_days = n;
-      else if (session.ageUnit === 'months') patient.age_months = n;
-      else patient.age_years = n;
-    }
-  }
+  const patient = { ...parseAgeParts(session) };
   if (session.sex) patient.sex = session.sex;
   if (session.weight !== '') patient.weight_kg = Number(session.weight);
   if (session.height !== '') patient.height_cm = Number(session.height);

@@ -5,6 +5,8 @@
 import { resolveLocalClinicMode, enableLocalClinic, LOCAL_CLINIC_KEY } from './localMode.js';
 import { loadClinicProfile, saveClinicProfile, CLINIC_PROFILE_KEY } from './profile.js';
 import { buildClinicBackup, parseClinicBackup, mergeEncounterRows } from './backup.js';
+import { hasAgeParts, parseAgeParts } from './ageParts.js';
+import { toAgeDays } from '../medscan/deterministic/labNormalize.js';
 
 let pass = 0, fail = 0;
 const t = (n, fn) => { try { fn(); console.log('  ✓ ' + n); pass++; } catch (e) { console.log('  ✗ ' + n + '\n      ' + e.message); fail++; } };
@@ -97,6 +99,21 @@ t('ייבוא ממזג בלי כפילות מזהה', () => {
   assert(merged.length === 2);
   assert(merged.find((r) => r.id === 'a').n === 1);
   assert(merged.find((r) => r.id === 'b').n === 2);
+});
+
+t('גיל בשנים וחודשים מחובר לימים', () => {
+  assert(toAgeDays({ age_days: 14 }) === 14);
+  assert(toAgeDays({ age_years: 4 }) === 1461);
+  assert(toAgeDays({ age_months: 6 }) === 183);
+  assert(toAgeDays({ age_years: 2, age_months: 4 }) === 852);
+  assert(toAgeDays({ age_years: 0, age_months: 8 }) === 244);
+  assert(toAgeDays({}) === null);
+  const parts = parseAgeParts({ ageYears: '2', ageMonths: '4', ageDays: '' });
+  assert(parts.age_years === 2);
+  assert(parts.age_months === 4);
+  assert(parts.age_days === undefined);
+  assert(hasAgeParts({ ageYears: '', ageMonths: '6', ageDays: '' }) === true);
+  assert(hasAgeParts({ ageYears: '', ageMonths: '', ageDays: '' }) === false);
 });
 
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);

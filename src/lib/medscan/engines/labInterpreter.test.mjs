@@ -57,6 +57,8 @@ await t('גיל מומר נכון מכל יחידה', async () => {
   eq(toAgeDays({ age_days: 14 }), 14);
   eq(toAgeDays({ age_years: 4 }), 1461);
   eq(toAgeDays({ age_months: 6 }), 183);
+  eq(toAgeDays({ age_years: 2, age_months: 4 }), 852);
+  eq(toAgeDays({ age_years: 0, age_months: 8 }), 244);
   eq(toAgeDays({}), null);
 });
 

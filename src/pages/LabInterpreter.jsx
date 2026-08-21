@@ -13,6 +13,8 @@ import { downscaleImageFile } from "@/lib/imageOptimize";
 import { pdfExtractText, isPdf } from "@/lib/pdfToImages";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
 import { RESULT_TYPES, CATALOG_SIZE, resolveAnalyte } from "@/lib/medscan/deterministic/analyteCatalog";
+import AgeFields from "@/components/clinic/AgeFields";
+import { hasAgeParts, parseAgeParts } from "@/lib/clinic/ageParts.js";
 
 // קיבוץ תוצאות לפאנלי-דם מוכרים (אחרי הפענוח).
 const PANEL_LABELS = {
@@ -41,8 +43,9 @@ const emptyRow = () => ({
 });
 
 export default function LabInterpreter() {
-  const [ageValue, setAgeValue] = useState("");
-  const [ageUnit, setAgeUnit] = useState("years");
+  const [ageYears, setAgeYears] = useState("");
+  const [ageMonths, setAgeMonths] = useState("");
+  const [ageDays, setAgeDays] = useState("");
   const [sex, setSex] = useState("");
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
@@ -236,7 +239,7 @@ export default function LabInterpreter() {
     (r) => r.analyte.trim() && String(r.value).trim() === ""
   );
 
-  const canRun = filledRows.length > 0 && ageValue !== "" && incompleteRows.length === 0;
+  const canRun = filledRows.length > 0 && hasAgeParts({ ageYears, ageMonths, ageDays }) && incompleteRows.length === 0;
 
   // השוואה דטרמיניסטית (בקוד) בין הבדיקה הנוכחית לקודמות — לפי שם המדד.
   const normName = (s) => (s || "").trim().toLowerCase();
@@ -263,8 +266,7 @@ export default function LabInterpreter() {
     setResult(null);
     try {
       const patient = {
-        [ageUnit === "days" ? "age_days" : ageUnit === "months" ? "age_months" : "age_years"]:
-          Number(ageValue),
+        ...parseAgeParts({ ageYears, ageMonths, ageDays }),
         sex: sex || undefined,
         weight_kg: weight ? Number(weight) : undefined,
         height_cm: height ? Number(height) : undefined,
@@ -423,33 +425,20 @@ export default function LabInterpreter() {
         <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
           <h3 className="text-sm font-bold">פרטי המטופל</h3>
 
-          <div>
-            <label className="text-[11px] font-medium text-slate-500 block mb-1">
-              גיל <span className="text-red-500">*</span>
-            </label>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                inputMode="numeric"
-                value={ageValue}
-                onChange={(e) => setAgeValue(e.target.value)}
-                placeholder="גיל"
-                className="flex-1"
-              />
-              <select
-                value={ageUnit}
-                onChange={(e) => setAgeUnit(e.target.value)}
-                className="rounded-md border border-slate-200 text-sm px-2 bg-white"
-              >
-                <option value="years">שנים</option>
-                <option value="months">חודשים</option>
-                <option value="days">ימים</option>
-              </select>
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1">
-              חובה — כמעט כל טווח ייחוס ברפואת ילדים תלוי-גיל.
-            </p>
-          </div>
+          <AgeFields
+            ageYears={ageYears}
+            ageMonths={ageMonths}
+            ageDays={ageDays}
+            required
+            onChange={(partial) => {
+              if (partial.ageYears !== undefined) setAgeYears(partial.ageYears);
+              if (partial.ageMonths !== undefined) setAgeMonths(partial.ageMonths);
+              if (partial.ageDays !== undefined) setAgeDays(partial.ageDays);
+            }}
+          />
+          <p className="text-[10px] text-slate-400 -mt-1">
+            חובה — כמעט כל טווח ייחוס ברפואת ילדים תלוי-גיל.
+          </p>
 
           <div className="grid grid-cols-3 gap-2">
             <div>

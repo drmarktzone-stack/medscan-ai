@@ -8,6 +8,8 @@ import PrintDraftButton from "@/components/clinic/PrintDraftButton";
 import { useI18n } from "@/lib/i18n";
 import { runDoctorPedAI } from "@/lib/medscan/doctorped/index.js";
 import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
+import AgeFields from "@/components/clinic/AgeFields";
+import { parseAgeParts } from "@/lib/clinic/ageParts.js";
 
 const CHIPS = [
   { he: "חום", en: "fever", ar: "حمى" },
@@ -28,6 +30,7 @@ const CHIPS = [
 
 export default function ParentPortal() {
   const { t, lang } = useI18n();
+  const [ageYears, setAgeYears] = useState("");
   const [ageMonths, setAgeMonths] = useState("");
   const [selected, setSelected] = useState([]);
   const [mchat, setMchat] = useState("");
@@ -48,7 +51,7 @@ export default function ParentPortal() {
       const next = runDoctorPedAI({
         persona: "parent",
         integrationMode: "unified",
-        patient: { age_months: ageMonths ? Number(ageMonths) : undefined },
+        patient: parseAgeParts({ ageYears, ageMonths }),
         findings: selected,
         presentation: selected.join(", "),
         proceed: true,
@@ -74,13 +77,14 @@ export default function ParentPortal() {
 
         <section className="clinic-card p-4 space-y-2">
           <p className="text-sm font-bold">{t("dp.step_age")}</p>
-          <Input
-            type="number"
-            inputMode="numeric"
-            className="h-12 text-base"
-            placeholder={t("dp.age_months")}
-            value={ageMonths}
-            onChange={(e) => setAgeMonths(e.target.value)}
+          <AgeFields
+            ageYears={ageYears}
+            ageMonths={ageMonths}
+            showDays={false}
+            onChange={(partial) => {
+              if (partial.ageYears !== undefined) setAgeYears(partial.ageYears);
+              if (partial.ageMonths !== undefined) setAgeMonths(partial.ageMonths);
+            }}
           />
         </section>
 

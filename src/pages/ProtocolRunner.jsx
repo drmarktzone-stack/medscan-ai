@@ -7,13 +7,16 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { runProtocolStep } from "@/lib/medscan/engines/protocolRunner";
 import { listProtocols } from "@/lib/medscan/llmAdapter";
+import AgeFields from "@/components/clinic/AgeFields";
+import { hasAgeParts, parseAgeParts } from "@/lib/clinic/ageParts.js";
 
 export default function ProtocolRunner() {
   const [protocols, setProtocols] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
   const [selected, setSelected] = useState(null);
-  const [ageValue, setAgeValue] = useState("");
-  const [ageUnit, setAgeUnit] = useState("years");
+  const [ageYears, setAgeYears] = useState("");
+  const [ageMonths, setAgeMonths] = useState("");
+  const [ageDays, setAgeDays] = useState("");
   const [weight, setWeight] = useState("");
   const [stepId, setStepId] = useState(null);
   const [history, setHistory] = useState([]);
@@ -36,8 +39,7 @@ export default function ProtocolRunner() {
     setError(null);
     try {
       const patient = {
-        [ageUnit === "days" ? "age_days" : ageUnit === "months" ? "age_months" : "age_years"]:
-          Number(ageValue),
+        ...parseAgeParts({ ageYears, ageMonths, ageDays }),
         weight_kg: weight ? Number(weight) : undefined,
       };
       const res = await runProtocolStep({
@@ -149,21 +151,17 @@ export default function ProtocolRunner() {
               </button>
             </div>
 
-            <div>
-              <label className="text-[11px] font-medium text-slate-500 block mb-1">
-                גיל <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-2">
-                <Input type="number" inputMode="numeric" value={ageValue}
-                  onChange={(e) => setAgeValue(e.target.value)} className="flex-1" />
-                <select value={ageUnit} onChange={(e) => setAgeUnit(e.target.value)}
-                  className="rounded-md border border-slate-200 text-sm px-2 bg-white">
-                  <option value="years">שנים</option>
-                  <option value="months">חודשים</option>
-                  <option value="days">ימים</option>
-                </select>
-              </div>
-            </div>
+            <AgeFields
+              ageYears={ageYears}
+              ageMonths={ageMonths}
+              ageDays={ageDays}
+              required
+              onChange={(partial) => {
+                if (partial.ageYears !== undefined) setAgeYears(partial.ageYears);
+                if (partial.ageMonths !== undefined) setAgeMonths(partial.ageMonths);
+                if (partial.ageDays !== undefined) setAgeDays(partial.ageDays);
+              }}
+            />
 
             <div>
               <label className="text-[11px] font-medium text-slate-500 block mb-1">משקל (ק"ג)</label>
@@ -174,7 +172,7 @@ export default function ProtocolRunner() {
               </p>
             </div>
 
-            <Button onClick={start} disabled={!ageValue || loading}
+            <Button onClick={start} disabled={!hasAgeParts({ ageYears, ageMonths, ageDays }) || loading}
               className="w-full h-11 rounded-xl text-sm font-semibold bg-sky-600 hover:bg-sky-700">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "התחל פרוטוקול"}
             </Button>
