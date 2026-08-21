@@ -2,6 +2,7 @@ import React from "react";
 import { Monitor } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { isLocalClinicSession } from "@/lib/clinic/localMode";
+import { isStandaloneBuild } from "@/lib/clinic/standalone";
 import { appParams } from "@/lib/app-params";
 
 export default function LocalClinicBanner() {
@@ -13,7 +14,7 @@ export default function LocalClinicBanner() {
       <div className="clinic-wrap">
         <div className="clinic-card py-1.5 px-3 flex items-center gap-2 text-[11px] font-medium text-sky-900">
           <Monitor className="w-3.5 h-3.5 shrink-0" />
-          <span>{t("clinic.local_banner")}</span>
+          <span>{t(isStandaloneBuild() ? "clinic.standalone_banner" : "clinic.local_banner")}</span>
         </div>
       </div>
     </div>

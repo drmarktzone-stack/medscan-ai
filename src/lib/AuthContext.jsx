@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 import { disableLocalClinic, enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
+import { isStandaloneBuild } from '@/lib/clinic/standalone';
 import { setPilotMode } from '@/lib/medscan/runtimeMode';
 
 const AuthContext = createContext();
@@ -41,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAppState = async () => {
-    if (localClinicAtBoot()) {
+    if (isStandaloneBuild() || localClinicAtBoot()) {
       enterLocalClinic(false);
       return;
     }
@@ -95,26 +96,17 @@ export const AuthProvider = ({ children }) => {
               message: appError.message
             });
           }
-        } else {
-          setAuthError({
-            type: 'unknown',
-            message: appError.message || 'Failed to load app'
-          });
+          setIsLoadingPublicSettings(false);
+          setIsLoadingAuth(false);
+          setAuthChecked(true);
+          return;
         }
-        setIsLoadingPublicSettings(false);
-        setIsLoadingAuth(false);
-        setAuthChecked(true);
-        if (!appParams.appId) enterLocalClinic(true);
+        // Credits exhausted, quota, proxy down, or no network → run on this device.
+        enterLocalClinic(true);
       }
     } catch (error) {
       console.error('Unexpected error:', error);
-      if (!appParams.appId) enterLocalClinic(true);
-      else {
-        setIsLoadingAuth(false);
-        setIsAuthenticated(false);
-        setAuthChecked(true);
-        setIsLoadingPublicSettings(false);
-      }
+      enterLocalClinic(true);
     }
   };
 

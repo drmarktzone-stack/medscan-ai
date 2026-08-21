@@ -11,6 +11,7 @@ import AppLayout from "@/components/AppLayout";
 import { I18nProvider } from '@/lib/i18n';
 import { PatientSessionProvider } from '@/lib/doctorped/patientSession';
 import { ClinicProfileProvider } from '@/lib/clinic/profileContext';
+import { routerBasename } from '@/lib/clinic/standalone';
 
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -118,7 +119,7 @@ function App() {
         <ClinicProfileProvider>
         <PatientSessionProvider>
         <QueryClientProvider client={queryClientInstance}>
-        <Router>
+        <Router basename={routerBasename(import.meta.env.BASE_URL)}>
           <ScrollToTop />
           <AuthenticatedApp />
         </Router>

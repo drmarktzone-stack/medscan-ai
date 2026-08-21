@@ -1,8 +1,10 @@
 /**
  * Local clinic session — the app can run on this computer without a remote account.
  * A hosted app shows the login/register screens unless the physician chose
- * "continue on this computer", or VITE_LOCAL_CLINIC is set.
+ * "continue on this computer", or VITE_LOCAL_CLINIC / VITE_STANDALONE is set.
  */
+
+import { readStandaloneFlag } from './standalone.js';
 
 export const LOCAL_CLINIC_KEY = 'doctorped_local_clinic_v1';
 export const LOCAL_CLINIC_USER = Object.freeze({ id: 'local-clinic', local: true, email: null });
@@ -15,7 +17,7 @@ export function resolveLocalClinicMode({
   base44Reachable,
 } = {}) {
   if (env.VITE_FORCE_AUTH === 'true' || env.VITE_FORCE_AUTH === '1') return false;
-  if (env.VITE_LOCAL_CLINIC === 'true' || env.VITE_LOCAL_CLINIC === '1') return true;
+  if (readStandaloneFlag(env)) return true;
   try {
     if (storage?.getItem?.(LOCAL_CLINIC_KEY) === '1') return true;
   } catch {

@@ -19,7 +19,7 @@ import { seedToEntityRows } from './deterministic/referenceRangeSeed.js';
 import { listPediatricPathways, toProtocolView } from './engines/pediatricPathways.js';
 
 const BASE44_REQUIRED_HE =
-  'ניתוח תמונה ושער השפה דורשים חיבור ליישום Base44. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בלי זה.';
+  'ניתוח תמונה דורש מנוע ראייה (Claude) בתשלום. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בחינם במכשיר זה.';
 
 async function timedEntityCall(promise, fallback, ms = 2000) {
   try {

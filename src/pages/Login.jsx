@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import { disableLocalClinic } from "@/lib/clinic/localMode";
-import { hasChosenRole, loadAccount, postAuthPath } from "@/lib/clinic/account";
+import { hasChosenRole, isAccountReady, loadAccount, postAuthPath } from "@/lib/clinic/account";
+import { isStandaloneBuild } from "@/lib/clinic/standalone";
 import AuthShell, { AuthTabs, AuthField, GoogleButton, GuestContinue, OrDivider } from "@/components/clinic/AuthShell";
 
 export default function Login() {
@@ -18,8 +19,9 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const account = loadAccount();
+  const standalone = isStandaloneBuild();
 
-  if (isAuthenticated && !isLocalClinic && hasChosenRole(account)) {
+  if (isAuthenticated && isAccountReady(account)) {
     return <Navigate to={postAuthPath(account)} replace />;
   }
   if (isAuthenticated && !isLocalClinic && !hasChosenRole(account)) {
@@ -54,40 +56,46 @@ export default function Login() {
         <p className="text-xs text-muted-foreground">{t("login.subtitle")}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <AuthField
-          icon={Mail}
-          type="email"
-          label={t("login.email")}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-        />
-        <AuthField
-          icon={Lock}
-          type="password"
-          label={t("login.password")}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-        />
-        <div className="text-end">
-          <Link to="/forgot-password" className="text-xs text-primary hover:underline">{t("login.forgot")}</Link>
-        </div>
-        {error ? <p className="text-xs text-red-600 text-center leading-relaxed">{error}</p> : null}
-        <Button type="submit" className="w-full h-12 rounded-xl font-bold" disabled={loading}>
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("login.submit")}
-        </Button>
-      </form>
+      {standalone ? (
+        <p className="text-xs text-center text-slate-600 leading-relaxed">{t("login.standalone_hint")}</p>
+      ) : (
+        <>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <AuthField
+              icon={Mail}
+              type="email"
+              label={t("login.email")}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+            />
+            <AuthField
+              icon={Lock}
+              type="password"
+              label={t("login.password")}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+            <div className="text-end">
+              <Link to="/forgot-password" className="text-xs text-primary hover:underline">{t("login.forgot")}</Link>
+            </div>
+            {error ? <p className="text-xs text-red-600 text-center leading-relaxed">{error}</p> : null}
+            <Button type="submit" className="w-full h-12 rounded-xl font-bold" disabled={loading}>
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("login.submit")}
+            </Button>
+          </form>
 
-      <OrDivider />
-      <GoogleButton
-        onClick={() => {
-          disableLocalClinic();
-          base44.auth.loginWithProvider("google", postAuthPath(loadAccount()));
-        }}
-        label={t("login.google")}
-      />
+          <OrDivider />
+          <GoogleButton
+            onClick={() => {
+              disableLocalClinic();
+              base44.auth.loginWithProvider("google", postAuthPath(loadAccount()));
+            }}
+            label={t("login.google")}
+          />
+        </>
+      )}
       <GuestContinue
         onClick={() => navigate("/register")}
         label={t("login.guest")}

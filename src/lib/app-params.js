@@ -2,6 +2,8 @@ const viteEnv = (typeof import.meta !== 'undefined' && import.meta.env) ? import
 const isNode = typeof window === 'undefined';
 const windowObj = isNode ? { localStorage: new Map() } : window;
 const storage = windowObj.localStorage;
+const standalone = viteEnv.VITE_STANDALONE === 'true' || viteEnv.VITE_STANDALONE === '1'
+	|| viteEnv.VITE_LOCAL_CLINIC === 'true' || viteEnv.VITE_LOCAL_CLINIC === '1';
 
 const toSnakeCase = (str) => {
 	return str.replace(/([A-Z])/g, '_$1').toLowerCase();
@@ -36,6 +38,15 @@ const getAppParamValue = (paramName, { defaultValue = undefined, removeFromUrl =
 }
 
 const getAppParams = () => {
+	if (standalone) {
+		return {
+			appId: null,
+			token: null,
+			fromUrl: isNode ? '' : window.location.href,
+			functionsVersion: null,
+			appBaseUrl: null,
+		};
+	}
 	if (getAppParamValue("clear_access_token") === 'true') {
 		storage.removeItem('base44_access_token');
 		storage.removeItem('token');

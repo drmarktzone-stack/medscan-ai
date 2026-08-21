@@ -287,7 +287,7 @@ await t('שער שפה בלי Base44 נכשל בעברית ולא בשקט', () 
   try {
     requireBase44Core('InvokeLLM');
   } catch (e) {
-    assert(/Base44|חיבור/.test(String(e.message)), e.message);
+    assert(/Claude|ראייה|תשלום|Base44|חיבור/.test(String(e.message)), e.message);
     return;
   }
   // בסביבה מארחת עם Core — גם זה תקין; הכלי לא ריק.

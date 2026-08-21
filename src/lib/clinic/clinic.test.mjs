@@ -13,6 +13,7 @@ import {
   hasChosenRole, needsRoleSelection, mustCompleteClinicianProfile,
 } from './account.js';
 import { reasonHe, displayText } from './engineDisplay.js';
+import { isBase44CreditFailure, readStandaloneFlag, routerBasename } from './standalone.js';
 
 let pass = 0, fail = 0;
 const t = (n, fn) => { try { fn(); console.log('  ✓ ' + n); pass++; } catch (e) { console.log('  ✗ ' + n + '\n      ' + e.message); fail++; } };
@@ -61,6 +62,25 @@ t('בחירה מפורשת במחשב זה נשמרת', () => {
   enableLocalClinic(storage);
   assert(storage.getItem(LOCAL_CLINIC_KEY) === '1');
   assert(resolveLocalClinicMode({ env: {}, appId: 'hosted', token: null, storage }) === true);
+});
+
+t('VITE_STANDALONE פותח מרפאה מקומית בלי Base44', () => {
+  assert(resolveLocalClinicMode({
+    env: { VITE_STANDALONE: 'true' },
+    appId: 'hosted',
+    token: 'tok',
+    storage: memoryStore(),
+  }) === true);
+});
+
+t('Base44 לא זמין — מרפאה מקומית', () => {
+  assert(resolveLocalClinicMode({
+    env: {},
+    appId: 'hosted',
+    token: null,
+    storage: memoryStore(),
+    base44Reachable: false,
+  }) === true);
 });
 
 t('VITE_FORCE_AUTH חוסם דילוג גם בלי אסימון', () => {
@@ -177,6 +197,23 @@ t('סיבות מנוע מוצגות בעברית ושדות אובייקט נק�
   assert(reasonHe('age_required').includes('גיל'));
   assert(displayText({ title_he: 'דפוס PKU' }) === 'דפוס PKU');
   assert(displayText(['a', { label_he: 'ב' }]).includes('ב'));
+});
+
+t('מצב עצמאי מזוהה מ-VITE_STANDALONE', () => {
+  assert(readStandaloneFlag({ VITE_STANDALONE: 'true' }) === true);
+  assert(readStandaloneFlag({ VITE_LOCAL_CLINIC: '1' }) === true);
+  assert(readStandaloneFlag({}) === false);
+});
+
+t('נתיב GitHub Pages נחתך ל-basename', () => {
+  assert(routerBasename('/medscan-ai/') === '/medscan-ai');
+  assert(routerBasename('/') === undefined);
+});
+
+t('כשל קרדיט/מכסה של Base44 מזוהה', () => {
+  assert(isBase44CreditFailure({ status: 402 }) === true);
+  assert(isBase44CreditFailure({ message: 'insufficient credits' }) === true);
+  assert(isBase44CreditFailure({ status: 403 }) === false);
 });
 
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);

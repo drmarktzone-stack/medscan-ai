@@ -224,7 +224,7 @@ export const translations = {
     "viewer.density_opacity": "שקיפות",
     "viewer.footer_note": "כל העיבוד מתבצע במכשיר. הקובץ שהועלה אינו משתנה, והפענוח רץ על המקור בלבד.",
     "analysis.error_fallback": "אירעה שגיאה במהלך הניתוח. נסה שנית.",
-    "analysis.needs_base44": "ניתוח תמונה דורש חיבור ליישום Base44. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בלי זה.",
+    "analysis.needs_base44": "ניתוח תמונה דורש מנוע ראייה בתשלום (Claude). כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בחינם במכשיר זה.",
 
     "uploader.primary": "ראשית",
     "uploader.add_more": "הוסף תמונות נוספות",
@@ -315,6 +315,7 @@ export const translations = {
     "history.type_radiology": "רדיולוגיה",
 
     "clinic.local_banner": "נשמר במחשב זה — אין נתוני מטופל מחוץ למחשב",
+    "clinic.standalone_banner": "פועל בלי Base44 ובלי קרדיט. כלי הטקסט במכשיר זה. פענוח צילום דורש מנוע ראייה בתשלום.",
     "clinic.local_enter": "כניסה למרפאה במחשב זה",
     "clinic.local_enter_hint": "הטיוטות נשמרות במחשב. זה אינו אבחון.",
     "clinic.profile_title": "פרטי המרפאה",
@@ -350,6 +351,7 @@ export const translations = {
     "login.unavailable": "לא ניתן להתחבר לשרת החשבון כרגע. אפשר להמשיך במחשב זה.",
     "login.guest": "המשך במחשב זה — בחירת הורה או רופא",
     "login.guest_hint": "הורה ממלא שם. רופא ממלא מספר רישיון ותחום מומחיות. הטיוטות נשארות במחשב זה. זה אינו אבחון.",
+    "login.standalone_hint": "האתר הזה אינו מחובר ל-Base44. אין צורך בקרדיט. בחרו הורה או רופא והמשיכו.",
     "register.title": "הרשמה",
     "register.subtitle": "בחרו אם אתם הורה או רופא — לכל אחד פלטפורמה משלו",
     "register.name": "שם מלא",
@@ -684,7 +686,7 @@ export const translations = {
     "viewer.density_opacity": "Opacity",
     "viewer.footer_note": "All processing runs on-device. The uploaded file is never modified, and interpretation runs on the original only.",
     "analysis.error_fallback": "An error occurred during analysis. Please try again.",
-    "analysis.needs_base44": "Image analysis needs a Base44 connection. Text tools (toxicology, trauma, growth, workbench) run without it.",
+    "analysis.needs_base44": "Image analysis needs a paid vision engine (Claude). Text tools (toxicology, trauma, growth, workbench) run free on this device.",
 
     "uploader.primary": "Primary",
     "uploader.add_more": "Add more images",
@@ -775,6 +777,7 @@ export const translations = {
     "history.type_radiology": "Radiology",
 
     "clinic.local_banner": "Saved on this computer — patient data stays here",
+    "clinic.standalone_banner": "Running without Base44 or credits. Text tools stay on this device. Image reads need a paid vision engine.",
     "clinic.local_enter": "Enter the clinic on this computer",
     "clinic.local_enter_hint": "Drafts stay on this computer. This is not a diagnosis.",
     "clinic.profile_title": "Clinic details",
@@ -810,6 +813,7 @@ export const translations = {
     "login.unavailable": "The account server is unavailable right now. You can continue on this computer.",
     "login.guest": "Continue on this computer — choose parent or physician",
     "login.guest_hint": "A parent enters a name. A physician must enter a license number and specialty. Drafts stay on this computer. This is not a diagnosis.",
+    "login.standalone_hint": "This site is not connected to Base44. No credits are required. Choose parent or physician to continue.",
     "register.title": "Register",
     "register.subtitle": "Choose parent or physician — each has a separate platform",
     "register.name": "Full name",
@@ -1144,7 +1148,7 @@ export const translations = {
     "viewer.density_opacity": "الشفافية",
     "viewer.footer_note": "تجري كل المعالجة على الجهاز. لا يتغير الملف المرفوع، والتفسير يعمل على الأصل فقط.",
     "analysis.error_fallback": "حدث خطأ أثناء التحليل. يرجى المحاولة مرة أخرى.",
-    "analysis.needs_base44": "تحليل الصورة يحتاج اتصالاً بـ Base44. أدوات النص (سموم، رضح، نمو، منضدة الطبيب) تعمل بدونه.",
+    "analysis.needs_base44": "تحليل الصورة يحتاج محرك رؤية مدفوع (Claude). أدوات النص (سموم، رضح، نمو، منضدة الطبيب) تعمل مجاناً على هذا الجهاز.",
 
     "uploader.primary": "رئيسية",
     "uploader.add_more": "إضافة المزيد من الصور",
@@ -1235,6 +1239,7 @@ export const translations = {
     "history.type_radiology": "أشعة",
 
     "clinic.local_banner": "يُحفظ على هذا الحاسوب — بيانات المرضى تبقى هنا",
+    "clinic.standalone_banner": "يعمل بدون Base44 وبدون رصيد. أدوات النص على هذا الجهاز. قراءة الصور تحتاج محرك رؤية مدفوع.",
     "clinic.local_enter": "دخول العيادة على هذا الحاسوب",
     "clinic.local_enter_hint": "المسودات تبقى على هذا الحاسوب. هذا ليس تشخيصاً.",
     "clinic.profile_title": "بيانات العيادة",
@@ -1270,6 +1275,7 @@ export const translations = {
     "login.unavailable": "تعذر الاتصال بخادم الحساب الآن. يمكنكم المتابعة على هذا الحاسوب.",
     "login.guest": "المتابعة على هذا الحاسوب — اختيار أهل أو طبيب",
     "login.guest_hint": "الأهل يدخلون الاسم. الطبيب يملأ رقم الرخصة والتخصص. المسودات تبقى على هذا الحاسوب. هذا ليس تشخيصاً.",
+    "login.standalone_hint": "هذا الموقع غير متصل بـ Base44. لا حاجة لرصيد. اختاروا أهلاً أو طبيباً للمتابعة.",
     "register.title": "إنشاء حساب",
     "register.subtitle": "اختاروا أهلًا أو طبيبًا — لكل واحد منصة منفصلة",
     "register.name": "الاسم الكامل",
