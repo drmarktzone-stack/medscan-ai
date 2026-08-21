@@ -297,7 +297,9 @@ export default function GroundedInterpretation({ data }) {
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-600" />
               <p className="text-xs font-semibold text-amber-800">
-                חלק מהתוכן הוסר או הוחלש ע"י שכבת האימות
+                {data.code_first
+                  ? "הפענוח מבוסס על המנוע הדטרמיניסטי בקוד. שער השפה לא רץ כאן. טיוטה לאימות רופא — אינה אבחנה."
+                  : "חלק מהתוכן הוסר או הוחלש ע\"י שכבת האימות"}
               </p>
             </div>
             {data.integrity?.removed_count > 0 && (
@@ -329,6 +331,20 @@ export default function GroundedInterpretation({ data }) {
         <Section icon={GitBranch} title="כיוונים אבחוניים מעוגנים">
           <div className="space-y-2">
             {sorted.map((d, i) => <DirectionCard key={d.direction_id || i} d={d} />)}
+          </div>
+        </Section>
+      )}
+      {sorted.length === 0 && (data.kbItems || []).length > 0 && (
+        <Section icon={GitBranch} title="דפוסים שהמנוע הדטרמיניסטי התאים">
+          <div className="space-y-2">
+            {data.kbItems.slice(0, 12).map((k, i) => (
+              <p key={k.pattern_key || i} className="text-xs leading-relaxed">
+                {k.title_he || k.direction_he || k.conclusion_he || k.label_he}
+                {k.clinical_reasoning_he ? (
+                  <span className="block text-[10px] text-slate-500">{k.clinical_reasoning_he}</span>
+                ) : null}
+              </p>
+            ))}
           </div>
         </Section>
       )}
@@ -440,7 +456,7 @@ export default function GroundedInterpretation({ data }) {
       )}
 
       {/* 6. מה לא ידוע — מוצג תמיד */}
-      {data.unknowns_he?.length > 0 && !isInsufficient && (
+      {data.unknowns_he?.length > 0 && (
         <Section icon={HelpCircle} title="מה לא ידוע / לא נכלל">
           <ul className="space-y-1">
             {data.unknowns_he.map((u, i) => (

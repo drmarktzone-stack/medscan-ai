@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GitBranch, Loader2, ShieldCheck, AlertTriangle, ChevronLeft, Lock } from "lucide-react";
+import { GitBranch, Loader2, ShieldCheck, AlertTriangle, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
@@ -31,9 +31,6 @@ export default function ProtocolRunner() {
       .finally(() => setLoadingList(false));
   }, []);
 
-  const verified = protocols.filter((p) => p.verification_status === "verified");
-  const unverified = protocols.filter((p) => p.verification_status !== "verified");
-
   const runStep = async (targetStepId) => {
     setLoading(true);
     setError(null);
@@ -46,6 +43,7 @@ export default function ProtocolRunner() {
         protocolKey: selected.protocol_key,
         patient,
         currentStepId: targetStepId,
+        mode: "development",
       });
       setResult(res);
       setStepId(targetStepId);
@@ -99,21 +97,23 @@ export default function ProtocolRunner() {
 
             {!loadingList && protocols.length === 0 && (
               <div className="text-xs text-slate-500 bg-slate-50 rounded-lg p-3 leading-relaxed">
-                אין פרוטוקולים במערכת. יש להוסיף רשומות לישות <code>Protocol</code>,
-                לאמת אותן מול הפרוטוקול המחלקתי, ורק אז ניתן להריץ.
+                אין פרוטוקולים זמינים כרגע.
               </div>
             )}
 
-            {verified.map((p) => (
+            {protocols.map((p) => (
               <button
                 key={p.protocol_key}
                 onClick={() => setSelected(p)}
                 className="w-full text-right rounded-xl border border-slate-200 hover:border-sky-300 p-3 transition-colors"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-semibold">{p.title_he}</span>
-                  <span className="text-[10px] text-slate-400">{p.step_count} שלבים</span>
+                  <span className="text-[10px] text-slate-400 shrink-0">{p.step_count} שלבים</span>
                 </div>
+                {p.verification_status !== "verified" ? (
+                  <p className="text-[10px] text-amber-800 mt-1">טיוטה לאימות — אינו אבחנה. הפרוטוקול המחלקתי גובר.</p>
+                ) : null}
                 {p.entry_criteria_he?.length > 0 && (
                   <p className="text-[11px] text-slate-500 mt-1">
                     קריטריוני כניסה: {p.entry_criteria_he.join(", ")}
@@ -121,23 +121,6 @@ export default function ProtocolRunner() {
                 )}
               </button>
             ))}
-
-            {unverified.length > 0 && (
-              <div className="pt-2 border-t border-slate-100">
-                <p className="text-[11px] font-semibold text-slate-500 mb-2">
-                  פרוטוקולים שאינם מאומתים — לא ניתנים להרצה
-                </p>
-                {unverified.map((p) => (
-                  <div key={p.protocol_key} className="flex items-center gap-2 py-1.5 opacity-60">
-                    <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="text-xs text-slate-600">{p.title_he}</span>
-                  </div>
-                ))}
-                <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                  פרוטוקול קליני לא-מאומת אינו רץ. יש לאמת אותו מול הפרוטוקול המחלקתי.
-                </p>
-              </div>
-            )}
           </div>
         )}
 

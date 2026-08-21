@@ -4,6 +4,7 @@ import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 import { disableLocalClinic, enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
 import { ensureLocalClinicianStub } from '@/lib/clinic/account';
+import { setPilotMode } from '@/lib/medscan/runtimeMode';
 
 const AuthContext = createContext();
 
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }) => {
   const enterLocalClinic = (persist = true) => {
     if (persist) enableLocalClinic();
     ensureLocalClinicianStub();
+    setPilotMode(true);
     setUser(LOCAL_CLINIC_USER);
     setIsAuthenticated(true);
     setAuthChecked(true);

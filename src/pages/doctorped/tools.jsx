@@ -76,9 +76,12 @@ function useRun() {
   const ctx = usePatientSession();
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
-  const go = (fn) => {
+  const go = async (fn) => {
     setLoading(true);
-    try { setResult(fn({ locale: lang, patient: ctx.patient, findings: ctx.findings, mode: "development" })); }
+    try {
+      const out = fn({ locale: lang, patient: ctx.patient, findings: ctx.findings, mode: "development" });
+      setResult(await Promise.resolve(out));
+    }
     catch (e) { setResult({ ok: false, reason: e.message, message_he: e.message }); }
     finally { setLoading(false); }
   };
@@ -312,16 +315,24 @@ export function GeneticsPage() {
 
 export function CsfPage() {
   const u = useRun();
-  const [csf, setCsf] = useState({ wbc: "", rbc: "", protein: "", glucose: "", blood_glucose: "", gram: "" });
+  const [csf, setCsf] = useState({ wbc: "", rbc: "", protein: "", glucose: "", blood_glucose: "", pmn: "", gram: "" });
   const set = (k, v) => setCsf((s) => ({ ...s, [k]: v }));
+  const CSF_FIELDS = [
+    { k: "wbc", ph: "WBC בנוזל (תאים/µL)" },
+    { k: "rbc", ph: "RBC בנוזל" },
+    { k: "protein", ph: "חלבון (מ״ג/ד״ל)" },
+    { k: "glucose", ph: "גלוקוז בנוזל (מ״ג/ד״ל)" },
+    { k: "blood_glucose", ph: "גלוקוז בדם (מ״ג/ד״ל)" },
+    { k: "pmn", ph: "אחוז נויטרופילים (PMN %)" },
+  ];
   return (
     <ToolPageShell icon={Droplets} titleKey="home.csf_title" introKey="home.csf_desc">
       <PatientStrip compact />
       <div className="grid grid-cols-2 gap-2">
-        {["wbc", "rbc", "protein", "glucose", "blood_glucose"].map((k) => (
-          <Input key={k} type="number" placeholder={k} value={csf[k]} onChange={(e) => set(k, e.target.value)} />
+        {CSF_FIELDS.map(({ k, ph }) => (
+          <Input key={k} type="number" placeholder={ph} value={csf[k]} onChange={(e) => set(k, e.target.value)} />
         ))}
-        <Input placeholder="Gram stain" value={csf.gram} onChange={(e) => set("gram", e.target.value)} />
+        <Input placeholder="צביעת גראם" value={csf.gram} onChange={(e) => set("gram", e.target.value)} />
       </div>
       <RunBar loading={u.loading} onClick={() => u.go((p) => runCsfInterpreter({
         ...p,
@@ -331,6 +342,7 @@ export function CsfPage() {
           protein: csf.protein === "" ? undefined : Number(csf.protein),
           glucose: csf.glucose === "" ? undefined : Number(csf.glucose),
           blood_glucose: csf.blood_glucose === "" ? undefined : Number(csf.blood_glucose),
+          pmn_percent: csf.pmn === "" ? undefined : Number(csf.pmn),
           gram_stain: csf.gram || undefined,
         },
       }))} />
@@ -410,13 +422,7 @@ export function AudioPage() {
         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("dp.record")}
       </Button>
       {err && <p className="text-sm text-red-700">{err}</p>}
-      {result?.ok && (
-        <div className="bg-white border rounded-xl p-4 text-xs space-y-1">
-          {(result.elevated_bands ?? []).map((b) => <p key={b}>{b}</p>)}
-          <p className="text-slate-500">{result.note_he}</p>
-        </div>
-      )}
-      {result && result.ok === false && <p className="text-sm">{result.reason}</p>}
+      <EngineResultPanel result={result} />
     </ToolPageShell>
   );
 }

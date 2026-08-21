@@ -19,6 +19,19 @@ export const ENGINE_REASON_HE = Object.freeze({
   skipped: "המנוע דולג — חסר קלט.",
   hidden_from_parent: "שדה זה אינו מוצג בממשק הורה.",
   lms_bad: "טבלת LMS אינה תקינה.",
+  invalid_sample_rate: "קצב הדגימה אינו תקין.",
+  audio_too_short: "ההקלטה קצרה מדי לפענוח.",
+  no_spectral_energy: "אין אנרגיה בקול — בדקו מיקרופון והקלטה.",
+  no_tox_input: "יש למלא בליעה, ממצא או סימנים חיוניים.",
+  no_trauma_input: "יש למלא חבלת ראש, GCS או אזורי כוויה.",
+  no_infant_input: "יש למלא משקל, תמ״ל או אבני דרך.",
+  no_neurodev_input: "יש לסמן קריטריונים או ציון M-CHAT.",
+  no_chronic_input: "יש לסמן כאב בטן או כאב ראש כרוני.",
+  no_syndrome_input: "יש לסמן ממצאים, מעבדה או סימנים חיוניים.",
+  no_csf_input: "יש למלא ערכי ניקור מותני.",
+  no_eeg_input: "יש לסמן תבנית EEG או ממצאים.",
+  no_metabolic_input: "יש למלא סקר ילודים, אמינוגרם או מעבדה.",
+  no_growth_vax_input: "יש למלא מדדי גדילה או סטטוס חיסונים.",
 });
 
 export function reasonHe(reason, fallback = "") {

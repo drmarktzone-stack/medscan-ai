@@ -53,6 +53,7 @@ export default function Differential() {
         findings: splitList(findingsText),
         labs: filledLabs,
         presentation: presentation.trim() || null,
+        mode: "development",
       }));
     } catch (e) {
       console.error(e);

@@ -31,6 +31,7 @@ import {
   writeAudit,
 } from '../llmAdapter.js';
 import { finalizeLocale } from '../i18n/localize.js';
+import { buildCodeFirstEnvelope } from './codeFirstEnvelope.js';
 
 const ENGINE_PROMPT = `אתה מפרש **תוצאות מעבדה שכבר נורמלו** ודפוסים שכבר הותאמו.
 
@@ -194,37 +195,49 @@ export async function runLabInterpreter({
   const { deterministic, refusals: calcRefusals } = runCalculators(calcRequests);
   const refusals = [...calcRefusals, ...unitSkips];
 
-  // ── 5–6. ספרות + שער ─────────────────────────────────────────────────
-  const invokeLLM = createInvokeLLM();
+  // ── 5–6. ספרות + שער. אם אין Base44 — מחזירים את ליבת הקוד בלבד. ──
+  let envelope;
+  let evidence = { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
+  try {
+    const invokeLLM = createInvokeLLM();
 
-  const abnormalFindings = [
-    ...findings,
-    ...normalized.filter((n) => n.flag === 'high' || n.flag === 'low')
-      .map((n) => `${n.label_he} ${n.flag === 'high' ? 'מוגבר' : 'נמוך'}`),
-  ];
+    const abnormalFindings = [
+      ...findings,
+      ...normalized.filter((n) => n.flag === 'high' || n.flag === 'low')
+        .map((n) => `${n.label_he} ${n.flag === 'high' ? 'מוגבר' : 'נמוך'}`),
+    ];
 
-  const [allowedTerms, evidence] = await Promise.all([
-    loadVerifiedDrugTerms(),
-    withLiterature && abnormalFindings.length
-      ? retrieveEvidence({ findings: abnormalFindings, patient: pt, invokeLLM })
-      : Promise.resolve({ literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } }),
-  ]);
+    const [allowedTerms, fetched] = await Promise.all([
+      loadVerifiedDrugTerms(),
+      withLiterature && abnormalFindings.length
+        ? retrieveEvidence({ findings: abnormalFindings, patient: pt, invokeLLM })
+        : Promise.resolve({ literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } }),
+    ]);
+    evidence = fetched;
 
-  const envelope = await groundedInvoke({
-    engine: 'lab_interpreter',
-    enginePrompt: ENGINE_PROMPT,
-    grounding,
-    deterministic,
-    patientData: patientFacts,
-    literature: evidence.literature,
-    invokeLLM,
-    mode,
-    knownTopicKeys: kb.knownTopicKeys,
-    allowedTerms,
-    extraContext: buildContextNote({ pt, missingRanges, refusals, rangeMeta }),
-  });
+    envelope = await groundedInvoke({
+      engine: 'lab_interpreter',
+      enginePrompt: ENGINE_PROMPT,
+      grounding,
+      deterministic,
+      patientData: patientFacts,
+      literature: evidence.literature,
+      invokeLLM,
+      mode,
+      knownTopicKeys: kb.knownTopicKeys,
+      allowedTerms,
+      extraContext: buildContextNote({ pt, missingRanges, refusals, rangeMeta }),
+    });
 
-  await writeAudit({ engine: 'lab_interpreter', envelope });
+    await writeAudit({ engine: 'lab_interpreter', envelope });
+  } catch (e) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'lab_interpreter',
+      grounding,
+      deterministic,
+      llmError: e.message,
+    });
+  }
 
   return finalizeLocale({
     ...envelope,

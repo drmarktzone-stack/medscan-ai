@@ -27,6 +27,7 @@ import {
   writeAudit,
 } from '../llmAdapter.js';
 import { finalizeLocale } from '../i18n/localize.js';
+import { buildCodeFirstEnvelope } from './codeFirstEnvelope.js';
 
 const ENGINE_PROMPT = `אתה בונה **אבחנה מבדלת מדורגת** מממצאים שסופקו.
 
@@ -127,28 +128,39 @@ export async function runDifferentialBuilder({
     ...(presentation ? [{ key: 'presentation', label_he: 'תיאור קליני', value: presentation }] : []),
   ];
 
-  const invokeLLM = createInvokeLLM();
-  const [allowedTerms, evidence] = await Promise.all([
-    loadVerifiedDrugTerms(),
-    withLiterature
-      ? retrieveEvidence({ findings, patient: pt, invokeLLM })
-      : Promise.resolve({ literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } }),
-  ]);
+  let envelope;
+  let evidence = { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
+  try {
+    const invokeLLM = createInvokeLLM();
+    const [allowedTerms, fetched] = await Promise.all([
+      loadVerifiedDrugTerms(),
+      withLiterature
+        ? retrieveEvidence({ findings, patient: pt, invokeLLM })
+        : Promise.resolve({ literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } }),
+    ]);
+    evidence = fetched;
 
-  const envelope = await groundedInvoke({
-    engine: 'differential',
-    enginePrompt: ENGINE_PROMPT,
-    grounding,
-    patientData,
-    literature: evidence.literature,
-    invokeLLM,
-    mode,
-    knownTopicKeys: kb.knownTopicKeys,
-    allowedTerms,
-    extraContext: missingRanges.length
-      ? { analytes_without_reference_range: missingRanges }
-      : null,
-  });
+    envelope = await groundedInvoke({
+      engine: 'differential',
+      enginePrompt: ENGINE_PROMPT,
+      grounding,
+      patientData,
+      literature: evidence.literature,
+      invokeLLM,
+      mode,
+      knownTopicKeys: kb.knownTopicKeys,
+      allowedTerms,
+      extraContext: missingRanges.length
+        ? { analytes_without_reference_range: missingRanges }
+        : null,
+    });
+  } catch (e) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'differential',
+      grounding,
+      llmError: e.message,
+    });
+  }
 
   // ── אכיפת must_not_miss מהידע, לא מהמודל ─────────────────────────────
   const { differential, enforced, uncoveredRed } = enforceMustNotMiss({

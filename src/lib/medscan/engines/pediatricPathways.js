@@ -473,6 +473,7 @@ export function getPediatricPathway(pathwayKey, catalog = PEDIATRIC_PATHWAYS) {
 export function listPediatricPathways({ age_days, category, catalog = PEDIATRIC_PATHWAYS } = {}) {
   return (catalog ?? []).filter((p) => {
     if (category && p.category !== category) return false;
+    if (age_days == null || age_days === '') return true;
     return ageWindowMatches(p, age_days);
   });
 }

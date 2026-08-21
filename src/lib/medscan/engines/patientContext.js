@@ -29,6 +29,7 @@ import {
   loadInteractionKb,
   writeAudit,
 } from '../llmAdapter.js';
+import { buildCodeFirstEnvelope } from './codeFirstEnvelope.js';
 
 const ENGINE_PROMPT = `אתה מנתח **רקע קליני של ילד** ומפיק המלצות מעקב ובירור.
 
@@ -85,20 +86,16 @@ export async function runPatientContext({
     };
   }
 
-  const invokeLLM = createInvokeLLM();
-
   const [kb, interactionKb, allowedTerms] = await Promise.all([
     loadKnowledgeBase(),
     loadInteractionKb(),
     loadVerifiedDrugTerms(),
   ]);
 
-  // ── אינטראקציות — דטרמיניסטי, ומצהיר על עצמו ─────────────────────────
   const interactions = matchInteractions({
     interactionKb, medications, conditions, mode,
   });
 
-  // ── כללי הקשר + דגלים תלויי-רקע ──────────────────────────────────────
   const findings = [...conditions, ...medications, ...recentEvents];
   const grounding = runRulesEngine({
     kb: {
@@ -113,18 +110,15 @@ export async function runPatientContext({
     mode,
   });
 
-  // האינטראקציות שהותאמו נכנסות ל-grounding כפריטי ידע מאומתים
   const interactionItems = interactionsToKbItems(interactions.matched);
   grounding.kbItems = [...grounding.kbItems, ...interactionItems];
   grounding.associations = [...(grounding.associations ?? []), ...interactionItems];
 
-  // ── כיסוי הרקע: מה לא הפעיל שום כלל ──────────────────────────────────
   const coveredText = JSON.stringify(grounding.kbItems ?? []);
   const uncoveredBackground = [...conditions, ...medications].filter(
     (c) => !coveredText.includes(c)
   );
 
-  // ── מחשבונים ─────────────────────────────────────────────────────────
   const calcRequests = [];
   if (Number.isFinite(Number(pt.weight_kg))) {
     calcRequests.push({ type: 'maintenance_fluids', params: { weight_kg: pt.weight_kg } });
@@ -134,7 +128,6 @@ export async function runPatientContext({
   }
   const { deterministic, refusals } = runCalculators(calcRequests);
 
-  // ── נתוני המטופל כ-P# ────────────────────────────────────────────────
   const patientData = [
     ...conditions.map((c, i) => ({ key: `cond_${i + 1}`, label_he: 'מצב רקע', value: c })),
     ...medications.map((m, i) => ({ key: `med_${i + 1}`, label_he: 'תרופה', value: m })),
@@ -153,36 +146,45 @@ export async function runPatientContext({
     patientData.push({ key: 'immunization', label_he: 'מצב חיסונים', value: patient.immunization_status });
   }
 
-  // ── ספרות ────────────────────────────────────────────────────────────
-  const evidence = withLiterature && conditions.length
-    ? await retrieveEvidence({ findings: conditions, patient: pt, invokeLLM })
-    : { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
+  let envelope;
+  let evidence = { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
+  try {
+    const invokeLLM = createInvokeLLM();
+    evidence = withLiterature && conditions.length
+      ? await retrieveEvidence({ findings: conditions, patient: pt, invokeLLM })
+      : { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
 
-  // ── השער ─────────────────────────────────────────────────────────────
-  const envelope = await groundedInvoke({
-    engine: 'patient_context',
-    enginePrompt: ENGINE_PROMPT,
-    grounding,
-    deterministic,
-    patientData,
-    literature: evidence.literature,
-    invokeLLM,
-    mode,
-    knownTopicKeys: kb.knownTopicKeys,
-    allowedTerms,
-    extraContext: {
-      interaction_check_he: interactions.note_he,
-      interaction_check_performed: interactions.status !== INTERACTION_STATUS.NO_SOURCE,
-      ...(uncoveredBackground.length
-        ? { background_without_matched_knowledge: uncoveredBackground }
-        : {}),
-      ...(refusals.length
-        ? { calculators_refused: refusals.map((r) => r.message_he) }
-        : {}),
-    },
-  });
+    envelope = await groundedInvoke({
+      engine: 'patient_context',
+      enginePrompt: ENGINE_PROMPT,
+      grounding,
+      deterministic,
+      patientData,
+      literature: evidence.literature,
+      invokeLLM,
+      mode,
+      knownTopicKeys: kb.knownTopicKeys,
+      allowedTerms,
+      extraContext: {
+        interaction_check_he: interactions.note_he,
+        interaction_check_performed: interactions.status !== INTERACTION_STATUS.NO_SOURCE,
+        ...(uncoveredBackground.length
+          ? { background_without_matched_knowledge: uncoveredBackground }
+          : {}),
+        ...(refusals.length
+          ? { calculators_refused: refusals.map((r) => r.message_he) }
+          : {}),
+      },
+    });
+  } catch (e) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'patient_context',
+      grounding,
+      deterministic,
+      llmError: e.message,
+    });
+  }
 
-  // הצהרות שנאכפות בקוד — לא נשענות על כך שהמודל יזכור אותן
   const enforced = { ...envelope };
   enforced.unknowns_he = [...(envelope.unknowns_he ?? [])];
 

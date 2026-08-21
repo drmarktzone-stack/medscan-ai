@@ -49,7 +49,7 @@ export default function PatientContext() {
         medications: splitList(medications),
         allergies: splitList(allergies),
       };
-      setResult(await runPatientContext({ patient, recentEvents: splitList(events) }));
+      setResult(await runPatientContext({ patient, recentEvents: splitList(events), mode: "development" }));
     } catch (e) {
       console.error(e);
       setError(e.message || "אירעה שגיאה בהרצת הניתוח.");
@@ -149,7 +149,11 @@ export default function PatientContext() {
               <ShieldCheck className="w-5 h-5 text-violet-600" />
               <div>
                 <h3 className="font-bold text-sm">ניתוח הקשר מעוגן</h3>
-                <p className="text-[11px] text-slate-500">עבר אימות מול בסיס הידע המאומת</p>
+                <p className="text-[11px] text-slate-500">
+                  {result.code_first
+                    ? "פענוח דטרמיניסטי (טיוטה) — שער השפה לא רץ כאן. אינו אבחנה."
+                    : "עבר אימות מול בסיס הידע המאומת"}
+                </p>
               </div>
             </div>
 

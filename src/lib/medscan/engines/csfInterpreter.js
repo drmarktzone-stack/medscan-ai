@@ -103,7 +103,9 @@ function gramPositive(gram) {
 }
 
 function pmnPredominant(csf) {
-  const n = pickNum(csf.neutrophils_pct, csf.pmn_pct, csf.neutrophil_percent);
+  const n = pickNum(
+    csf.neutrophils_pct, csf.pmn_pct, csf.pmn_percent, csf.neutrophil_percent, csf.pmn,
+  );
   const l = pickNum(csf.lymphocytes_pct, csf.lymph_pct);
   const diff = String(csf.differential ?? csf.diff ?? '').toLowerCase();
   if (/pmn|neutrophil|נויטרופ/.test(diff)) return true;

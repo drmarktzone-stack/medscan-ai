@@ -14,6 +14,7 @@ import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import { useClinicProfile } from "@/lib/clinic/profileContext";
+import PilotModeToggle from "@/components/PilotModeToggle";
 
 const languages = [
   { code: "he", label: "עברית" },
@@ -141,6 +142,8 @@ export default function AccountSettings({ open, onOpenChange }) {
                   ))}
                 </div>
               </div>
+
+              <PilotModeToggle />
 
               {local ? (
                 <>
