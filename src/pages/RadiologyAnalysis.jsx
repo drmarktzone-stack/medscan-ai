@@ -3,8 +3,7 @@ import { ScanLine, Loader2, BookOpen, ShieldCheck, Contrast, FileText } from "lu
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
-import { runRadiologyFastAnalysis } from "@/lib/medscan/engines/radiologyFastPipeline";
+import { analyzeRadiologyPhoto, humanizeAnalysisError } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import ExamFindingsInput, { RADIOLOGY_EXAM_FIELDS } from "@/components/ExamFindingsInput";
@@ -14,7 +13,6 @@ import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
-import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RadiologyViewer from "@/components/RadiologyViewer";
 
@@ -63,10 +61,7 @@ export default function RadiologyAnalysis() {
     setError(null);
     const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
     try {
-      // ⚡ צינור-רדיולוגיה מהיר: קריאה שיטתית אחת (מודליות→ABCDE→אפיון),
-      // ואז כל ההרכבה בקוד (הערכת-מדידות מול נורמות-גיל + השוואה למאגר).
-      // מחליף את הצינור הרב-קריאתי (3-4 קריאות Opus טוריות ≈ 5 דקות).
-      const res = await runRadiologyFastAnalysis({
+      const res = await analyzeRadiologyPhoto({
         files,
         clinicalContext: fullContext,
         language: lang,
@@ -74,13 +69,9 @@ export default function RadiologyAnalysis() {
         onStage: setStage,
       });
       setResult(res);
-
-      // הצינור הישן והפרשנות המעוגנת נשמרים בקוד אך אינם בשימוש במסלול המהיר.
-      void runDiagnosisPipeline;
-      void runGroundedVisionInterpretation;
     } catch (err) {
       console.error(err);
-      setError(err.message || t("analysis.error_fallback"));
+      setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
     } finally {
       setLoading(false);
       setStage("");
@@ -88,8 +79,10 @@ export default function RadiologyAnalysis() {
   };
 
   const stageLabels = {
+    uploading: t("analysis.stage_uploading"),
     extracting: t("analysis.stage_extracting"),
     matching: t("analysis.stage_matching"),
+    interpreting: t("analysis.stage_interpreting"),
     verifying: t("analysis.stage_verifying"),
     diagnosing: t("analysis.stage_diagnosing"),
   };

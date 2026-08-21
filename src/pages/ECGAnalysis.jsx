@@ -3,8 +3,7 @@ import { Activity, Loader2, BookOpen, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
-import { runEcgFastAnalysis } from "@/lib/medscan/engines/ecgFastPipeline";
+import { analyzeEcgPhoto, humanizeAnalysisError } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import ExamFindingsInput, { ECG_EXAM_FIELDS } from "@/components/ExamFindingsInput";
@@ -14,11 +13,9 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
-import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { runEcgComparison } from "@/lib/ecgCompare";
 import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
-import { runEcgMicroReading, buildMeasuredBlock } from "@/lib/medscan/engines/ecgPerception";
 
 export default function ECGAnalysis() {
   const { t, lang } = useI18n();
@@ -85,7 +82,7 @@ export default function ECGAnalysis() {
         updateUploadedUrls(fileUrls);
       } catch (err) {
         console.error("Upload failed", err);
-        setError(err.message || t("analysis.error_fallback"));
+        setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
       } finally {
         setUploading(false);
       }
@@ -107,7 +104,7 @@ export default function ECGAnalysis() {
         setPriorUrls(urls.map((r) => r.file_url));
       } catch (err) {
         console.error("prior upload failed", err);
-        setError(err.message || t("analysis.error_fallback"));
+        setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
       } finally {
         setPriorUploading(false);
       }
@@ -129,7 +126,7 @@ export default function ECGAnalysis() {
       // (מדידות → יסודות → התאמת-פתולוגיות מול קריטריונים → השוואה למאגר).
       // מחליף את הצינור הרב-קריאתי הישן (3-4 קריאות Opus טוריות ≈ 5 דקות).
       setMicroLoading(true);
-      const res = await runEcgFastAnalysis({
+      const res = await analyzeEcgPhoto({
         files,
         preUploadedUrls: uploadedUrls,
         clinicalContext: fullContext,
@@ -142,13 +139,6 @@ export default function ECGAnalysis() {
       setResult(res);
       if (res.microReading) setMicroReading(res.microReading);
       setMicroLoading(false);
-
-      // הצינור הישן והפרשנות המעוגנת נשמרים בקוד אך אינם בשימוש במסלול-האק"ג המהיר.
-      void runDiagnosisPipeline;
-      void runGroundedVisionInterpretation;
-      void createVisionInvokeLLM;
-      void runEcgMicroReading;
-      void buildMeasuredBlock;
 
       // השוואה לתרשים קודם — רץ אחרי שהפענוח הוצג, ורק אם הועלה תרשים קודם.
       if (priorUrls.length > 0 && res?.imageUrl) {
@@ -167,7 +157,7 @@ export default function ECGAnalysis() {
       sessionStorage.removeItem("ecg_file_urls");
     } catch (err) {
       console.error(err);
-      setError(err.message || t("analysis.error_fallback"));
+      setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
     } finally {
       setLoading(false);
       setMicroLoading(false);
@@ -176,6 +166,7 @@ export default function ECGAnalysis() {
   };
 
   const stageLabels = {
+    uploading: t("analysis.stage_uploading"),
     extracting: t("analysis.stage_extracting"),
     matching: t("analysis.stage_matching"),
     interpreting: t("analysis.stage_interpreting"),

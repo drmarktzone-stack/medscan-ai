@@ -22,6 +22,7 @@ import { runDoctorPedAI, listToolboxModules } from '../medscan/doctorped/index.j
 import { preprocessAudio } from '../medscan/audio/audioPreprocess.js';
 import { seedToEntityRows } from '../medscan/deterministic/referenceRangeSeed.js';
 import { listPediatricPathways } from '../medscan/engines/pediatricPathways.js';
+import { humanizeAnalysisError } from './humanizeAnalysisError.js';
 
 let pass = 0;
 let fail = 0;
@@ -273,6 +274,13 @@ await t('עיבוד שמע מקבל PCM בלי ליפול', () => {
   for (let i = 0; i < samples.length; i++) samples[i] = Math.sin(i / 8) * 0.4;
   const r = preprocessAudio({ samples, sampleRate: 16000 });
   assert(r.ok === true || r.reason, JSON.stringify(r));
+});
+
+await t('שגיאת JS בפענוח צילום מוצגת בעברית ולא כ-ReferenceError', () => {
+  const msg = humanizeAnalysisError(new ReferenceError('runRadiologyFastAnalysis is not defined'));
+  assert(/[\u0590-\u05FF]/.test(msg), msg);
+  assert(!/is not defined/.test(msg), msg);
+  assert(!/runRadiologyFastAnalysis/.test(msg), msg);
 });
 
 await t('שער שפה בלי Base44 נכשל בעברית ולא בשקט', () => {

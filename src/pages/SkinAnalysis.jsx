@@ -3,8 +3,7 @@ import { Stethoscope, Loader2, BookOpen, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
-import { runSkinFastAnalysis } from "@/lib/medscan/engines/skinFastPipeline";
+import { analyzeSkinPhoto, humanizeAnalysisError } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import ExamFindingsInput from "@/components/ExamFindingsInput";
@@ -15,7 +14,6 @@ import GroundedInterpretation from "@/components/GroundedInterpretation";
 import LesionMorphometry from "@/components/LesionMorphometry";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
-import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
 
 export default function SkinAnalysis() {
   const { t, lang } = useI18n();
@@ -48,8 +46,7 @@ export default function SkinAnalysis() {
     setError(null);
     const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");
     try {
-      // ⚡ צינור-עור מהיר: קריאה מורפולוגית אחת + ניקוד דרמוסקופי בקוד + השוואה למאגר.
-      const res = await runSkinFastAnalysis({
+      const res = await analyzeSkinPhoto({
         files,
         clinicalContext: fullContext,
         language: lang,
@@ -57,13 +54,9 @@ export default function SkinAnalysis() {
         onStage: setStage,
       });
       setResult(res);
-
-      // הצינור הישן והפרשנות המעוגנת נשמרים בקוד אך אינם בשימוש במסלול המהיר.
-      void runDiagnosisPipeline;
-      void runGroundedVisionInterpretation;
     } catch (err) {
       console.error(err);
-      setError(err.message || t("analysis.error_fallback"));
+      setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
     } finally {
       setLoading(false);
       setStage("");
@@ -71,8 +64,10 @@ export default function SkinAnalysis() {
   };
 
   const stageLabels = {
+    uploading: t("analysis.stage_uploading"),
     extracting: t("analysis.stage_extracting"),
     matching: t("analysis.stage_matching"),
+    interpreting: t("analysis.stage_interpreting"),
     verifying: t("analysis.stage_verifying"),
     diagnosing: t("analysis.stage_diagnosing"),
   };
