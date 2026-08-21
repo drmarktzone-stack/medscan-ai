@@ -107,7 +107,7 @@ export default function History() {
         ) : (
           <>
             {encounters.map((row) => (
-              <div key={row.id} className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
+              <div key={row.id} className="clinic-card p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-cyan-50 flex items-center justify-center shrink-0">
                     <Heart className="w-5 h-5 text-cyan-700" />
@@ -125,7 +125,7 @@ export default function History() {
               </div>
             ))}
             {analyses.map((a) => (
-              <div key={a.id} className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm">
+              <div key={a.id} className="clinic-card p-4">
                 <div className="flex items-start gap-3">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${a.type === "ecg" ? "bg-blue-50" : a.type === "skin" ? "bg-teal-50" : "bg-indigo-50"}`}>
                     {a.type === "ecg" ? <Activity className="w-5 h-5 text-blue-500" /> : a.type === "skin" ? <Stethoscope className="w-5 h-5 text-teal-500" /> : <ScanLine className="w-5 h-5 text-indigo-500" />}

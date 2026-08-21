@@ -38,11 +38,11 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[hsl(204,36%,97%)] flex items-center justify-center p-5" dir="rtl">
-      <div className="w-full max-w-sm space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-5" dir="rtl">
+      <div className="w-full max-w-sm clinic-card p-6 space-y-6">
         <div className="text-center">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-cyan-800 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-900/20 mb-4">
-            <Stethoscope className="w-7 h-7 text-white" />
+          <div className="clinic-icon w-14 h-14 mx-auto mb-4">
+            <Stethoscope className="w-7 h-7 text-sky-600" />
           </div>
           <h1 className="text-2xl font-extrabold text-foreground">{t("home.brand")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("login.local_title")}</p>
@@ -56,7 +56,7 @@ export default function Login() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
-          <div className="relative flex justify-center text-xs"><span className="bg-[hsl(204,36%,97%)] px-3 text-muted-foreground">{t("login.or_account")}</span></div>
+          <div className="relative flex justify-center text-xs"><span className="px-3 text-muted-foreground bg-white/40 rounded-full">{t("login.or_account")}</span></div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

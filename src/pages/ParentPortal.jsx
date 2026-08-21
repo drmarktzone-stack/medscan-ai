@@ -92,8 +92,8 @@ export default function ParentPortal() {
                 key={c.en}
                 type="button"
                 onClick={() => toggle(c)}
-                className={`text-sm px-4 py-2.5 rounded-full border font-medium ${
-                  selected.includes(c.en) ? "bg-rose-600 text-white border-rose-600" : "bg-white text-slate-700"
+                className={`clinic-chip ${
+                  selected.includes(c.en) ? "clinic-chip-on bg-rose-500 shadow-[0_8px_20px_-10px_rgba(244,63,94,0.85)]" : "text-slate-700"
                 }`}
               >
                 {chipLabel(c)}
@@ -104,7 +104,7 @@ export default function ParentPortal() {
 
         <Input type="number" placeholder={t("dp.mchat")} value={mchat} onChange={(e) => setMchat(e.target.value)} />
 
-        <Button className="w-full h-14 text-base font-bold rounded-2xl bg-rose-600 hover:bg-rose-700" disabled={loading || selected.length === 0} onClick={handleRun}>
+        <Button className="w-full h-14 text-base font-bold rounded-full bg-rose-500 hover:bg-rose-600 shadow-[0_10px_24px_-12px_rgba(244,63,94,0.9)]" disabled={loading || selected.length === 0} onClick={handleRun}>
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t("dp.parent_run")}
         </Button>
 

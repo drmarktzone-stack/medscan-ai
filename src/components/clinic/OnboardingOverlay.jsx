@@ -23,24 +23,28 @@ export default function OnboardingOverlay() {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-40 bg-slate-900/55 flex items-end sm:items-center justify-center p-4">
-      <div className="clinic-card w-full max-w-md p-6 space-y-4 shadow-2xl">
+    <div className="fixed inset-0 z-40 bg-slate-900/35 backdrop-blur-md flex items-end sm:items-center justify-center p-4">
+      <div className="clinic-card w-full max-w-md p-6 space-y-4">
         <h2 className="text-xl font-extrabold text-slate-900">{t("clinic.onboard_title")}</h2>
         <p className="text-sm text-slate-600 leading-relaxed">{t("clinic.onboard_body")}</p>
         <Link
           to="/doctorped"
           onClick={dismiss}
-          className="flex items-center gap-3 rounded-2xl bg-gradient-to-l from-cyan-800 to-teal-600 text-white p-4 font-bold"
+          className="flex items-center gap-3 rounded-2xl clinic-card p-4 font-bold hover:bg-white/80"
         >
-          <Stethoscope className="w-6 h-6" />
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-300 flex items-center justify-center">
+            <Stethoscope className="w-6 h-6 text-white" />
+          </div>
           {t("clinic.onboard_clinician")}
         </Link>
         <Link
           to="/parent"
           onClick={dismiss}
-          className="flex items-center gap-3 rounded-2xl bg-gradient-to-l from-rose-700 to-orange-500 text-white p-4 font-bold"
+          className="flex items-center gap-3 rounded-2xl clinic-card p-4 font-bold hover:bg-white/80"
         >
-          <Heart className="w-6 h-6" />
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-400 to-orange-300 flex items-center justify-center">
+            <Heart className="w-6 h-6 text-white" />
+          </div>
           {t("clinic.onboard_parent")}
         </Link>
         <button type="button" onClick={dismiss} className="w-full text-sm text-slate-500 py-2">

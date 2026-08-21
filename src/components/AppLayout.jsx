@@ -9,7 +9,7 @@ export default function AppLayout() {
     <>
       <PilotModeBanner />
       <LocalClinicBanner />
-      <main className="pb-28">
+      <main className="pb-32">
         <Outlet />
       </main>
       <BottomNav />

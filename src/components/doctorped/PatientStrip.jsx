@@ -22,7 +22,7 @@ export default function PatientStrip({ compact = false }) {
           <Input type="number" value={session.ageValue} onChange={(e) => patch({ ageValue: e.target.value })} />
         </Field>
         <Field label={t("dp.days")}>
-          <select className="h-10 w-full rounded-md border px-2 text-sm bg-white" value={session.ageUnit} onChange={(e) => patch({ ageUnit: e.target.value })}>
+          <select className="h-10 w-full rounded-xl border px-2 text-sm bg-white/50" value={session.ageUnit} onChange={(e) => patch({ ageUnit: e.target.value })}>
             <option value="days">{t("dp.days")}</option>
             <option value="months">{t("dp.months")}</option>
             <option value="years">{t("dp.years")}</option>
@@ -40,7 +40,7 @@ export default function PatientStrip({ compact = false }) {
       {!compact && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Field label={t("dp.sex")}>
-            <select className="h-10 w-full rounded-md border px-2 text-sm bg-white" value={session.sex} onChange={(e) => patch({ sex: e.target.value })}>
+            <select className="h-10 w-full rounded-xl border px-2 text-sm bg-white/50" value={session.sex} onChange={(e) => patch({ sex: e.target.value })}>
               <option value="">{t("dp.sex")}</option>
               <option value="male">{t("dp.male")}</option>
               <option value="female">{t("dp.female")}</option>

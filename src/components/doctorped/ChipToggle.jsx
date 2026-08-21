@@ -20,9 +20,7 @@ export default function ChipToggle({ options, selected, onToggle, multi = true }
             key={id}
             type="button"
             onClick={() => click(id)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-              on ? "bg-cyan-700 text-white border-cyan-700" : "bg-white text-slate-700 border-slate-200"
-            }`}
+            className={`clinic-chip text-xs ${on ? "clinic-chip-on" : "text-slate-700"}`}
           >
             {label}
           </button>

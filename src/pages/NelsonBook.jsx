@@ -297,7 +297,7 @@ function Shell({ children }) {
         icon={BookOpen}
         tone="tool"
         extra={
-          <Link to="/knowledge-import" title="טעינה מחדש" className="text-white/80 hover:text-white">
+          <Link to="/knowledge-import" title="טעינה מחדש" className="text-slate-500 hover:text-slate-800">
             <BookUp className="w-4 h-4" />
           </Link>
         }

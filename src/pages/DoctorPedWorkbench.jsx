@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Stethoscope, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,8 +81,31 @@ export default function DoctorPedWorkbench() {
   return (
     <div className="clinic-page">
       <ClinicHeader title={t("dp.workbench_title")} icon={Stethoscope} tone="clinic" />
-      <div className="clinic-wrap py-6 grid lg:grid-cols-[minmax(0,1fr)_300px] gap-5">
-        <div className="space-y-5">
+      <div className="clinic-wrap py-5 grid lg:grid-cols-[240px_minmax(0,1fr)_280px] gap-4">
+        <aside className="order-3 lg:order-none space-y-3 no-print">
+          <div className="clinic-card p-3 lg:sticky lg:top-24">
+            <p className="text-sm font-bold mb-2 px-1">{t("dp.toolbox")}</p>
+            <div className="grid grid-cols-1 gap-1 max-h-[62vh] overflow-auto">
+              {toolbox.map((m) => (
+                <NavLink
+                  key={m.id}
+                  to={m.route}
+                  className={({ isActive }) =>
+                    `text-xs rounded-xl px-3 py-2 font-medium transition-all ${
+                      isActive
+                        ? "bg-primary text-white shadow-[0_8px_18px_-10px_hsl(var(--primary))]"
+                        : "text-slate-700 hover:bg-white/60"
+                    }`
+                  }
+                >
+                  {m.title_he || t(m.i18n_key)}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        <div className="space-y-4">
           <p className="text-sm text-slate-600 leading-relaxed clinic-card p-4">{t("dp.workbench_intro")}</p>
           <div>
             <p className="clinic-label">{t("dp.patient_strip")}</p>
@@ -99,19 +122,26 @@ export default function DoctorPedWorkbench() {
               <Input type="number" placeholder={t("dp.father")} value={session.fatherCm} onChange={(e) => patch({ fatherCm: e.target.value })} />
               <Input type="number" placeholder={t("dp.mother")} value={session.motherCm} onChange={(e) => patch({ motherCm: e.target.value })} />
             </div>
-            <div className="flex flex-wrap gap-3 text-xs text-slate-600">
+            <div className="flex flex-wrap gap-2">
               {["vision_tested", "hearing_tested", "gluten_containing_diet", "growth_plotted"].map((k) => (
-                <label key={k} className="flex items-center gap-1">
-                  <input type="checkbox" checked={session.features[k] === true} onChange={(e) => patchFeature(k, e.target.checked)} />
+                <button
+                  key={k}
+                  type="button"
+                  className={`clinic-chip text-xs ${session.features[k] === true ? "clinic-chip-on" : "text-slate-700"}`}
+                  onClick={() => patchFeature(k, session.features[k] !== true)}
+                >
                   {t(`dp.feat.${k}`)}
-                </label>
+                </button>
               ))}
+              <button
+                type="button"
+                className={`clinic-chip text-xs ${proceed ? "clinic-chip-on" : "text-slate-700"}`}
+                onClick={() => setProceed((v) => !v)}
+              >
+                {t("dp.proceed")}
+              </button>
             </div>
-            <label className="flex items-center gap-2 text-xs text-slate-600">
-              <input type="checkbox" checked={proceed} onChange={(e) => setProceed(e.target.checked)} />
-              {t("dp.proceed")}
-            </label>
-            <Button className="w-full h-12 font-bold rounded-xl" disabled={loading || !session.presentation.trim()} onClick={() => run()}>
+            <Button className="w-full h-12 font-bold rounded-2xl" disabled={loading || !session.presentation.trim()} onClick={() => run()}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("dp.run")}
             </Button>
           </div>
@@ -120,7 +150,7 @@ export default function DoctorPedWorkbench() {
           {saveNote && <p className="text-[11px] text-slate-500">{saveNote}</p>}
 
           {result?.awaiting_anamnesis && (
-            <div className="bg-amber-50 border border-amber-300 rounded-2xl p-5 space-y-3">
+            <div className="clinic-card p-5 space-y-3">
               <p className="text-sm font-bold">{t("dp.anamnesis")}</p>
               {(result.anamnesis?.questions ?? []).map((q) => (
                 <div key={q.id} className="space-y-1 clinic-card p-3">
@@ -134,59 +164,51 @@ export default function DoctorPedWorkbench() {
               <Button className="w-full" onClick={() => run({ answers })}>{t("dp.run")}</Button>
             </div>
           )}
-
-          {result?.triage && (
-            <div className={`rounded-2xl p-4 ${urgencyStyle}`}>
-              <p className="text-sm font-extrabold flex items-center gap-2">
-                {result.emergency && <AlertTriangle className="w-4 h-4" />}
-                {t("dp.triage")}: {result.triage.urgency}
-              </p>
-            </div>
-          )}
-
-          {result?.triggered_modules?.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {result.triggered_modules.map((id) => {
-                const mod = toolbox.find((m) => m.id === id);
-                return (
-                  <Link key={id} to={mod?.route || "/doctorped"} className="text-xs px-3 py-1.5 rounded-full bg-cyan-50 border border-cyan-200 font-medium">
-                    {mod?.title_he || id}
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-
-          {result && !result.awaiting_anamnesis && (
-            <div id="clinic-draft-print" className="space-y-4">
-              <EngineResultPanel result={result} />
-              <PrintDraftButton />
-            </div>
-          )}
-
-          {result?.referral_gate && Object.keys(result.referral_gate).length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
-              <p className="text-sm font-semibold">{t("dp.referrals")}</p>
-              {Object.entries(result.referral_gate).map(([k, v]) => (
-                <p key={k} className="text-xs">{k}: {v.allowed ? t("dp.refer_ok") : v.message_he}</p>
-              ))}
-              <Link to="/referrals" className="text-xs underline font-semibold">{t("home.referrals_title")}</Link>
-            </div>
-          )}
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-24 self-start no-print">
-          <div className="clinic-card p-4">
-            <p className="text-sm font-bold mb-2">{t("dp.toolbox")}</p>
-            <div className="grid grid-cols-1 gap-1.5 max-h-[60vh] overflow-auto">
-              {toolbox.map((m) => (
-                <Link key={m.id} to={m.route} className="text-xs border rounded-lg p-2 hover:bg-cyan-50 hover:border-cyan-200">
-                  {m.title_he || t(m.i18n_key)}
-                </Link>
-              ))}
-            </div>
+        <aside className="order-2 lg:order-none space-y-3 lg:sticky lg:top-24 self-start">
+          <div className="clinic-card p-4 min-h-[12rem]">
+            <p className="text-sm font-bold mb-3">{t("dp.triage")}</p>
+            {!result && <p className="text-xs text-slate-500">{t("dp.workbench_intro")}</p>}
+            {result?.triage && (
+              <div className={`rounded-2xl p-3 mb-3 ${urgencyStyle}`}>
+                <p className="text-sm font-extrabold flex items-center gap-2">
+                  {result.emergency && <AlertTriangle className="w-4 h-4" />}
+                  {result.triage.urgency}
+                </p>
+              </div>
+            )}
+            {result?.triggered_modules?.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {result.triggered_modules.map((id) => {
+                  const mod = toolbox.find((m) => m.id === id);
+                  return (
+                    <Link key={id} to={mod?.route || "/doctorped"} className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary font-medium">
+                      {mod?.title_he || t(mod?.i18n_key) || id}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+            {result?.referral_gate && Object.keys(result.referral_gate).length > 0 && (
+              <div className="space-y-1 mb-3">
+                <p className="text-sm font-semibold">{t("dp.referrals")}</p>
+                {Object.entries(result.referral_gate).map(([k, v]) => (
+                  <p key={k} className="text-xs">{k}: {v.allowed ? t("dp.refer_ok") : v.message_he}</p>
+                ))}
+                <Link to="/referrals" className="text-xs underline font-semibold">{t("home.referrals_title")}</Link>
+              </div>
+            )}
+            {result && !result.awaiting_anamnesis && (
+              <div id="clinic-draft-print" className="space-y-4">
+                <EngineResultPanel result={result} />
+                <PrintDraftButton />
+              </div>
+            )}
           </div>
-          <DisclaimerBanner />
+          <div className="no-print">
+            <DisclaimerBanner />
+          </div>
         </aside>
       </div>
     </div>

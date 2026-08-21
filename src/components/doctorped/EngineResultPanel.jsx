@@ -35,7 +35,7 @@ export default function EngineResultPanel({ result }) {
         </div>
       )}
       {(body.pecarn_action || body.pecarn?.pecarn_action) && (
-        <p className="text-sm bg-white border rounded-xl p-3">PECARN: <strong>{body.pecarn_action || body.pecarn.pecarn_action}</strong></p>
+        <p className="text-sm bg-white/50 border border-white/70 rounded-xl p-3">PECARN: <strong>{body.pecarn_action || body.pecarn.pecarn_action}</strong></p>
       )}
       {(body.tbsa_pct != null || body.burn?.tbsa_pct != null) && (
         <p className="text-sm bg-white border rounded-xl p-3">TBSA: <strong>{body.tbsa_pct ?? body.burn.tbsa_pct}%</strong></p>
