@@ -1,8 +1,10 @@
 # Lovable
 
-1. הקוד הקליני והמסכים כבר בפרויקט.
-2. אם Lovable אומר שחסר מפתח / LLM / ישויות — הדביקו את **כל** `LOVABLE_UNBLOCK.md`.
-3. אחר כך הדביקו את **כל** `LOVABLE_SUPABASE_LIVE.md`.
-4. משתני סביבה: `env.template` (מזהה היישום כבר ממולא; מפתח Base44 לא קיים במאגר).
-5. Lovable מחבר **Supabase** לנתונים חיים — לא GitHub כמסד, ולא Lovable AI כמנוע קליני.
-6. אחרי חיבור: `npm test` ו-`npm run build`.
+מספקים **קובץ אחד**: `PASTE_THIS.md`.
+
+1. פתחו את `prompts/lovable/PASTE_THIS.md`.
+2. הדביקו את **כל** התוכן בצ'אט של Lovable.
+3. ב-Lovable Secrets שימו את שני השורות מתוך הקובץ (`VITE_BASE44_APP_ID` ו-`VITE_LOCAL_CLINIC`).
+4. אחרי יצירת Supabase — הוסיפו URL ומפתח anon **שם**, לא בגיטהאב.
+
+אין מפתח Base44 במאגר. אין להחליף את המנוע ל-Lovable AI.
