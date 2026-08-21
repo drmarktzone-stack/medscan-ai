@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical,
+import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical,
   UserCog, GitBranch, ListChecks, Database, Biohazard, Flame, Baby, Brain, Bone,
-  Dna, Droplets, Waves, Mic, Pill,
+  Dna, Droplets, Waves, Mic, Pill, LogIn, UserPlus,
 } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import OnboardingOverlay from "@/components/clinic/OnboardingOverlay";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/AuthContext";
+import { loadAccount } from "@/lib/clinic/account";
 
 const portals = [
   {
@@ -83,21 +84,41 @@ function ToolGrid({ items, t }) {
 
 export default function Home() {
   const { t } = useI18n();
+  const { user, isLocalClinic } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const showAuthLinks = isLocalClinic || !user?.email;
+  const role = loadAccount().role;
+  const visiblePortals = role === "clinician" ? portals.filter((p) => p.path === "/doctorped") : portals;
 
   return (
     <div className="clinic-page">
-      <div className="flex items-center justify-between clinic-wrap pt-[calc(env(safe-area-inset-top)+1rem)]">
+      <div className="flex items-center justify-between clinic-wrap pt-[calc(env(safe-area-inset-top)+1rem)] gap-2">
         <div className="clinic-card px-3 py-1.5">
           <LanguageSwitcher />
         </div>
-        <button
-          onClick={() => setSettingsOpen(true)}
-          className="clinic-card text-xs text-slate-600 hover:text-foreground flex items-center gap-1.5 px-3 py-2"
-        >
-          <Settings className="w-4 h-4" />
-          {t("home.settings")}
-        </button>
+        <div className="flex items-center gap-2">
+          {showAuthLinks ? (
+            <>
+              <Link to="/login" className="clinic-card text-xs text-slate-600 hover:text-foreground flex items-center gap-1.5 px-3 py-2">
+                <LogIn className="w-4 h-4" />
+                {t("login.title")}
+              </Link>
+              <Link to="/register" className="clinic-card text-xs font-bold text-primary hover:text-sky-800 flex items-center gap-1.5 px-3 py-2">
+                <UserPlus className="w-4 h-4" />
+                {t("register.title")}
+              </Link>
+            </>
+          ) : (
+            <span className="clinic-card text-xs text-slate-600 px-3 py-2 truncate max-w-[180px]">{user.email}</span>
+          )}
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="clinic-card text-xs text-slate-600 hover:text-foreground flex items-center gap-1.5 px-3 py-2"
+          >
+            <Settings className="w-4 h-4" />
+            {t("home.settings")}
+          </button>
+        </div>
       </div>
 
       <header className="clinic-wrap pt-8 pb-8 text-center">
@@ -113,7 +134,7 @@ export default function Home() {
 
       <main className="clinic-wrap pb-10 space-y-8">
         <section className="grid md:grid-cols-2 gap-4">
-          {portals.map((p) => (
+          {visiblePortals.map((p) => (
             <Link key={p.path} to={p.path} className="clinic-card p-6 hover:bg-white/70 transition group">
               <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${p.blob} flex items-center justify-center mb-4 shadow-lg`}>
                 <p.icon className="w-6 h-6 text-white" />

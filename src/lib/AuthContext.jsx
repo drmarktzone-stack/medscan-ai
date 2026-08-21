@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
-import { enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
+import { disableLocalClinic, enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
 
 const AuthContext = createContext();
 
@@ -102,14 +102,17 @@ export const AuthProvider = ({ children }) => {
         setIsLoadingPublicSettings(false);
         setIsLoadingAuth(false);
         setAuthChecked(true);
-        const reason = appError.status === 403 ? appError.data?.extra_data?.reason : null;
-        if (reason !== 'user_not_registered' && reason !== 'auth_required') {
-          enterLocalClinic(true);
-        }
+        if (!appParams.appId) enterLocalClinic(true);
       }
     } catch (error) {
       console.error('Unexpected error:', error);
-      enterLocalClinic(true);
+      if (!appParams.appId) enterLocalClinic(true);
+      else {
+        setIsLoadingAuth(false);
+        setIsAuthenticated(false);
+        setAuthChecked(true);
+        setIsLoadingPublicSettings(false);
+      }
     }
   };
 
@@ -139,14 +142,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = (shouldRedirect = true) => {
+    const wasLocal = Boolean(user?.local);
+    disableLocalClinic();
     setUser(null);
     setIsAuthenticated(false);
-    
+    if (wasLocal) {
+      if (shouldRedirect && typeof window !== 'undefined') window.location.href = '/login';
+      return;
+    }
     if (shouldRedirect) {
-      // Use the SDK's logout method which handles token cleanup and redirect
-      base44.auth.logout(window.location.href);
+      base44.auth.logout('/login');
     } else {
-      // Just remove the token without redirect
       base44.auth.logout();
     }
   };

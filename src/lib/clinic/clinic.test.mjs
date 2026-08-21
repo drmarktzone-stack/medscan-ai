@@ -7,6 +7,10 @@ import { loadClinicProfile, saveClinicProfile, CLINIC_PROFILE_KEY } from './prof
 import { buildClinicBackup, parseClinicBackup, mergeEncounterRows } from './backup.js';
 import { hasAgeParts, parseAgeParts } from './ageParts.js';
 import { toAgeDays } from '../medscan/deterministic/labNormalize.js';
+import {
+  isValidNationalId, isValidLicenseNumber, isClinicianComplete, isParentComplete,
+  isParentAllowedPath, postAuthPath, saveAccount, emptyAccount,
+} from './account.js';
 
 let pass = 0, fail = 0;
 const t = (n, fn) => { try { fn(); console.log('  ✓ ' + n); pass++; } catch (e) { console.log('  ✗ ' + n + '\n      ' + e.message); fail++; } };
@@ -28,17 +32,17 @@ t('בלי מזהה אפליקציה חיצוני — המרפאה נפתחת ב�
   assert(resolveLocalClinicMode({ env: {}, appId: null, token: null }) === true);
 });
 
-t('פיתוח בלי אסימון — מצב מקומי', () => {
-  assert(resolveLocalClinicMode({ env: { DEV: true }, appId: 'x', token: null }) === true);
+t('פיתוח בלי אסימון מציג התחברות', () => {
+  assert(resolveLocalClinicMode({ env: { DEV: true }, appId: 'x', token: null, storage: memoryStore() }) === false);
 });
 
-t('ייצור עם מזהה יישום בלי אסימון — עדיין מצב מקומי', () => {
+t('ייצור עם מזהה יישום בלי אסימון דורש התחברות', () => {
   assert(resolveLocalClinicMode({
     env: { DEV: false },
     appId: 'hosted',
     token: null,
     storage: memoryStore(),
-  }) === true);
+  }) === false);
 });
 
 t('אפליקציה מארחת עם אסימון — לא מדלגת על התחברות', () => {
@@ -114,6 +118,43 @@ t('גיל בשנים וחודשים מחובר לימים', () => {
   assert(parts.age_days === undefined);
   assert(hasAgeParts({ ageYears: '', ageMonths: '6', ageDays: '' }) === true);
   assert(hasAgeParts({ ageYears: '', ageMonths: '', ageDays: '' }) === false);
+});
+
+t('תעודת זהות ישראלית נבדקת לפי ספרת ביקורת', () => {
+  assert(isValidNationalId('123456782') === true);
+  assert(isValidNationalId('123456781') === false);
+  assert(isValidLicenseNumber('12345') === true);
+  assert(isValidLicenseNumber('ab') === false);
+});
+
+t('הורה מוכן עם שם בלבד ונכנס רק לפורטל', () => {
+  const parent = saveAccount({ role: 'parent', fullName: 'הורה בדיקה' }, memoryStore());
+  assert(isParentComplete(parent) === true);
+  assert(isClinicianComplete(parent) === false);
+  assert(postAuthPath(parent) === '/parent');
+  assert(isParentAllowedPath('/parent') === true);
+  assert(isParentAllowedPath('/doctorped') === false);
+});
+
+t('רופא בלי רישיון אינו מוכן; עם פרטים מלאים נכנס למרפאה', () => {
+  const store = memoryStore();
+  const incomplete = saveAccount({
+    role: 'clinician', fullName: 'ד"ר בדיקה', clinicName: 'מרפאה',
+  }, store);
+  assert(isClinicianComplete(incomplete) === false);
+  assert(postAuthPath(incomplete) === '/register');
+  const complete = saveAccount({
+    role: 'clinician',
+    fullName: 'ד"ר בדיקה',
+    nationalId: '123456782',
+    licenseNumber: '12345',
+    specialty: 'pediatrics',
+    clinicName: 'מרפאת ילדים',
+    phone: '0501234567',
+  }, store);
+  assert(isClinicianComplete(complete) === true);
+  assert(postAuthPath(complete) === '/');
+  assert(emptyAccount().role === '');
 });
 
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);

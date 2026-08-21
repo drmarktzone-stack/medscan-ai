@@ -1,7 +1,7 @@
 /**
- * Local clinic session — the app runs on this computer without Base44 login.
- * Hosted Base44 with a live app id still requires login unless the physician
- * explicitly chose "enter clinic on this computer".
+ * Local clinic session — the app can run on this computer without a remote account.
+ * A hosted app shows the login/register screens unless the physician chose
+ * "continue on this computer", or VITE_LOCAL_CLINIC is set.
  */
 
 export const LOCAL_CLINIC_KEY = 'doctorped_local_clinic_v1';
@@ -23,9 +23,7 @@ export function resolveLocalClinicMode({
   }
   if (!appId) return true;
   if (base44Reachable === false) return true;
-  // Hosted app id without a session token still opens the clinic on this computer.
-  // Image analysis still needs Base44; text engines do not.
-  if (!token) return true;
+  void token;
   return false;
 }
 

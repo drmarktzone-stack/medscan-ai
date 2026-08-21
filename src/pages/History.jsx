@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/i18n";
 import { listEncounters, exportLocalEncounters, mergeImportedEncounters } from "@/lib/supabase/encounters.js";
 import { buildClinicBackup, parseClinicBackup } from "@/lib/clinic/backup.js";
 import { loadClinicProfile, saveClinicProfile } from "@/lib/clinic/profile.js";
+import { loadAccount } from "@/lib/clinic/account.js";
 import { useClinicProfile } from "@/lib/clinic/profileContext";
 import moment from "moment";
 
@@ -24,7 +25,7 @@ export default function History() {
     setLoading(true);
     Promise.all([
       base44.entities.Analysis.list("-created_date", 50).catch(() => []),
-      listEncounters({ role: "clinician" }).then((r) => r.rows ?? []).catch(() => []),
+      listEncounters({ role: loadAccount().role === "parent" ? "parent" : "clinician" }).then((r) => r.rows ?? []).catch(() => []),
     ]).then(([a, e]) => {
       setAnalyses(Array.isArray(a) ? a : []);
       setEncounters(Array.isArray(e) ? e : []);

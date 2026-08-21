@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Heart, Loader2, AlertTriangle } from "lucide-react";
+import { Heart, Loader2, AlertTriangle, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import PrintDraftButton from "@/components/clinic/PrintDraftButton";
+import AccountSettings from "@/components/AccountSettings";
 import { useI18n } from "@/lib/i18n";
 import { runDoctorPedAI } from "@/lib/medscan/doctorped/index.js";
 import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
@@ -37,6 +38,7 @@ export default function ParentPortal() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [acked, setAcked] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const chipLabel = (c) => (lang === "en" ? c.en : lang === "ar" ? c.ar : c.he);
   const toggle = (c) => {
@@ -71,7 +73,17 @@ export default function ParentPortal() {
 
   return (
     <div className="clinic-page">
-      <ClinicHeader title={t("dp.parent_title")} icon={Heart} tone="parent" />
+      <ClinicHeader
+        title={t("dp.parent_title")}
+        icon={Heart}
+        tone="parent"
+        backTo="/parent"
+        extra={(
+          <button type="button" onClick={() => setSettingsOpen(true)} className="text-slate-500">
+            <Settings className="w-4 h-4" />
+          </button>
+        )}
+      />
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         <p className="text-base text-slate-700 leading-relaxed clinic-card p-4">{t("dp.parent_intro")}</p>
 
@@ -142,6 +154,7 @@ export default function ParentPortal() {
 
         <DisclaimerBanner />
       </div>
+      <AccountSettings open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }

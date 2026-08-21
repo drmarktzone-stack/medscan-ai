@@ -37,6 +37,7 @@ import SkinValidation from '@/pages/SkinValidation';
 import KnowledgeCoverage from '@/pages/KnowledgeCoverage';
 import DoctorPedWorkbench from '@/pages/DoctorPedWorkbench';
 import ParentPortal from '@/pages/ParentPortal';
+import RoleGate from "@/components/clinic/RoleGate";
 import {
   ToxicologyPage, TraumaPage, GrowthPage, NutritionPage, NeurodevPage,
   ChronicPage, SyndromesPage, MetabolicPage, GeneticsPage, CsfPage,
@@ -65,6 +66,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route element={<RoleGate />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/ecg" element={<ECGAnalysis />} />
@@ -101,6 +103,7 @@ const AuthenticatedApp = () => {
           <Route path="/eeg" element={<EegPage />} />
           <Route path="/audio" element={<AudioPage />} />
           <Route path="/referrals" element={<ReferralsPage />} />
+        </Route>
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

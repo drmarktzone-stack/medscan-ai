@@ -23,8 +23,8 @@ const languages = [
 
 export default function AccountSettings({ open, onOpenChange }) {
   const { t, lang, setLang } = useI18n();
-  const { user: authUser } = useAuth();
-  const { profile, update } = useClinicProfile();
+  const { user: authUser, logout } = useAuth();
+  const { profile, update, account, updateAccount } = useClinicProfile();
   const [user, setUser] = useState(null);
   const [step, setStep] = useState("main");
   const [busy, setBusy] = useState(false);
@@ -46,7 +46,7 @@ export default function AccountSettings({ open, onOpenChange }) {
     }
   }, [open, local, profile.clinicName, profile.physicianName]);
 
-  const handleLogout = () => base44.auth.logout("/");
+  const handleLogout = () => logout(true);
 
   const handleDelete = async () => {
     setBusy(true);
@@ -80,25 +80,40 @@ export default function AccountSettings({ open, onOpenChange }) {
             <div className="space-y-3 py-1">
               <div className="bg-slate-50 rounded-xl p-3 space-y-2">
                 <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5" /> {t("clinic.profile_title")}
+                  <Building2 className="w-3.5 h-3.5" /> {account.role === "parent" ? t("register.role_parent") : t("clinic.profile_title")}
                 </p>
-                <Input
-                  value={clinicName}
-                  onChange={(e) => setClinicName(e.target.value)}
-                  placeholder={t("clinic.clinic_name")}
-                  className="h-10 rounded-lg"
-                />
-                <Input
-                  value={physicianName}
-                  onChange={(e) => setPhysicianName(e.target.value)}
-                  placeholder={t("clinic.physician_name")}
-                  className="h-10 rounded-lg"
-                />
+                {account.role === "parent" ? (
+                  <Input
+                    value={physicianName}
+                    onChange={(e) => setPhysicianName(e.target.value)}
+                    placeholder={t("register.name")}
+                    className="h-10 rounded-lg"
+                  />
+                ) : (
+                  <>
+                    <Input
+                      value={clinicName}
+                      onChange={(e) => setClinicName(e.target.value)}
+                      placeholder={t("clinic.clinic_name")}
+                      className="h-10 rounded-lg"
+                    />
+                    <Input
+                      value={physicianName}
+                      onChange={(e) => setPhysicianName(e.target.value)}
+                      placeholder={t("clinic.physician_name")}
+                      className="h-10 rounded-lg"
+                    />
+                    {account.licenseNumber ? (
+                      <p className="text-[11px] text-slate-500">{t("register.license")}: {account.licenseNumber}</p>
+                    ) : null}
+                  </>
+                )}
                 <Button
                   type="button"
                   className="w-full h-10 rounded-lg"
                   onClick={() => {
                     update({ clinicName, physicianName });
+                    updateAccount({ fullName: physicianName, clinicName });
                     setSaved(true);
                   }}
                 >
@@ -127,7 +142,20 @@ export default function AccountSettings({ open, onOpenChange }) {
                 </div>
               </div>
 
-              {!local && (
+              {local ? (
+                <>
+              <Button
+                variant="outline"
+                className="w-full h-11 rounded-xl"
+                onClick={() => { window.location.href = "/login"; }}
+              >
+                {t("settings.sign_in")}
+              </Button>
+              <Button onClick={handleLogout} variant="outline" className="w-full h-11 rounded-xl">
+                <LogOut className="w-4 h-4" /> {t("settings.logout_local")}
+              </Button>
+                </>
+              ) : (
                 <>
               <Button onClick={handleLogout} variant="outline" className="w-full h-11 rounded-xl">
                 <LogOut className="w-4 h-4" /> {t("settings.logout")}
