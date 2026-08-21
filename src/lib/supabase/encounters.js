@@ -5,6 +5,7 @@
 
 import { dirFor, resolveLocale } from '../medscan/i18n/locale.js';
 import { isSupabaseConfigured, supabaseRest } from './client.js';
+import { mergeEncounterRows } from '../clinic/backup.js';
 
 export const LOCAL_ENCOUNTERS_KEY = 'doctorped_encounters_v1';
 const MG_RE = /mg|dose|dosing|nac|mg_per_kg/i;
@@ -84,6 +85,16 @@ function readLocal() {
 function writeLocal(rows) {
   if (typeof localStorage === 'undefined') return;
   localStorage.setItem(LOCAL_ENCOUNTERS_KEY, JSON.stringify(rows.slice(0, 200)));
+}
+
+export function exportLocalEncounters() {
+  return readLocal();
+}
+
+export function mergeImportedEncounters(incoming) {
+  const merged = mergeEncounterRows(readLocal(), incoming);
+  writeLocal(merged);
+  return merged;
 }
 
 export async function persistDoctorPedEncounter({ result, locale = 'he', patient_id = null } = {}) {

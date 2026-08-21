@@ -1,16 +1,16 @@
 import React, { useState, useRef } from "react";
-import { FlaskConical, Loader2, Plus, X, ShieldCheck, AlertTriangle, ScanLine, Upload, Info, Camera, GitCompare, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { FlaskConical, Loader2, Plus, X, ShieldCheck, AlertTriangle, ScanLine, Upload, Camera, GitCompare, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import AnalytePicker from "@/components/AnalytePicker";
 import { base44 } from "@/api/base44Client";
 import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
 import { runLabScan, finalizeScan, LAB_SCAN_SCHEMA } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
-import { pdfToImages, pdfExtractText, isPdf } from "@/lib/pdfToImages";
+import { pdfExtractText, isPdf } from "@/lib/pdfToImages";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
 import { RESULT_TYPES, CATALOG_SIZE, resolveAnalyte } from "@/lib/medscan/deterministic/analyteCatalog";
 
@@ -298,16 +298,8 @@ export default function LabInterpreter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-teal-600" />
-            <h1 className="font-bold text-base">פענוח מעבדה</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="פענוח מעבדה" icon={FlaskConical} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3">

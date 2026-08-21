@@ -2,23 +2,47 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+import { enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
 
 const AuthContext = createContext();
 
+function localClinicAtBoot(extra = {}) {
+  return isLocalClinicSession({
+    appId: appParams.appId,
+    token: appParams.token,
+    ...extra,
+  });
+}
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
-  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
+  const bootLocal = localClinicAtBoot();
+  const [user, setUser] = useState(bootLocal ? LOCAL_CLINIC_USER : null);
+  const [isAuthenticated, setIsAuthenticated] = useState(bootLocal);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(!bootLocal);
+  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(!bootLocal);
   const [authError, setAuthError] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false);
+  const [authChecked, setAuthChecked] = useState(bootLocal);
   const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
+
+  const enterLocalClinic = (persist = true) => {
+    if (persist) enableLocalClinic();
+    setUser(LOCAL_CLINIC_USER);
+    setIsAuthenticated(true);
+    setAuthChecked(true);
+    setAuthError(null);
+    setIsLoadingAuth(false);
+    setIsLoadingPublicSettings(false);
+  };
 
   useEffect(() => {
     checkAppState();
   }, []);
 
   const checkAppState = async () => {
+    if (localClinicAtBoot()) {
+      enterLocalClinic(false);
+      return;
+    }
     try {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
@@ -77,15 +101,15 @@ export const AuthProvider = ({ children }) => {
         }
         setIsLoadingPublicSettings(false);
         setIsLoadingAuth(false);
+        setAuthChecked(true);
+        const reason = appError.status === 403 ? appError.data?.extra_data?.reason : null;
+        if (reason !== 'user_not_registered' && reason !== 'auth_required') {
+          enterLocalClinic(true);
+        }
       }
     } catch (error) {
       console.error('Unexpected error:', error);
-      setAuthError({
-        type: 'unknown',
-        message: error.message || 'An unexpected error occurred'
-      });
-      setIsLoadingPublicSettings(false);
-      setIsLoadingAuth(false);
+      enterLocalClinic(true);
     }
   };
 
@@ -144,7 +168,9 @@ export const AuthProvider = ({ children }) => {
       logout,
       navigateToLogin,
       checkUserAuth,
-      checkAppState
+      checkAppState,
+      enterLocalClinic,
+      isLocalClinic: Boolean(user?.local),
     }}>
       {children}
     </AuthContext.Provider>

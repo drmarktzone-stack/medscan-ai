@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { runDifferentialBuilder } from "@/lib/medscan/engines/differentialBuilder";
 
 const emptyLab = () => ({ analyte: "", value: "", unit: "", ref_low: "", ref_high: "" });
@@ -61,16 +61,8 @@ export default function Differential() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <ListChecks className="w-5 h-5 text-rose-600" />
-            <h1 className="font-bold text-base">אבחנה מבדלת</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="אבחנה מבדלת" icon={ListChecks} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3">

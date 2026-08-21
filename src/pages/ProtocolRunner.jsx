@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { runProtocolStep } from "@/lib/medscan/engines/protocolRunner";
 import { listProtocols } from "@/lib/medscan/llmAdapter";
 
@@ -69,16 +69,8 @@ export default function ProtocolRunner() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50/50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <GitBranch className="w-5 h-5 text-sky-600" />
-            <h1 className="font-bold text-base">הרצת פרוטוקול</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="הרצת פרוטוקול" icon={GitBranch} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         <div className="text-xs text-slate-500 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1">

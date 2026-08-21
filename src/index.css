@@ -75,3 +75,18 @@
   .safe-top { padding-top: env(safe-area-inset-top); }
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
+
+@media print {
+  nav, header, .no-print, .safe-bottom {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  body, .clinic-page {
+    background: #fff !important;
+  }
+  #clinic-draft-print {
+    box-shadow: none !important;
+  }
+}

@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { isLocalClinicSession } from '@/lib/clinic/localMode';
+import { appParams } from '@/lib/app-params';
 
 const DefaultFallback = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -17,6 +19,10 @@ export default function ProtectedRoute({ fallback = <DefaultFallback />, unauthe
       checkUserAuth();
     }
   }, [authChecked, isLoadingAuth, checkUserAuth]);
+
+  if (isLocalClinicSession({ appId: appParams.appId, token: appParams.token })) {
+    return <Outlet />;
+  }
 
   if (isLoadingAuth || !authChecked) {
     return fallback;

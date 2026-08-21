@@ -8,6 +8,7 @@ import {
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import OnboardingOverlay from "@/components/clinic/OnboardingOverlay";
 import { useI18n } from "@/lib/i18n";
 
 const portals = [
@@ -149,6 +150,7 @@ export default function Home() {
       </main>
 
       <AccountSettings open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <OnboardingOverlay />
     </div>
   );
 }

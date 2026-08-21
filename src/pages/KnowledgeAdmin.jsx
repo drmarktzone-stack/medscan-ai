@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { listKbEntity, loadKbStatus, createKbRecord,
   verifyKbRecord, flagKbRecord, deleteKbRecord, currentUser,
 } from "@/lib/medscan/llmAdapter";
@@ -131,16 +131,8 @@ export default function KnowledgeAdmin() {
   const totalDraft = status.reduce((a, s) => a + s.draft, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <Database className="w-5 h-5 text-slate-600" />
-            <h1 className="font-bold text-base">ניהול ידע</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="ניהול ידע" icon={Database} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         {/* מצב הידע */}

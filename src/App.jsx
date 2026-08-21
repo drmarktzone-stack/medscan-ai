@@ -10,6 +10,7 @@ import ScrollToTop from './components/ScrollToTop';
 import AppLayout from "@/components/AppLayout";
 import { I18nProvider } from '@/lib/i18n';
 import { PatientSessionProvider } from '@/lib/doctorped/patientSession';
+import { ClinicProfileProvider } from '@/lib/clinic/profileContext';
 
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -43,7 +44,7 @@ import {
 } from '@/pages/doctorped/tools';
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -53,13 +54,8 @@ const AuthenticatedApp = () => {
     );
   }
 
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
-    }
+  if (authError?.type === 'user_not_registered') {
+    return <UserNotRegisteredError />;
   }
 
   return (
@@ -116,6 +112,7 @@ function App() {
   return (
     <AuthProvider>
       <I18nProvider>
+        <ClinicProfileProvider>
         <PatientSessionProvider>
         <QueryClientProvider client={queryClientInstance}>
         <Router>
@@ -125,6 +122,7 @@ function App() {
         <Toaster />
         </QueryClientProvider>
         </PatientSessionProvider>
+        </ClinicProfileProvider>
       </I18nProvider>
     </AuthProvider>
   )

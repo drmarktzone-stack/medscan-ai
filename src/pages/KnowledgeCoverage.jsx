@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Loader2, Database, ShieldCheck, FileWarning, Flag, ArrowLeft } from "lucide-react";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { loadKbStatus, KB_ENTITY_NAMES } from "@/lib/medscan/llmAdapter";
 import PilotModeToggle from "@/components/PilotModeToggle";
 
@@ -56,16 +56,8 @@ export default function KnowledgeCoverage() {
   const pct = totals.total ? Math.round((totals.verified / totals.total) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50/30 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <Database className="w-5 h-5 text-teal-500" />
-            <h1 className="font-bold text-base">כיסוי ידע ואימות</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="כיסוי ידע ואימות" icon={Database} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         {loading ? (

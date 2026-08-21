@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ShieldCheck, Play, AlertTriangle } from "lucide-react";
 import { SKIN_SMOKE_CASES, scoreCaseSkin, aggregateSkin } from "@/lib/skinValidation";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 
 /**
  * מנגנון ולידציה — עור. עמוד פיתוח/מנהל.
@@ -34,12 +34,9 @@ export default function SkinValidation() {
   };
 
   return (
-    <div dir="rtl" className="max-w-3xl mx-auto p-4 space-y-4">
-      <div className="flex items-center gap-2">
-        <BackButton />
-        <ShieldCheck className="w-6 h-6 text-teal-600" />
-        <h1 className="text-xl font-bold text-slate-800">מנגנון ולידציה — עור</h1>
-      </div>
+    <div dir="rtl" className="clinic-page">
+      <ClinicHeader title="מנגנון ולידציה — עור" icon={ShieldCheck} tone="tool" />
+      <div className="max-w-3xl mx-auto p-4 space-y-4">
 
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[12px] text-amber-800 flex gap-2">
         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -126,6 +123,7 @@ export default function SkinValidation() {
           </table>
         </>
       )}
+    </div>
     </div>
   );
 }

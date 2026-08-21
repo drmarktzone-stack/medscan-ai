@@ -7,6 +7,7 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import PatientStrip from "@/components/doctorped/PatientStrip";
 import EngineResultPanel from "@/components/doctorped/EngineResultPanel";
+import PrintDraftButton from "@/components/clinic/PrintDraftButton";
 import { useI18n } from "@/lib/i18n";
 import { usePatientSession } from "@/lib/doctorped/patientSession";
 import { runDoctorPedAI, listToolboxModules } from "@/lib/medscan/doctorped/index.js";
@@ -156,7 +157,12 @@ export default function DoctorPedWorkbench() {
             </div>
           )}
 
-          {result && !result.awaiting_anamnesis && <EngineResultPanel result={result} />}
+          {result && !result.awaiting_anamnesis && (
+            <div id="clinic-draft-print" className="space-y-4">
+              <EngineResultPanel result={result} />
+              <PrintDraftButton />
+            </div>
+          )}
 
           {result?.referral_gate && Object.keys(result.referral_gate).length > 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
@@ -169,7 +175,7 @@ export default function DoctorPedWorkbench() {
           )}
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-24 self-start">
+        <aside className="space-y-4 lg:sticky lg:top-24 self-start no-print">
           <div className="clinic-card p-4">
             <p className="text-sm font-bold mb-2">{t("dp.toolbox")}</p>
             <div className="grid grid-cols-1 gap-1.5 max-h-[60vh] overflow-auto">

@@ -7,7 +7,7 @@ import { base44 } from "@/api/base44Client";
 import CaseForm from "@/components/knowledge/CaseForm";
 import SearchFilter from "@/components/knowledge/SearchFilter";
 import BulkImport from "@/components/knowledge/BulkImport";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
 import { categoryTranslations } from "@/lib/translations";
 import { loadBook, bookStats } from "@/lib/medscan/knowledge/bookStore";
@@ -143,23 +143,22 @@ export default function KnowledgeBase() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BackButton />
-            <h1 className="font-bold text-base">{t("kb.title")}</h1>
-          </div>
+    <div className="clinic-page">
+      <ClinicHeader
+        title={t("kb.title")}
+        icon={BookOpen}
+        tone="tool"
+        extra={
           <div className="flex items-center gap-2">
-            <Button onClick={() => setBulkOpen(!bulkOpen)} size="sm" variant="outline" className="rounded-lg text-xs">
+            <Button onClick={() => setBulkOpen(!bulkOpen)} size="sm" variant="outline" className="rounded-lg text-xs bg-white/10 text-white border-white/30 hover:bg-white/20">
               <Plus className="w-4 h-4 ml-1" /> {t("kb.import_create")}
             </Button>
-            <Button onClick={() => setFormOpen(true)} size="sm" className="rounded-lg text-xs">
+            <Button onClick={() => setFormOpen(true)} size="sm" className="rounded-lg text-xs bg-white text-cyan-900 hover:bg-cyan-50">
               <Plus className="w-4 h-4 ml-1" /> {t("kb.add_case")}
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="max-w-lg mx-auto px-5 py-6">
         {/* ספר המקור — מעל למקרי ה-Vision, כי הוא המקור לכל הכלים */}

@@ -8,9 +8,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { LogOut, Trash2, AlertTriangle, Loader2, User, Globe } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { LogOut, Trash2, AlertTriangle, Loader2, User, Globe, Building2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/AuthContext";
+import { useClinicProfile } from "@/lib/clinic/profileContext";
 
 const languages = [
   { code: "he", label: "עברית" },
@@ -20,19 +23,28 @@ const languages = [
 
 export default function AccountSettings({ open, onOpenChange }) {
   const { t, lang, setLang } = useI18n();
+  const { user: authUser } = useAuth();
+  const { profile, update } = useClinicProfile();
   const [user, setUser] = useState(null);
   const [step, setStep] = useState("main");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [clinicName, setClinicName] = useState("");
+  const [physicianName, setPhysicianName] = useState("");
+  const [saved, setSaved] = useState(false);
+  const local = Boolean(authUser?.local);
 
   useEffect(() => {
     if (open) {
       setStep("main");
       setError(null);
       setBusy(false);
-      base44.auth.me().then(setUser).catch(() => {});
+      setSaved(false);
+      setClinicName(profile.clinicName);
+      setPhysicianName(profile.physicianName);
+      if (!local) base44.auth.me().then(setUser).catch(() => {});
     }
-  }, [open]);
+  }, [open, local, profile.clinicName, profile.physicianName]);
 
   const handleLogout = () => base44.auth.logout("/");
 
@@ -61,11 +73,38 @@ export default function AccountSettings({ open, onOpenChange }) {
                 <User className="w-4 h-4 text-primary" /> {t("settings.title")}
               </DialogTitle>
               <DialogDescription>
-                {user?.email ? t("settings.connected_as", { email: user.email }) : t("settings.default_desc")}
+                {user?.email ? t("settings.connected_as", { email: user.email }) : t("clinic.profile_title")}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-3 py-1">
+              <div className="bg-slate-50 rounded-xl p-3 space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5" /> {t("clinic.profile_title")}
+                </p>
+                <Input
+                  value={clinicName}
+                  onChange={(e) => setClinicName(e.target.value)}
+                  placeholder={t("clinic.clinic_name")}
+                  className="h-10 rounded-lg"
+                />
+                <Input
+                  value={physicianName}
+                  onChange={(e) => setPhysicianName(e.target.value)}
+                  placeholder={t("clinic.physician_name")}
+                  className="h-10 rounded-lg"
+                />
+                <Button
+                  type="button"
+                  className="w-full h-10 rounded-lg"
+                  onClick={() => {
+                    update({ clinicName, physicianName });
+                    setSaved(true);
+                  }}
+                >
+                  {saved ? t("clinic.saved") : t("clinic.save_profile")}
+                </Button>
+              </div>
               {/* Language */}
               <div className="bg-slate-50 rounded-xl p-3">
                 <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -88,6 +127,8 @@ export default function AccountSettings({ open, onOpenChange }) {
                 </div>
               </div>
 
+              {!local && (
+                <>
               <Button onClick={handleLogout} variant="outline" className="w-full h-11 rounded-xl">
                 <LogOut className="w-4 h-4" /> {t("settings.logout")}
               </Button>
@@ -98,6 +139,8 @@ export default function AccountSettings({ open, onOpenChange }) {
                   <Trash2 className="w-4 h-4" /> {t("settings.delete_btn")}
                 </Button>
               </div>
+                </>
+              )}
             </div>
           </>
         )}

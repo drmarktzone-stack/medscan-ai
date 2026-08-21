@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
+import PrintDraftButton from "@/components/clinic/PrintDraftButton";
 import { useI18n } from "@/lib/i18n";
 import { runDoctorPedAI } from "@/lib/medscan/doctorped/index.js";
 import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
@@ -122,7 +123,7 @@ export default function ParentPortal() {
         )}
 
         {result && !emergency && (
-          <div className={`clinic-card p-5 space-y-2 border-2 ${urgency === "home_care" ? "border-emerald-300 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+          <div id="clinic-draft-print" className={`clinic-card p-5 space-y-2 border-2 ${urgency === "home_care" ? "border-emerald-300 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
             <p className="font-extrabold text-lg">
               {urgency === "home_care" ? t("dp.parent_home") : t("dp.parent_hmo")}
             </p>
@@ -131,6 +132,7 @@ export default function ParentPortal() {
             {result.medication_guide?.message_he && (
               <p className="text-xs">{result.medication_guide.message_he}</p>
             )}
+            <PrintDraftButton />
           </div>
         )}
 

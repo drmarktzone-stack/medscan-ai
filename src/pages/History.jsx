@@ -1,29 +1,38 @@
-import React, { useState, useEffect } from "react";
-import { Activity, Stethoscope, Clock, ScanLine, Heart } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Activity, Stethoscope, Clock, ScanLine, Heart, Download, Upload } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import SeverityBadge from "@/components/SeverityBadge";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
-import { listEncounters } from "@/lib/supabase/encounters.js";
+import { listEncounters, exportLocalEncounters, mergeImportedEncounters } from "@/lib/supabase/encounters.js";
+import { buildClinicBackup, parseClinicBackup } from "@/lib/clinic/backup.js";
+import { loadClinicProfile, saveClinicProfile } from "@/lib/clinic/profile.js";
+import { useClinicProfile } from "@/lib/clinic/profileContext";
 import moment from "moment";
 
 export default function History() {
   const { t } = useI18n();
+  const { update } = useClinicProfile();
   const [analyses, setAnalyses] = useState([]);
   const [encounters, setEncounters] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [note, setNote] = useState(null);
+  const fileRef = useRef(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  const refresh = () => {
+    setLoading(true);
     Promise.all([
       base44.entities.Analysis.list("-created_date", 50).catch(() => []),
       listEncounters({ role: "clinician" }).then((r) => r.rows ?? []).catch(() => []),
     ]).then(([a, e]) => {
-      if (cancelled) return;
       setAnalyses(Array.isArray(a) ? a : []);
       setEncounters(Array.isArray(e) ? e : []);
-    }).finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+    }).finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    refresh();
   }, []);
 
   const typeLabel = (type) =>
@@ -31,11 +40,61 @@ export default function History() {
 
   const empty = analyses.length === 0 && encounters.length === 0;
 
+  const exportBackup = () => {
+    const backup = buildClinicBackup({
+      encounters: exportLocalEncounters(),
+      profile: loadClinicProfile(),
+    });
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `doctorpedai-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setNote(t("clinic.backup_ok"));
+  };
+
+  const importBackup = async (file) => {
+    try {
+      const text = await file.text();
+      const parsed = parseClinicBackup(text);
+      mergeImportedEncounters(parsed.encounters);
+      const next = saveClinicProfile(parsed.profile || {});
+      update(next);
+      setNote(t("clinic.backup_ok"));
+      refresh();
+    } catch {
+      setNote(t("clinic.backup_bad"));
+    }
+  };
+
   return (
     <div className="clinic-page">
       <ClinicHeader title={t("history.title")} icon={Clock} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-3">
+        <div className="flex gap-2 no-print">
+          <Button variant="outline" className="flex-1 h-10 rounded-xl text-xs" onClick={exportBackup}>
+            <Download className="w-4 h-4" /> {t("clinic.export_backup")}
+          </Button>
+          <Button variant="outline" className="flex-1 h-10 rounded-xl text-xs" onClick={() => fileRef.current?.click()}>
+            <Upload className="w-4 h-4" /> {t("clinic.import_backup")}
+          </Button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) importBackup(file);
+              e.target.value = "";
+            }}
+          />
+        </div>
+        {note && <p className="text-[11px] text-slate-500">{note}</p>}
+
         {loading ? (
           <div className="flex justify-center py-20">
             <div className="w-7 h-7 border-3 border-slate-200 border-t-primary rounded-full animate-spin" />
