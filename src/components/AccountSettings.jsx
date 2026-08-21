@@ -14,6 +14,7 @@ import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import { useClinicProfile } from "@/lib/clinic/profileContext";
+import { CLINICIAN_SPECIALTIES } from "@/lib/clinic/account";
 import PilotModeToggle from "@/components/PilotModeToggle";
 
 const languages = [
@@ -32,6 +33,10 @@ export default function AccountSettings({ open, onOpenChange }) {
   const [error, setError] = useState(null);
   const [clinicName, setClinicName] = useState("");
   const [physicianName, setPhysicianName] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [specialty, setSpecialty] = useState("");
+  const [nationalId, setNationalId] = useState("");
+  const [phone, setPhone] = useState("");
   const [saved, setSaved] = useState(false);
   const local = Boolean(authUser?.local);
 
@@ -41,11 +46,15 @@ export default function AccountSettings({ open, onOpenChange }) {
       setError(null);
       setBusy(false);
       setSaved(false);
-      setClinicName(profile.clinicName);
-      setPhysicianName(profile.physicianName);
+      setClinicName(profile.clinicName || account.clinicName || "");
+      setPhysicianName(profile.physicianName || account.fullName || "");
+      setLicenseNumber(account.licenseNumber || "");
+      setSpecialty(account.specialty || "");
+      setNationalId(account.nationalId || "");
+      setPhone(account.phone || "");
       if (!local) base44.auth.me().then(setUser).catch(() => {});
     }
-  }, [open, local, profile.clinicName, profile.physicianName]);
+  }, [open, local, profile.clinicName, profile.physicianName, account.clinicName, account.fullName, account.licenseNumber, account.specialty, account.nationalId, account.phone]);
 
   const handleLogout = () => logout(true);
 
@@ -66,7 +75,7 @@ export default function AccountSettings({ open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm rounded-2xl">
+      <DialogContent className="max-w-md rounded-2xl max-h-[90vh] overflow-y-auto">
         {step === "main" && (
           <>
             <DialogHeader>
@@ -104,9 +113,42 @@ export default function AccountSettings({ open, onOpenChange }) {
                       placeholder={t("clinic.physician_name")}
                       className="h-10 rounded-lg"
                     />
-                    {account.licenseNumber ? (
-                      <p className="text-[11px] text-slate-500">{t("register.license")}: {account.licenseNumber}</p>
-                    ) : null}
+                    <Input
+                      value={nationalId}
+                      onChange={(e) => setNationalId(e.target.value)}
+                      placeholder={t("register.national_id")}
+                      className="h-10 rounded-lg"
+                      inputMode="numeric"
+                      maxLength={9}
+                      dir="ltr"
+                    />
+                    <Input
+                      value={licenseNumber}
+                      onChange={(e) => setLicenseNumber(e.target.value)}
+                      placeholder={t("register.license")}
+                      className="h-10 rounded-lg"
+                      inputMode="numeric"
+                      maxLength={9}
+                      dir="ltr"
+                    />
+                    <select
+                      className="h-10 w-full rounded-lg border border-input bg-white px-3 text-sm"
+                      value={specialty}
+                      onChange={(e) => setSpecialty(e.target.value)}
+                    >
+                      <option value="">{t("register.pick_specialty")}</option>
+                      {CLINICIAN_SPECIALTIES.map((s) => (
+                        <option key={s} value={s}>{t(`register.spec.${s}`)}</option>
+                      ))}
+                    </select>
+                    <Input
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder={t("register.phone")}
+                      className="h-10 rounded-lg"
+                      inputMode="tel"
+                      dir="ltr"
+                    />
                   </>
                 )}
                 <Button
@@ -114,7 +156,14 @@ export default function AccountSettings({ open, onOpenChange }) {
                   className="w-full h-10 rounded-lg"
                   onClick={() => {
                     update({ clinicName, physicianName });
-                    updateAccount({ fullName: physicianName, clinicName });
+                    updateAccount({
+                      fullName: physicianName,
+                      clinicName,
+                      licenseNumber,
+                      specialty,
+                      nationalId,
+                      phone,
+                    });
                     setSaved(true);
                   }}
                 >

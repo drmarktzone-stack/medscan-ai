@@ -28,7 +28,7 @@ const emptyForm = () => ({
   phone: "",
   nationalId: "",
   licenseNumber: "",
-  specialty: "pediatrics",
+    specialty: "",
   clinicName: "",
   workplaceCity: "",
 });
@@ -56,12 +56,13 @@ export default function Register() {
 
   const patch = (partial) => setForm((s) => ({ ...s, ...partial }));
 
+  const skipHostedSignup = isLocalClinic || (isAuthenticated && !isLocalClinic);
   const missingDoctor = useMemo(
     () => (form.role === "clinician" ? clinicianMissingFields(form) : []),
     [form],
   );
 
-  if (isAuthenticated && !isLocalClinic && isAccountReady(existing)) {
+  if (isAuthenticated && isAccountReady(existing)) {
     return <Navigate to={postAuthPath(existing)} replace />;
   }
 
@@ -164,7 +165,7 @@ export default function Register() {
           <RolePicker value={form.role} onChange={(role) => patch({ role })} />
 
           {form.role ? (
-            <form onSubmit={isAuthenticated && !isLocalClinic ? saveIfAlreadySignedIn : handleRegister} className="space-y-3">
+            <form onSubmit={skipHostedSignup ? saveIfAlreadySignedIn : handleRegister} className="space-y-3">
               <AuthField
                 icon={User}
                 type="text"
@@ -204,6 +205,7 @@ export default function Register() {
                       onChange={(e) => patch({ specialty: e.target.value })}
                       required
                     >
+                      <option value="">{t("register.pick_specialty")}</option>
                       {CLINICIAN_SPECIALTIES.map((s) => (
                         <option key={s} value={s}>{t(`register.spec.${s}`)}</option>
                       ))}
@@ -239,7 +241,7 @@ export default function Register() {
                 </>
               ) : null}
 
-              {!(isAuthenticated && !isLocalClinic) ? (
+              {!skipHostedSignup ? (
                 <>
                   <AuthField
                     icon={Mail}
@@ -272,12 +274,12 @@ export default function Register() {
 
               {error ? <p className="text-xs text-red-600 text-center leading-relaxed">{error}</p> : null}
               <Button type="submit" className="w-full h-12 rounded-xl font-bold" disabled={loading}>
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("register.submit")}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (skipHostedSignup ? t("register.save_and_enter") : t("register.submit"))}
               </Button>
             </form>
           ) : null}
 
-          {form.role && !(isAuthenticated && !isLocalClinic) ? (
+          {form.role && !skipHostedSignup ? (
             <>
               <OrDivider />
               <GoogleButton

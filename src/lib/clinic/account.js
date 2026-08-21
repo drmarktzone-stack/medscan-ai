@@ -112,29 +112,21 @@ export function hasChosenRole(account) {
   return ACCOUNT_ROLES.includes(normalizeAccount(account).role);
 }
 
-/** Hosted app without a role must pick parent vs clinician. Local clinic may run immediately. */
-export function needsRoleSelection(account, { localClinic = false } = {}) {
-  if (localClinic) return false;
+/** Anyone without a chosen role must pick parent vs clinician — including local clinic. */
+export function needsRoleSelection(account) {
   return !hasChosenRole(account);
 }
 
-/**
- * Local clinic on this computer: create a clinician stub so tools are not locked
- * behind the license form. Never overwrite a saved parent account.
- */
-export function ensureLocalClinicianStub(storage) {
-  const a = loadAccount(storage);
-  if (a.role === "parent" || a.role === "clinician") return a;
-  return saveAccount({
-    role: "clinician",
-    fullName: a.fullName || "רופא במחשב זה",
-  }, storage);
+/** Physician clinic stays closed until license number and specialty are filled. */
+export function mustCompleteClinicianProfile(account) {
+  const a = normalizeAccount(account);
+  return a.role === "clinician" && !isClinicianComplete(a);
 }
 
 export function postAuthPath(account) {
   const a = normalizeAccount(account);
   if (a.role === "parent") return isParentComplete(a) ? "/parent" : "/register";
-  if (a.role === "clinician") return "/";
+  if (a.role === "clinician") return isClinicianComplete(a) ? "/" : "/register";
   return "/register";
 }
 

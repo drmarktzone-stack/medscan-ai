@@ -10,7 +10,7 @@ import { toAgeDays } from '../medscan/deterministic/labNormalize.js';
 import {
   isValidNationalId, isValidLicenseNumber, isClinicianComplete, isParentComplete,
   isParentAllowedPath, postAuthPath, saveAccount, emptyAccount,
-  hasChosenRole, needsRoleSelection, ensureLocalClinicianStub,
+  hasChosenRole, needsRoleSelection, mustCompleteClinicianProfile,
 } from './account.js';
 import { reasonHe, displayText } from './engineDisplay.js';
 
@@ -138,15 +138,16 @@ t('הורה מוכן עם שם בלבד ונכנס רק לפורטל', () => {
   assert(isParentAllowedPath('/doctorped') === false);
 });
 
-t('רופא בלי רישיון נכנס למרפאה; הכלים לא נחסמים', () => {
+t('רופא בלי רישיון והתמחות נשאר בהרשמה', () => {
   const store = memoryStore();
   const incomplete = saveAccount({
     role: 'clinician', fullName: 'ד"ר בדיקה', clinicName: 'מרפאה',
   }, store);
   assert(isClinicianComplete(incomplete) === false);
-  assert(postAuthPath(incomplete) === '/');
+  assert(mustCompleteClinicianProfile(incomplete) === true);
+  assert(postAuthPath(incomplete) === '/register');
   assert(hasChosenRole(incomplete) === true);
-  assert(needsRoleSelection(incomplete, { localClinic: false }) === false);
+  assert(needsRoleSelection(incomplete) === false);
   const complete = saveAccount({
     role: 'clinician',
     fullName: 'ד"ר בדיקה',
@@ -157,21 +158,19 @@ t('רופא בלי רישיון נכנס למרפאה; הכלים לא נחסמ�
     phone: '0501234567',
   }, store);
   assert(isClinicianComplete(complete) === true);
+  assert(mustCompleteClinicianProfile(complete) === false);
   assert(postAuthPath(complete) === '/');
   assert(emptyAccount().role === '');
-  assert(needsRoleSelection(emptyAccount(), { localClinic: false }) === true);
-  assert(needsRoleSelection(emptyAccount(), { localClinic: true }) === false);
+  assert(needsRoleSelection(emptyAccount()) === true);
 });
 
-t('מרפאה מקומית בלי חשבון מקבלת סטאב רופא ולא דורסת הורה', () => {
-  const store = memoryStore();
-  const stub = ensureLocalClinicianStub(store);
-  assert(stub.role === 'clinician');
-  assert(stub.fullName === 'רופא במחשב זה');
+t('מרפאה מקומית בלי חשבון לא ממציאה רופא בלי רישיון', () => {
+  assert(needsRoleSelection(emptyAccount()) === true);
   const parentStore = memoryStore();
   saveAccount({ role: 'parent', fullName: 'הורה' }, parentStore);
-  const kept = ensureLocalClinicianStub(parentStore);
+  const kept = saveAccount({ role: 'parent', fullName: 'הורה' }, parentStore);
   assert(kept.role === 'parent');
+  assert(postAuthPath(kept) === '/parent');
 });
 
 t('סיבות מנוע מוצגות בעברית ושדות אובייקט נקראים', () => {

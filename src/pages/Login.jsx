@@ -11,7 +11,7 @@ import AuthShell, { AuthTabs, AuthField, GoogleButton, GuestContinue, OrDivider 
 
 export default function Login() {
   const { t } = useI18n();
-  const { isAuthenticated, isLocalClinic, enterLocalClinic } = useAuth();
+  const { isAuthenticated, isLocalClinic } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -89,10 +89,8 @@ export default function Login() {
         label={t("login.google")}
       />
       <GuestContinue
-        onClick={() => {
-          enterLocalClinic(true);
-          navigate("/");
-        }}
+        onClick={() => navigate("/register")}
+        label={t("login.guest")}
       />
       <p className="text-xs text-center text-slate-500 leading-relaxed">
         {t("login.no_account")}{" "}
