@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Activity, Stethoscope, Clock, ScanLine, Heart } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import SeverityBadge from "@/components/SeverityBadge";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
 import { listEncounters } from "@/lib/supabase/encounters.js";
 import moment from "moment";
@@ -32,16 +32,8 @@ export default function History() {
   const empty = analyses.length === 0 && encounters.length === 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-muted-foreground" />
-            <h1 className="font-bold text-base">{t("history.title")}</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title={t("history.title")} icon={Clock} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-3">
         {loading ? (

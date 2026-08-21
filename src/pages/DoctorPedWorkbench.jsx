@@ -4,8 +4,7 @@ import { Stethoscope, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import PatientStrip from "@/components/doctorped/PatientStrip";
 import EngineResultPanel from "@/components/doctorped/EngineResultPanel";
 import { useI18n } from "@/lib/i18n";
@@ -72,26 +71,27 @@ export default function DoctorPedWorkbench() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-cyan-50/60 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-5xl mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <Stethoscope className="w-5 h-5 text-cyan-700" />
-          <h1 className="font-bold text-base flex-1">{t("dp.workbench_title")}</h1>
-          <LanguageSwitcher />
-        </div>
-      </div>
+  const urgencyStyle = result?.emergency
+    ? "bg-red-600 text-white"
+    : result?.triage?.urgency === "home_care"
+      ? "bg-emerald-50 border border-emerald-200"
+      : "bg-amber-50 border border-amber-200";
 
-      <div className="max-w-5xl mx-auto px-5 py-6 grid md:grid-cols-[minmax(0,1fr)_280px] gap-5">
+  return (
+    <div className="clinic-page">
+      <ClinicHeader title={t("dp.workbench_title")} icon={Stethoscope} tone="clinic" />
+      <div className="clinic-wrap py-6 grid lg:grid-cols-[minmax(0,1fr)_300px] gap-5">
         <div className="space-y-5">
-          <p className="text-xs text-slate-600 leading-relaxed bg-cyan-50 border border-cyan-100 rounded-xl p-3">
-            {t("dp.workbench_intro")}
-          </p>
-          <PatientStrip />
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-            <textarea className="w-full min-h-[72px] rounded-md border p-2 text-sm" placeholder={t("dp.presentation")} value={session.presentation} onChange={(e) => patch({ presentation: e.target.value })} />
-            <textarea className="w-full min-h-[72px] rounded-md border p-2 text-sm" placeholder={t("dp.findings")} value={session.findingsText} onChange={(e) => patch({ findingsText: e.target.value })} />
+          <p className="text-sm text-slate-600 leading-relaxed clinic-card p-4">{t("dp.workbench_intro")}</p>
+          <div>
+            <p className="clinic-label">{t("dp.patient_strip")}</p>
+            <PatientStrip />
+          </div>
+          <div className="clinic-card p-4 space-y-3">
+            <label className="clinic-label">{t("dp.presentation")}</label>
+            <textarea className="w-full min-h-[80px] rounded-xl border p-3 text-sm" placeholder={t("dp.presentation")} value={session.presentation} onChange={(e) => patch({ presentation: e.target.value })} />
+            <label className="clinic-label">{t("dp.findings")}</label>
+            <textarea className="w-full min-h-[72px] rounded-xl border p-3 text-sm" placeholder={t("dp.findings")} value={session.findingsText} onChange={(e) => patch({ findingsText: e.target.value })} />
             <div className="grid grid-cols-2 gap-2">
               <Input placeholder={t("dp.pupils")} value={pupils} onChange={(e) => setPupils(e.target.value)} />
               <Input placeholder={t("dp.rr")} value={rrFlag} onChange={(e) => setRrFlag(e.target.value)} />
@@ -110,7 +110,7 @@ export default function DoctorPedWorkbench() {
               <input type="checkbox" checked={proceed} onChange={(e) => setProceed(e.target.checked)} />
               {t("dp.proceed")}
             </label>
-            <Button className="w-full" disabled={loading || !session.presentation.trim()} onClick={() => run()}>
+            <Button className="w-full h-12 font-bold rounded-xl" disabled={loading || !session.presentation.trim()} onClick={() => run()}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("dp.run")}
             </Button>
           </div>
@@ -119,11 +119,11 @@ export default function DoctorPedWorkbench() {
           {saveNote && <p className="text-[11px] text-slate-500">{saveNote}</p>}
 
           {result?.awaiting_anamnesis && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
-              <p className="text-sm font-semibold">{t("dp.anamnesis")}</p>
+            <div className="bg-amber-50 border border-amber-300 rounded-2xl p-5 space-y-3">
+              <p className="text-sm font-bold">{t("dp.anamnesis")}</p>
               {(result.anamnesis?.questions ?? []).map((q) => (
-                <div key={q.id} className="space-y-1">
-                  <p className="text-xs text-amber-900">{q.question_he}</p>
+                <div key={q.id} className="space-y-1 clinic-card p-3">
+                  <p className="text-sm text-amber-950">{q.question_he}</p>
                   <div className="flex gap-2">
                     <Button size="sm" variant={answers[q.need] === true ? "default" : "outline"} onClick={() => setAnswers((a) => ({ ...a, [q.need]: true }))}>{t("dp.yes")}</Button>
                     <Button size="sm" variant={answers[q.need] === false ? "default" : "outline"} onClick={() => setAnswers((a) => ({ ...a, [q.need]: false }))}>{t("dp.no")}</Button>
@@ -135,9 +135,9 @@ export default function DoctorPedWorkbench() {
           )}
 
           {result?.triage && (
-            <div className={`rounded-xl p-4 border ${result.emergency ? "bg-red-50 border-red-200" : "bg-white border-slate-100"}`}>
-              <p className="text-sm font-bold flex items-center gap-2">
-                {result.emergency && <AlertTriangle className="w-4 h-4 text-red-600" />}
+            <div className={`rounded-2xl p-4 ${urgencyStyle}`}>
+              <p className="text-sm font-extrabold flex items-center gap-2">
+                {result.emergency && <AlertTriangle className="w-4 h-4" />}
                 {t("dp.triage")}: {result.triage.urgency}
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function DoctorPedWorkbench() {
               {result.triggered_modules.map((id) => {
                 const mod = toolbox.find((m) => m.id === id);
                 return (
-                  <Link key={id} to={mod?.route || "/doctorped"} className="text-xs px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200">
+                  <Link key={id} to={mod?.route || "/doctorped"} className="text-xs px-3 py-1.5 rounded-full bg-cyan-50 border border-cyan-200 font-medium">
                     {mod?.title_he || id}
                   </Link>
                 );
@@ -159,22 +159,22 @@ export default function DoctorPedWorkbench() {
           {result && !result.awaiting_anamnesis && <EngineResultPanel result={result} />}
 
           {result?.referral_gate && Object.keys(result.referral_gate).length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-1">
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
               <p className="text-sm font-semibold">{t("dp.referrals")}</p>
               {Object.entries(result.referral_gate).map(([k, v]) => (
                 <p key={k} className="text-xs">{k}: {v.allowed ? t("dp.refer_ok") : v.message_he}</p>
               ))}
-              <Link to="/referrals" className="text-xs underline">{t("home.referrals_title")}</Link>
+              <Link to="/referrals" className="text-xs underline font-semibold">{t("home.referrals_title")}</Link>
             </div>
           )}
         </div>
 
-        <aside className="space-y-4">
-          <div className="bg-white rounded-xl border p-4">
-            <p className="text-sm font-semibold mb-2">{t("dp.toolbox")}</p>
-            <div className="grid grid-cols-1 gap-2">
+        <aside className="space-y-4 lg:sticky lg:top-24 self-start">
+          <div className="clinic-card p-4">
+            <p className="text-sm font-bold mb-2">{t("dp.toolbox")}</p>
+            <div className="grid grid-cols-1 gap-1.5 max-h-[60vh] overflow-auto">
               {toolbox.map((m) => (
-                <Link key={m.id} to={m.route} className="text-xs border rounded-lg p-2 hover:bg-slate-50">
+                <Link key={m.id} to={m.route} className="text-xs border rounded-lg p-2 hover:bg-cyan-50 hover:border-cyan-200">
                   {m.title_he || t(m.i18n_key)}
                 </Link>
               ))}

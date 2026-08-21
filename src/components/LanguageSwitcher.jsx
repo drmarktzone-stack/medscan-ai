@@ -26,7 +26,7 @@ export default function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors select-none"
+        className="flex items-center gap-1.5 text-xs hover:opacity-80 transition-colors select-none"
       >
         <Globe className="w-4 h-4" />
         {current.short}

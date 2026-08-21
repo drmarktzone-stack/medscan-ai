@@ -6,31 +6,31 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 215 25% 15%;
+    --background: 204 36% 97%;
+    --foreground: 210 29% 14%;
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 210 29% 14%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
-    --primary: 213 80% 50%;
+    --popover-foreground: 210 29% 14%;
+    --primary: 192 72% 28%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 30% 95%;
-    --secondary-foreground: 215 25% 15%;
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 15% 50%;
-    --accent: 170 60% 45%;
+    --secondary: 204 30% 94%;
+    --secondary-foreground: 210 29% 14%;
+    --muted: 204 20% 95%;
+    --muted-foreground: 210 12% 40%;
+    --accent: 174 48% 36%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 48%;
     --destructive-foreground: 0 0% 98%;
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 213 80% 50%;
-    --chart-1: 213 80% 50%;
-    --chart-2: 170 60% 45%;
-    --chart-3: 340 65% 55%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.75rem;
+    --border: 204 18% 88%;
+    --input: 204 18% 88%;
+    --ring: 192 72% 28%;
+    --chart-1: 192 72% 28%;
+    --chart-2: 174 48% 36%;
+    --chart-3: 340 65% 45%;
+    --chart-4: 43 74% 56%;
+    --chart-5: 27 87% 50%;
+    --radius: 0.9rem;
     --font-heading: 'Heebo', sans-serif;
     --font-body: 'Heebo', sans-serif;
     --font-display: 'Heebo', sans-serif;
@@ -52,7 +52,22 @@
   }
 
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body antialiased;
+  }
+}
+
+@layer components {
+  .clinic-page {
+    @apply min-h-screen bg-[hsl(204,36%,97%)];
+  }
+  .clinic-wrap {
+    @apply max-w-5xl mx-auto px-4 sm:px-6;
+  }
+  .clinic-card {
+    @apply bg-white rounded-2xl border border-slate-200/90 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.35)];
+  }
+  .clinic-label {
+    @apply text-[11px] font-semibold text-slate-500 mb-1 block;
   }
 }
 

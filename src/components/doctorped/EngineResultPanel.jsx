@@ -28,8 +28,8 @@ export default function EngineResultPanel({ result }) {
   return (
     <div className="space-y-3">
       {emergency && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-          <p className="font-bold text-red-800 flex items-center gap-2">
+        <div className="bg-red-600 text-white rounded-2xl p-4">
+          <p className="font-extrabold flex items-center gap-2">
             <AlertTriangle className="w-4 h-4" /> {t("dp.parent_ed")}
           </p>
         </div>
@@ -63,8 +63,9 @@ export default function EngineResultPanel({ result }) {
         </div>
       )}
       {ddx.length > 0 && (
-        <div className="bg-white border rounded-xl p-4 space-y-1">
+        <div className="clinic-card p-4 space-y-1">
           <p className="text-sm font-semibold flex items-center gap-2"><ListChecks className="w-4 h-4" />{t("dp.ddx")}</p>
+          <p className="text-[10px] text-slate-500">{t("dp.draft_badge")}</p>
           {ddx.slice(0, 10).map((d, i) => (
             <p key={d.direction_id || i} className="text-xs">
               {d.must_not_miss ? "⚠ " : ""}{d.diagnosis_direction_he}

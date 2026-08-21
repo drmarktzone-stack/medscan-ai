@@ -3,8 +3,7 @@ import { Heart, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
 import { runDoctorPedAI } from "@/lib/medscan/doctorped/index.js";
 import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
@@ -67,44 +66,55 @@ export default function ParentPortal() {
   const emergency = Boolean(result?.emergency);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/70 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <Heart className="w-5 h-5 text-rose-600" />
-          <h1 className="font-bold text-base flex-1">{t("dp.parent_title")}</h1>
-          <LanguageSwitcher />
-        </div>
-      </div>
-
+    <div className="clinic-page">
+      <ClinicHeader title={t("dp.parent_title")} icon={Heart} tone="parent" />
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
-        <p className="text-sm text-slate-700 leading-relaxed">{t("dp.parent_intro")}</p>
-        <Input type="number" placeholder={t("dp.age_months")} value={ageMonths} onChange={(e) => setAgeMonths(e.target.value)} />
-        <div className="flex flex-wrap gap-2">
-          {CHIPS.map((c) => (
-            <button
-              key={c.en}
-              type="button"
-              onClick={() => toggle(c)}
-              className={`text-sm px-3 py-2 rounded-full border ${selected.includes(c.en) ? "bg-rose-600 text-white border-rose-600" : "bg-white"}`}
-            >
-              {chipLabel(c)}
-            </button>
-          ))}
-        </div>
+        <p className="text-base text-slate-700 leading-relaxed clinic-card p-4">{t("dp.parent_intro")}</p>
+
+        <section className="clinic-card p-4 space-y-2">
+          <p className="text-sm font-bold">{t("dp.step_age")}</p>
+          <Input
+            type="number"
+            inputMode="numeric"
+            className="h-12 text-base"
+            placeholder={t("dp.age_months")}
+            value={ageMonths}
+            onChange={(e) => setAgeMonths(e.target.value)}
+          />
+        </section>
+
+        <section className="clinic-card p-4 space-y-3">
+          <p className="text-sm font-bold">{t("dp.step_symptoms")}</p>
+          <div className="flex flex-wrap gap-2">
+            {CHIPS.map((c) => (
+              <button
+                key={c.en}
+                type="button"
+                onClick={() => toggle(c)}
+                className={`text-sm px-4 py-2.5 rounded-full border font-medium ${
+                  selected.includes(c.en) ? "bg-rose-600 text-white border-rose-600" : "bg-white text-slate-700"
+                }`}
+              >
+                {chipLabel(c)}
+              </button>
+            ))}
+          </div>
+        </section>
+
         <Input type="number" placeholder={t("dp.mchat")} value={mchat} onChange={(e) => setMchat(e.target.value)} />
-        <Button className="w-full h-12 text-base" disabled={loading || selected.length === 0} onClick={handleRun}>
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("dp.parent_run")}
+
+        <Button className="w-full h-14 text-base font-bold rounded-2xl bg-rose-600 hover:bg-rose-700" disabled={loading || selected.length === 0} onClick={handleRun}>
+          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t("dp.parent_run")}
         </Button>
 
         {emergency && (
-          <div className="bg-red-600 text-white rounded-2xl p-5 space-y-3">
-            <p className="font-extrabold text-xl flex items-center gap-2">
-              <AlertTriangle className="w-6 h-6" /> {t("dp.parent_ed")}
+          <div className="bg-red-600 text-white rounded-3xl p-6 space-y-3 shadow-lg">
+            <p className="font-extrabold text-2xl flex items-center gap-2">
+              <AlertTriangle className="w-7 h-7" /> {t("dp.parent_ed")}
             </p>
-            <p className="text-sm">{result.parent_plan_he}</p>
+            <p className="text-base leading-relaxed">{result.parent_plan_he}</p>
             {!acked && (
-              <Button className="w-full bg-white text-red-700 hover:bg-red-50" onClick={() => setAcked(true)}>
+              <Button className="w-full h-12 bg-white text-red-700 hover:bg-red-50 font-bold" onClick={() => setAcked(true)}>
                 {t("dp.ack_emergency")}
               </Button>
             )}
@@ -112,11 +122,11 @@ export default function ParentPortal() {
         )}
 
         {result && !emergency && (
-          <div className={`border rounded-xl p-4 space-y-2 ${urgency === "home_care" ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}>
-            <p className="font-semibold text-sm">
+          <div className={`clinic-card p-5 space-y-2 border-2 ${urgency === "home_care" ? "border-emerald-300 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+            <p className="font-extrabold text-lg">
               {urgency === "home_care" ? t("dp.parent_home") : t("dp.parent_hmo")}
             </p>
-            <p className="text-sm">{result.parent_plan_he}</p>
+            <p className="text-sm leading-relaxed">{result.parent_plan_he}</p>
             <p className="text-xs text-slate-600">{result.parent_note_he}</p>
             {result.medication_guide?.message_he && (
               <p className="text-xs">{result.medication_guide.message_he}</p>
