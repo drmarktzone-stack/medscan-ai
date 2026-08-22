@@ -7,6 +7,9 @@ import { loadClinicProfile, saveClinicProfile, CLINIC_PROFILE_KEY } from './prof
 import { buildClinicBackup, parseClinicBackup, mergeEncounterRows } from './backup.js';
 import { hasAgeParts, parseAgeParts } from './ageParts.js';
 import { toAgeDays } from '../medscan/deterministic/labNormalize.js';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   isValidNationalId, isValidLicenseNumber, isClinicianComplete, isParentComplete,
   isParentAllowedPath, postAuthPath, saveAccount, emptyAccount,
@@ -15,6 +18,7 @@ import {
 } from './account.js';
 import { reasonHe, displayText } from './engineDisplay.js';
 import { AUTH_BOOT_DEADLINE_MS, isBase44CreditFailure, readStandaloneFlag, routerBasename, absoluteAppPath } from './standalone.js';
+import { registerClinicPwa, serviceWorkerUrl } from './pwa.js';
 import { decideCodeFirst } from '../medscan/codeFirstPolicy.js';
 import { VISION_BILLING_GROUP, isVisionBillingRoute, visionPaywallOn } from './billingGroups.js';
 import { onDeviceSkinEngine, onDeviceRadiologyEngine, onDeviceEcgReading } from './onDeviceVision.js';
@@ -309,6 +313,30 @@ t('כשל קרדיט/מכסה של Base44 מזוהה', () => {
   assert(isBase44CreditFailure({ status: 402 }) === true);
   assert(isBase44CreditFailure({ message: 'insufficient credits' }) === true);
   assert(isBase44CreditFailure({ status: 403 }) === false);
+});
+
+t('כתובת Service Worker כוללת את בסיס GitHub Pages', () => {
+  assert(serviceWorkerUrl('/medscan-ai/') === '/medscan-ai/sw.js');
+  assert(serviceWorkerUrl('/medscan-ai') === '/medscan-ai/sw.js');
+  assert(serviceWorkerUrl('/') === '/sw.js');
+});
+
+t('רישום PWA לא רץ במצב פיתוח', () => {
+  let called = false;
+  registerClinicPwa({
+    env: { DEV: true, BASE_URL: '/medscan-ai/' },
+    register: () => { called = true; },
+  });
+  assert(called === false);
+});
+
+t('מניפסט ההתקנה משתמש בנתיבים יחסיים', () => {
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+  const manifest = JSON.parse(readFileSync(resolve(root, 'public/manifest.json'), 'utf8'));
+  assert(manifest.start_url === './');
+  assert(manifest.scope === './');
+  assert(manifest.theme_color === '#4da3ff');
+  assert(manifest.icons.every((icon) => !String(icon.src).startsWith('/')));
 });
 
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);

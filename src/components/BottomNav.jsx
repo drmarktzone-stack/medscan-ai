@@ -30,8 +30,8 @@ export default function BottomNav() {
             className={({ isActive }) =>
               `flex flex-col items-center justify-center gap-0.5 py-2 rounded-full transition-all ${
                 isActive
-                  ? "bg-primary text-white shadow-[0_8px_18px_-10px_hsl(var(--primary))]"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-sky-500/85 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]"
+                  : "text-slate-600 hover:text-slate-900"
               }`
             }
           >
