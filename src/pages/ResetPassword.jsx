@@ -4,6 +4,7 @@ import { Lock, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { absoluteAppPath } from "@/lib/clinic/standalone";
 import AuthShell, { AuthField } from "@/components/clinic/AuthShell";
 
 export default function ResetPassword() {
@@ -30,7 +31,7 @@ export default function ResetPassword() {
     setError("");
     try {
       await base44.auth.resetPassword({ resetToken: token, newPassword: password });
-      window.location.href = "/login";
+      window.location.href = absoluteAppPath("/login");
     } catch {
       setError(t("reset.error"));
     } finally {

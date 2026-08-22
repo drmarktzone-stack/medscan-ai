@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 import { disableLocalClinic, enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
-import { isStandaloneBuild, withDeadline } from '@/lib/clinic/standalone';
+import { isStandaloneBuild, withDeadline, absoluteAppPath } from '@/lib/clinic/standalone';
 import { setPilotMode } from '@/lib/medscan/runtimeMode';
 
 const AuthContext = createContext();
@@ -143,7 +143,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     if (wasLocal) {
-      if (shouldRedirect && typeof window !== 'undefined') window.location.href = '/login';
+      if (shouldRedirect && typeof window !== 'undefined') window.location.href = absoluteAppPath('/login');
       return;
     }
     if (shouldRedirect) {

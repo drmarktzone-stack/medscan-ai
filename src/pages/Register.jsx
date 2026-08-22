@@ -7,6 +7,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import { disableLocalClinic, enableLocalClinic } from "@/lib/clinic/localMode";
+import { absoluteAppPath } from "@/lib/clinic/standalone";
 import {
   CLINICIAN_SPECIALTIES,
   clinicianBlockingFields,
@@ -86,7 +87,7 @@ export default function Register() {
     } else {
       disableLocalClinic();
     }
-    window.location.href = postAuthPath({ ...form, role: form.role });
+    window.location.href = absoluteAppPath(postAuthPath({ ...form, role: form.role }));
   };
 
   const validate = () => {
