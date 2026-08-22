@@ -1,10 +1,14 @@
 #!/bin/sh
-# MedScan — SessionStart inbox scanner.
-# Prints any new prompt files waiting in prompts/inbox/ so Claude Code
-# notices them automatically at session start (stdout is injected into context).
+# Reports waiting prompts. Does not mean "execute them".
+# Execute only if the doctor asked in chat or ran /inbox. See CLAUDE.md.
 L=$(ls -1 prompts/inbox/*.md 2>/dev/null | grep -vi readme)
+H=$(ls -1 prompts/hold/*.md 2>/dev/null | grep -vi readme)
 if [ -n "$L" ]; then
-  echo "[MedScan] נמצאו פרומפטים חדשים ב-prompts/inbox/ — בצע אותם לפי הפרוטוקול ב-CLAUDE.md (אחד-אחד, npm run build + create_checkpoint אחרי כל שלב, ואז העבר ל-prompts/done/):"
+  echo "[MedScan] יש קבצים ב-prompts/inbox/. אל תבצע אותם אלא אם הרופא ביקש או הקליד /inbox:"
   echo "$L"
+fi
+if [ -n "$H" ]; then
+  echo "[MedScan] prompts/hold/ מוקפא עד שהרופא ישחרר:"
+  echo "$H"
 fi
 true
