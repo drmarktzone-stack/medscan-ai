@@ -14,7 +14,7 @@ import {
   clinicianBlockingFields,
 } from './account.js';
 import { reasonHe, displayText } from './engineDisplay.js';
-import { AUTH_BOOT_DEADLINE_MS, isBase44CreditFailure, readStandaloneFlag, routerBasename } from './standalone.js';
+import { AUTH_BOOT_DEADLINE_MS, isBase44CreditFailure, readStandaloneFlag, routerBasename, absoluteAppPath } from './standalone.js';
 import { decideCodeFirst } from '../medscan/codeFirstPolicy.js';
 import { VISION_BILLING_GROUP, isVisionBillingRoute, visionPaywallOn } from './billingGroups.js';
 import { onDeviceSkinEngine, onDeviceRadiologyEngine, onDeviceEcgReading } from './onDeviceVision.js';
@@ -221,6 +221,14 @@ t('מצב פיתוח אינו מדלג על שער השפה כשיש קלוד ו
 t('נתיב GitHub Pages נחתך ל-basename', () => {
   assert(routerBasename('/medscan-ai/') === '/medscan-ai');
   assert(routerBasename('/') === undefined);
+});
+
+t('קפיצה מלאה אחרי הרשמה כוללת את תיקיית GitHub Pages', () => {
+  assert(absoluteAppPath('/parent', '/medscan-ai/') === '/medscan-ai/parent');
+  assert(absoluteAppPath('/login', '/medscan-ai/') === '/medscan-ai/login');
+  assert(absoluteAppPath('/', '/medscan-ai/') === '/medscan-ai/');
+  assert(absoluteAppPath('/parent', '/') === '/parent');
+  assert(absoluteAppPath('/medscan-ai/parent', '/medscan-ai/') === '/medscan-ai/parent');
 });
 
 t('דדליין אתחול Base44 מוגדר כדי שהמסך לא יישאר על ספינר', () => {

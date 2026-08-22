@@ -24,6 +24,21 @@ export function routerBasename(baseUrl = '/') {
   return trimmed;
 }
 
+/**
+ * Full-page jumps (`window.location.href`) must include Vite `base`.
+ * Without this, GitHub Pages goes to github.io/parent instead of github.io/medscan-ai/parent.
+ */
+export function absoluteAppPath(path, baseUrl) {
+  const rel = String(path || "/");
+  const relNorm = rel.startsWith("/") ? rel : `/${rel}`;
+  const raw = baseUrl ?? (typeof import.meta !== "undefined" ? import.meta.env?.BASE_URL : "/");
+  const base = routerBasename(raw);
+  if (!base) return relNorm;
+  if (relNorm === "/") return `${base}/`;
+  if (relNorm === base || relNorm.startsWith(`${base}/`)) return relNorm;
+  return `${base}${relNorm}`;
+}
+
 /** Hosted Base44 public-settings / me() must not spin the app forever. */
 export const AUTH_BOOT_DEADLINE_MS = 2500;
 

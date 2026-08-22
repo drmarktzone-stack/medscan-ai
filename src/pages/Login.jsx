@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import { disableLocalClinic } from "@/lib/clinic/localMode";
 import { hasChosenRole, isAccountReady, loadAccount, postAuthPath } from "@/lib/clinic/account";
-import { isStandaloneBuild } from "@/lib/clinic/standalone";
+import { absoluteAppPath, isStandaloneBuild } from "@/lib/clinic/standalone";
 import AuthShell, { AuthTabs, AuthField, GoogleButton, GuestContinue, OrDivider } from "@/components/clinic/AuthShell";
 
 export default function Login() {
@@ -30,7 +30,7 @@ export default function Login() {
 
   const afterAuth = () => {
     disableLocalClinic();
-    window.location.href = postAuthPath(loadAccount());
+    window.location.href = absoluteAppPath(postAuthPath(loadAccount()));
   };
 
   const handleSubmit = async (e) => {

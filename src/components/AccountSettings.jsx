@@ -15,6 +15,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import { useClinicProfile } from "@/lib/clinic/profileContext";
 import { CLINICIAN_SPECIALTIES } from "@/lib/clinic/account";
+import { absoluteAppPath } from "@/lib/clinic/standalone";
 import PilotModeToggle from "@/components/PilotModeToggle";
 
 const languages = [
@@ -199,7 +200,7 @@ export default function AccountSettings({ open, onOpenChange }) {
               <Button
                 variant="outline"
                 className="w-full h-11 rounded-xl"
-                onClick={() => { window.location.href = "/login"; }}
+                onClick={() => { window.location.href = absoluteAppPath("/login"); }}
               >
                 {t("settings.sign_in")}
               </Button>
