@@ -5,6 +5,9 @@
 
 import { extractDermatologyFeatures } from "../medscan/vision/dermatologyFeatures.js";
 import { extractRadiologyFeatures } from "../medscan/vision/radiologyFeatures.js";
+import { digitizeFromImageData } from "../ecgDigitize.js";
+import { screenEcgImageData } from "../medscan/signal/ecgImageScreen.js";
+import { INCOMPLETE_HEADLINE_HE, INCOMPLETE_GUIDELINE_HE } from "./incompleteVision.js";
 import { VISION_BILLING_GROUP } from "./billingGroups.js";
 
 const DRAFT = "draft_needs_verification";
@@ -23,8 +26,8 @@ export function onDeviceSkinEngine(imageData, { language = "he" } = {}) {
     is_relevant: true,
     interpretable: Boolean(morphology.ok),
     confidence: 30,
-    clinical_urgency: "Normal",
-    primary_impression: "מדידה מורפולוגית מהתמונה במכשיר — טיוטה, אינה אבחנת עור.",
+    clinical_urgency: "Unknown",
+    primary_impression: INCOMPLETE_HEADLINE_HE.skin,
     dermatological_descriptors: {
       primary_lesions: [],
       secondary_lesions: [],
@@ -62,8 +65,8 @@ export function onDeviceRadiologyEngine(imageData, { language = "he" } = {}) {
     is_relevant: true,
     interpretable: Boolean(morphology.ok),
     confidence: 30,
-    clinical_urgency: "Normal",
-    primary_impression: "מדידת צפיפויות יחסיות מהתמונה במכשיר — טיוטה, אינה פענוח רדיולוגי.",
+    clinical_urgency: "Unknown",
+    primary_impression: INCOMPLETE_HEADLINE_HE.radiology,
     image_metadata: {
       modality_detected: "לא נקבע בלי מנוע ראייה",
       anatomical_region: "לא נקבע",
@@ -98,9 +101,33 @@ export function onDeviceRadiologyEngine(imageData, { language = "he" } = {}) {
   };
 }
 
-export function onDeviceEcgReading({ digitize = null, language = "he" } = {}) {
-  const hr = Number(digitize?.hr_measured ?? digitize?.rate?.hr_bpm);
-  const hasHr = digitize?.ok === true && Number.isFinite(hr);
+function stScreenCandidate(screen) {
+  const elev = Boolean(screen?.possible_st_elevation);
+  const dep = Boolean(screen?.possible_st_depression);
+  if (!elev && !dep) return null;
+  return {
+    key: "st_change_screen",
+    name_he: elev ? "חשד לשינוי מקטע ST בתמונה" : "חשד לשקיעת ST בתמונה",
+    name_en: "Uncalibrated ST-segment change on image (screen)",
+    severity: "red",
+    score: 40,
+    criteria: [{ ok: true, text: "סמן פיקסלים יחסי אחרי שיא R — לא מדידת מ״מ" }],
+    note_he: INCOMPLETE_GUIDELINE_HE.ecg,
+  };
+}
+
+export function onDeviceEcgReading({ digitize = null, imageData = null, language = "he" } = {}) {
+  const fromPixels = (!digitize || digitize.ok === false) && imageData
+    ? digitizeFromImageData(imageData)
+    : null;
+  const cal = (digitize && digitize.ok !== false && digitize) || fromPixels || digitize || null;
+  const screen = imageData ? screenEcgImageData(imageData, { digitize: cal }) : { ok: false, reason: "no_image" };
+  const hr = Number(cal?.hr_measured ?? cal?.rate?.hr_bpm);
+  const hasHr = cal?.ok === true && Number.isFinite(hr);
+  const candidate = stScreenCandidate(screen);
+  const candidates = candidate ? [candidate] : [];
+  const incomplete = !hasHr || !screen.ok || !candidate;
+
   return {
     abstain: false,
     measured: {
@@ -111,19 +138,41 @@ export function onDeviceEcgReading({ digitize = null, language = "he" } = {}) {
       axis: {},
     },
     perception: {
-      quality: { is_ecg: true, interpretable: hasHr },
-      calibration: { reliable: Boolean(digitize?.ok) },
+      quality: { is_ecg: true, interpretable: hasHr || Boolean(screen.ok) },
+      calibration: {
+        reliable: Boolean(cal?.ok && cal?.calibration?.px_per_small_box),
+        paper_speed_mm_s: cal?.calibration?.speed_mm_s,
+        sample_rate_hz: cal?.calibration?.sample_rate_hz,
+        grid_source: cal?.quality?.grid_source || cal?.calibration?.grid_source,
+      },
+      morphology: {
+        st_elevation_leads: [],
+        st_depression_leads: [],
+        pixel_st_screen: screen,
+      },
     },
     interpretation: {
-      summary_he: hasHr
-        ? `דופק משוער מהתמונה במכשיר: ${hr} לדקה — טיוטה בלבד, לא פענוח אק״ג.`
-        : "לא זוהו כיול ונקודות-ציון בביטחון. אין מספרי PR/QRS/QT מהתמונה.",
-      interval_warnings: ["טיוטה במכשיר. אינה פענוח אק״ג ואינה אבחנה."],
+      summary_he: candidate
+        ? `${candidate.name_he}. טיוטה מהתמונה במכשיר — לא אבחנת אוטם.`
+        : hasHr
+          ? `דופק משוער מהתמונה במכשיר: ${hr} לדקה. ${INCOMPLETE_HEADLINE_HE.ecg}`
+          : INCOMPLETE_HEADLINE_HE.ecg,
+      interval_warnings: [
+        "טיוטה במכשיר. אינה פענוח אק״ג ואינה אבחנה.",
+        INCOMPLETE_GUIDELINE_HE.ecg,
+      ],
     },
-    pathologyMatch: { candidates: [], maxSeverity: "normal", mustNotMiss: [] },
+    pathologyMatch: {
+      candidates,
+      maxSeverity: candidate ? "red" : "incomplete",
+      mustNotMiss: candidates,
+    },
+    incomplete_read: incomplete,
     on_device: true,
     billing_group: VISION_BILLING_GROUP.id,
     verification_status: DRAFT,
     locale: language,
+    pixel_screen: screen,
+    digitize: cal || null,
   };
 }

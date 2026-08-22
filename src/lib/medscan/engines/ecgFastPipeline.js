@@ -61,7 +61,7 @@ export async function runEcgFastAnalysis({
       ageYears: patientAgeYears,
       sex: patientSex,
     }),
-    () => onDeviceEcgReading({ language }),
+    () => onDeviceEcgReading({ language, imageData: input.imageData }),
   );
 
   if (reading.abstain) {

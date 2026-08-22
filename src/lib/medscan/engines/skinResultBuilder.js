@@ -9,6 +9,7 @@
  */
 
 import { finalizeLocale } from "../i18n/localize.js";
+import { cannotCallNormalVision } from "../../clinic/incompleteVision.js";
 
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
@@ -40,6 +41,7 @@ export function mapSkinSeverity(engineResult) {
   if (risk === "high") return { severity: "severe", urgency: "Urgent" };
   if (flags.length || risk === "moderate") return { severity: "moderate", urgency: "Normal" };
   if ((st.differential_diagnoses || []).length) return { severity: "mild", urgency: "Normal" };
+  if (cannotCallNormalVision(engineResult)) return { severity: "moderate", urgency: "Normal" };
   return { severity: "normal", urgency: "Normal" };
 }
 

@@ -10,6 +10,7 @@
  */
 
 import { finalizeLocale } from "../i18n/localize.js";
+import { INCOMPLETE_GUIDELINE_HE, INCOMPLETE_HEADLINE_HE } from "../../clinic/incompleteVision.js";
 
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 2);
@@ -121,10 +122,24 @@ export function matchKbCases(candidates, cases) {
   return out;
 }
 
-export function mapSeverity(pathologyMatch) {
+export function incompleteEcgRead(reading) {
+  if (!reading) return true;
+  if (reading.incomplete_read) return true;
+  const morph = reading.perception?.morphology || {};
+  const hasMorph = (morph.st_elevation_leads || []).length
+    || (morph.st_depression_leads || []).length
+    || (reading.pathologyMatch?.candidates || []).length;
+  if (reading.measured?.measurable === false && !hasMorph) return true;
+  if (reading.perception?.quality?.interpretable === false && !hasMorph) return true;
+  if (reading.on_device && !hasMorph) return true;
+  return false;
+}
+
+export function mapSeverity(pathologyMatch, reading) {
   const max = pathologyMatch?.maxSeverity || "normal";
   if (max === "red") return { severity: "urgent", urgency: "Emergency" };
   if (max === "yellow") return { severity: "moderate", urgency: "Normal" };
+  if (reading && incompleteEcgRead(reading)) return { severity: "moderate", urgency: "Normal" };
   return { severity: "normal", urgency: "Normal" };
 }
 
@@ -136,6 +151,7 @@ export function buildStructured(reading, { sex, urgency }) {
   const obs = reading.perception?.morphology || {};
   const cal = reading.perception?.calibration || {};
   const rhythmObs = reading.perception?.rhythm || {};
+  const incomplete = incompleteEcgRead(reading);
 
   const st_deviations = [];
   for (const e of obs.st_elevation_leads || []) if (e?.lead) st_deviations.push({ lead: e.lead, mm: e.mm, direction: "elevation" });
@@ -149,18 +165,18 @@ export function buildStructured(reading, { sex, urgency }) {
   return {
     structured: {
       is_ecg: true,
-      interpretable: m.measurable !== false,
+      interpretable: incomplete ? false : m.measurable !== false,
       technical_check: {
-        quality: reading.perception?.quality?.interpretable === false ? "Poor" : "Good",
+        quality: incomplete || reading.perception?.quality?.interpretable === false ? "Poor" : "Good",
         speed_mm_s: cal.paper_speed_mm_s ?? 25,
         calibration_mm_mv: cal.gain_mm_mv ?? 10,
-        artifacts: (reading.perception?.quality?.issues_he || []).join(", ") || "ללא",
+        artifacts: (reading.perception?.quality?.issues_he || []).join(", ") || (incomplete ? "כיול חסר" : "ללא"),
       },
       rhythm_and_rate: {
         heart_rate_bpm: rate.hr_bpm,
-        rhythm_type: interp.rhythm?.rhythm_he || "—",
-        regularity: rhythmObs.regular === false ? "Irregular" : "Regular",
-        p_wave_present: rhythmObs.p_before_each_qrs !== false,
+        rhythm_type: interp.rhythm?.rhythm_he || (incomplete ? "לא נקבע" : "—"),
+        regularity: rhythmObs.regular === false ? "Irregular" : rhythmObs.regular === true ? "Regular" : (incomplete ? "Unknown" : "Regular"),
+        p_wave_present: rhythmObs.p_before_each_qrs === false ? false : rhythmObs.p_before_each_qrs === true ? true : null,
       },
       axis: { degrees: axis.degrees, interpretation: axis.label_he || "" },
       intervals: {
@@ -170,9 +186,11 @@ export function buildStructured(reading, { sex, urgency }) {
       },
       st_deviations,
       wave_and_segment_morphology: {
-        st_segment: st_deviations.length ? st_deviations.map((d) => `${d.lead} ${d.direction} ${d.mm ?? "?"}mm`).join(", ") : "ללא סטייה משמעותית",
-        t_waves: (obs.t_inversion_leads || []).length ? `היפוך ב-${(obs.t_inversion_leads || []).join(", ")}` : (obs.peaked_t_leads || []).length ? `מחודדים ב-${obs.peaked_t_leads.join(", ")}` : "תקינים",
-        q_waves: (obs.pathological_q_leads || []).length ? `Q פתולוגי ב-${(obs.pathological_q_leads || []).join(", ")}` : "ללא Q פתולוגי",
+        st_segment: st_deviations.length
+          ? st_deviations.map((d) => `${d.lead} ${d.direction} ${d.mm ?? "?"}mm`).join(", ")
+          : (incomplete ? "לא נמדד — אין לשלול סטיית ST" : "ללא סטייה משמעותית"),
+        t_waves: (obs.t_inversion_leads || []).length ? `היפוך ב-${(obs.t_inversion_leads || []).join(", ")}` : (obs.peaked_t_leads || []).length ? `מחודדים ב-${obs.peaked_t_leads.join(", ")}` : (incomplete ? "לא נמדד" : "תקינים"),
+        q_waves: (obs.pathological_q_leads || []).length ? `Q פתולוגי ב-${(obs.pathological_q_leads || []).join(", ")}` : (incomplete ? "לא נמדד" : "ללא Q פתולוגי"),
       },
       primary_findings: cand.map((c) => c.name_he),
       clinical_urgency: urgency,
@@ -202,7 +220,11 @@ export function buildAnalysisMd(reading, kbMatches) {
   lines.push("");
   lines.push(`## דפוסים שקריטריוניהם התקיימו (מנוע דטרמיניסטי)`);
   if (cand.length === 0) {
-    lines.push(`המדידות בגבולות הנורמה ואף קריטריון פתולוגי מגדיר לא התקיים → **בגבולות הנורמה / ללא ממצא חד-משמעי**.`);
+    if (incompleteEcgRead(reading)) {
+      lines.push(INCOMPLETE_HEADLINE_HE.ecg);
+    } else {
+      lines.push(`המדידות בגבולות הנורמה ואף קריטריון פתולוגי מגדיר לא התקיים → **בגבולות הנורמה / ללא ממצא חד-משמעי**.`);
+    }
   } else {
     cand.slice(0, 8).forEach((c) => {
       const crit = (c.criteria || []).map((x) => `${x.ok === false ? "✗" : x.ok === null ? "?" : "✓"} ${x.text}`).join("; ");
@@ -248,23 +270,25 @@ export function measurementsList(measured) {
 export function assembleEcgResult(reading, allCases, { sex, fileUrl, locale = "he" } = {}) {
   const pathologyMatch = reading.pathologyMatch || { candidates: [], maxSeverity: "normal", mustNotMiss: [] };
   const kbMatches = matchKbCases(pathologyMatch.candidates, allCases);
-  const { severity, urgency } = mapSeverity(pathologyMatch);
+  const incomplete = incompleteEcgRead(reading);
+  const { severity, urgency } = mapSeverity(pathologyMatch, reading);
   const structuredInterpretation = buildStructured(reading, { sex, urgency });
 
   const top = pathologyMatch.candidates[0];
   let summary;
   if (top) {
     summary = `${top.name_he}${top.territory ? " — " + top.territory : ""}`;
+  } else if (incomplete) {
+    summary = INCOMPLETE_HEADLINE_HE.ecg;
   } else {
-    // Normal read — give an informative, confident headline (not just "within normal limits").
     const hr = reading.measured?.rate?.hr_bpm;
     const rhythm = reading.interpretation?.rhythm?.rhythm_he || "קצב סינוס";
     summary = `${rhythm}${isNum(hr) ? ` · HR ${hr}` : ""} · ללא ממצא פתולוגי מגדיר`;
-  };
+  }
 
   const guideline = (pathologyMatch.mustNotMiss[0]?.note_he)
     || top?.note_he
-    || "אין ממצא מגדיר; המשך מעקב קליני לפי ההקשר.";
+    || (incomplete ? INCOMPLETE_GUIDELINE_HE.ecg : "אין ממצא מגדיר; המשך מעקב קליני לפי ההקשר.");
 
   let uncertainty = null;
   if (reading.measured?.measurable === false) {

@@ -10,6 +10,7 @@
  */
 
 import { finalizeLocale } from "../i18n/localize.js";
+import { cannotCallNormalVision, INCOMPLETE_HEADLINE_HE } from "../../clinic/incompleteVision.js";
 
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
@@ -39,11 +40,14 @@ export function matchRadiologyKb(text, cases) {
 }
 
 /** Map engine urgency + abnormalities → the UI's 5-level severity. */
-export function mapRadiologySeverity(st) {
+export function mapRadiologySeverity(st, engineResult) {
   const urg = st?.clinical_urgency;
   if (urg === "Emergency") return { severity: "urgent", urgency: "Emergency" };
   if (urg === "Urgent") return { severity: "severe", urgency: "Urgent" };
   const abn = (st?.key_abnormalities || []).filter((a) => a && a.finding);
+  if (cannotCallNormalVision(engineResult) && abn.length === 0) {
+    return { severity: "moderate", urgency: "Normal" };
+  }
   if (abn.length === 0) return { severity: "normal", urgency: "Normal" };
   const anySevere = abn.some((a) => /severe|חמור/i.test(a.severity || ""));
   return { severity: anySevere ? "moderate" : "mild", urgency: "Normal" };
@@ -111,7 +115,11 @@ export function buildRadiologyAnalysisMd(engineResult, matches) {
   const abn = (st.key_abnormalities || []).filter((a) => a && a.finding);
   lines.push(`## ממצאים עיקריים`);
   if (abn.length === 0) {
-    lines.push(`לא זוהה ממצא חריג משמעותי בסריקה השיטתית → **בגבולות הנורמה / ללא ממצא חד-משמעי**.`);
+    if (cannotCallNormalVision(engineResult)) {
+      lines.push(INCOMPLETE_HEADLINE_HE.radiology);
+    } else {
+      lines.push(`לא זוהה ממצא חריג משמעותי בסריקה השיטתית → **בגבולות הנורמה / ללא ממצא חד-משמעי**.`);
+    }
   } else {
     abn.forEach((a) => lines.push(`- **${a.finding}** (${a.severity || "?"}) — ${a.location || ""}${a.characteristics ? ": " + a.characteristics : ""}`));
   }
@@ -170,12 +178,14 @@ const UNCERTAINTY_REASON = {
 /** Assemble the full UI result. Pure (no persistence). */
 export function assembleRadiologyResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
-  const { severity, urgency } = mapRadiologySeverity(st);
+  const { severity, urgency } = mapRadiologySeverity(st, engineResult);
   const matches = buildRadiologyMatches(st, allCases);
 
   const abn = (st.key_abnormalities || []).filter((a) => a && a.finding);
   const summary = st.primary_impression
-    || (abn[0] ? `${abn[0].finding}${abn[0].location ? " — " + abn[0].location : ""}` : `${st.image_metadata?.modality_detected || "בדיקה"} · ללא ממצא חריג משמעותי`);
+    || (abn[0] ? `${abn[0].finding}${abn[0].location ? " — " + abn[0].location : ""}` : (cannotCallNormalVision(engineResult)
+      ? INCOMPLETE_HEADLINE_HE.radiology
+      : `${st.image_metadata?.modality_detected || "בדיקה"} · ללא ממצא חריג משמעותי`));
 
   const guideline = (st.recommended_next_steps || [])[0]
     || (urgency === "Emergency" ? "ממצא דחוף — הערכה/הפניה מיידית." : "המשך מעקב קליני לפי ההקשר.");
