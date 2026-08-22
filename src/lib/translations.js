@@ -226,7 +226,7 @@ export const translations = {
     "viewer.footer_note": "כל העיבוד מתבצע במכשיר. הקובץ שהועלה אינו משתנה, והפענוח רץ על המקור בלבד.",
     "analysis.error_fallback": "אירעה שגיאה במהלך הניתוח. נסה שנית.",
     "analysis.need_image": "יש להעלות תמונה לפני פענוח.",
-    "analysis.needs_base44": "ניתוח תמונה דורש מנוע ראייה בתשלום (Claude). כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בחינם במכשיר זה.",
+    "analysis.needs_base44": "אק״ג, עור וצילום פתוחים לבדיקה: מעלים תמונה ומקבלים טיוטה מהמכשיר. כשתכריזו על השיווק — נסמן יחד אילו מהם יהיו בתשלום. הטיוטה אינה אבחנה.",
 
     "uploader.primary": "ראשית",
     "uploader.add_more": "הוסף תמונות נוספות",
@@ -317,7 +317,7 @@ export const translations = {
     "history.type_radiology": "רדיולוגיה",
 
     "clinic.local_banner": "נשמר במחשב זה — אין נתוני מטופל מחוץ למחשב",
-    "clinic.standalone_banner": "פועל בלי Base44 ובלי קרדיט. כלי הטקסט במכשיר זה. פענוח צילום דורש מנוע ראייה בתשלום.",
+    "clinic.standalone_banner": "פועל בלי Base44. כלי הטקסט והדימות רצים במכשיר כטיוטה. קבוצת התשלום תסומן יחד בשיווק.",
     "clinic.local_enter": "כניסה למרפאה במחשב זה",
     "clinic.local_enter_hint": "הטיוטות נשמרות במחשב. זה אינו אבחון.",
     "clinic.profile_title": "פרטי המרפאה",
@@ -690,7 +690,7 @@ export const translations = {
     "viewer.footer_note": "All processing runs on-device. The uploaded file is never modified, and interpretation runs on the original only.",
     "analysis.error_fallback": "An error occurred during analysis. Please try again.",
     "analysis.need_image": "Upload an image before analysis.",
-    "analysis.needs_base44": "Image analysis needs a paid vision engine (Claude). Text tools (toxicology, trauma, growth, workbench) run free on this device.",
+    "analysis.needs_base44": "ECG, skin and imaging are open for testing: upload a photo and get an on-device draft. When you launch, we will mark together which of these are paid. The draft is not a diagnosis.",
 
     "uploader.primary": "Primary",
     "uploader.add_more": "Add more images",
@@ -781,7 +781,7 @@ export const translations = {
     "history.type_radiology": "Radiology",
 
     "clinic.local_banner": "Saved on this computer — patient data stays here",
-    "clinic.standalone_banner": "Running without Base44 or credits. Text tools stay on this device. Image reads need a paid vision engine.",
+    "clinic.standalone_banner": "Running without Base44. Text and imaging tools run on this device as a draft. The paid group will be marked together at launch.",
     "clinic.local_enter": "Enter the clinic on this computer",
     "clinic.local_enter_hint": "Drafts stay on this computer. This is not a diagnosis.",
     "clinic.profile_title": "Clinic details",
@@ -1154,7 +1154,7 @@ export const translations = {
     "viewer.footer_note": "تجري كل المعالجة على الجهاز. لا يتغير الملف المرفوع، والتفسير يعمل على الأصل فقط.",
     "analysis.error_fallback": "حدث خطأ أثناء التحليل. يرجى المحاولة مرة أخرى.",
     "analysis.need_image": "ارفع صورة قبل التحليل.",
-    "analysis.needs_base44": "تحليل الصورة يحتاج محرك رؤية مدفوع (Claude). أدوات النص (سموم، رضح، نمو، منضدة الطبيب) تعمل مجاناً على هذا الجهاز.",
+    "analysis.needs_base44": "تخطيط القلب والجلد والأشعة مفتوحة للتجربة: ارفع صورة واحصل على مسودة على الجهاز. عند الإطلاق سنحدد معاً أيّها سيكون مدفوعاً. المسودة ليست تشخيصاً.",
 
     "uploader.primary": "رئيسية",
     "uploader.add_more": "إضافة المزيد من الصور",
@@ -1245,7 +1245,7 @@ export const translations = {
     "history.type_radiology": "أشعة",
 
     "clinic.local_banner": "يُحفظ على هذا الحاسوب — بيانات المرضى تبقى هنا",
-    "clinic.standalone_banner": "يعمل بدون Base44 وبدون رصيد. أدوات النص على هذا الجهاز. قراءة الصور تحتاج محرك رؤية مدفوع.",
+    "clinic.standalone_banner": "يعمل بدون Base44. أدوات النص والتصوير تعمل على الجهاز كمسودة. مجموعة الدفع ستُحدَّد معاً عند الإطلاق.",
     "clinic.local_enter": "دخول العيادة على هذا الحاسوب",
     "clinic.local_enter_hint": "المسودات تبقى على هذا الحاسوب. هذا ليس تشخيصاً.",
     "clinic.profile_title": "بيانات العيادة",
