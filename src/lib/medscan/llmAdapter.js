@@ -14,10 +14,12 @@
  */
 
 import { base44 } from '../../api/base44Client.js';
+import { appParams } from '../app-params.js';
 import { DIAGNOSIS_MODEL, FAST_MODEL, VISION_MODEL } from '../aiConfig.js';
 import { seedToEntityRows } from './deterministic/referenceRangeSeed.js';
 import { listPediatricPathways, toProtocolView } from './engines/pediatricPathways.js';
 import { isStandaloneBuild, withDeadline } from '../clinic/standalone.js';
+import { decideCodeFirst } from './codeFirstPolicy.js';
 
 const BASE44_REQUIRED_HE =
   'ניתוח תמונה דורש מנוע ראייה (Claude) בתשלום. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בחינם במכשיר זה.';
@@ -52,15 +54,21 @@ export function tryBase44Core(action) {
 }
 
 /**
- * Code-first only when Claude cannot run: standalone host, or InvokeLLM is not a function.
+ * Code-first only when Claude cannot actually run:
+ * standalone host, no app id, or InvokeLLM is not a function.
  * `mode: development` still lets draft KB enter the FactBlock inside groundedInvoke.
  * It must not skip the language gate.
  */
 export function shouldUseCodeFirst(mode, deps = {}) {
   void mode;
-  if (isStandaloneBuild(deps.env)) return true;
-  const invoke = deps.invokeLLM ?? base44?.integrations?.Core?.InvokeLLM;
-  return typeof invoke !== 'function';
+  const invoke = Object.prototype.hasOwnProperty.call(deps, 'invokeLLM')
+    ? deps.invokeLLM
+    : base44?.integrations?.Core?.InvokeLLM;
+  return decideCodeFirst({
+    standalone: isStandaloneBuild(deps.env),
+    appId: Object.prototype.hasOwnProperty.call(deps, 'appId') ? deps.appId : appParams?.appId,
+    invokeLLM: invoke,
+  });
 }
 
 function invokeTimeoutMs() {
