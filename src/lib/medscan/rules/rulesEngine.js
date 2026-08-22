@@ -9,7 +9,16 @@
  *   2. LabPatterns
  *   3. ClinicalRules
  *   4. Associations
+ *   5. Pediatric Pathways (ניתוב מסלול קהילה — מעל protocolTree)
+ *   6. Clinical triads / pentads (syndromeMatcher — רב-ערוצי)
  */
+
+import { matchSyndromes } from '../engines/syndromeMatcher.js';
+
+import {
+  matchPediatricPathway,
+  pathwayToKbItem,
+} from '../engines/pediatricPathways.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
  * 1. RED FLAGS — קדימות מוחלטת
@@ -268,7 +277,24 @@ export function matchAssociations({ assocKb = [], findings = [], labs = [], pati
  * הרצה משולבת — הסדר הוא חלק מהבטיחות
  * ═══════════════════════════════════════════════════════════════════════ */
 
-export function runRulesEngine({ kb = {}, patient = {}, labs = [], findings = [], mode = 'clinical' }) {
+export function runRulesEngine({
+  kb = {},
+  patient = {},
+  labs = [],
+  findings = [],
+  mode = 'clinical',
+  query = null,
+  pathwayCategory = null,
+  currentPathwayStepId = null,
+  vitals = {},
+  skin = null,
+  radiology = null,
+  complaints = [],
+  presentation = null,
+  audio = null,
+  labInterpreter = null,
+  features = {},
+} = {}) {
   const redFlagsResult = computeRedFlags({
     redFlagKb: kb.redFlags ?? [], patient, findings, labs, mode,
   });
@@ -276,12 +302,61 @@ export function runRulesEngine({ kb = {}, patient = {}, labs = [], findings = []
   const rulesResult = evaluateRules({ ruleKb: kb.rules ?? [], patient, labs, findings, mode });
   const assocResult = matchAssociations({ assocKb: kb.associations ?? [], findings, labs, patient, mode });
 
-  // פריטי ה-KB שיזינו את ה-FACT BLOCK — רק מה שהותאם בפועל
+  const pathwayQuery = buildPathwayQuery({ query, findings });
+  const pathwayMatch = matchPediatricPathway({
+    query: pathwayQuery,
+    age_days: patient.age_days,
+    category: pathwayCategory,
+    currentStepId: currentPathwayStepId,
+    catalog: kb.pathways,
+  });
+
+  const syndromeResult = matchSyndromes({
+    findings,
+    complaints,
+    presentation,
+    labs,
+    labInterpreter,
+    vitals,
+    skin,
+    radiology,
+    audio,
+    features,
+  });
+  const syndromeDraft = (s) => (s.verification_status ?? 'draft_needs_verification') !== 'verified';
+  const syndromesForKb = (syndromeResult.matched ?? []).filter((s) => {
+    if (s.verification_status === 'flagged') return false;
+    if (mode === 'clinical' && syndromeDraft(s)) return false;
+    return true;
+  });
+
+  // פריטי ה-KB שיזינו את ה-FACT BLOCK — רק מה שהותאם בפועל.
+  // מסלול טיוטה נדחף ל-kbItems רק במצב development; במצב clinical
+  // הסינון זהה לכללי/דפוסים — FactBlock/AnchorGuard לא רואים אותו.
   const kbItems = [
     ...patternsResult.matched.map((p) => ({ ...p, verification_status: p.verification_status })),
     ...rulesResult.fired,
     ...assocResult.matched,
+    ...syndromesForKb.map((s) => ({
+      pattern_key: s.pattern_key,
+      title_he: s.title_he,
+      direction_he: s.differential?.[0]?.diagnosis_direction_he ?? s.title_he,
+      suspicion: s.suspicion,
+      clinical_reasoning_he: s.evidence_he,
+      source_anchor: s.source_anchor,
+      extra_anchors: s.extra_anchors ?? [],
+      verification_status: s.verification_status,
+      criteria_match_pct: s.criteria_match_pct,
+    })),
   ];
+
+  const pathwayItem = pathwayToKbItem(pathwayMatch);
+  if (pathwayItem) {
+    const status = pathwayItem.verification_status ?? 'draft_needs_verification';
+    if (status !== 'flagged' && (mode !== 'clinical' || status === 'verified')) {
+      kbItems.push(pathwayItem);
+    }
+  }
 
   return {
     redFlags: redFlagsResult.redFlags,
@@ -291,9 +366,22 @@ export function runRulesEngine({ kb = {}, patient = {}, labs = [], findings = []
     firedRules: rulesResult.fired,
     nearMissRules: rulesResult.nearMiss,
     associations: assocResult.matched,
+    matchedPathway: pathwayMatch.matched,
+    activePathwayStep: pathwayMatch.active_step,
+    pathwayCandidates: pathwayMatch.candidates,
+    pathwaySkipped: pathwayMatch.skipped,
+    pathwayError_he: pathwayMatch.error_he,
+    matchedSyndromes: syndromeResult.matched,
+    nearMissSyndromes: syndromeResult.nearMiss,
     kbItems,
     isEmpty: kbItems.length === 0 && redFlagsResult.redFlags.length === 0,
   };
+}
+
+function buildPathwayQuery({ query, findings = [] }) {
+  const explicit = String(query ?? '').trim();
+  if (explicit) return explicit;
+  return (findings ?? []).filter(Boolean).join(' ');
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

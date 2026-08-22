@@ -9,6 +9,9 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import AppLayout from "@/components/AppLayout";
 import { I18nProvider } from '@/lib/i18n';
+import { PatientSessionProvider } from '@/lib/doctorped/patientSession';
+import { ClinicProfileProvider } from '@/lib/clinic/profileContext';
+import { routerBasename } from '@/lib/clinic/standalone';
 
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -33,9 +36,17 @@ import Evaluation from '@/pages/Evaluation';
 import ECGValidation from '@/pages/ECGValidation';
 import SkinValidation from '@/pages/SkinValidation';
 import KnowledgeCoverage from '@/pages/KnowledgeCoverage';
+import DoctorPedWorkbench from '@/pages/DoctorPedWorkbench';
+import ParentPortal from '@/pages/ParentPortal';
+import RoleGate from "@/components/clinic/RoleGate";
+import {
+  ToxicologyPage, TraumaPage, GrowthPage, NutritionPage, NeurodevPage,
+  ChronicPage, SyndromesPage, MetabolicPage, GeneticsPage, CsfPage,
+  UltrasoundPage, EegPage, AudioPage, ReferralsPage,
+} from '@/pages/doctorped/tools';
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -45,13 +56,8 @@ const AuthenticatedApp = () => {
     );
   }
 
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
-    }
+  if (authError?.type === 'user_not_registered') {
+    return <UserNotRegisteredError />;
   }
 
   return (
@@ -61,6 +67,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route element={<RoleGate />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/ecg" element={<ECGAnalysis />} />
@@ -81,6 +88,23 @@ const AuthenticatedApp = () => {
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/evaluation" element={<Evaluation />} />
           <Route path="/knowledge-coverage" element={<KnowledgeCoverage />} />
+          <Route path="/doctorped" element={<DoctorPedWorkbench />} />
+          <Route path="/parent" element={<ParentPortal />} />
+          <Route path="/tox" element={<ToxicologyPage />} />
+          <Route path="/trauma" element={<TraumaPage />} />
+          <Route path="/growth" element={<GrowthPage />} />
+          <Route path="/nutrition" element={<NutritionPage />} />
+          <Route path="/neurodev" element={<NeurodevPage />} />
+          <Route path="/chronic" element={<ChronicPage />} />
+          <Route path="/syndromes" element={<SyndromesPage />} />
+          <Route path="/metabolic" element={<MetabolicPage />} />
+          <Route path="/genetics" element={<GeneticsPage />} />
+          <Route path="/csf" element={<CsfPage />} />
+          <Route path="/us" element={<UltrasoundPage />} />
+          <Route path="/eeg" element={<EegPage />} />
+          <Route path="/audio" element={<AudioPage />} />
+          <Route path="/referrals" element={<ReferralsPage />} />
+        </Route>
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
@@ -92,13 +116,17 @@ function App() {
   return (
     <AuthProvider>
       <I18nProvider>
+        <ClinicProfileProvider>
+        <PatientSessionProvider>
         <QueryClientProvider client={queryClientInstance}>
-        <Router>
+        <Router basename={routerBasename(import.meta.env.BASE_URL)}>
           <ScrollToTop />
           <AuthenticatedApp />
         </Router>
         <Toaster />
         </QueryClientProvider>
+        </PatientSessionProvider>
+        </ClinicProfileProvider>
       </I18nProvider>
     </AuthProvider>
   )

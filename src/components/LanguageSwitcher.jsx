@@ -26,14 +26,14 @@ export default function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors select-none"
+        className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition-colors select-none rounded-full px-2 py-1 hover:bg-white/50"
       >
         <Globe className="w-4 h-4" />
         {current.short}
         <ChevronDown className="w-3 h-3" />
       </button>
       {open && (
-        <div className={`absolute top-full mt-1 ${dir === "rtl" ? "left-0" : "right-0"} bg-white rounded-lg shadow-lg border border-slate-200 py-1 min-w-[120px] z-50`}>
+        <div className={`absolute top-full mt-1 ${dir === "rtl" ? "left-0" : "right-0"} clinic-card py-1 min-w-[132px] z-50 overflow-hidden`}>
           {languages.map((l) => (
             <button
               key={l.code}

@@ -9,6 +9,8 @@
  * ============================================================================
  */
 
+import { finalizeLocale } from "../i18n/localize.js";
+
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 2);
 const STOP = new Set(["the", "and", "ecg", "ekg", "pattern", "syndrome", "with", "due", "acute", "type", "wave", "waves", "block", "old", "new", "left", "right"]);
@@ -243,7 +245,7 @@ export function measurementsList(measured) {
 /**
  * Assemble the full UI result from a reading + KB cases. Pure (no persistence).
  */
-export function assembleEcgResult(reading, allCases, { sex, fileUrl } = {}) {
+export function assembleEcgResult(reading, allCases, { sex, fileUrl, locale = "he" } = {}) {
   const pathologyMatch = reading.pathologyMatch || { candidates: [], maxSeverity: "normal", mustNotMiss: [] };
   const kbMatches = matchKbCases(pathologyMatch.candidates, allCases);
   const { severity, urgency } = mapSeverity(pathologyMatch);
@@ -269,7 +271,7 @@ export function assembleEcgResult(reading, allCases, { sex, fileUrl } = {}) {
     uncertainty = { level: "high", reason: "לא ניתן היה לכייל/למדוד את הרשת בביטחון — הערכים אינדיקטיביים בלבד; חזור על תרשים באיכות טובה יותר." };
   }
 
-  return {
+  return finalizeLocale({
     summary,
     severity,
     analysis: buildAnalysisMd(reading, kbMatches),
@@ -283,5 +285,5 @@ export function assembleEcgResult(reading, allCases, { sex, fileUrl } = {}) {
     structuredInterpretation,
     microReading: reading,
     numericIntegrity: null,
-  };
+  }, locale);
 }

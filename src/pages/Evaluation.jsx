@@ -7,7 +7,7 @@ import { runEvaluation } from "@/lib/evaluation";
 import GoldStandardForm from "@/components/evaluation/GoldStandardForm";
 import MetricsChart from "@/components/evaluation/MetricsChart";
 import BulkImport from "@/components/knowledge/BulkImport";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { computeCalibration } from "@/lib/calibration";
 import { runRedTeamSuite } from "@/lib/redTeamSuite";
 import { useI18n } from "@/lib/i18n";
@@ -110,16 +110,8 @@ export default function Evaluation() {
   }, [liveResults]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50/30 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-purple-500" />
-            <h1 className="font-bold text-base">{t("eval.title")}</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title={t("eval.title")} icon={Target} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6">
         <Tabs value={tab} onValueChange={setTab}>

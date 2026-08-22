@@ -17,6 +17,7 @@ import { verifyDiagnosis } from "./verify";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { RADIOLOGY_CRITICAL_PROMPT, applyRadiologyCritical } from "./radiologyCritical";
 import { evaluateMeasurements } from "./radiologyMeasurements";
+import { extractRadiologyFeatures } from "./medscan/vision/radiologyFeatures.js";
 import { runVisionNumericGuard, groundedRadiologyNumbers } from "./visionNumericGuard";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
@@ -238,9 +239,22 @@ export async function runRadiologyEngine({
   // ⚡ קריאת-הראייה העיקרית עוברת למודל המהיר (Sonnet) לצמצום זמן-פענוח;
   // הערכת המדידות מול נורמות-גיל מחושבת בקוד ומבטיחה את הדיוק הנומרי.
   model = FAST_MODEL,
+  imageData = null,
 }) {
   void DIAGNOSIS_MODEL;
   onStage?.("interpreting");
+
+  let morphology = null;
+  const morphWarnings = [];
+  if (imageData) {
+    morphology = extractRadiologyFeatures(imageData);
+    if (!morphology.ok) {
+      morphWarnings.push(`מדידת מאפייני הדמיה נכשלה (${morphology.reason}) — אין ניחוש צפיפויות/תסנינים.`);
+    } else if (morphology.note_he) {
+      morphWarnings.push(morphology.note_he);
+    }
+  }
+
   const prompt = buildRadiologySystemPrompt({ clinicalContext, language, pediatric });
 
   const pass1 = await invokeLLM({
@@ -258,11 +272,12 @@ export async function runRadiologyEngine({
         pass1.abstain_reason ||
         (pass1.is_relevant === false ? "התמונה אינה נראית כבדיקת הדמיה רפואית." : "בדיקת ההדמיה אינה קריאה מספיק."),
       structured: pass1,
+      morphology,
     };
   }
 
   const cons = radiologyConsistency(pass1);
-  const warnings = [...cons.warnings];
+  const warnings = [...cons.warnings, ...morphWarnings];
   let confidence = (typeof pass1.confidence === "number" ? pass1.confidence : 60) - cons.penalty;
 
   // ---- Critical rule-out escalation (a met life-threat forces urgency) ----
@@ -315,7 +330,7 @@ export async function runRadiologyEngine({
   if (confidence < 45 || (verification && verification.refuted)) uncertaintyLevel = "high";
   else if (confidence < 65 || cons.warnings.length) uncertaintyLevel = "medium";
 
-  return { abstain: false, structured: pass1, warnings, confidence, uncertaintyLevel, verification, measurement_eval: measurementEval };
+  return { abstain: false, structured: pass1, warnings, confidence, uncertaintyLevel, verification, measurement_eval: measurementEval, morphology };
 }
 
 function st0(st) {

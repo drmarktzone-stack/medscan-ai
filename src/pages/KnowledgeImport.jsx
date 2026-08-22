@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { extractBookSource, summarizeBook } from "@/lib/medscan/ingestion/bookParser";
 import { parseJsLiteral } from "@/lib/medscan/ingestion/jsLiteral";
 import { estimateRun, runIngestion } from "@/lib/medscan/ingestion/runIngestion";
@@ -154,16 +154,8 @@ export default function KnowledgeImport() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/40 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <BookUp className="w-5 h-5 text-amber-600" />
-            <h1 className="font-bold text-base">ייבוא ידע מנלסון</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="ייבוא ידע מנלסון" icon={BookUp} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">

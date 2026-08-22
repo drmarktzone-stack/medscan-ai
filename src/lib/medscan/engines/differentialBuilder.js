@@ -24,8 +24,11 @@ import {
   loadKnowledgeBase,
   loadVerifiedDrugTerms,
   loadReferenceRangePayload,
+  shouldUseCodeFirst,
   writeAudit,
 } from '../llmAdapter.js';
+import { finalizeLocale } from '../i18n/localize.js';
+import { buildCodeFirstEnvelope } from './codeFirstEnvelope.js';
 
 const ENGINE_PROMPT = `אתה בונה **אבחנה מבדלת מדורגת** מממצאים שסופקו.
 
@@ -70,15 +73,17 @@ export async function runDifferentialBuilder({
   presentation = null,
   mode = resolveMode(),
   withLiterature = true,
+  locale = 'he',
 }) {
   const ageDays = toAgeDays(patient);
   const pt = { ...patient, age_days: ageDays };
 
   if (!findings.length && !labs.length) {
-    return {
+    return finalizeLocale({
       status: 'input_error',
+      i18n_key: 'ddx.empty',
       message_he: 'לא הוזנו ממצאים או תוצאות מעבדה. אין ממה לבנות אבחנה מבדלת.',
-    };
+    }, locale);
   }
 
   // ── נרמול מעבדה (אם הוזנה) ───────────────────────────────────────────
@@ -94,11 +99,11 @@ export async function runDifferentialBuilder({
 
     const blocking = labWarnings.filter((w) => w.severity === 'block');
     if (blocking.length) {
-      return {
+      return finalizeLocale({
         status: 'input_error',
         blocking_warnings: blocking,
         message_he: blocking.map((b) => b.message_he).join(' '),
-      };
+      }, locale);
     }
   }
 
@@ -124,28 +129,46 @@ export async function runDifferentialBuilder({
     ...(presentation ? [{ key: 'presentation', label_he: 'תיאור קליני', value: presentation }] : []),
   ];
 
-  const invokeLLM = createInvokeLLM();
-  const [allowedTerms, evidence] = await Promise.all([
-    loadVerifiedDrugTerms(),
-    withLiterature
-      ? retrieveEvidence({ findings, patient: pt, invokeLLM })
-      : Promise.resolve({ literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } }),
-  ]);
+  let envelope;
+  let evidence = { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
+  if (shouldUseCodeFirst(mode)) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'differential',
+      grounding,
+    });
+  } else {
+  try {
+    const invokeLLM = createInvokeLLM();
+    const [allowedTerms, fetched] = await Promise.all([
+      loadVerifiedDrugTerms(),
+      withLiterature
+        ? retrieveEvidence({ findings, patient: pt, invokeLLM })
+        : Promise.resolve({ literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } }),
+    ]);
+    evidence = fetched;
 
-  const envelope = await groundedInvoke({
-    engine: 'differential',
-    enginePrompt: ENGINE_PROMPT,
-    grounding,
-    patientData,
-    literature: evidence.literature,
-    invokeLLM,
-    mode,
-    knownTopicKeys: kb.knownTopicKeys,
-    allowedTerms,
-    extraContext: missingRanges.length
-      ? { analytes_without_reference_range: missingRanges }
-      : null,
-  });
+    envelope = await groundedInvoke({
+      engine: 'differential',
+      enginePrompt: ENGINE_PROMPT,
+      grounding,
+      patientData,
+      literature: evidence.literature,
+      invokeLLM,
+      mode,
+      knownTopicKeys: kb.knownTopicKeys,
+      allowedTerms,
+      extraContext: missingRanges.length
+        ? { analytes_without_reference_range: missingRanges }
+        : null,
+    });
+  } catch (e) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'differential',
+      grounding,
+      llmError: e.message,
+    });
+  }
+  }
 
   // ── אכיפת must_not_miss מהידע, לא מהמודל ─────────────────────────────
   const { differential, enforced, uncoveredRed } = enforceMustNotMiss({
@@ -172,7 +195,7 @@ export async function runDifferentialBuilder({
 
   await writeAudit({ engine: 'differential', envelope: final });
 
-  return {
+  return finalizeLocale({
     ...final,
     must_not_miss_enforced: enforced,
     uncovered_red_items: uncoveredRed,
@@ -180,5 +203,5 @@ export async function runDifferentialBuilder({
     missing_ranges: missingRanges,
     lab_warnings: labWarnings,
     evidence_meta: evidence.meta,
-  };
+  }, locale);
 }

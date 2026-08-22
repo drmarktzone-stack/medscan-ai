@@ -26,6 +26,8 @@
  * במקום לניתן-לגילוי.
  */
 
+import { attachLiteratureCitation } from '../knowledge/approvedLiterature.js';
+
 /** רק ידע מאומת נכנס לפלט קליני. טיוטה נכנסת רק במצב פיתוח, ומסומנת. */
 export const VERIFICATION_POLICY = {
   clinical: ['verified'],
@@ -89,7 +91,15 @@ function renderKbFact(item) {
     parts.push(`בירור מומלץ: ${item.recommended_workup_he.join('; ')}`);
   }
   if (item.action_he) parts.push(`פעולה: ${item.action_he}`);
+  if (item.active_step_id) {
+    parts.push(`שלב פעיל: ${item.active_step_title_he ?? item.active_step_id}`);
+  }
+  if (item.category) parts.push(`קטגוריית מסלול: ${item.category}`);
+  if (item.local_protocol_ref) parts.push(`פרוטוקול מקומי: ${item.local_protocol_ref}`);
   if (item.summary_he) parts.push(item.summary_he);
+  if (item.literature_citation?.display_he) {
+    parts.push(`ספרות: ${item.literature_citation.display_he}`);
+  }
 
   return parts.filter(Boolean).join(' | ');
 }
@@ -124,6 +134,7 @@ export function buildFactBlock({
     facts.push(fact);
     index.set(fact.id, fact);
     if (fact.source_anchor) anchors.add(fact.source_anchor);
+    for (const a of fact.extra_anchors ?? []) if (a) anchors.add(a);
     for (const n of extractNumbers(fact.text)) allowedNumbers.add(n);
     return fact;
   };
@@ -131,14 +142,18 @@ export function buildFactBlock({
   // ── F# : עובדות KB ──────────────────────────────────────────────────────
   admitted.forEach((item, i) => {
     const draft = (item.verification_status ?? 'draft_needs_verification') !== 'verified';
+    const withLit = attachLiteratureCitation(item);
     register({
       id: `F${i + 1}`,
       kind: 'kb',
-      text: renderKbFact(item),
+      text: renderKbFact(withLit),
       source_anchor: item.source_anchor ?? item.topic_key ?? null,
+      extra_anchors: item.extra_anchors ?? [],
+      literature_citation: withLit.literature_citation ?? null,
+      literature_ok: Boolean(withLit.literature_ok),
       entity_key:
         item.rule_key ?? item.pattern_key ?? item.assoc_key ?? item.flag_key ??
-        item.protocol_key ?? item.topic_key ?? null,
+        item.pathway_key ?? item.protocol_key ?? item.topic_key ?? null,
       kb_suspicion: item.suspicion ?? null,
       is_draft: draft,
       verification_status: item.verification_status ?? 'draft_needs_verification',
@@ -271,6 +286,8 @@ export function renderFactBlockText(facts, mode = 'clinical') {
     for (const f of group) {
       const meta = [];
       if (f.source_anchor) meta.push(`מקור: ${f.source_anchor}`);
+      if (f.extra_anchors?.length) meta.push(`מקורות נוספים: ${f.extra_anchors.join(', ')}`);
+      if (f.literature_citation?.display_he) meta.push(f.literature_citation.display_he);
       if (f.is_draft) meta.push('⚠ טיוטה לא-מאומתת');
       const metaText = meta.length ? ` {${meta.join(' | ')}}` : '';
       lines.push(`[${f.id}]${metaText} ${f.text}`);

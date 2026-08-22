@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Lock, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Heart, Lock, Loader2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import AuthShell, { AuthField } from "@/components/clinic/AuthShell";
 
 export default function ResetPassword() {
+  const { t } = useI18n();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,44 +18,57 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirm) { setError("הסיסמאות אינן תואמות"); return; }
+    if (password !== confirm) {
+      setError(t("register.mismatch"));
+      return;
+    }
+    if (password.length < 8) {
+      setError(t("register.short"));
+      return;
+    }
     setLoading(true);
     setError("");
     try {
       await base44.auth.resetPassword({ resetToken: token, newPassword: password });
       window.location.href = "/login";
-    } catch (err) {
-      setError("שגיאה באיפוס הסיסמה. ייתכן שהקישור פג תוקף.");
+    } catch {
+      setError(t("reset.error"));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-slate-50 flex items-center justify-center p-5" dir="rtl">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/25 mb-4">
-            <Heart className="w-7 h-7 text-white" />
-          </div>
-          <h1 className="text-2xl font-extrabold text-foreground">סיסמה חדשה</h1>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative">
-            <Lock className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
-            <Input type="password" placeholder="סיסמה חדשה" value={password} onChange={(e) => setPassword(e.target.value)} className="pr-10 h-11 rounded-xl" required />
-          </div>
-          <div className="relative">
-            <Lock className="absolute right-3 top-3 w-4 h-4 text-muted-foreground" />
-            <Input type="password" placeholder="אימות סיסמה" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="pr-10 h-11 rounded-xl" required />
-          </div>
-          {error && <p className="text-xs text-red-500 text-center">{error}</p>}
-          <Button type="submit" className="w-full h-11 rounded-xl font-semibold" disabled={loading}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "עדכן סיסמה"}
-          </Button>
-        </form>
+    <AuthShell>
+      <div className="text-center space-y-1">
+        <h2 className="text-lg font-extrabold">{t("reset.title")}</h2>
+        <p className="text-xs text-muted-foreground">{t("reset.subtitle")}</p>
       </div>
-    </div>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <AuthField
+          icon={Lock}
+          type="password"
+          label={t("reset.password")}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="new-password"
+          minLength={8}
+        />
+        <AuthField
+          icon={Lock}
+          type="password"
+          label={t("register.confirm")}
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          autoComplete="new-password"
+          minLength={8}
+        />
+        {error ? <p className="text-xs text-red-600 text-center leading-relaxed">{error}</p> : null}
+        <Button type="submit" className="w-full h-12 rounded-xl font-bold" disabled={loading || !token}>
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("reset.submit")}
+        </Button>
+        <Link to="/login" className="text-xs text-primary hover:underline block text-center">{t("forgot.back")}</Link>
+      </form>
+    </AuthShell>
   );
 }

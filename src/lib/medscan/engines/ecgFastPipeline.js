@@ -19,7 +19,7 @@
 import { base44 } from "@/api/base44Client";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { VISION_MODEL } from "@/lib/aiConfig";
-import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
 import { runEcgMicroReading } from "./ecgPerception.js";
 import { assembleEcgResult } from "./ecgResultBuilder.js";
 
@@ -42,7 +42,7 @@ export async function runEcgFastAnalysis({
   patientRef,
   onStage,
   invokeLLM,           // optional override (tests)
-  model = VISION_MODEL,  // קריאת-התמונה על מודל-הראייה (Gemini) — המספרים מחושבים בקוד
+  model = VISION_MODEL,  // קריאת-התמונה ב-Claude. המספרים מחושבים בקוד.
 }) {
   onStage?.("uploading");
   const [fileUrls, allCases] = await Promise.all([
@@ -50,7 +50,7 @@ export async function runEcgFastAnalysis({
       ? Promise.resolve(preUploadedUrls)
       : Promise.all((files || []).map(async (f) => {
           const optimized = await downscaleImageFile(f, { autoLandscape: true });
-          const r = await base44.integrations.Core.UploadFile({ file: optimized });
+          const r = await requireBase44Core("UploadFile")({ file: optimized });
           return r.file_url;
         })),
     base44.entities.ECGCase.list("-created_date", 1000).catch(() => []),
@@ -75,7 +75,7 @@ export async function runEcgFastAnalysis({
 
   // ---- deterministic assembly (pure, unit-tested) ----
   onStage?.("verifying");
-  const result = assembleEcgResult(reading, allCases, { sex: patientSex, fileUrl: file_url });
+  const result = assembleEcgResult(reading, allCases, { sex: patientSex, fileUrl: file_url, locale: language });
 
   // ---- persist (non-fatal; kept awaited so analysisId is ready for PDF export + feedback) ----
   // This is a fast round-trip and never the bottleneck — the single vision call is.

@@ -9,6 +9,8 @@
  * ============================================================================
  */
 
+import { finalizeLocale } from "../i18n/localize.js";
+
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
 const STOP = new Set(["with", "and", "the", "acute", "chronic", "left", "right", "wall", "syndrome", "disease", "pediatric", "bilateral"]);
@@ -125,6 +127,16 @@ export function buildRadiologyAnalysisMd(engineResult, matches) {
     lines.push("");
   }
 
+  const morph = engineResult?.morphology;
+  if (morph?.ok) {
+    lines.push(`## מאפייני הדמיה (מדידה דטרמיניסטית, יחסית)`);
+    lines.push(`- **צפיפויות (שבר פיקסלים):** לוסנטי ${morph.densities?.lucent_like ?? "—"} / בינוני ${morph.densities?.intermediate_like ?? "—"} / צפוף ${morph.densities?.dense_like ?? "—"}`);
+    lines.push(`- **מבנה גרמי (רכיבים מחוברים):** ${morph.bone_structure?.connected_components ?? "—"}`);
+    lines.push(`- **מרקם לוסנטי (טיוטת תסנין):** ${morph.pulmonary_infiltrate_texture?.elevated ? "מוגבר" : "לא מוגבר"}`);
+    if (morph.note_he) lines.push(`- ${morph.note_he}`);
+    lines.push("");
+  }
+
   const flags = (st.critical_red_flags || []).filter(Boolean);
   if (flags.length) {
     lines.push(`## 🚩 דגלים אדומים`);
@@ -156,7 +168,7 @@ const UNCERTAINTY_REASON = {
 };
 
 /** Assemble the full UI result. Pure (no persistence). */
-export function assembleRadiologyResult(engineResult, allCases, { fileUrl } = {}) {
+export function assembleRadiologyResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
   const { severity, urgency } = mapRadiologySeverity(st);
   const matches = buildRadiologyMatches(st, allCases);
@@ -178,7 +190,7 @@ export function assembleRadiologyResult(engineResult, allCases, { fileUrl } = {}
     value: `${m.value}${m.unit || ""}${m.verdict && m.verdict !== "normal" ? (m.verdict === "above_normal" ? " (↑)" : " (↓)") : ""}`,
   }));
 
-  return {
+  return finalizeLocale({
     summary,
     severity,
     analysis: buildRadiologyAnalysisMd(engineResult, matches),
@@ -191,5 +203,5 @@ export function assembleRadiologyResult(engineResult, allCases, { fileUrl } = {}
     ecgInterpretation: null,
     structuredInterpretation: engineResult,
     numericIntegrity: null,
-  };
+  }, locale);
 }

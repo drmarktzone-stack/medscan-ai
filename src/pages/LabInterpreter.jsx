@@ -1,18 +1,20 @@
 import React, { useState, useRef } from "react";
-import { FlaskConical, Loader2, Plus, X, ShieldCheck, AlertTriangle, ScanLine, Upload, Info, Camera, GitCompare, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { FlaskConical, Loader2, Plus, X, ShieldCheck, AlertTriangle, ScanLine, Upload, Camera, GitCompare, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import AnalytePicker from "@/components/AnalytePicker";
 import { base44 } from "@/api/base44Client";
-import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
 import { runLabScan, finalizeScan, LAB_SCAN_SCHEMA } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
-import { pdfToImages, pdfExtractText, isPdf } from "@/lib/pdfToImages";
+import { pdfExtractText, isPdf } from "@/lib/pdfToImages";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
 import { RESULT_TYPES, CATALOG_SIZE, resolveAnalyte } from "@/lib/medscan/deterministic/analyteCatalog";
+import AgeFields from "@/components/clinic/AgeFields";
+import { hasAgeParts, parseAgeParts } from "@/lib/clinic/ageParts.js";
 
 // קיבוץ תוצאות לפאנלי-דם מוכרים (אחרי הפענוח).
 const PANEL_LABELS = {
@@ -41,8 +43,9 @@ const emptyRow = () => ({
 });
 
 export default function LabInterpreter() {
-  const [ageValue, setAgeValue] = useState("");
-  const [ageUnit, setAgeUnit] = useState("years");
+  const [ageYears, setAgeYears] = useState("");
+  const [ageMonths, setAgeMonths] = useState("");
+  const [ageDays, setAgeDays] = useState("");
   const [sex, setSex] = useState("");
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
@@ -96,7 +99,7 @@ export default function LabInterpreter() {
   };
 
   const scanImageFile = async (imgFile) => {
-    const { file_url } = await base44.integrations.Core.UploadFile({ file: imgFile });
+    const { file_url } = await requireBase44Core("UploadFile")({ file: imgFile });
     return runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
   };
 
@@ -112,9 +115,11 @@ export default function LabInterpreter() {
     let file_url = null;
     try {
       const toUpload = isPdf(file) ? file : await downscaleImageFile(file);
-      const up = await base44.integrations.Core.UploadFile({ file: toUpload });
+      const up = await requireBase44Core("UploadFile")({ file: toUpload });
       file_url = up?.file_url || null;
-    } catch { return merged; }
+    } catch (e) {
+      return { ...merged, reason: e.message || "upload_failed" };
+    }
     if (!file_url) return merged;
 
     // 1) חילוץ בצד-השרת (האמין ביותר — ללא תלות ב-pdf.js בדפדפן).
@@ -149,7 +154,7 @@ export default function LabInterpreter() {
     try {
       const allRows = [];
       const totals = { total: 0, readable: 0, needs_review: 0 };
-      let sexDetected = null, ageText = "", failed = 0;
+      let sexDetected = null, ageText = "", failed = 0, lastReason = "";
       for (const file of files) {
         try {
           const scan = await scanOneFile(file);
@@ -160,11 +165,17 @@ export default function LabInterpreter() {
             totals.needs_review += scan.stats?.needs_review || 0;
             if (!sexDetected && (scan.patient?.sex === "male" || scan.patient?.sex === "female")) sexDetected = scan.patient.sex;
             if (!ageText && scan.patient?.age_text) ageText = scan.patient.age_text;
-          } else { failed++; }
-        } catch { failed++; }
+          } else {
+            failed++;
+            if (scan.reason) lastReason = scan.reason;
+          }
+        } catch (e) {
+          failed++;
+          lastReason = e.message || lastReason;
+        }
       }
       if (!allRows.length) {
-        setScanInfo({ error: "לא הצלחתי לקרוא ערכים מהקבצים. נסה צילום חד יותר או מילוי ידני." });
+        setScanInfo({ error: lastReason || "לא הצלחתי לקרוא ערכים מהקבצים. נסו צילום חד יותר, או מלאו ידנית — הפענוח הטקסטואלי עובד בלי סריקה." });
       } else {
         // מצרפים לשורות שכבר מולאו (סריקות קודמות או הקלדה ידנית) — לא דורסים.
         const existing = rows.filter((r) => r.analyte.trim() && String(r.value).trim() !== "");
@@ -236,7 +247,7 @@ export default function LabInterpreter() {
     (r) => r.analyte.trim() && String(r.value).trim() === ""
   );
 
-  const canRun = filledRows.length > 0 && ageValue !== "" && incompleteRows.length === 0;
+  const canRun = filledRows.length > 0 && hasAgeParts({ ageYears, ageMonths, ageDays }) && incompleteRows.length === 0;
 
   // השוואה דטרמיניסטית (בקוד) בין הבדיקה הנוכחית לקודמות — לפי שם המדד.
   const normName = (s) => (s || "").trim().toLowerCase();
@@ -263,8 +274,7 @@ export default function LabInterpreter() {
     setResult(null);
     try {
       const patient = {
-        [ageUnit === "days" ? "age_days" : ageUnit === "months" ? "age_months" : "age_years"]:
-          Number(ageValue),
+        ...parseAgeParts({ ageYears, ageMonths, ageDays }),
         sex: sex || undefined,
         weight_kg: weight ? Number(weight) : undefined,
         height_cm: height ? Number(height) : undefined,
@@ -288,7 +298,7 @@ export default function LabInterpreter() {
         .map((f) => f.trim())
         .filter(Boolean);
 
-      setResult(await runLabInterpreter({ patient, labs, findings }));
+      setResult(await runLabInterpreter({ patient, labs, findings, mode: "development" }));
     } catch (e) {
       console.error(e);
       setError(e.message || "אירעה שגיאה בהרצת הניתוח.");
@@ -298,16 +308,8 @@ export default function LabInterpreter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-teal-600" />
-            <h1 className="font-bold text-base">פענוח מעבדה</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="פענוח מעבדה" icon={FlaskConical} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3">
@@ -431,33 +433,20 @@ export default function LabInterpreter() {
         <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
           <h3 className="text-sm font-bold">פרטי המטופל</h3>
 
-          <div>
-            <label className="text-[11px] font-medium text-slate-500 block mb-1">
-              גיל <span className="text-red-500">*</span>
-            </label>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                inputMode="numeric"
-                value={ageValue}
-                onChange={(e) => setAgeValue(e.target.value)}
-                placeholder="גיל"
-                className="flex-1"
-              />
-              <select
-                value={ageUnit}
-                onChange={(e) => setAgeUnit(e.target.value)}
-                className="rounded-md border border-slate-200 text-sm px-2 bg-white"
-              >
-                <option value="years">שנים</option>
-                <option value="months">חודשים</option>
-                <option value="days">ימים</option>
-              </select>
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1">
-              חובה — כמעט כל טווח ייחוס ברפואת ילדים תלוי-גיל.
-            </p>
-          </div>
+          <AgeFields
+            ageYears={ageYears}
+            ageMonths={ageMonths}
+            ageDays={ageDays}
+            required
+            onChange={(partial) => {
+              if (partial.ageYears !== undefined) setAgeYears(partial.ageYears);
+              if (partial.ageMonths !== undefined) setAgeMonths(partial.ageMonths);
+              if (partial.ageDays !== undefined) setAgeDays(partial.ageDays);
+            }}
+          />
+          <p className="text-[10px] text-slate-400 -mt-1">
+            חובה — כמעט כל טווח ייחוס ברפואת ילדים תלוי-גיל.
+          </p>
 
           <div className="grid grid-cols-3 gap-2">
             <div>
@@ -656,7 +645,11 @@ export default function LabInterpreter() {
               <ShieldCheck className="w-5 h-5 text-teal-600" />
               <div>
                 <h3 className="font-bold text-sm">פענוח מעוגן</h3>
-                <p className="text-[11px] text-slate-500">עבר אימות מול בסיס הידע המאומת</p>
+                <p className="text-[11px] text-slate-500">
+                  {result.code_first
+                    ? "פענוח דטרמיניסטי (טיוטה) — שער השפה לא רץ כאן. אינו אבחנה."
+                    : "עבר אימות מול בסיס הידע המאומת"}
+                </p>
               </div>
             </div>
 

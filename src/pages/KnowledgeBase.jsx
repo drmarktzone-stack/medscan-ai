@@ -7,7 +7,7 @@ import { base44 } from "@/api/base44Client";
 import CaseForm from "@/components/knowledge/CaseForm";
 import SearchFilter from "@/components/knowledge/SearchFilter";
 import BulkImport from "@/components/knowledge/BulkImport";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
 import { categoryTranslations } from "@/lib/translations";
 import { loadBook, bookStats } from "@/lib/medscan/knowledge/bookStore";
@@ -143,29 +143,27 @@ export default function KnowledgeBase() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BackButton />
-            <h1 className="font-bold text-base">{t("kb.title")}</h1>
-          </div>
+    <div className="clinic-page">
+      <ClinicHeader
+        title={t("kb.title")}
+        icon={BookOpen}
+        tone="tool"
+        extra={
           <div className="flex items-center gap-2">
-            <Button onClick={() => setBulkOpen(!bulkOpen)} size="sm" variant="outline" className="rounded-lg text-xs">
+            <Button onClick={() => setBulkOpen(!bulkOpen)} size="sm" variant="outline" className="rounded-full text-xs">
               <Plus className="w-4 h-4 ml-1" /> {t("kb.import_create")}
             </Button>
-            <Button onClick={() => setFormOpen(true)} size="sm" className="rounded-lg text-xs">
+            <Button onClick={() => setFormOpen(true)} size="sm" className="rounded-full text-xs">
               <Plus className="w-4 h-4 ml-1" /> {t("kb.add_case")}
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="max-w-lg mx-auto px-5 py-6">
         {/* ספר המקור — מעל למקרי ה-Vision, כי הוא המקור לכל הכלים */}
         <Link to="/book" className="block mb-5">
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-3
-                          hover:border-slate-300 transition-colors">
+          <div className="clinic-card p-4 flex items-center gap-3 hover:bg-white/70 transition-colors">
             <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
               <BookOpen className="w-5 h-5 text-slate-600" />
             </div>

@@ -18,6 +18,7 @@ import { verifyDiagnosis } from "./verify";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { sevenPointScore, abcdTds, chaosAndClues, malignancyRisk } from "./dermoscopyScore";
 import { allergensForDistribution } from "./allergyModule";
+import { extractDermatologyFeatures } from "./medscan/vision/dermatologyFeatures.js";
 
 const langNames = { he: "Hebrew", en: "English", ar: "Arabic" };
 
@@ -208,9 +209,22 @@ export async function runSkinEngine({
   // ⚡ קריאת-הראייה העיקרית עוברת למודל המהיר (Sonnet) לצמצום זמן-פענוח;
   // הניקוד הדרמוסקופי (7-point/ABCD/chaos) מחושב בקוד ומבטיח את הדיוק הנומרי.
   model = FAST_MODEL,
+  imageData = null,
 }) {
   void DIAGNOSIS_MODEL;
   onStage?.("interpreting");
+
+  let morphology = null;
+  const morphWarnings = [];
+  if (imageData) {
+    morphology = extractDermatologyFeatures(imageData);
+    if (!morphology.ok) {
+      morphWarnings.push(`מדידה מורפולוגית נכשלה (${morphology.reason}) — אין ניחוש מאפיינים.`);
+    } else if (morphology.note_he) {
+      morphWarnings.push(morphology.note_he);
+    }
+  }
+
   const prompt = buildSkinSystemPrompt({ clinicalContext, language, pediatric });
 
   const pass1 = await invokeLLM({
@@ -228,11 +242,12 @@ export async function runSkinEngine({
         pass1.abstain_reason ||
         (pass1.is_relevant === false ? "התמונה אינה נראית כתצלום עור." : "תצלום העור אינו קריא מספיק (טשטוש/תאורה)."),
       structured: pass1,
+      morphology,
     };
   }
 
   const cons = skinConsistency(pass1);
-  const warnings = [...cons.warnings];
+  const warnings = [...cons.warnings, ...morphWarnings];
   let confidence = (typeof pass1.confidence === "number" ? pass1.confidence : 60) - cons.penalty;
 
   // ---- Deterministic dermoscopy scoring + allergen mapping (code, not LLM) ----
@@ -281,5 +296,5 @@ export async function runSkinEngine({
   if (confidence < 45 || (verification && verification.refuted)) uncertaintyLevel = "high";
   else if (confidence < 65 || cons.warnings.length) uncertaintyLevel = "medium";
 
-  return { abstain: false, structured: pass1, warnings, confidence, uncertaintyLevel, verification, dermoscopy, suspected_allergens: suspectedAllergens };
+  return { abstain: false, structured: pass1, warnings, confidence, uncertaintyLevel, verification, dermoscopy, suspected_allergens: suspectedAllergens, morphology };
 }

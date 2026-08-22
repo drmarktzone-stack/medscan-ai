@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { GitBranch, Loader2, ShieldCheck, AlertTriangle, ChevronLeft, Lock } from "lucide-react";
+import { GitBranch, Loader2, ShieldCheck, AlertTriangle, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { runProtocolStep } from "@/lib/medscan/engines/protocolRunner";
 import { listProtocols } from "@/lib/medscan/llmAdapter";
+import AgeFields from "@/components/clinic/AgeFields";
+import { hasAgeParts, parseAgeParts } from "@/lib/clinic/ageParts.js";
 
 export default function ProtocolRunner() {
   const [protocols, setProtocols] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
   const [selected, setSelected] = useState(null);
-  const [ageValue, setAgeValue] = useState("");
-  const [ageUnit, setAgeUnit] = useState("years");
+  const [ageYears, setAgeYears] = useState("");
+  const [ageMonths, setAgeMonths] = useState("");
+  const [ageDays, setAgeDays] = useState("");
   const [weight, setWeight] = useState("");
   const [stepId, setStepId] = useState(null);
   const [history, setHistory] = useState([]);
@@ -28,22 +31,19 @@ export default function ProtocolRunner() {
       .finally(() => setLoadingList(false));
   }, []);
 
-  const verified = protocols.filter((p) => p.verification_status === "verified");
-  const unverified = protocols.filter((p) => p.verification_status !== "verified");
-
   const runStep = async (targetStepId) => {
     setLoading(true);
     setError(null);
     try {
       const patient = {
-        [ageUnit === "days" ? "age_days" : ageUnit === "months" ? "age_months" : "age_years"]:
-          Number(ageValue),
+        ...parseAgeParts({ ageYears, ageMonths, ageDays }),
         weight_kg: weight ? Number(weight) : undefined,
       };
       const res = await runProtocolStep({
         protocolKey: selected.protocol_key,
         patient,
         currentStepId: targetStepId,
+        mode: "development",
       });
       setResult(res);
       setStepId(targetStepId);
@@ -69,16 +69,8 @@ export default function ProtocolRunner() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50/50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <GitBranch className="w-5 h-5 text-sky-600" />
-            <h1 className="font-bold text-base">הרצת פרוטוקול</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="הרצת פרוטוקול" icon={GitBranch} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         <div className="text-xs text-slate-500 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1">
@@ -105,21 +97,23 @@ export default function ProtocolRunner() {
 
             {!loadingList && protocols.length === 0 && (
               <div className="text-xs text-slate-500 bg-slate-50 rounded-lg p-3 leading-relaxed">
-                אין פרוטוקולים במערכת. יש להוסיף רשומות לישות <code>Protocol</code>,
-                לאמת אותן מול הפרוטוקול המחלקתי, ורק אז ניתן להריץ.
+                אין פרוטוקולים זמינים כרגע.
               </div>
             )}
 
-            {verified.map((p) => (
+            {protocols.map((p) => (
               <button
                 key={p.protocol_key}
                 onClick={() => setSelected(p)}
                 className="w-full text-right rounded-xl border border-slate-200 hover:border-sky-300 p-3 transition-colors"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-semibold">{p.title_he}</span>
-                  <span className="text-[10px] text-slate-400">{p.step_count} שלבים</span>
+                  <span className="text-[10px] text-slate-400 shrink-0">{p.step_count} שלבים</span>
                 </div>
+                {p.verification_status !== "verified" ? (
+                  <p className="text-[10px] text-amber-800 mt-1">טיוטה לאימות — אינו אבחנה. הפרוטוקול המחלקתי גובר.</p>
+                ) : null}
                 {p.entry_criteria_he?.length > 0 && (
                   <p className="text-[11px] text-slate-500 mt-1">
                     קריטריוני כניסה: {p.entry_criteria_he.join(", ")}
@@ -127,23 +121,6 @@ export default function ProtocolRunner() {
                 )}
               </button>
             ))}
-
-            {unverified.length > 0 && (
-              <div className="pt-2 border-t border-slate-100">
-                <p className="text-[11px] font-semibold text-slate-500 mb-2">
-                  פרוטוקולים שאינם מאומתים — לא ניתנים להרצה
-                </p>
-                {unverified.map((p) => (
-                  <div key={p.protocol_key} className="flex items-center gap-2 py-1.5 opacity-60">
-                    <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="text-xs text-slate-600">{p.title_he}</span>
-                  </div>
-                ))}
-                <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                  פרוטוקול קליני לא-מאומת אינו רץ. יש לאמת אותו מול הפרוטוקול המחלקתי.
-                </p>
-              </div>
-            )}
           </div>
         )}
 
@@ -157,21 +134,17 @@ export default function ProtocolRunner() {
               </button>
             </div>
 
-            <div>
-              <label className="text-[11px] font-medium text-slate-500 block mb-1">
-                גיל <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-2">
-                <Input type="number" inputMode="numeric" value={ageValue}
-                  onChange={(e) => setAgeValue(e.target.value)} className="flex-1" />
-                <select value={ageUnit} onChange={(e) => setAgeUnit(e.target.value)}
-                  className="rounded-md border border-slate-200 text-sm px-2 bg-white">
-                  <option value="years">שנים</option>
-                  <option value="months">חודשים</option>
-                  <option value="days">ימים</option>
-                </select>
-              </div>
-            </div>
+            <AgeFields
+              ageYears={ageYears}
+              ageMonths={ageMonths}
+              ageDays={ageDays}
+              required
+              onChange={(partial) => {
+                if (partial.ageYears !== undefined) setAgeYears(partial.ageYears);
+                if (partial.ageMonths !== undefined) setAgeMonths(partial.ageMonths);
+                if (partial.ageDays !== undefined) setAgeDays(partial.ageDays);
+              }}
+            />
 
             <div>
               <label className="text-[11px] font-medium text-slate-500 block mb-1">משקל (ק"ג)</label>
@@ -182,7 +155,7 @@ export default function ProtocolRunner() {
               </p>
             </div>
 
-            <Button onClick={start} disabled={!ageValue || loading}
+            <Button onClick={start} disabled={!hasAgeParts({ ageYears, ageMonths, ageDays }) || loading}
               className="w-full h-11 rounded-xl text-sm font-semibold bg-sky-600 hover:bg-sky-700">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "התחל פרוטוקול"}
             </Button>

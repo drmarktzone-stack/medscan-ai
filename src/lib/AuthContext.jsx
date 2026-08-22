@@ -2,23 +2,50 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+import { disableLocalClinic, enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
+import { isStandaloneBuild, withDeadline } from '@/lib/clinic/standalone';
+import { setPilotMode } from '@/lib/medscan/runtimeMode';
 
 const AuthContext = createContext();
 
+function localClinicAtBoot(extra = {}) {
+  return isLocalClinicSession({
+    appId: appParams.appId,
+    token: appParams.token,
+    ...extra,
+  });
+}
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
-  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
+  const bootLocal = localClinicAtBoot();
+  const [user, setUser] = useState(bootLocal ? LOCAL_CLINIC_USER : null);
+  const [isAuthenticated, setIsAuthenticated] = useState(bootLocal);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(!bootLocal);
+  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(!bootLocal);
   const [authError, setAuthError] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false);
+  const [authChecked, setAuthChecked] = useState(bootLocal);
   const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
+
+  const enterLocalClinic = (persist = true) => {
+    if (persist) enableLocalClinic();
+    setPilotMode(true);
+    setUser(LOCAL_CLINIC_USER);
+    setIsAuthenticated(true);
+    setAuthChecked(true);
+    setAuthError(null);
+    setIsLoadingAuth(false);
+    setIsLoadingPublicSettings(false);
+  };
 
   useEffect(() => {
     checkAppState();
   }, []);
 
   const checkAppState = async () => {
+    if (isStandaloneBuild() || localClinicAtBoot()) {
+      enterLocalClinic(false);
+      return;
+    }
     try {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
@@ -35,12 +62,14 @@ export const AuthProvider = ({ children }) => {
       });
       
       try {
-        const publicSettings = await appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
+        const publicSettings = await withDeadline(
+          appClient.get(`/prod/public-settings/by-id/${appParams.appId}`),
+        );
         setAppPublicSettings(publicSettings);
         
         // If we got the app public settings successfully, check if user is authenticated
         if (appParams.token) {
-          await checkUserAuth();
+          await withDeadline(checkUserAuth());
         } else {
           setIsLoadingAuth(false);
           setIsAuthenticated(false);
@@ -69,23 +98,17 @@ export const AuthProvider = ({ children }) => {
               message: appError.message
             });
           }
-        } else {
-          setAuthError({
-            type: 'unknown',
-            message: appError.message || 'Failed to load app'
-          });
+          setIsLoadingPublicSettings(false);
+          setIsLoadingAuth(false);
+          setAuthChecked(true);
+          return;
         }
-        setIsLoadingPublicSettings(false);
-        setIsLoadingAuth(false);
+        // Credits exhausted, quota, proxy down, or no network → run on this device.
+        enterLocalClinic(true);
       }
     } catch (error) {
       console.error('Unexpected error:', error);
-      setAuthError({
-        type: 'unknown',
-        message: error.message || 'An unexpected error occurred'
-      });
-      setIsLoadingPublicSettings(false);
-      setIsLoadingAuth(false);
+      enterLocalClinic(true);
     }
   };
 
@@ -115,14 +138,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = (shouldRedirect = true) => {
+    const wasLocal = Boolean(user?.local);
+    disableLocalClinic();
     setUser(null);
     setIsAuthenticated(false);
-    
+    if (wasLocal) {
+      if (shouldRedirect && typeof window !== 'undefined') window.location.href = '/login';
+      return;
+    }
     if (shouldRedirect) {
-      // Use the SDK's logout method which handles token cleanup and redirect
-      base44.auth.logout(window.location.href);
+      base44.auth.logout('/login');
     } else {
-      // Just remove the token without redirect
       base44.auth.logout();
     }
   };
@@ -144,7 +170,9 @@ export const AuthProvider = ({ children }) => {
       logout,
       navigateToLogin,
       checkUserAuth,
-      checkAppState
+      checkAppState,
+      enterLocalClinic,
+      isLocalClinic: Boolean(user?.local),
     }}>
       {children}
     </AuthContext.Provider>

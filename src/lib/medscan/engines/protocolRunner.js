@@ -28,9 +28,11 @@ import {
   loadKnowledgeBase,
   loadVerifiedDrugTerms,
   loadProtocol,
+  shouldUseCodeFirst,
   writeAudit,
 } from '../llmAdapter.js';
 import { resolveStep, validateProtocolOutput, buildCalcRequests } from './protocolTree.js';
+import { buildCodeFirstEnvelope } from './codeFirstEnvelope.js';
 
 // מיוצאים מחדש לנוחות הקוראים — המימוש יושב ב-protocolTree.js
 // כדי שיהיה בר-בדיקה בלי התלות ה-alias של Vite.
@@ -80,6 +82,7 @@ export async function runProtocolStep({
 }) {
   const ageDays = toAgeDays(patient);
   const pt = { ...patient, age_days: ageDays };
+  const resolvedMode = resolveMode(mode);
 
   const protocol = await loadProtocol(protocolKey);
 
@@ -90,14 +93,14 @@ export async function runProtocolStep({
     };
   }
 
-  // פרוטוקול לא-מאומת אינו רץ. בשום מצב.
-  if (protocol.verification_status !== 'verified') {
+  const verified = protocol.verification_status === 'verified';
+  if (!verified && resolvedMode === 'clinical') {
     return {
       status: 'protocol_error',
       protocol,
       message_he:
         `הפרוטוקול "${protocol.title_he}" בסטטוס "${protocol.verification_status}" ואינו מאומת. ` +
-        'פרוטוקול קליני לא-מאומת אינו רץ — יש לאמת אותו מול הפרוטוקול המחלקתי לפני שימוש.',
+        'במצב קליני פרוטוקול לא-מאומת אינו רץ — יש לאמת אותו מול הפרוטוקול המחלקתי, או להפעיל מצב פילוט.',
     };
   }
 
@@ -119,10 +122,10 @@ export async function runProtocolStep({
     patient: pt,
     labs: [],
     findings: stateFindings,
-    mode,
+    mode: resolvedMode,
   });
 
-  // הפרוטוקול עצמו נכנס כפריט ידע מאומת — הוא המקור לשלב הזה
+  // הפרוטוקול עצמו נכנס כפריט ידע — במצב פיתוח גם טיוטה, מסומנת ככזו
   grounding.kbItems = [
     ...grounding.kbItems,
     {
@@ -131,7 +134,7 @@ export async function runProtocolStep({
       conclusion_he: (step.actions_he ?? []).join('; '),
       suspicion: 'yellow',
       source_anchor: protocol.source_anchor,
-      verification_status: 'verified',
+      verification_status: protocol.verification_status ?? 'draft_needs_verification',
     },
   ];
 
@@ -142,39 +145,81 @@ export async function runProtocolStep({
     ...Object.entries(state).map(([k, v]) => ({ key: k, label_he: k, value: v })),
   ];
 
-  const invokeLLM = createInvokeLLM();
-  const allowedTerms = await loadVerifiedDrugTerms();
-
-  const envelope = await groundedInvoke({
-    engine: 'protocol_runner',
-    enginePrompt: ENGINE_PROMPT,
-    grounding,
-    deterministic,
-    patientData,
-    invokeLLM,
-    mode,
-    knownTopicKeys: kb.knownTopicKeys,
-    allowedTerms,
-    extraContext: {
-      protocol_key: protocol.protocol_key,
-      protocol_title_he: protocol.title_he,
-      local_protocol_ref: protocol.local_protocol_ref ?? null,
-      current_step: {
-        step_id: step.step_id,
-        title_he: step.title_he,
-        actions_he: step.actions_he ?? [],
-        red_flags_he: step.red_flags_he ?? [],
+  let envelope;
+  if (shouldUseCodeFirst(resolvedMode)) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'protocol_runner',
+      grounding,
+      deterministic,
+      extra: {
+        current_step: {
+          step_id: step.step_id,
+          title_he: step.title_he,
+          actions_he: step.actions_he ?? [],
+          red_flags_he: step.red_flags_he ?? [],
+        },
+        branch_options: (step.branches ?? []).map((b) => ({
+          condition_he: b.condition_he,
+          next_step_id: b.next_step_id,
+        })),
       },
-      branch_options: (step.branches ?? []).map((b) => ({
-        condition_he: b.condition_he,
-        next_step_id: b.next_step_id,
-      })),
-      valid_step_ids: [...index.keys()],
-      ...(refusals.length
-        ? { calculators_refused: refusals.map((r) => r.message_he) }
-        : {}),
-    },
-  });
+    });
+  } else {
+  try {
+    const invokeLLM = createInvokeLLM();
+    const allowedTerms = await loadVerifiedDrugTerms();
+
+    envelope = await groundedInvoke({
+      engine: 'protocol_runner',
+      enginePrompt: ENGINE_PROMPT,
+      grounding,
+      deterministic,
+      patientData,
+      invokeLLM,
+      mode: resolvedMode,
+      knownTopicKeys: kb.knownTopicKeys,
+      allowedTerms,
+      extraContext: {
+        protocol_key: protocol.protocol_key,
+        protocol_title_he: protocol.title_he,
+        local_protocol_ref: protocol.local_protocol_ref ?? null,
+        current_step: {
+          step_id: step.step_id,
+          title_he: step.title_he,
+          actions_he: step.actions_he ?? [],
+          red_flags_he: step.red_flags_he ?? [],
+        },
+        branch_options: (step.branches ?? []).map((b) => ({
+          condition_he: b.condition_he,
+          next_step_id: b.next_step_id,
+        })),
+        valid_step_ids: [...index.keys()],
+        ...(refusals.length
+          ? { calculators_refused: refusals.map((r) => r.message_he) }
+          : {}),
+      },
+    });
+  } catch (e) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'protocol_runner',
+      grounding,
+      deterministic,
+      llmError: e.message,
+      extra: {
+        current_step: {
+          step_id: step.step_id,
+          title_he: step.title_he,
+          actions_he: step.actions_he ?? [],
+          red_flags_he: step.red_flags_he ?? [],
+        },
+        branch_options: (step.branches ?? []).map((b) => ({
+          condition_he: b.condition_he,
+          next_step_id: b.next_step_id,
+        })),
+      },
+    });
+  }
+  }
 
   // ── ולידציה ייחודית: שלב/ענף/פעולה מומצאים ───────────────────────────
   const protocolCheck = validateProtocolOutput({

@@ -37,6 +37,7 @@
 import { ECG_FULL_RULES } from "./ecgRules";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { flagEcgNormals } from "./ecgNormals";
+import { extractEcgWaveformFeatures } from "./medscan/signal/ecgWaveformFeatures.js";
 import { assessEcgQuality, decideGate, deterministicLeadReversalCheck } from "./ecgQualityGate";
 import { runVisionNumericGuard, groundedEcgNumbers } from "./visionNumericGuard";
 
@@ -708,6 +709,9 @@ export async function runEcgEngine({
   // הסופי (Stage 2 בצינור) נשאר על Opus — שם ההיגיון הקליני דרוש דיוק מרבי.
   model = FAST_MODEL,
   qualityGate = true,
+  waveform = null,
+  fiducials = null,
+  calibration = null,
 }) {
   // ---- Pass 0: image-quality / artifact gate (anti-hallucination) ----
   // Refuse to interpret a non-ECG / unreadable / severely-degraded image before
@@ -846,6 +850,31 @@ export async function runEcgEngine({
 
   structured.clinical_urgency = finalUrgency;
 
+  let waveform_features = null;
+  if (waveform || fiducials) {
+    waveform_features = extractEcgWaveformFeatures({
+      samples: waveform?.samples,
+      sampleRate: waveform?.sampleRate,
+      fiducials: fiducials || waveform?.fiducials,
+      calibration: calibration || waveform?.calibration,
+      leadNet: waveform?.leadNet,
+      ageYears,
+      sex,
+      qt_ms: structured?.intervals?.qt_ms,
+      rr_ms: structured?.intervals?.rr_ms,
+      pr_ms: structured?.intervals?.pr_ms,
+      qrs_ms: structured?.intervals?.qrs_ms,
+      hr_bpm: structured?.rhythm_and_rate?.heart_rate_bpm_calculated
+        ?? structured?.rhythm_and_rate?.heart_rate_bpm,
+    });
+    if (!waveform_features.ok) {
+      warnings.push(`חילוץ מאפייני גל נכשל (${waveform_features.reason}) — אין ניחוש QTc/ST/SVT.`);
+    } else {
+      warnings.push(...(waveform_features.notes || []));
+      if (waveform_features.note_he) warnings.push(waveform_features.note_he);
+    }
+  }
+
   let uncertaintyLevel = null;
   if (confidence < 45 || consistencyAgree === false || (verification && verification.refuted)) {
     uncertaintyLevel = "high";
@@ -864,5 +893,6 @@ export async function runEcgEngine({
     warnings,
     confidence,
     uncertaintyLevel,
+    waveform_features,
   };
 }

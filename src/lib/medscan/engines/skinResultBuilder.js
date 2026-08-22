@@ -8,6 +8,8 @@
  * ============================================================================
  */
 
+import { finalizeLocale } from "../i18n/localize.js";
+
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
 const STOP = new Set(["with", "and", "the", "acute", "chronic", "skin", "lesion", "rash", "disease", "syndrome", "pediatric"]);
@@ -75,6 +77,17 @@ export function buildSkinAnalysisMd(engineResult, matches) {
     lines.push("");
   }
 
+  const morph = engineResult?.morphology;
+  if (morph?.ok) {
+    lines.push(`## מאפיינים מורפולוגיים (מדידה דטרמיניסטית)`);
+    lines.push(`- **גבולות (compactness):** ${morph.borders?.compactness ?? "—"}`);
+    lines.push(`- **צבע (אשכולות):** ${morph.color?.cluster_count ?? "—"}`);
+    lines.push(`- **פיזור בשדה:** ${morph.distribution?.pattern_he ?? "—"}`);
+    lines.push(`- **רכיבים לווייניים:** ${morph.satellite_lesions?.count ?? 0}`);
+    if (morph.note_he) lines.push(`- ${morph.note_he}`);
+    lines.push("");
+  }
+
   lines.push(`## אבחנה מבדלת`);
   if (matches.length === 0) {
     lines.push(`לא זוהתה אבחנה מבדלת חד-משמעית — נדרש מתאם קליני.`);
@@ -113,7 +126,7 @@ const UNCERTAINTY_REASON = {
   medium: "אבחנות מתחרות עם ביטחון דומה — מומלץ בירור/מעקב.",
 };
 
-export function assembleSkinResult(engineResult, allCases, { fileUrl } = {}) {
+export function assembleSkinResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
   const { severity, urgency } = mapSkinSeverity(engineResult);
   const matches = buildSkinMatches(st, allCases);
@@ -129,7 +142,7 @@ export function assembleSkinResult(engineResult, allCases, { fileUrl } = {}) {
     uncertainty = { level: engineResult.uncertaintyLevel, reason: UNCERTAINTY_REASON[engineResult.uncertaintyLevel] || UNCERTAINTY_REASON.medium };
   }
 
-  return {
+  return finalizeLocale({
     summary,
     severity,
     analysis: buildSkinAnalysisMd(engineResult, matches),
@@ -142,5 +155,5 @@ export function assembleSkinResult(engineResult, allCases, { fileUrl } = {}) {
     ecgInterpretation: null,
     structuredInterpretation: engineResult,
     numericIntegrity: null,
-  };
+  }, locale);
 }

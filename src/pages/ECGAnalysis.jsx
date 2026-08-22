@@ -3,8 +3,7 @@ import { Activity, Loader2, BookOpen, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { runDiagnosisPipeline } from "@/lib/analysisPipeline";
-import { runEcgFastAnalysis } from "@/lib/medscan/engines/ecgFastPipeline";
+import { analyzeEcgPhoto, humanizeAnalysisError } from "@/lib/analysisPipeline";
 import ImageUploader from "@/components/ImageUploader";
 import ClinicalContextForm from "@/components/ClinicalContextForm";
 import ExamFindingsInput, { ECG_EXAM_FIELDS } from "@/components/ExamFindingsInput";
@@ -12,13 +11,11 @@ import PediatricToggle from "@/components/PediatricToggle";
 import AnalysisResult from "@/components/AnalysisResult";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
-import { runGroundedVisionInterpretation } from "@/lib/medscan/engines/visionGrounded";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { runEcgComparison } from "@/lib/ecgCompare";
-import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
-import { runEcgMicroReading, buildMeasuredBlock } from "@/lib/medscan/engines/ecgPerception";
+import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
 
 export default function ECGAnalysis() {
   const { t, lang } = useI18n();
@@ -78,13 +75,14 @@ export default function ECGAnalysis() {
         const urls = await Promise.all(
           newFiles.map(async (f) => {
             const optimized = await downscaleImageFile(f, { autoLandscape: true });
-            return base44.integrations.Core.UploadFile({ file: optimized });
+            return requireBase44Core("UploadFile")({ file: optimized });
           })
         );
         const fileUrls = urls.map((r) => r.file_url);
         updateUploadedUrls(fileUrls);
       } catch (err) {
         console.error("Upload failed", err);
+        setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
       } finally {
         setUploading(false);
       }
@@ -100,12 +98,13 @@ export default function ECGAnalysis() {
         const urls = await Promise.all(
           newFiles.map(async (f) => {
             const optimized = await downscaleImageFile(f, { autoLandscape: true });
-            return base44.integrations.Core.UploadFile({ file: optimized });
+            return requireBase44Core("UploadFile")({ file: optimized });
           })
         );
         setPriorUrls(urls.map((r) => r.file_url));
       } catch (err) {
         console.error("prior upload failed", err);
+        setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
       } finally {
         setPriorUploading(false);
       }
@@ -115,7 +114,10 @@ export default function ECGAnalysis() {
   };
 
   const handleAnalyze = async () => {
-    if (uploadedUrls.length === 0 && files.length === 0) return;
+    if (uploadedUrls.length === 0 && files.length === 0) {
+      setError(t("analysis.need_image"));
+      return;
+    }
     setLoading(true);
     setError(null);
     setComparison(null);
@@ -127,7 +129,7 @@ export default function ECGAnalysis() {
       // (מדידות → יסודות → התאמת-פתולוגיות מול קריטריונים → השוואה למאגר).
       // מחליף את הצינור הרב-קריאתי הישן (3-4 קריאות Opus טוריות ≈ 5 דקות).
       setMicroLoading(true);
-      const res = await runEcgFastAnalysis({
+      const res = await analyzeEcgPhoto({
         files,
         preUploadedUrls: uploadedUrls,
         clinicalContext: fullContext,
@@ -140,13 +142,6 @@ export default function ECGAnalysis() {
       setResult(res);
       if (res.microReading) setMicroReading(res.microReading);
       setMicroLoading(false);
-
-      // הצינור הישן והפרשנות המעוגנת נשמרים בקוד אך אינם בשימוש במסלול-האק"ג המהיר.
-      void runDiagnosisPipeline;
-      void runGroundedVisionInterpretation;
-      void createVisionInvokeLLM;
-      void runEcgMicroReading;
-      void buildMeasuredBlock;
 
       // השוואה לתרשים קודם — רץ אחרי שהפענוח הוצג, ורק אם הועלה תרשים קודם.
       if (priorUrls.length > 0 && res?.imageUrl) {
@@ -165,7 +160,7 @@ export default function ECGAnalysis() {
       sessionStorage.removeItem("ecg_file_urls");
     } catch (err) {
       console.error(err);
-      setError(err.message || t("analysis.error_fallback"));
+      setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
     } finally {
       setLoading(false);
       setMicroLoading(false);
@@ -174,6 +169,7 @@ export default function ECGAnalysis() {
   };
 
   const stageLabels = {
+    uploading: t("analysis.stage_uploading"),
     extracting: t("analysis.stage_extracting"),
     matching: t("analysis.stage_matching"),
     interpreting: t("analysis.stage_interpreting"),
@@ -183,16 +179,8 @@ export default function ECGAnalysis() {
   const stageLabel = stageLabels[stage] || t("analysis.stage_diagnosing");
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-blue-500" />
-            <h1 className="font-bold text-base">{t("analysis.ecg_title")}</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title={t("analysis.ecg_title")} icon={Activity} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         {kbCount > 0 && (
@@ -210,6 +198,7 @@ export default function ECGAnalysis() {
           imageUrls={uploadedUrls}
           onImageUrlsChange={updateUploadedUrls}
         />
+        <p className="text-[11px] text-slate-500 leading-relaxed">{t("analysis.needs_base44")}</p>
 
         {(files.length > 0 || uploadedUrls.length > 0) && !result && (
           <>

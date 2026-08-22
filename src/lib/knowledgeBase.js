@@ -1,8 +1,36 @@
 // עוזר קיצוץ — שומר על פרומפטים ממוקדים. קיצוץ אינו פוגע בדיוק:
 // שלב ההתאמה צריך את המאפיינים והקריטריונים המבחינים, לא חיבורים שלמים.
+import {
+  attachLiteratureCitation,
+  describeLiteratureAnchor,
+  isApprovedLiteratureAnchor,
+  isLiteratureShapedAnchor,
+  parseLiteratureCitation,
+  APPROVED_LITERATURE_PREFIXES,
+} from './medscan/knowledge/approvedLiterature.js';
+
+export {
+  attachLiteratureCitation,
+  describeLiteratureAnchor,
+  isApprovedLiteratureAnchor,
+  isLiteratureShapedAnchor,
+  parseLiteratureCitation,
+  APPROVED_LITERATURE_PREFIXES,
+};
+
 function trunc(s, n) {
   const t = String(s ?? "").trim();
   return t.length > n ? t.slice(0, n).trimEnd() + "…" : t;
+}
+
+function literatureLine(c) {
+  const anchor = c?.source_anchor ?? c?.topic_key ?? null;
+  const cited = parseLiteratureCitation(anchor);
+  if (cited) return cited.display_he;
+  if (anchor && !isLiteratureShapedAnchor(anchor)) {
+    return `עוגן לא-מאושר (${anchor}) — אינו נלסון/חוזר משרד הבריאות`;
+  }
+  return null;
 }
 
 export function buildKnowledgeBaseText(cases) {
@@ -11,12 +39,14 @@ export function buildKnowledgeBaseText(cases) {
   }
 
   return cases.map((c, i) => {
+    const lit = literatureLine(c);
     let entry = `### ${i + 1}. ${c.title}\n`;
     entry += `- **אבחנה:** ${c.diagnosis}\n`;
     if (c.category) entry += `- **קטגוריה:** ${c.category}\n`;
     if (c.key_features) entry += `- **מאפיינים מרכזיים:** ${c.key_features}\n`;
     if (c.diagnostic_criteria) entry += `- **קריטריוני אבחון:** ${c.diagnostic_criteria}\n`;
     if (c.description) entry += `- **תיאור קליני מפורט:** ${c.description}\n`;
+    if (lit) entry += `- **עיגון ספרות:** ${lit}\n`;
     return entry;
   }).join("\n---\n");
 }
@@ -41,6 +71,8 @@ export function buildCasesForMatching(cases) {
     if (c.urgent) entry += " ⚠דחוף";
     // שלב-האחזור רץ על מאפיינים בלבד (קל ומהיר); הקריטריונים המלאים נבדקים בשלב-האימות על המובילים בלבד.
     if (c.key_features) entry += ` | ${trunc(c.key_features, 130)}`;
+    const lit = literatureLine(c);
+    if (lit) entry += ` | מקור: ${lit}`;
     return entry;
   }).join("\n");
 }
@@ -55,12 +87,15 @@ export function buildMatchedCasesText(cases) {
   if (!cases || cases.length === 0) return "";
 
   return cases.map((c, i) => {
+    const lit = literatureLine(c);
     let entry = `### מקרה תואם ${i + 1}: ${c.title}\n`;
     entry += `- **אבחנה:** ${c.diagnosis}\n`;
     if (c.category) entry += `- **קטגוריה:** ${c.category}\n`;
     if (c.key_features) entry += `- **מאפיינים מרכזיים:** ${c.key_features}\n`;
     if (c.diagnostic_criteria) entry += `- **קריטריוני אבחון:** ${trunc(c.diagnostic_criteria, 900)}\n`;
     if (c.description) entry += `- **תיאור קליני:** ${trunc(c.description, 320)}\n`;
+    if (lit) entry += `- **עיגון ספרות (חובה לפלט):** ${lit}\n`;
+    else entry += `- **עיגון ספרות:** חסר — אין להפיק אבחנה/המלצה ממקרה זה עד לעיגון נלסון/חוזר.\n`;
     return entry;
   }).join("\n---\n");
 }

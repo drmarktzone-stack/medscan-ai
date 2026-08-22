@@ -13,8 +13,48 @@
  *     על כך שכל קורא יזכור להעביר אותו.
  */
 
-import { base44 } from '@/api/base44Client';
-import { DIAGNOSIS_MODEL, FAST_MODEL, VISION_MODEL } from '@/lib/aiConfig';
+import { base44 } from '../../api/base44Client.js';
+import { DIAGNOSIS_MODEL, FAST_MODEL, VISION_MODEL } from '../aiConfig.js';
+import { seedToEntityRows } from './deterministic/referenceRangeSeed.js';
+import { listPediatricPathways, toProtocolView } from './engines/pediatricPathways.js';
+import { isStandaloneBuild, withDeadline } from '../clinic/standalone.js';
+
+const BASE44_REQUIRED_HE =
+  'ניתוח תמונה דורש מנוע ראייה (Claude) בתשלום. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בחינם במכשיר זה.';
+
+async function timedEntityCall(promise, fallback, ms = 2000) {
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('entity_timeout')), ms)),
+    ]);
+  } catch {
+    return fallback;
+  }
+}
+
+export function requireBase44Core(action) {
+  const fn = base44?.integrations?.Core?.[action];
+  if (typeof fn !== 'function') {
+    throw new Error(BASE44_REQUIRED_HE);
+  }
+  return fn.bind(base44.integrations.Core);
+}
+
+/** Text tools must answer from code when Base44 is missing, standalone, or the hosted LLM hangs. */
+export function shouldUseCodeFirst(mode) {
+  if (isStandaloneBuild()) return true;
+  try {
+    requireBase44Core('InvokeLLM');
+  } catch {
+    return true;
+  }
+  return String(mode || '').toLowerCase() === 'development';
+}
+
+function callCoreOrTimeout(fn, request, ms = 2000) {
+  return withDeadline(Promise.resolve().then(() => fn(request)), ms, BASE44_REQUIRED_HE);
+}
 
 /**
  * ⚠ מזהי הדגמים הם מזהי **Base44**, לא מזהי Anthropic API.
@@ -61,7 +101,7 @@ export function createInvokeLLM({ fileUrls = null, onCall = null } = {}) {
     };
     if (fileUrls?.length) request.file_urls = fileUrls;
 
-    return base44.integrations.Core.InvokeLLM(request);
+    return callCoreOrTimeout(requireBase44Core('InvokeLLM'), request);
   };
 }
 
@@ -103,7 +143,7 @@ export function createVisionInvokeLLM({ purpose = 'vision', onCall = null } = {}
       fileCount: (args.file_urls ?? []).length,
     });
 
-    return base44.integrations.Core.InvokeLLM({
+    return callCoreOrTimeout(requireBase44Core('InvokeLLM'), {
       ...args,
       // קריאת-התמונה רצה על מודל-הראייה (VISION_MODEL) — אלא אם המנוע נקב מודל מפורש.
       model: model ?? VISION_MODEL,
@@ -124,14 +164,11 @@ export function createVisionInvokeLLM({ purpose = 'vision', onCall = null } = {}
  */
 export async function loadKnowledgeBase({ domains = null, limit = 2000 } = {}) {
   const safeList = async (entityName) => {
-    try {
-      const rows = await base44.entities[entityName].list('-created_date', limit);
-      return Array.isArray(rows) ? rows : [];
-    } catch {
-      // ישות שטרם נוצרה אינה שגיאה — היא פשוט ריקה.
-      // המנוע יסרב בהתאם, וזו התנהגות נכונה.
-      return [];
-    }
+    const rows = await timedEntityCall(
+      base44.entities[entityName].list('-created_date', limit),
+      [],
+    );
+    return Array.isArray(rows) ? rows : [];
   };
 
   const [rules, associations, labPatterns, redFlags, protocols, topics] = await Promise.all([
@@ -159,15 +196,20 @@ export async function loadKnowledgeBase({ domains = null, limit = 2000 } = {}) {
 
 /** טוען טווחי ייחוס מישות ReferenceRange, בפורמט של refRanges.loadReferenceRanges. */
 export async function loadReferenceRangePayload() {
-  try {
-    const rows = await base44.entities.ReferenceRange.list('-created_date', 1000);
+  const rows = await timedEntityCall(
+    base44.entities.ReferenceRange.list('-created_date', 1000),
+    null,
+  );
+  if (Array.isArray(rows) && rows.length > 0) {
     return {
-      source: rows?.[0]?.lab_name ?? null,
-      analytes: Array.isArray(rows) ? rows : [],
+      source: rows[0]?.lab_name ?? null,
+      analytes: rows,
     };
-  } catch {
-    return { source: null, analytes: [] };
   }
+  return {
+    source: 'seed_draft',
+    analytes: seedToEntityRows(),
+  };
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -190,12 +232,11 @@ export const KB_ENTITY_NAMES = Object.keys(KB_ENTITIES);
 
 /** רשומות ישות ידע אחת. */
 export async function listKbEntity(entityName, limit = 2000) {
-  try {
-    const rows = await base44.entities[entityName].list('-created_date', limit);
-    return Array.isArray(rows) ? rows : [];
-  } catch {
-    return [];
-  }
+  const rows = await timedEntityCall(
+    base44.entities[entityName].list('-created_date', limit),
+    [],
+  );
+  return Array.isArray(rows) ? rows : [];
 }
 
 /** סיכום מצב הידע — כמה מאומת, כמה טיוטה, בכל ישות. */
@@ -270,31 +311,47 @@ export async function currentUser() {
 
 /** טוען פרוטוקול בודד לפי מפתח. */
 export async function loadProtocol(protocolKey) {
-  try {
-    const rows = await base44.entities.Protocol.list('-created_date', 500);
-    return (rows ?? []).find((p) => p.protocol_key === protocolKey) ?? null;
-  } catch {
-    return null;
-  }
+  const rows = await timedEntityCall(
+    base44.entities.Protocol.list('-created_date', 500),
+    [],
+  );
+  const found = (Array.isArray(rows) ? rows : []).find((p) => p.protocol_key === protocolKey);
+  if (found) return found;
+  const local = listPediatricPathways().find((p) => p.pathway_key === protocolKey);
+  return local ? toProtocolView(local) : null;
 }
 
-/** רשימת הפרוטוקולים לבחירה. מסמן אילו מאומתים — רק הם ירוצו. */
+/** רשימת הפרוטוקולים לבחירה. מסמן אילו מאומתים. כולל מסלולי הקהילה המקומיים. */
 export async function listProtocols() {
-  try {
-    const rows = await base44.entities.Protocol.list('-created_date', 500);
-    return (rows ?? []).map((p) => ({
-      protocol_key: p.protocol_key,
-      title_he: p.title_he,
-      domain: p.domain ?? null,
-      age_scope: p.age_scope ?? 'all',
+  const rows = await timedEntityCall(
+    base44.entities.Protocol.list('-created_date', 500),
+    [],
+  );
+  const remote = (Array.isArray(rows) ? rows : []).map((p) => ({
+    protocol_key: p.protocol_key,
+    title_he: p.title_he,
+    domain: p.domain ?? null,
+    age_scope: p.age_scope ?? 'all',
+    entry_criteria_he: p.entry_criteria_he ?? [],
+    step_count: (p.steps ?? []).length,
+    verification_status: p.verification_status ?? 'draft_needs_verification',
+    local_protocol_ref: p.local_protocol_ref ?? null,
+  }));
+  const seen = new Set(remote.map((p) => p.protocol_key));
+  const local = listPediatricPathways().map((p) => {
+    const view = toProtocolView(p);
+    return {
+      protocol_key: view.protocol_key,
+      title_he: view.title_he,
+      domain: p.category ?? null,
+      age_scope: 'pediatric',
       entry_criteria_he: p.entry_criteria_he ?? [],
-      step_count: (p.steps ?? []).length,
-      verification_status: p.verification_status ?? 'draft_needs_verification',
-      local_protocol_ref: p.local_protocol_ref ?? null,
-    }));
-  } catch {
-    return [];
-  }
+      step_count: (view.steps ?? []).length,
+      verification_status: view.verification_status,
+      local_protocol_ref: view.local_protocol_ref ?? null,
+    };
+  }).filter((p) => !seen.has(p.protocol_key));
+  return [...remote, ...local];
 }
 
 /**
@@ -303,42 +360,45 @@ export async function listProtocols() {
  * שלא בוצעה בדיקה, במקום להציג "לא נמצאו אינטראקציות".
  */
 export async function loadInteractionKb() {
-  try {
-    const rows = await base44.entities.DrugInteraction.list('-created_date', 2000);
-    return Array.isArray(rows) ? rows : [];
-  } catch {
-    return [];
-  }
+  const rows = await timedEntityCall(
+    base44.entities.DrugInteraction.list('-created_date', 2000),
+    [],
+  );
+  return Array.isArray(rows) ? rows : [];
 }
 
 /** שמות תרופות מרשומות מינון מאומתות — מותרים ל-entityGuard. */
 export async function loadVerifiedDrugTerms() {
-  try {
-    const rows = await base44.entities.DoseRecord.list('-created_date', 1000);
-    return (rows ?? [])
-      .filter((r) => r.verification_status === 'verified')
-      .flatMap((r) => [r.drug_name_en, r.drug_name_he, r.drug_key])
-      .filter(Boolean);
-  } catch {
-    return [];
-  }
+  const rows = await timedEntityCall(
+    base44.entities.DoseRecord.list('-created_date', 1000),
+    [],
+  );
+  return (Array.isArray(rows) ? rows : [])
+    .filter((r) => r.verification_status === 'verified')
+    .flatMap((r) => [r.drug_name_en, r.drug_name_he, r.drug_key])
+    .filter(Boolean);
 }
 
-/** רושם יומן בקרה לכל ריצה. כישלון ברישום לא מפיל את הניתוח. */
+/** רושם יומן בקרה לכל ריצה. כישלון או השהיה ברישום לא מפילים את הניתוח. */
 export async function writeAudit({ engine, envelope }) {
   try {
-    await base44.entities.AnalysisAudit.create({
-      engine,
-      status: envelope?.status ?? 'unknown',
-      fact_block_size: envelope?.audit?.fact_block_size ?? 0,
-      draft_items_rejected: envelope?.audit?.fact_block_draft_items ?? 0,
-      anchors_used: envelope?.audit?.anchors_used ?? [],
-      violation_count: envelope?.audit?.violation_count ?? 0,
-      blocking_count: envelope?.audit?.blocking_count ?? 0,
-      removed_claims: envelope?.integrity?.removed_claims ?? [],
-      confidence_adjustments: envelope?.integrity?.confidence_adjustments ?? [],
-      reason_codes: envelope?.audit?.reason_codes ?? [],
-    });
+    await Promise.race([
+      base44.entities.AnalysisAudit.create({
+        engine,
+        status: envelope?.status ?? 'unknown',
+        fact_block_size: envelope?.audit?.fact_block_size ?? 0,
+        draft_items_rejected: envelope?.audit?.fact_block_draft_items ?? 0,
+        anchors_used: envelope?.audit?.anchors_used ?? [],
+        violation_count: envelope?.audit?.violation_count ?? 0,
+        blocking_count: envelope?.audit?.blocking_count ?? 0,
+        removed_claims: envelope?.integrity?.removed_claims ?? [],
+        confidence_adjustments: envelope?.integrity?.confidence_adjustments ?? [],
+        reason_codes: envelope?.audit?.reason_codes ?? [],
+      }),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('audit_timeout')), 1500);
+      }),
+    ]);
   } catch {
     // אין להפיל ניתוח קליני בגלל כשל ברישום יומן.
   }

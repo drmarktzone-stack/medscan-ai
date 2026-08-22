@@ -25,13 +25,9 @@ export const DIAGNOSIS_MODEL = "claude_opus_4_8";
 // ╔═══════════════════════════════════════════════════════════════╗
 // ║  VISION_MODEL — המודל שקורא את התמונה (ECG / רדיולוגיה / עור / מעבדה)  ║
 // ╠═══════════════════════════════════════════════════════════════╣
-// מופרד ממודל-ההיגיון בכוונה: הקונפיגורציה החזקה ביותר היא היברידית:
-//   · קריאת-התמונה (perception) ← מודל-ראייה חזק (Gemini 3.1 Pro).
-//   · ההיגיון הקליני + אנטי-הזיה + אבחנה מבדלת ← DIAGNOSIS_MODEL (Opus 4.8).
-// להחלפת מודל-הראייה — שנה שורה אחת בלבד. אפשרויות זמינות ב-Base44:
-//   "gemini_3_1_pro" (מומלץ לראייה) | "claude_opus_4_8" | "gpt_5_5" | "gemini_3_flash" (מהיר).
-// הערה: המספרים הקריטיים (מרווחי ECG וכו') מחושבים בקוד ולא תלויים במודל.
-export const VISION_MODEL = "gemini_3_1_pro";
+// Claude בלבד. אין Gemini ואין GPT כמנוע קליני.
+// המספרים הקריטיים (מרווחי ECG וכו') מחושבים בקוד ולא תלויים במודל.
+export const VISION_MODEL = "claude_opus_4_8";
 
 // Faster model for heavy-but-non-critical diagnostic sub-steps: knowledge-base
 // matching over the full case library, and the adversarial verifier. Keeps the

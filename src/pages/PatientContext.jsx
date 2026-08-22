@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { runPatientContext } from "@/lib/medscan/engines/patientContext";
+import AgeFields from "@/components/clinic/AgeFields";
+import { hasAgeParts, parseAgeParts } from "@/lib/clinic/ageParts.js";
 
 const splitList = (s) => s.split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
 
@@ -17,8 +19,9 @@ const SEVERITY_STYLE = {
 };
 
 export default function PatientContext() {
-  const [ageValue, setAgeValue] = useState("");
-  const [ageUnit, setAgeUnit] = useState("years");
+  const [ageYears, setAgeYears] = useState("");
+  const [ageMonths, setAgeMonths] = useState("");
+  const [ageDays, setAgeDays] = useState("");
   const [sex, setSex] = useState("");
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
@@ -30,7 +33,7 @@ export default function PatientContext() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const canRun = ageValue !== "" && (conditions.trim() || medications.trim() || events.trim());
+  const canRun = hasAgeParts({ ageYears, ageMonths, ageDays }) && (conditions.trim() || medications.trim() || events.trim());
 
   const handleRun = async () => {
     setLoading(true);
@@ -38,8 +41,7 @@ export default function PatientContext() {
     setResult(null);
     try {
       const patient = {
-        [ageUnit === "days" ? "age_days" : ageUnit === "months" ? "age_months" : "age_years"]:
-          Number(ageValue),
+        ...parseAgeParts({ ageYears, ageMonths, ageDays }),
         sex: sex || undefined,
         weight_kg: weight ? Number(weight) : undefined,
         height_cm: height ? Number(height) : undefined,
@@ -47,7 +49,7 @@ export default function PatientContext() {
         medications: splitList(medications),
         allergies: splitList(allergies),
       };
-      setResult(await runPatientContext({ patient, recentEvents: splitList(events) }));
+      setResult(await runPatientContext({ patient, recentEvents: splitList(events), mode: "development" }));
     } catch (e) {
       console.error(e);
       setError(e.message || "אירעה שגיאה בהרצת הניתוח.");
@@ -60,16 +62,8 @@ export default function PatientContext() {
   const noSource = ix?.status === "no_source";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50/50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
-          <BackButton />
-          <div className="flex items-center gap-2">
-            <UserCog className="w-5 h-5 text-violet-600" />
-            <h1 className="font-bold text-base">הקשר מטופל</h1>
-          </div>
-        </div>
-      </div>
+    <div className="clinic-page">
+      <ClinicHeader title="הקשר מטופל" icon={UserCog} tone="tool" />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
         <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3">
@@ -79,21 +73,17 @@ export default function PatientContext() {
 
         <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
           <h3 className="text-sm font-bold">פרטי המטופל</h3>
-          <div>
-            <label className="text-[11px] font-medium text-slate-500 block mb-1">
-              גיל <span className="text-red-500">*</span>
-            </label>
-            <div className="flex gap-2">
-              <Input type="number" inputMode="numeric" value={ageValue}
-                onChange={(e) => setAgeValue(e.target.value)} className="flex-1" />
-              <select value={ageUnit} onChange={(e) => setAgeUnit(e.target.value)}
-                className="rounded-md border border-slate-200 text-sm px-2 bg-white">
-                <option value="years">שנים</option>
-                <option value="months">חודשים</option>
-                <option value="days">ימים</option>
-              </select>
-            </div>
-          </div>
+          <AgeFields
+            ageYears={ageYears}
+            ageMonths={ageMonths}
+            ageDays={ageDays}
+            required
+            onChange={(partial) => {
+              if (partial.ageYears !== undefined) setAgeYears(partial.ageYears);
+              if (partial.ageMonths !== undefined) setAgeMonths(partial.ageMonths);
+              if (partial.ageDays !== undefined) setAgeDays(partial.ageDays);
+            }}
+          />
           <div className="grid grid-cols-3 gap-2">
             <div>
               <label className="text-[11px] font-medium text-slate-500 block mb-1">מין</label>
@@ -159,7 +149,11 @@ export default function PatientContext() {
               <ShieldCheck className="w-5 h-5 text-violet-600" />
               <div>
                 <h3 className="font-bold text-sm">ניתוח הקשר מעוגן</h3>
-                <p className="text-[11px] text-slate-500">עבר אימות מול בסיס הידע המאומת</p>
+                <p className="text-[11px] text-slate-500">
+                  {result.code_first
+                    ? "פענוח דטרמיניסטי (טיוטה) — שער השפה לא רץ כאן. אינו אבחנה."
+                    : "עבר אימות מול בסיס הידע המאומת"}
+                </p>
               </div>
             </div>
 

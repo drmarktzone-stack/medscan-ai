@@ -6,8 +6,12 @@ import { runRadiologyEngine, buildRadiologyEvidenceBlock } from "./radiologyEngi
 import { runSkinEngine, buildSkinEvidenceBlock } from "./skinEngine";
 import { DIAGNOSIS_MODEL, FAST_MODEL } from "./aiConfig";
 import { guardVisionNarrative } from "./medscan/engines/visionNarrativeGuard";
-import { createVisionInvokeLLM } from "./medscan/llmAdapter";
+import { createVisionInvokeLLM, requireBase44Core } from "./medscan/llmAdapter";
 import { downscaleImageFile } from "./imageOptimize";
+import { runRadiologyFastAnalysis } from "./medscan/engines/radiologyFastPipeline";
+import { runEcgFastAnalysis } from "./medscan/engines/ecgFastPipeline";
+import { runSkinFastAnalysis } from "./medscan/engines/skinFastPipeline";
+import { humanizeAnalysisError } from "./clinic/humanizeAnalysisError";
 
 // ⚠ כל קריאות ה-LLM בצינור עוברות דרך המתאם ולא ישירות ל-SDK.
 // המתאם אוכף סכמת פלט, משבית הקשר-מהאינטרנט ומרכז ניטור.
@@ -78,7 +82,7 @@ export async function runDiagnosisPipeline({
       ? Promise.resolve(preUploadedUrls)
       : Promise.all(files.map(async (f) => {
           const optimized = await downscaleImageFile(f); // מקטין מהירות; לא פוגע באיכות הפענוח
-          const r = await base44.integrations.Core.UploadFile({ file: optimized });
+          const r = await requireBase44Core("UploadFile")({ file: optimized });
           return r.file_url;
         })),
     base44.entities[entityName].list("-created_date", 1000),
@@ -457,4 +461,82 @@ ${langDirective}`,
     // אילו מספרים בניתוח עוקבים לתצפית — ואילו לא.
     numericIntegrity,
   };
+}
+
+export { runRadiologyFastAnalysis, runEcgFastAnalysis, runSkinFastAnalysis, humanizeAnalysisError };
+
+const RADIOLOGY_FALLBACK = {
+  entityName: "RadiologyCase",
+  analysisType: "radiology",
+  domainRole: "רדיולוג מומחה",
+  matchingInstructions: `1. זהה את סוג הבדיקה הרדיולוגית (רנטגן, CT, MRI, אולטראסאונד) ואת האזור האנטומי המצולם.
+2. סרוק את הצילום בצורה שיטתית מלמעלה למטה ומצד לצד — אל תדלג על אזורים.
+3. הערך צפיפות רקמות, מבנה אנטומי, סימטריה, וכל חריגה מהתקין.
+4. השווה את הממצאים מול המאפיינים המרכזיים של כל מקרה במאגר — גם חיובי וגם שלילי.
+5. שים לב במיוחד לממצאים מסכני חיים: פנאומוטורקס, פנאומופריטונאום, דיסקציה אאורטה, דימום תוך-גולגולתי, תסחיף ריאתי, שברים מרוסקים.
+6. אל תניח "תקין" כברירת מחדל — שקול כל מקרה ברצינות.`,
+  diagnosisInstructions: `1. התבסס על תוצאות שלב ההתאמה — המקרים התואמים ביותר מופיעים למעלה עם דרגת הביטחון שלהם.
+2. תאר את סוג הבדיקה, האזור האנטומי, ואיכות הצילום (חשיפה, חדות, זווית).
+3. נתח ממצאים מורפולוגיים מפורטים: צפיפות, גודל, צורה, מיקום, גבולות, השפעה על מבנים סמוכים.
+4. הסבר מדוע האבחנה הראשית תואמת את המקרה מהמאגר, ומדוע אבחנות אחרות נשללו.
+5. השתמש בתמונות הייחוס להשוואה ויזואלית מול המקרים התואמים.
+6. ציין רמת דחיפות והמלצות — המשך בירור, בדיקות השלמה (CT עם חומר ניגוד, MRI, אולטראסאונד), הפניה למומחה.`,
+};
+
+const ECG_FALLBACK = {
+  entityName: "ECGCase",
+  analysisType: "ecg",
+  domainRole: "קרדיולוג מומחה",
+  matchingInstructions: "התאם את התרשים מול מקרי מאגר ה-ECG לפי קצב, הולכה, ציר ומורפולוגיה.",
+  diagnosisInstructions: "פענח את ה-ECG לפי המדידות והמקרים התואמים. אל תמציא מספרים.",
+};
+
+const SKIN_FALLBACK = {
+  entityName: "SkinCase",
+  analysisType: "skin",
+  domainRole: "דרמטולוג מומחה",
+  matchingInstructions: "התאם את הנגע מול מקרי מאגר העור לפי מורפולוגיה וצבע.",
+  diagnosisInstructions: "תאר את הנגע לפי המקרים התואמים. אל תאבחן מלנומה סופית.",
+};
+
+async function runFastOrLegacy(fastFn, fallbackMeta, opts) {
+  if (typeof fastFn === "function") {
+    return fastFn(opts);
+  }
+  return runDiagnosisPipeline({
+    ...fallbackMeta,
+    files: opts.files,
+    preUploadedUrls: opts.preUploadedUrls,
+    clinicalContext: opts.clinicalContext,
+    language: opts.language,
+    pediatric: opts.pediatric,
+    patientAgeYears: opts.patientAgeYears,
+    patientSex: opts.patientSex,
+    patientRef: opts.patientRef,
+    onStage: opts.onStage,
+  });
+}
+
+/** Entry the radiology page must call. Lives next to runDiagnosisPipeline so a missing named import cannot happen again. */
+export async function analyzeRadiologyPhoto(opts) {
+  return runFastOrLegacy(runRadiologyFastAnalysis, RADIOLOGY_FALLBACK, opts);
+}
+
+export async function analyzeEcgPhoto(opts) {
+  return runFastOrLegacy(runEcgFastAnalysis, ECG_FALLBACK, opts);
+}
+
+export async function analyzeSkinPhoto(opts) {
+  return runFastOrLegacy(runSkinFastAnalysis, SKIN_FALLBACK, opts);
+}
+
+try {
+  if (typeof globalThis !== "undefined") {
+    globalThis.runRadiologyFastAnalysis = runRadiologyFastAnalysis;
+    globalThis.runEcgFastAnalysis = runEcgFastAnalysis;
+    globalThis.runSkinFastAnalysis = runSkinFastAnalysis;
+    globalThis.analyzeRadiologyPhoto = analyzeRadiologyPhoto;
+  }
+} catch {
+  /* ignore */
 }

@@ -12,7 +12,7 @@
 
 import { base44 } from "@/api/base44Client";
 import { downscaleImageFile } from "@/lib/imageOptimize";
-import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
 import { runSkinEngine } from "@/lib/skinEngine";
 import { assembleSkinResult } from "./skinResultBuilder.js";
 
@@ -38,7 +38,7 @@ export async function runSkinFastAnalysis({
       ? Promise.resolve(preUploadedUrls)
       : Promise.all((files || []).map(async (f) => {
           const optimized = await downscaleImageFile(f);
-          const r = await base44.integrations.Core.UploadFile({ file: optimized });
+          const r = await requireBase44Core("UploadFile")({ file: optimized });
           return r.file_url;
         })),
     base44.entities.SkinCase.list("-created_date", 1000).catch(() => []),
@@ -62,7 +62,7 @@ export async function runSkinFastAnalysis({
   }
 
   onStage?.("verifying");
-  const result = assembleSkinResult(engineResult, allCases, { fileUrl: file_url });
+  const result = assembleSkinResult(engineResult, allCases, { fileUrl: file_url, locale: language });
 
   try {
     const rec = await base44.entities.Analysis.create({

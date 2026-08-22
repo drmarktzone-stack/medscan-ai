@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build:standalone"
+  publish = "dist"
+
+[build.environment]
+  VITE_STANDALONE = "true"
+  VITE_LOCAL_CLINIC = "true"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

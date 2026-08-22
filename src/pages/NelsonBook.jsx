@@ -5,7 +5,7 @@ import {
   FileText, Info, BookUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import BackButton from "@/components/BackButton";
+import ClinicHeader from "@/components/clinic/ClinicHeader";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
 import { loadBook, searchBook, bookStats, BOOK_SOURCE_NOTE_HE } from "@/lib/medscan/knowledge/bookStore";
@@ -291,21 +291,17 @@ function Mark({ text, q }) {
 
 function Shell({ children }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-slate-100 safe-top">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BackButton />
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-slate-600" />
-              <h1 className="font-bold text-base">נלסון — הספר</h1>
-            </div>
-          </div>
-          <Link to="/knowledge-import" title="טעינה מחדש">
-            <BookUp className="w-4 h-4 text-slate-300 hover:text-slate-500" />
+    <div className="clinic-page">
+      <ClinicHeader
+        title="נלסון — הספר"
+        icon={BookOpen}
+        tone="tool"
+        extra={
+          <Link to="/knowledge-import" title="טעינה מחדש" className="text-slate-500 hover:text-slate-800">
+            <BookUp className="w-4 h-4" />
           </Link>
-        </div>
-      </div>
+        }
+      />
       <div className="max-w-lg mx-auto px-5 py-5">{children}</div>
     </div>
   );
