@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, Stethoscope, ShieldCheck, Activity, Settings, ScanLine, FlaskConical,
   UserCog, GitBranch, ListChecks, Database, Biohazard, Flame, Baby, Brain, Bone,
-  Dna, Droplets, Waves, Mic, Pill, LogIn, UserPlus,
+  Dna, Droplets, Waves, Mic, Pill, LogIn, UserPlus, BookOpen,
 } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AccountSettings from "@/components/AccountSettings";
@@ -39,6 +39,7 @@ const medscan = [
   { titleKey: "home.context_title", descKey: "home.context_desc", icon: UserCog, path: "/patient-context", color: "#8b5cf6" },
   { titleKey: "home.protocols_title", descKey: "home.protocols_desc", icon: GitBranch, path: "/protocols", color: "#0ea5e9" },
   { titleKey: "home.differential_title", descKey: "home.differential_desc", icon: ListChecks, path: "/differential", color: "#f43f5e" },
+  { titleKey: "home.book_title", descKey: "home.book_desc", icon: BookOpen, path: "/book", color: "#b45309" },
   { titleKey: "home.kbadmin_title", descKey: "home.kbadmin_desc", icon: Database, path: "/knowledge-admin", color: "#64748b" },
 ];
 

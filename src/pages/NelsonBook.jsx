@@ -98,6 +98,11 @@ export default function NelsonBook() {
             {stats.chapters} פרקים · {stats.topics} נושאים · {stats.cells.toLocaleString()} פריטים
           </p>
         </div>
+        {chapters.some((c) => c.local_subset) ? (
+          <p className="text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-md p-3 leading-relaxed">
+            זו תת-קבוצה מחילוץ שכבר במאגר. אינה הספר השלם. טיוטה לאימות מול המקור.
+          </p>
+        ) : null}
 
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />

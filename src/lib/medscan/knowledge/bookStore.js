@@ -10,6 +10,7 @@
 
 import { base44 } from "@/api/base44Client";
 import { buildChapterRecords } from "@/lib/medscan/knowledge/bookCore";
+import { loadLocalNelsonSubset } from "@/lib/medscan/knowledge/localNelsonSubset";
 
 export {
   buildChapterRecords,
@@ -57,13 +58,19 @@ export async function saveBookToApp(book, { onProgress } = {}) {
 }
 
 export async function loadBook() {
-  return base44.entities.NelsonChapter.list("chapter_no", 200);
+  try {
+    const hosted = await base44.entities.NelsonChapter.list("chapter_no", 200);
+    if (Array.isArray(hosted) && hosted.length > 0) return hosted;
+  } catch {
+    /* GitHub Pages / no Base44 entity — use the subset already in this repo */
+  }
+  return loadLocalNelsonSubset();
 }
 
 /** האם הספר כבר באפליקציה. זול — לא מושך את התוכן כולו. */
 export async function isBookLoaded() {
   try {
-    const rows = await base44.entities.NelsonChapter.list("chapter_no", 1);
+    const rows = await loadBook();
     return rows.length > 0;
   } catch {
     return false;

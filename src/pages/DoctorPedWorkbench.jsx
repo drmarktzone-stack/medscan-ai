@@ -118,7 +118,16 @@ export default function DoctorPedWorkbench() {
 
   return (
     <div className="clinic-page">
-      <ClinicHeader title={t("chart.title")} icon={Stethoscope} tone="clinic" />
+      <ClinicHeader
+        title={t("chart.title")}
+        icon={Stethoscope}
+        tone="clinic"
+        extra={(
+          <Link to="/book" className="text-[11px] font-bold text-sky-800 border border-sky-200 bg-sky-50 rounded-md px-2 py-1">
+            {t("home.book_title")}
+          </Link>
+        )}
+      />
       <div className="clinic-wrap py-5 grid lg:grid-cols-[220px_minmax(0,1fr)_300px] gap-4">
         <aside className="order-3 lg:order-none space-y-3 no-print">
           <div className="clinic-card p-3 lg:sticky lg:top-24">
