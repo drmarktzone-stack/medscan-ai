@@ -24,6 +24,17 @@ export function routerBasename(baseUrl = '/') {
   return trimmed;
 }
 
+/** Hosted Base44 public-settings / me() must not spin the app forever. */
+export const AUTH_BOOT_DEADLINE_MS = 2500;
+
+export function withDeadline(promise, ms = AUTH_BOOT_DEADLINE_MS, label = "deadline") {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(Object.assign(new Error(label), { deadline: true })), ms);
+  });
+  return Promise.race([Promise.resolve(promise), timeout]).finally(() => clearTimeout(timer));
+}
+
 export function isBase44CreditFailure(err) {
   const status = Number(err?.status || err?.response?.status || 0);
   if ([402, 429, 502, 503, 504].includes(status)) return true;

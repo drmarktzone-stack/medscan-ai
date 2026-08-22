@@ -56,7 +56,10 @@ export default function RadiologyAnalysis() {
   };
 
   const handleAnalyze = async () => {
-    if (files.length === 0) return;
+    if (files.length === 0) {
+      setError(t("analysis.need_image"));
+      return;
+    }
     setLoading(true);
     setError(null);
     const fullContext = [clinicalContext, examFindings].filter(Boolean).join("\n");

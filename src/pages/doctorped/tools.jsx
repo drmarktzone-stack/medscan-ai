@@ -79,10 +79,22 @@ function useRun() {
   const go = async (fn) => {
     setLoading(true);
     try {
-      const out = fn({ locale: lang, patient: ctx.patient, findings: ctx.findings, mode: "development" });
-      setResult(await Promise.resolve(out));
+      const bag = {
+        locale: lang,
+        patient: ctx.patient,
+        findings: ctx.findings,
+        mode: "development",
+        weight_kg: ctx.patient.weight_kg,
+        height_cm: ctx.patient.height_cm,
+      };
+      const out = await Promise.resolve(fn(bag));
+      if (!out || typeof out !== "object") {
+        setResult({ ok: false, message_he: "המנוע לא החזיר תוצאה. בדקו גיל, משקל וממצאים." });
+        return;
+      }
+      setResult(out);
     }
-    catch (e) { setResult({ ok: false, reason: e.message, message_he: e.message }); }
+    catch (e) { setResult({ ok: false, reason: e.message, message_he: e.message || "הכלי נכשל בהרצה." }); }
     finally { setLoading(false); }
   };
   return { ...ctx, lang, result, setResult, loading, go };

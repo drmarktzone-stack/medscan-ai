@@ -80,20 +80,33 @@ export function normalizeAccount(raw = {}) {
   };
 }
 
+/** Extra profile fields — collected on the form, never used to lock the clinic. */
 export function clinicianMissingFields(account) {
   const a = normalizeAccount(account);
   const missing = [];
   if (!a.fullName) missing.push("fullName");
-  if (!isValidNationalId(a.nationalId)) missing.push("nationalId");
+  if (a.nationalId && !isValidNationalId(a.nationalId)) missing.push("nationalId");
   if (!isValidLicenseNumber(a.licenseNumber)) missing.push("licenseNumber");
   if (!a.specialty) missing.push("specialty");
-  if (!a.clinicName) missing.push("clinicName");
-  if (!isValidPhone(a.phone)) missing.push("phone");
+  if (a.phone && !isValidPhone(a.phone)) missing.push("phone");
+  return missing;
+}
+
+/**
+ * Clinic tools stay open after name + license + specialty.
+ * Israeli ID / phone / clinic name are optional so a checksum typo cannot freeze the app.
+ */
+export function clinicianBlockingFields(account) {
+  const a = normalizeAccount(account);
+  const missing = [];
+  if (!a.fullName) missing.push("fullName");
+  if (!isValidLicenseNumber(a.licenseNumber)) missing.push("licenseNumber");
+  if (!a.specialty) missing.push("specialty");
   return missing;
 }
 
 export function isClinicianComplete(account) {
-  return normalizeAccount(account).role === "clinician" && clinicianMissingFields(account).length === 0;
+  return normalizeAccount(account).role === "clinician" && clinicianBlockingFields(account).length === 0;
 }
 
 export function isParentComplete(account) {

@@ -17,6 +17,7 @@ import { base44 } from '../../api/base44Client.js';
 import { DIAGNOSIS_MODEL, FAST_MODEL, VISION_MODEL } from '../aiConfig.js';
 import { seedToEntityRows } from './deterministic/referenceRangeSeed.js';
 import { listPediatricPathways, toProtocolView } from './engines/pediatricPathways.js';
+import { isStandaloneBuild, withDeadline } from '../clinic/standalone.js';
 
 const BASE44_REQUIRED_HE =
   'ניתוח תמונה דורש מנוע ראייה (Claude) בתשלום. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בחינם במכשיר זה.';
@@ -38,6 +39,21 @@ export function requireBase44Core(action) {
     throw new Error(BASE44_REQUIRED_HE);
   }
   return fn.bind(base44.integrations.Core);
+}
+
+/** Text tools must answer from code when Base44 is missing, standalone, or the hosted LLM hangs. */
+export function shouldUseCodeFirst(mode) {
+  if (isStandaloneBuild()) return true;
+  try {
+    requireBase44Core('InvokeLLM');
+  } catch {
+    return true;
+  }
+  return String(mode || '').toLowerCase() === 'development';
+}
+
+function callCoreOrTimeout(fn, request, ms = 2000) {
+  return withDeadline(Promise.resolve().then(() => fn(request)), ms, BASE44_REQUIRED_HE);
 }
 
 /**
@@ -85,7 +101,7 @@ export function createInvokeLLM({ fileUrls = null, onCall = null } = {}) {
     };
     if (fileUrls?.length) request.file_urls = fileUrls;
 
-    return requireBase44Core('InvokeLLM')(request);
+    return callCoreOrTimeout(requireBase44Core('InvokeLLM'), request);
   };
 }
 
@@ -127,7 +143,7 @@ export function createVisionInvokeLLM({ purpose = 'vision', onCall = null } = {}
       fileCount: (args.file_urls ?? []).length,
     });
 
-    return requireBase44Core('InvokeLLM')({
+    return callCoreOrTimeout(requireBase44Core('InvokeLLM'), {
       ...args,
       // קריאת-התמונה רצה על מודל-הראייה (VISION_MODEL) — אלא אם המנוע נקב מודל מפורש.
       model: model ?? VISION_MODEL,

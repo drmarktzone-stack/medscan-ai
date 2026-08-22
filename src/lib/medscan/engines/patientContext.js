@@ -27,6 +27,7 @@ import {
   loadKnowledgeBase,
   loadVerifiedDrugTerms,
   loadInteractionKb,
+  shouldUseCodeFirst,
   writeAudit,
 } from '../llmAdapter.js';
 import { buildCodeFirstEnvelope } from './codeFirstEnvelope.js';
@@ -148,6 +149,13 @@ export async function runPatientContext({
 
   let envelope;
   let evidence = { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
+  if (shouldUseCodeFirst(mode)) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'patient_context',
+      grounding,
+      deterministic,
+    });
+  } else {
   try {
     const invokeLLM = createInvokeLLM();
     evidence = withLiterature && conditions.length
@@ -183,6 +191,7 @@ export async function runPatientContext({
       deterministic,
       llmError: e.message,
     });
+  }
   }
 
   const enforced = { ...envelope };

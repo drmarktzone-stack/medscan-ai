@@ -24,6 +24,7 @@ import {
   loadKnowledgeBase,
   loadVerifiedDrugTerms,
   loadReferenceRangePayload,
+  shouldUseCodeFirst,
   writeAudit,
 } from '../llmAdapter.js';
 import { finalizeLocale } from '../i18n/localize.js';
@@ -130,6 +131,12 @@ export async function runDifferentialBuilder({
 
   let envelope;
   let evidence = { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
+  if (shouldUseCodeFirst(mode)) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'differential',
+      grounding,
+    });
+  } else {
   try {
     const invokeLLM = createInvokeLLM();
     const [allowedTerms, fetched] = await Promise.all([
@@ -160,6 +167,7 @@ export async function runDifferentialBuilder({
       grounding,
       llmError: e.message,
     });
+  }
   }
 
   // ── אכיפת must_not_miss מהידע, לא מהמודל ─────────────────────────────

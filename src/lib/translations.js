@@ -56,6 +56,7 @@ export const translations = {
     "dp.findings": "ממצאים (מופרדים בפסיק)",
     "dp.proceed": "המשך גם אם חסרות תשובות אנמנזה (לא בדגל אדום)",
     "dp.run": "הרץ הערכה",
+    "dp.need_presentation": "מלאו תיאור או ממצאים — אחרת אין מה להריץ.",
     "dp.error": "שגיאה בהרצה",
     "dp.anamnesis": "שאלות הבהרה — אין מסקנה עדיין",
     "dp.triage": "טריאז׳",
@@ -224,6 +225,7 @@ export const translations = {
     "viewer.density_opacity": "שקיפות",
     "viewer.footer_note": "כל העיבוד מתבצע במכשיר. הקובץ שהועלה אינו משתנה, והפענוח רץ על המקור בלבד.",
     "analysis.error_fallback": "אירעה שגיאה במהלך הניתוח. נסה שנית.",
+    "analysis.need_image": "יש להעלות תמונה לפני פענוח.",
     "analysis.needs_base44": "ניתוח תמונה דורש מנוע ראייה בתשלום (Claude). כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בחינם במכשיר זה.",
 
     "uploader.primary": "ראשית",
@@ -518,6 +520,7 @@ export const translations = {
     "dp.findings": "Findings (comma-separated)",
     "dp.proceed": "Continue even if history questions remain (not for red flags)",
     "dp.run": "Run assessment",
+    "dp.need_presentation": "Enter a presentation or findings before running.",
     "dp.error": "Run failed",
     "dp.anamnesis": "Clarifying questions — no conclusion yet",
     "dp.triage": "Triage",
@@ -686,6 +689,7 @@ export const translations = {
     "viewer.density_opacity": "Opacity",
     "viewer.footer_note": "All processing runs on-device. The uploaded file is never modified, and interpretation runs on the original only.",
     "analysis.error_fallback": "An error occurred during analysis. Please try again.",
+    "analysis.need_image": "Upload an image before analysis.",
     "analysis.needs_base44": "Image analysis needs a paid vision engine (Claude). Text tools (toxicology, trauma, growth, workbench) run free on this device.",
 
     "uploader.primary": "Primary",
@@ -980,6 +984,7 @@ export const translations = {
     "dp.findings": "موجودات (مفصولة بفاصلة)",
     "dp.proceed": "المتابعة حتى مع أسئلة سوابق ناقصة (ليس للأعلام الحمراء)",
     "dp.run": "تشغيل التقييم",
+    "dp.need_presentation": "أدخل وصفاً أو موجودات قبل التشغيل.",
     "dp.error": "فشل التشغيل",
     "dp.anamnesis": "أسئلة توضيح — لا استنتاج بعد",
     "dp.triage": "الفرز",
@@ -1148,6 +1153,7 @@ export const translations = {
     "viewer.density_opacity": "الشفافية",
     "viewer.footer_note": "تجري كل المعالجة على الجهاز. لا يتغير الملف المرفوع، والتفسير يعمل على الأصل فقط.",
     "analysis.error_fallback": "حدث خطأ أثناء التحليل. يرجى المحاولة مرة أخرى.",
+    "analysis.need_image": "ارفع صورة قبل التحليل.",
     "analysis.needs_base44": "تحليل الصورة يحتاج محرك رؤية مدفوع (Claude). أدوات النص (سموم، رضح، نمو، منضدة الطبيب) تعمل مجاناً على هذا الجهاز.",
 
     "uploader.primary": "رئيسية",

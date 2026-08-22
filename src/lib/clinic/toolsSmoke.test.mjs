@@ -283,6 +283,30 @@ await t('שגיאת JS בפענוח צילום מוצגת בעברית ולא כ
   assert(!/runRadiologyFastAnalysis/.test(msg), msg);
 });
 
+await t('טוקסיקולוגיה מצורת דף הכלי מחזירה דגל וטקסט', () => {
+  const r = runToxicologyEngine({
+    locale: 'he',
+    patient: { age_months: 24, weight_kg: 12 },
+    findings: ['button battery'],
+    mode: 'development',
+    vitals: { pupils: '', rr_flag: '' },
+  });
+  assert(r.ok === true, r.message_he || r.reason);
+  assert((r.red_flags || []).length > 0);
+  assert((r.notes_he || []).length > 0 || r.message_he);
+});
+
+await t('מעבדה במצב פיתוח מחזירה מעטפת קוד בלי לחכות ל-LLM', async () => {
+  const started = Date.now();
+  const r = await runLabInterpreter({
+    patient: { age_months: 24 },
+    labs: [{ analyte: 'CRP', value: 80, unit: 'mg/L', ref_low: 0, ref_high: 5 }],
+    mode: 'development',
+  });
+  assert(Date.now() - started < 4000, 'lab hung: ' + (Date.now() - started));
+  assert(r.ok === true || Array.isArray(r.normalized), JSON.stringify({ ok: r.ok, status: r.status }));
+});
+
 await t('שער שפה בלי Base44 נכשל בעברית ולא בשקט', () => {
   try {
     requireBase44Core('InvokeLLM');

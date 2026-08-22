@@ -114,7 +114,10 @@ export default function ECGAnalysis() {
   };
 
   const handleAnalyze = async () => {
-    if (uploadedUrls.length === 0 && files.length === 0) return;
+    if (uploadedUrls.length === 0 && files.length === 0) {
+      setError(t("analysis.need_image"));
+      return;
+    }
     setLoading(true);
     setError(null);
     setComparison(null);

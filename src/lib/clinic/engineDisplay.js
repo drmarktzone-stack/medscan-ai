@@ -32,6 +32,9 @@ export const ENGINE_REASON_HE = Object.freeze({
   no_eeg_input: "יש לסמן תבנית EEG או ממצאים.",
   no_metabolic_input: "יש למלא סקר ילודים, אמינוגרם או מעבדה.",
   no_growth_vax_input: "יש למלא מדדי גדילה או סטטוס חיסונים.",
+  missing_age: "יש למלא גיל — שנים וחודשים יחד.",
+  missing_weight: "יש למלא משקל בקילוגרמים.",
+  clinical_mode_refuses_unverified_dose: "במצב קליני אין מינון לא-מאומת.",
 });
 
 export function reasonHe(reason, fallback = "") {

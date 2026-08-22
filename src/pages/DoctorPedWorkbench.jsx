@@ -141,7 +141,13 @@ export default function DoctorPedWorkbench() {
                 {t("dp.proceed")}
               </button>
             </div>
-            <Button className="w-full h-12 font-bold rounded-2xl" disabled={loading || !session.presentation.trim()} onClick={() => run()}>
+            <Button className="w-full h-12 font-bold rounded-2xl" disabled={loading} onClick={() => {
+              if (!session.presentation.trim() && !session.findingsText.trim()) {
+                setError(t("dp.need_presentation"));
+                return;
+              }
+              run();
+            }}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("dp.run")}
             </Button>
           </div>

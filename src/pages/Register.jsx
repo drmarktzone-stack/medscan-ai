@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { disableLocalClinic, enableLocalClinic } from "@/lib/clinic/localMode";
 import {
   CLINICIAN_SPECIALTIES,
-  clinicianMissingFields,
+  clinicianBlockingFields,
   isAccountReady,
   loadAccount,
   postAuthPath,
@@ -58,7 +58,7 @@ export default function Register() {
 
   const skipHostedSignup = isLocalClinic || (isAuthenticated && !isLocalClinic);
   const missingDoctor = useMemo(
-    () => (form.role === "clinician" ? clinicianMissingFields(form) : []),
+    () => (form.role === "clinician" ? clinicianBlockingFields(form) : []),
     [form],
   );
 
@@ -186,6 +186,7 @@ export default function Register() {
                     inputMode="numeric"
                     maxLength={9}
                     dir="ltr"
+                    required={false}
                   />
                   <AuthField
                     icon={BadgeCheck}
@@ -218,6 +219,7 @@ export default function Register() {
                     value={form.clinicName}
                     onChange={(e) => patch({ clinicName: e.target.value })}
                     autoComplete="organization"
+                    required={false}
                   />
                   <AuthField
                     icon={MapPin}
@@ -237,6 +239,7 @@ export default function Register() {
                     inputMode="tel"
                     dir="ltr"
                     autoComplete="tel"
+                    required={false}
                   />
                 </>
               ) : null}

@@ -45,6 +45,7 @@ export default function EngineResultPanel({ result }) {
   const title = displayText(body.title_he || result.title_he || kbItems[0]);
   const message = body.message_he || result.message_he || reasonHe(body.reason || result.reason);
   const emergency = Boolean(result.emergency || body.emergency);
+  const dueItems = asArray(body.due ?? result.due ?? body.overdue ?? result.overdue ?? body.items);
 
   const hasClinical =
     emergency
@@ -61,7 +62,9 @@ export default function EngineResultPanel({ result }) {
     || body.formula
     || unknowns.length
     || notes
-    || title;
+    || title
+    || Boolean(message)
+    || dueItems.length;
 
   if (failed && !flags.length && !hasClinical) {
     return (
@@ -80,8 +83,8 @@ export default function EngineResultPanel({ result }) {
           </p>
         </div>
       )}
-      {failed && message ? (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-900 leading-relaxed">
+      {message ? (
+        <div className={`${failed ? "bg-amber-50 border-amber-200 text-amber-900" : "clinic-card text-slate-800"} border rounded-xl p-3 text-sm leading-relaxed`}>
           {message}
         </div>
       ) : null}

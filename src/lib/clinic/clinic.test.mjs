@@ -11,9 +11,10 @@ import {
   isValidNationalId, isValidLicenseNumber, isClinicianComplete, isParentComplete,
   isParentAllowedPath, postAuthPath, saveAccount, emptyAccount,
   hasChosenRole, needsRoleSelection, mustCompleteClinicianProfile,
+  clinicianBlockingFields,
 } from './account.js';
 import { reasonHe, displayText } from './engineDisplay.js';
-import { isBase44CreditFailure, readStandaloneFlag, routerBasename } from './standalone.js';
+import { AUTH_BOOT_DEADLINE_MS, isBase44CreditFailure, readStandaloneFlag, routerBasename } from './standalone.js';
 
 let pass = 0, fail = 0;
 const t = (n, fn) => { try { fn(); console.log('  ✓ ' + n); pass++; } catch (e) { console.log('  ✗ ' + n + '\n      ' + e.message); fail++; } };
@@ -171,12 +172,10 @@ t('רופא בלי רישיון והתמחות נשאר בהרשמה', () => {
   const complete = saveAccount({
     role: 'clinician',
     fullName: 'ד"ר בדיקה',
-    nationalId: '123456782',
     licenseNumber: '12345',
     specialty: 'pediatrics',
-    clinicName: 'מרפאת ילדים',
-    phone: '0501234567',
   }, store);
+  assert(clinicianBlockingFields(complete).length === 0);
   assert(isClinicianComplete(complete) === true);
   assert(mustCompleteClinicianProfile(complete) === false);
   assert(postAuthPath(complete) === '/');
@@ -208,6 +207,11 @@ t('מצב עצמאי מזוהה מ-VITE_STANDALONE', () => {
 t('נתיב GitHub Pages נחתך ל-basename', () => {
   assert(routerBasename('/medscan-ai/') === '/medscan-ai');
   assert(routerBasename('/') === undefined);
+});
+
+t('דדליין אתחול Base44 מוגדר כדי שהמסך לא יישאר על ספינר', () => {
+  assert(AUTH_BOOT_DEADLINE_MS <= 3000);
+  assert(AUTH_BOOT_DEADLINE_MS >= 1000);
 });
 
 t('כשל קרדיט/מכסה של Base44 מזוהה', () => {

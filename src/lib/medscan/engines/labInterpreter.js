@@ -28,6 +28,7 @@ import {
   loadKnowledgeBase,
   loadVerifiedDrugTerms,
   loadReferenceRangePayload,
+  shouldUseCodeFirst,
   writeAudit,
 } from '../llmAdapter.js';
 import { finalizeLocale } from '../i18n/localize.js';
@@ -195,9 +196,16 @@ export async function runLabInterpreter({
   const { deterministic, refusals: calcRefusals } = runCalculators(calcRequests);
   const refusals = [...calcRefusals, ...unitSkips];
 
-  // ── 5–6. ספרות + שער. אם אין Base44 — מחזירים את ליבת הקוד בלבד. ──
+  // ── 5–6. ספרות + שער. בלי Base44 / במצב פיתוח — ליבת הקוד בלבד. ──
   let envelope;
   let evidence = { literature: [], meta: { attempted: false, note_he: 'לא בוצעה שליפת ספרות.' } };
+  if (shouldUseCodeFirst(mode)) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'lab_interpreter',
+      grounding,
+      deterministic,
+    });
+  } else {
   try {
     const invokeLLM = createInvokeLLM();
 
@@ -237,6 +245,7 @@ export async function runLabInterpreter({
       deterministic,
       llmError: e.message,
     });
+  }
   }
 
   return finalizeLocale({

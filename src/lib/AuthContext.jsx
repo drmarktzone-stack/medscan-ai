@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 import { disableLocalClinic, enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
-import { isStandaloneBuild } from '@/lib/clinic/standalone';
+import { isStandaloneBuild, withDeadline } from '@/lib/clinic/standalone';
 import { setPilotMode } from '@/lib/medscan/runtimeMode';
 
 const AuthContext = createContext();
@@ -62,12 +62,14 @@ export const AuthProvider = ({ children }) => {
       });
       
       try {
-        const publicSettings = await appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
+        const publicSettings = await withDeadline(
+          appClient.get(`/prod/public-settings/by-id/${appParams.appId}`),
+        );
         setAppPublicSettings(publicSettings);
         
         // If we got the app public settings successfully, check if user is authenticated
         if (appParams.token) {
-          await checkUserAuth();
+          await withDeadline(checkUserAuth());
         } else {
           setIsLoadingAuth(false);
           setIsAuthenticated(false);

@@ -28,6 +28,7 @@ import {
   loadKnowledgeBase,
   loadVerifiedDrugTerms,
   loadProtocol,
+  shouldUseCodeFirst,
   writeAudit,
 } from '../llmAdapter.js';
 import { resolveStep, validateProtocolOutput, buildCalcRequests } from './protocolTree.js';
@@ -145,6 +146,25 @@ export async function runProtocolStep({
   ];
 
   let envelope;
+  if (shouldUseCodeFirst(resolvedMode)) {
+    envelope = buildCodeFirstEnvelope({
+      engine: 'protocol_runner',
+      grounding,
+      deterministic,
+      extra: {
+        current_step: {
+          step_id: step.step_id,
+          title_he: step.title_he,
+          actions_he: step.actions_he ?? [],
+          red_flags_he: step.red_flags_he ?? [],
+        },
+        branch_options: (step.branches ?? []).map((b) => ({
+          condition_he: b.condition_he,
+          next_step_id: b.next_step_id,
+        })),
+      },
+    });
+  } else {
   try {
     const invokeLLM = createInvokeLLM();
     const allowedTerms = await loadVerifiedDrugTerms();
@@ -198,6 +218,7 @@ export async function runProtocolStep({
         })),
       },
     });
+  }
   }
 
   // ── ולידציה ייחודית: שלב/ענף/פעולה מומצאים ───────────────────────────
