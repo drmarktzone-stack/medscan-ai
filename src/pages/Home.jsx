@@ -119,7 +119,7 @@ export default function Home() {
       </div>
 
       <header className="clinic-wrap pt-8 pb-8 text-center">
-        <div className="clinic-icon w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-sky-400 to-cyan-300">
+        <div className="clinic-icon w-16 h-16 mx-auto mb-4">
           <Stethoscope className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{t("home.brand")}</h1>
@@ -138,7 +138,7 @@ export default function Home() {
         <section className="grid md:grid-cols-2 gap-4">
           {visiblePortals.map((p) => (
             <Link key={p.path} to={p.path} className="clinic-card p-6 hover:bg-white/70 transition group">
-              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${p.blob} flex items-center justify-center mb-4 shadow-lg`}>
+              <div className="clinic-icon w-12 h-12 mb-4">
                 <p.icon className="w-6 h-6 text-white" />
               </div>
               <h2 className="text-xl font-extrabold text-slate-900">{t(p.titleKey)}</h2>
