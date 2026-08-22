@@ -3,13 +3,7 @@ import BackButton from "@/components/BackButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useClinicProfile } from "@/lib/clinic/profileContext";
 
-const ICON_TONE = {
-  clinic: "text-sky-600",
-  parent: "text-rose-500",
-  tool: "text-slate-600",
-};
-
-export default function ClinicHeader({ title, icon: Icon, tone = "clinic", backTo = "/", extra = null }) {
+export default function ClinicHeader({ title, icon: Icon, backTo = "/", extra = null }) {
   const { profile } = useClinicProfile();
   const subtitle = [profile.clinicName, profile.physicianName].filter(Boolean).join(" · ");
 
@@ -19,8 +13,8 @@ export default function ClinicHeader({ title, icon: Icon, tone = "clinic", backT
         <div className="clinic-card px-3 py-2 flex items-center gap-3">
           <BackButton to={backTo} className="text-slate-500" />
           {Icon && (
-            <div className={`clinic-icon ${ICON_TONE[tone] || ICON_TONE.clinic}`}>
-              <Icon className="w-5 h-5" />
+            <div className="clinic-icon">
+              <Icon className="w-5 h-5 text-white" />
             </div>
           )}
           <div className="flex-1 min-w-0">

@@ -66,7 +66,7 @@ function ToolGrid({ items, t }) {
         <Link key={tool.path} to={tool.path} className="clinic-card p-4 hover:bg-white/70 transition-all group">
           <div className="flex items-start gap-3">
             <div className="clinic-icon">
-              <tool.icon className="w-5 h-5" style={{ color: tool.color }} />
+              <tool.icon className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
               <h3 className="text-sm font-bold group-hover:text-primary">{t(tool.titleKey)}</h3>
@@ -143,7 +143,7 @@ export default function Home() {
               </div>
               <h2 className="text-xl font-extrabold text-slate-900">{t(p.titleKey)}</h2>
               <p className="text-sm text-slate-600 mt-2 leading-relaxed">{t(p.descKey)}</p>
-              <span className="inline-block mt-5 text-xs font-bold bg-primary text-white rounded-full px-3 py-1.5 shadow-[0_8px_18px_-10px_hsl(var(--primary))]">
+              <span className="clinic-chip-on inline-block mt-5 text-xs font-bold rounded-full px-3 py-1.5">
                 {t(p.ctaKey)}
               </span>
             </Link>
