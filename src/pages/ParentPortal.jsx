@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { Heart, Loader2, AlertTriangle, Settings } from "lucide-react";
+import { Heart, Loader2, AlertTriangle, Settings, Stethoscope } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
@@ -25,6 +26,7 @@ import {
 } from "@/lib/medscan/doctorped/index.js";
 import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
 import { ParentSkinPanel, ParentTraumaPanel, ParentDevelopPanel } from "@/components/parent/ParentExtraTools";
+import { CLINICIAN_SWITCH_PATH } from "@/lib/clinic/account";
 
 function durationHours(n, unit) {
   const v = Number(n);
@@ -200,9 +202,18 @@ export default function ParentPortal() {
         tone="parent"
         backTo="/parent"
         extra={(
-          <button type="button" onClick={() => setSettingsOpen(true)} className="text-slate-500">
-            <Settings className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <Link
+              to={CLINICIAN_SWITCH_PATH}
+              className="inline-flex items-center gap-1 rounded-md border border-sky-200 bg-sky-50 px-2 py-1 text-[11px] font-bold text-sky-800"
+            >
+              <Stethoscope className="w-3.5 h-3.5" />
+              {t("parent.open_clinician")}
+            </Link>
+            <button type="button" onClick={() => setSettingsOpen(true)} className="text-slate-500" aria-label={t("settings.title")}>
+              <Settings className="w-4 h-4" />
+            </button>
+          </div>
         )}
       />
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
@@ -217,7 +228,7 @@ export default function ParentPortal() {
             <button
               key={id}
               type="button"
-              className={`clinic-chip text-[11px] py-2 ${tab === id ? "clinic-chip-on bg-rose-500" : "text-slate-700"}`}
+              className={`clinic-chip text-[11px] py-2 ${tab === id ? "clinic-chip-on" : "text-slate-700"}`}
               onClick={() => setTab(id)}
             >
               {t(key)}

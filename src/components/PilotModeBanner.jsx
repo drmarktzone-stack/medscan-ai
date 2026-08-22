@@ -23,9 +23,9 @@ export default function PilotModeBanner() {
   return (
     <div
       dir="rtl"
-      className="sticky top-0 z-50 bg-amber-500 text-amber-950 border-b border-amber-600 shadow-sm"
+      className="sticky top-0 z-50 bg-amber-100 text-amber-950 border-b border-amber-300"
     >
-      <div className="max-w-3xl mx-auto px-3 py-2 flex items-center gap-2 text-sm">
+      <div className="max-w-5xl mx-auto px-3 py-1.5 flex items-center gap-2 text-xs">
         <AlertTriangle className="w-4 h-4 shrink-0" />
         <span className="flex-1 font-medium leading-tight">
           מצב פילוט פעיל — התוצאות עשויות להישען על ידע שטרם אומת (מסומן

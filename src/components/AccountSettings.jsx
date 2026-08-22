@@ -9,12 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, Trash2, AlertTriangle, Loader2, User, Globe, Building2 } from "lucide-react";
+import { LogOut, Trash2, AlertTriangle, Loader2, User, Globe, Building2, Stethoscope } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import { useClinicProfile } from "@/lib/clinic/profileContext";
-import { CLINICIAN_SPECIALTIES } from "@/lib/clinic/account";
+import { CLINICIAN_SPECIALTIES, CLINICIAN_SWITCH_PATH } from "@/lib/clinic/account";
 import { absoluteAppPath } from "@/lib/clinic/standalone";
 import PilotModeToggle from "@/components/PilotModeToggle";
 
@@ -28,6 +29,7 @@ export default function AccountSettings({ open, onOpenChange }) {
   const { t, lang, setLang } = useI18n();
   const { user: authUser, logout } = useAuth();
   const { profile, update, account, updateAccount } = useClinicProfile();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [step, setStep] = useState("main");
   const [busy, setBusy] = useState(false);
@@ -170,6 +172,19 @@ export default function AccountSettings({ open, onOpenChange }) {
                 >
                   {saved ? t("clinic.saved") : t("clinic.save_profile")}
                 </Button>
+                {account.role === "parent" ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full h-10 rounded-lg"
+                    onClick={() => {
+                      onOpenChange(false);
+                      navigate(CLINICIAN_SWITCH_PATH);
+                    }}
+                  >
+                    <Stethoscope className="w-4 h-4" /> {t("settings.become_clinician")}
+                  </Button>
+                ) : null}
               </div>
               {/* Language */}
               <div className="bg-slate-50 rounded-xl p-3">

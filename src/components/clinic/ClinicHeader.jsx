@@ -16,7 +16,7 @@ export default function ClinicHeader({ title, icon: Icon, tone = "clinic", backT
   return (
     <header className="sticky top-0 z-20 safe-top no-print px-3 pt-3">
       <div className="clinic-wrap">
-        <div className="clinic-card px-3 py-2.5 flex items-center gap-3">
+        <div className="clinic-card px-3 py-2 flex items-center gap-3">
           <BackButton to={backTo} className="text-slate-500" />
           {Icon && (
             <div className={`clinic-icon ${ICON_TONE[tone] || ICON_TONE.clinic}`}>

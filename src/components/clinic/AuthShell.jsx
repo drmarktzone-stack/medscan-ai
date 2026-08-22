@@ -18,7 +18,7 @@ export default function AuthShell({ children }) {
       <div className="flex-1 flex items-center justify-center p-5">
         <div className="w-full max-w-md space-y-5">
           <div className="text-center">
-            <div className="clinic-icon w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-sky-400 to-cyan-300">
+            <div className="clinic-icon w-16 h-16 mx-auto mb-4 bg-primary">
               <Stethoscope className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight">{t("home.brand")}</h1>

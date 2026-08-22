@@ -4,6 +4,7 @@ import {
   isParentAllowedPath,
   needsRoleSelection,
   mustCompleteClinicianProfile,
+  CLINICIAN_SWITCH_PATH,
 } from "@/lib/clinic/account";
 
 export default function RoleGate() {
@@ -14,6 +15,9 @@ export default function RoleGate() {
     return <Navigate to="/register" replace />;
   }
   if (account.role === "parent" && !isParentAllowedPath(location.pathname)) {
+    if (location.pathname === "/doctorped" || location.pathname === "/") {
+      return <Navigate to={CLINICIAN_SWITCH_PATH} replace />;
+    }
     return <Navigate to="/parent" replace />;
   }
 
