@@ -10,7 +10,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import OnboardingOverlay from "@/components/clinic/OnboardingOverlay";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/AuthContext";
-import { loadAccount } from "@/lib/clinic/account";
+import { loadAccount, visibleHomeDoors } from "@/lib/clinic/account";
 
 const portals = [
   {
@@ -85,7 +85,7 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const showAuthLinks = isLocalClinic || !user?.email;
   const role = loadAccount().role;
-  const visiblePortals = role === "clinician" ? portals.filter((p) => p.path === "/doctorped") : portals;
+  const visiblePortals = portals.filter((p) => visibleHomeDoors(role).includes(p.path));
 
   return (
     <div className="clinic-page">
@@ -130,11 +130,6 @@ export default function Home() {
       </header>
 
       <main className="clinic-wrap pb-10 space-y-8">
-        <section>
-          <h2 className="text-sm font-extrabold text-slate-700 mb-3">{t("home.group_medscan")}</h2>
-          <ToolGrid items={medscan} t={t} />
-        </section>
-
         <section className="grid md:grid-cols-2 gap-4">
           {visiblePortals.map((p) => (
             <Link key={p.path} to={p.path} className="clinic-card p-6 hover:bg-white/70 transition group">
@@ -148,6 +143,11 @@ export default function Home() {
               </span>
             </Link>
           ))}
+        </section>
+
+        <section>
+          <h2 className="text-sm font-extrabold text-slate-700 mb-3">{t("home.group_medscan")}</h2>
+          <ToolGrid items={medscan} t={t} />
         </section>
 
         <section>

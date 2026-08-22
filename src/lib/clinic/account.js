@@ -154,6 +154,11 @@ export function isParentAllowedPath(pathname) {
   return pathname === "/parent" || pathname === "/history";
 }
 
+/** Both desks of one product. Parents never land on `/` (RoleGate). */
+export function visibleHomeDoors(_role) {
+  return ["/doctorped", "/parent"];
+}
+
 export function loadAccount(storage) {
   const store = storage ?? (typeof localStorage === "undefined" ? null : localStorage);
   if (!store) return emptyAccount();
