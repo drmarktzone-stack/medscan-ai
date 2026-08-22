@@ -31,7 +31,18 @@ const portals = [
   },
 ];
 
-const community = [
+const medscan = [
+  { titleKey: "home.ecg_title", descKey: "home.ecg_desc", icon: Activity, path: "/ecg", color: "#3b82f6" },
+  { titleKey: "home.skin_title", descKey: "home.skin_desc", icon: Stethoscope, path: "/skin", color: "#14b8a6" },
+  { titleKey: "home.radiology_title", descKey: "home.radiology_desc", icon: ScanLine, path: "/radiology", color: "#6366f1" },
+  { titleKey: "home.labs_title", descKey: "home.labs_desc", icon: FlaskConical, path: "/labs", color: "#10b981" },
+  { titleKey: "home.context_title", descKey: "home.context_desc", icon: UserCog, path: "/patient-context", color: "#8b5cf6" },
+  { titleKey: "home.protocols_title", descKey: "home.protocols_desc", icon: GitBranch, path: "/protocols", color: "#0ea5e9" },
+  { titleKey: "home.differential_title", descKey: "home.differential_desc", icon: ListChecks, path: "/differential", color: "#f43f5e" },
+  { titleKey: "home.kbadmin_title", descKey: "home.kbadmin_desc", icon: Database, path: "/knowledge-admin", color: "#64748b" },
+];
+
+const extras = [
   { titleKey: "home.tox_title", descKey: "home.tox_desc", icon: Biohazard, path: "/tox", color: "#ea580c" },
   { titleKey: "home.trauma_title", descKey: "home.trauma_desc", icon: Flame, path: "/trauma", color: "#dc2626" },
   { titleKey: "home.growth_title", descKey: "home.growth_desc", icon: Activity, path: "/growth", color: "#65a30d" },
@@ -46,20 +57,6 @@ const community = [
   { titleKey: "home.eeg_title", descKey: "home.eeg_desc", icon: Brain, path: "/eeg", color: "#2563eb" },
   { titleKey: "home.audio_title", descKey: "home.audio_desc", icon: Mic, path: "/audio", color: "#475569" },
   { titleKey: "home.referrals_title", descKey: "home.referrals_desc", icon: Bone, path: "/referrals", color: "#ca8a04" },
-];
-
-const media = [
-  { titleKey: "home.ecg_title", descKey: "home.ecg_desc", icon: Activity, path: "/ecg", color: "#3b82f6" },
-  { titleKey: "home.skin_title", descKey: "home.skin_desc", icon: Stethoscope, path: "/skin", color: "#14b8a6" },
-  { titleKey: "home.radiology_title", descKey: "home.radiology_desc", icon: ScanLine, path: "/radiology", color: "#6366f1" },
-  { titleKey: "home.labs_title", descKey: "home.labs_desc", icon: FlaskConical, path: "/labs", color: "#10b981" },
-];
-
-const knowledge = [
-  { titleKey: "home.context_title", descKey: "home.context_desc", icon: UserCog, path: "/patient-context", color: "#8b5cf6" },
-  { titleKey: "home.protocols_title", descKey: "home.protocols_desc", icon: GitBranch, path: "/protocols", color: "#0ea5e9" },
-  { titleKey: "home.differential_title", descKey: "home.differential_desc", icon: ListChecks, path: "/differential", color: "#f43f5e" },
-  { titleKey: "home.kbadmin_title", descKey: "home.kbadmin_desc", icon: Database, path: "/knowledge-admin", color: "#64748b" },
 ];
 
 function ToolGrid({ items, t }) {
@@ -133,6 +130,11 @@ export default function Home() {
       </header>
 
       <main className="clinic-wrap pb-10 space-y-8">
+        <section>
+          <h2 className="text-sm font-extrabold text-slate-700 mb-3">{t("home.group_medscan")}</h2>
+          <ToolGrid items={medscan} t={t} />
+        </section>
+
         <section className="grid md:grid-cols-2 gap-4">
           {visiblePortals.map((p) => (
             <Link key={p.path} to={p.path} className="clinic-card p-6 hover:bg-white/70 transition group">
@@ -150,15 +152,7 @@ export default function Home() {
 
         <section>
           <h2 className="text-sm font-extrabold text-slate-700 mb-3">{t("home.group_community")}</h2>
-          <ToolGrid items={community} t={t} />
-        </section>
-        <section>
-          <h2 className="text-sm font-extrabold text-slate-700 mb-3">{t("home.group_media")}</h2>
-          <ToolGrid items={media} t={t} />
-        </section>
-        <section>
-          <h2 className="text-sm font-extrabold text-slate-700 mb-3">{t("home.group_knowledge")}</h2>
-          <ToolGrid items={knowledge} t={t} />
+          <ToolGrid items={extras} t={t} />
         </section>
 
         <div className="grid grid-cols-3 gap-3">

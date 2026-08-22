@@ -15,6 +15,7 @@ import {
 } from './account.js';
 import { reasonHe, displayText } from './engineDisplay.js';
 import { AUTH_BOOT_DEADLINE_MS, isBase44CreditFailure, readStandaloneFlag, routerBasename } from './standalone.js';
+import { shouldUseCodeFirst } from '../medscan/llmAdapter.js';
 import { VISION_BILLING_GROUP, isVisionBillingRoute, visionPaywallOn } from './billingGroups.js';
 import { onDeviceSkinEngine, onDeviceRadiologyEngine, onDeviceEcgReading } from './onDeviceVision.js';
 import { assembleSkinResult } from '../medscan/engines/skinResultBuilder.js';
@@ -207,6 +208,14 @@ t('מצב עצמאי מזוהה מ-VITE_STANDALONE', () => {
   assert(readStandaloneFlag({ VITE_STANDALONE: 'true' }) === true);
   assert(readStandaloneFlag({ VITE_LOCAL_CLINIC: '1' }) === true);
   assert(readStandaloneFlag({}) === false);
+});
+
+t('מצב פיתוח אינו מדלג על שער השפה כשיש InvokeLLM', () => {
+  const fakeInvoke = async () => ({});
+  assert(shouldUseCodeFirst('development', { invokeLLM: fakeInvoke }) === false);
+  assert(shouldUseCodeFirst('production', { invokeLLM: fakeInvoke }) === false);
+  assert(shouldUseCodeFirst('development', { invokeLLM: fakeInvoke, env: { VITE_STANDALONE: 'true' } }) === true);
+  assert(shouldUseCodeFirst('development', { invokeLLM: null }) === true);
 });
 
 t('נתיב GitHub Pages נחתך ל-basename', () => {

@@ -6,8 +6,7 @@ import GroundedInterpretation from "@/components/GroundedInterpretation";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import AnalytePicker from "@/components/AnalytePicker";
-import { base44 } from "@/api/base44Client";
-import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM, tryBase44Core } from "@/lib/medscan/llmAdapter";
 import { runLabScan, finalizeScan, LAB_SCAN_SCHEMA } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { pdfExtractText, isPdf } from "@/lib/pdfToImages";
@@ -36,6 +35,8 @@ function groupByPanel(normalized) {
 }
 
 const scanInvoke = createVisionInvokeLLM({ purpose: "lab_scan" });
+const SCAN_NEEDS_HOST_HE =
+  "סריקת דף מעבדה דורשת העלאה למנוע המארח. בינתיים הזינו את השורות ידנית — הפענוח מהשורות פועל במכשיר זה.";
 
 const emptyRow = () => ({
   analyte: "", value: "", unit: "", ref_low: "", ref_high: "",
@@ -98,48 +99,49 @@ export default function LabInterpreter() {
     return merged;
   };
 
-  const scanImageFile = async (imgFile) => {
-    const { file_url } = await requireBase44Core("UploadFile")({ file: imgFile });
-    return runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke });
-  };
-
   // סריקת קובץ בודד — קורא כל פורמט (PDF טקסטואלי/סרוק, JPG, PNG, צילום-מסך).
   // סדר לפי אמינות:
   //  1) ExtractDataFromUploadedFile — חילוץ בצד-השרת של Base44 (קורא PDF ותמונות, ללא pdf.js בדפדפן).
   //  2) ראייה (vision) על אותו קובץ.
-  //  3) PDF בלבד — חילוץ-טקסט בצד-הלקוח (pdf.js) → פענוח-טקסט.
+  //  3) PDF בלבד — חילוץ-טקסט בצד-הלקוח (pdf.js) → פענוח-טקסט. רץ גם בלי העלאה.
   const scanOneFile = async (file) => {
     const merged = { ok: false, rows: [], patient: {}, stats: { total: 0, readable: 0, needs_review: 0 } };
 
-    // העלאה אחת (תמונות מוקטנות; PDF כמותו).
     let file_url = null;
-    try {
-      const toUpload = isPdf(file) ? file : await downscaleImageFile(file);
-      const up = await requireBase44Core("UploadFile")({ file: toUpload });
-      file_url = up?.file_url || null;
-    } catch (e) {
-      return { ...merged, reason: e.message || "upload_failed" };
+    const upload = tryBase44Core("UploadFile");
+    if (upload) {
+      try {
+        const toUpload = isPdf(file) ? file : await downscaleImageFile(file);
+        const up = await upload({ file: toUpload });
+        file_url = up?.file_url || null;
+      } catch {
+        file_url = null;
+      }
     }
-    if (!file_url) return merged;
 
-    // 1) חילוץ בצד-השרת (האמין ביותר — ללא תלות ב-pdf.js בדפדפן).
-    try {
-      const res = await base44.integrations.Core.ExtractDataFromUploadedFile({ file_url, json_schema: LAB_SCAN_SCHEMA });
-      const raw = res?.output ?? res?.details ?? null;
-      if (raw) absorb(finalizeScan(raw), merged);
+    if (file_url) {
+      try {
+        const extract = tryBase44Core("ExtractDataFromUploadedFile");
+        if (extract) {
+          const res = await extract({ file_url, json_schema: LAB_SCAN_SCHEMA });
+          const raw = res?.output ?? res?.details ?? null;
+          if (raw) absorb(finalizeScan(raw), merged);
+          if (merged.ok) return merged;
+        }
+      } catch { /* ממשיך ל-fallback */ }
+
+      try { absorb(await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke }), merged); } catch { /* ממשיך */ }
       if (merged.ok) return merged;
-    } catch { /* ממשיך ל-fallback */ }
+    }
 
-    // 2) ראייה על אותו קובץ.
-    try { absorb(await runLabScan({ fileUrls: [file_url], invokeLLM: scanInvoke }), merged); } catch { /* ממשיך */ }
-    if (merged.ok) return merged;
-
-    // 3) PDF — חילוץ-טקסט בצד-הלקוח → פענוח-טקסט.
     if (isPdf(file)) {
       try {
         const text = await pdfExtractText(file);
         if (text && /\d/.test(text) && text.length > 40) absorb(await runLabScan({ text, invokeLLM: scanInvoke }), merged);
       } catch { /* נכשל */ }
+    }
+    if (!merged.ok && !file_url) {
+      return { ...merged, reason: SCAN_NEEDS_HOST_HE };
     }
     return merged;
   };

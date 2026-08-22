@@ -51,18 +51,23 @@ export function tryBase44Core(action) {
   return typeof fn === 'function' ? fn.bind(base44.integrations.Core) : null;
 }
 
-/** Text tools must answer from code when Base44 is missing, standalone, or the hosted LLM hangs. */
-export function shouldUseCodeFirst(mode) {
-  if (isStandaloneBuild()) return true;
-  try {
-    requireBase44Core('InvokeLLM');
-  } catch {
-    return true;
-  }
-  return String(mode || '').toLowerCase() === 'development';
+/**
+ * Code-first only when Claude cannot run: standalone host, or InvokeLLM is not a function.
+ * `mode: development` still lets draft KB enter the FactBlock inside groundedInvoke.
+ * It must not skip the language gate.
+ */
+export function shouldUseCodeFirst(mode, deps = {}) {
+  void mode;
+  if (isStandaloneBuild(deps.env)) return true;
+  const invoke = deps.invokeLLM ?? base44?.integrations?.Core?.InvokeLLM;
+  return typeof invoke !== 'function';
 }
 
-function callCoreOrTimeout(fn, request, ms = 2000) {
+function invokeTimeoutMs() {
+  return isStandaloneBuild() ? 2000 : 45_000;
+}
+
+function callCoreOrTimeout(fn, request, ms = invokeTimeoutMs()) {
   return withDeadline(Promise.resolve().then(() => fn(request)), ms, BASE44_REQUIRED_HE);
 }
 
