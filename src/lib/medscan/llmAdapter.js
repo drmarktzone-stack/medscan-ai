@@ -41,6 +41,16 @@ export function requireBase44Core(action) {
   return fn.bind(base44.integrations.Core);
 }
 
+export function canInvokeVision() {
+  if (isStandaloneBuild()) return false;
+  return typeof base44?.integrations?.Core?.InvokeLLM === 'function';
+}
+
+export function tryBase44Core(action) {
+  const fn = base44?.integrations?.Core?.[action];
+  return typeof fn === 'function' ? fn.bind(base44.integrations.Core) : null;
+}
+
 /** Text tools must answer from code when Base44 is missing, standalone, or the hosted LLM hangs. */
 export function shouldUseCodeFirst(mode) {
   if (isStandaloneBuild()) return true;
@@ -150,7 +160,7 @@ export function createVisionInvokeLLM({ purpose = 'vision', onCall = null } = {}
       // נכפה כאן ולא נסמך על הקורא: הקשר מהאינטרנט מכניס טענות
       // שאינן ניתנות לעקיבה לתמונה ולא לידע המאומת.
       add_context_from_internet: false,
-    });
+    }, 60_000);
   };
 }
 

@@ -15,6 +15,11 @@ import {
 } from './account.js';
 import { reasonHe, displayText } from './engineDisplay.js';
 import { AUTH_BOOT_DEADLINE_MS, isBase44CreditFailure, readStandaloneFlag, routerBasename } from './standalone.js';
+import { VISION_BILLING_GROUP, isVisionBillingRoute, visionPaywallOn } from './billingGroups.js';
+import { onDeviceSkinEngine, onDeviceRadiologyEngine, onDeviceEcgReading } from './onDeviceVision.js';
+import { assembleSkinResult } from '../medscan/engines/skinResultBuilder.js';
+import { assembleRadiologyResult } from '../medscan/engines/radiologyResultBuilder.js';
+import { assembleEcgResult } from '../medscan/engines/ecgResultBuilder.js';
 
 let pass = 0, fail = 0;
 const t = (n, fn) => { try { fn(); console.log('  ✓ ' + n); pass++; } catch (e) { console.log('  ✗ ' + n + '\n      ' + e.message); fail++; } };
@@ -212,6 +217,72 @@ t('נתיב GitHub Pages נחתך ל-basename', () => {
 t('דדליין אתחול Base44 מוגדר כדי שהמסך לא יישאר על ספינר', () => {
   assert(AUTH_BOOT_DEADLINE_MS <= 3000);
   assert(AUTH_BOOT_DEADLINE_MS >= 1000);
+});
+
+t('כלי דימות מסומנים כקבוצת תשלום עתידית בלי חומה עכשיו', () => {
+  assert(visionPaywallOn() === false);
+  assert(isVisionBillingRoute('/ecg') === true);
+  assert(isVisionBillingRoute('/ecg-compare') === true);
+  assert(isVisionBillingRoute('/skin') === true);
+  assert(isVisionBillingRoute('/radiology') === true);
+  assert(isVisionBillingRoute('/tox') === false);
+  assert(VISION_BILLING_GROUP.paywall_enabled === false);
+  assert(VISION_BILLING_GROUP.id === 'vision');
+});
+
+function makeRgba(w, h, pixel) {
+  const data = new Uint8ClampedArray(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const [r, g, b] = pixel(x, y);
+      const i = (y * w + x) * 4;
+      data[i] = r;
+      data[i + 1] = g;
+      data[i + 2] = b;
+      data[i + 3] = 255;
+    }
+  }
+  return { width: w, height: h, data };
+}
+
+t('עור במכשיר מחזיר טיוטה בלי שם אבחנה', () => {
+  const img = makeRgba(80, 80, (x, y) => {
+    const dx = x - 40;
+    const dy = y - 40;
+    if (dx * dx + dy * dy < 14 * 14) return [30, 20, 15];
+    return [220, 185, 160];
+  });
+  const engine = onDeviceSkinEngine(img);
+  assert(engine.abstain === false);
+  assert((engine.structured.differential_diagnoses || []).length === 0);
+  const ui = assembleSkinResult(engine, [], { fileUrl: 'blob:test', locale: 'he' });
+  assert(ui.analysis && ui.summary);
+  assert(!/מלנומה|פסוריאזיס|melanoma/i.test(JSON.stringify(ui)));
+});
+
+t('צילום במכשיר מחזיר טיוטת צפיפויות בלי אבחנת ריאות', () => {
+  const img = makeRgba(64, 64, (x, y) => {
+    if (x >= 28 && x <= 36) return [230, 230, 230];
+    if (x < 22 || x > 42) return [20, 20, 25];
+    return [90, 90, 95];
+  });
+  const engine = onDeviceRadiologyEngine(img);
+  assert(engine.abstain === false);
+  assert((engine.structured.key_abnormalities || []).length === 0);
+  const ui = assembleRadiologyResult(engine, [], { fileUrl: 'blob:test', locale: 'he' });
+  assert(ui.analysis && ui.summary);
+  assert((engine.structured.differential_diagnoses || []).length === 0);
+  assert(!(ui.matchedCases || []).some((c) => /pneumothorax|דלקת ריאות/i.test(c.title || '')));
+});
+
+t('אק״ג במכשיר לא ממציא PR/QRS בלי כיול', () => {
+  const reading = onDeviceEcgReading({});
+  assert(reading.abstain === false);
+  assert(reading.measured.measurable === false);
+  const ui = assembleEcgResult(reading, [], { locale: 'he' });
+  assert(ui.analysis);
+  assert(!/\bPR=\d/.test(ui.analysis));
+  assert(ui.microReading === reading);
 });
 
 t('כשל קרדיט/מכסה של Base44 מזוהה', () => {

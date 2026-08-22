@@ -14,7 +14,7 @@ export function humanizeAnalysisError(err, fallback) {
   if (!raw) return heFallback;
 
   if (JS_INTERNALS.test(raw) || /run(Radiology|Ecg|Skin)FastAnalysis/i.test(raw)) {
-    return "כלי פענוח הצילום לא נטען. רענן את העמוד. ניתוח תמונה דורש חיבור ליישום Base44 — כלי הטקסט (רעלים, טראומה, גדילה) פועלים בלעדיו.";
+    return "כלי פענוח הצילום לא נטען. רענן את העמוד. אק״ג, עור וצילום אמורים לרוץ כטיוטה במכשיר גם בלי Base44.";
   }
   if (NETWORK.test(raw)) {
     return "אין חיבור לשרת הפענוח. בדקו את החיבור ליישום Base44 ונסו שוב.";

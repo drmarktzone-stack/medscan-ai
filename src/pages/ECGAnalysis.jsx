@@ -15,7 +15,8 @@ import ClinicHeader from "@/components/clinic/ClinicHeader";
 import { useI18n } from "@/lib/i18n";
 import { downscaleImageFile } from "@/lib/imageOptimize";
 import { runEcgComparison } from "@/lib/ecgCompare";
-import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM, tryBase44Core } from "@/lib/medscan/llmAdapter";
+import { isStandaloneBuild } from "@/lib/clinic/standalone";
 
 export default function ECGAnalysis() {
   const { t, lang } = useI18n();
@@ -68,21 +69,22 @@ export default function ECGAnalysis() {
     setError(null);
     updateUploadedUrls([]);
 
-    if (newFiles.length > 0) {
+    const upload = !isStandaloneBuild() ? tryBase44Core("UploadFile") : null;
+    if (newFiles.length > 0 && upload) {
       setUploading(true);
       try {
         // הקטנה למהירות + סיבוב אוטומטי של תרשים מצולם לאורך → לרוחב, לפני העלאה.
         const urls = await Promise.all(
           newFiles.map(async (f) => {
             const optimized = await downscaleImageFile(f, { autoLandscape: true });
-            return requireBase44Core("UploadFile")({ file: optimized });
+            return upload({ file: optimized });
           })
         );
-        const fileUrls = urls.map((r) => r.file_url);
-        updateUploadedUrls(fileUrls);
+        const fileUrls = urls.map((r) => r.file_url).filter(Boolean);
+        if (fileUrls.length) updateUploadedUrls(fileUrls);
       } catch (err) {
         console.error("Upload failed", err);
-        setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
+        // הקובץ נשאר במכשיר — Analyze רץ כטיוטה מקומית.
       } finally {
         setUploading(false);
       }
@@ -94,17 +96,21 @@ export default function ECGAnalysis() {
     setComparison(null);
     if (newFiles.length > 0) {
       setPriorUploading(true);
+      const upload = !isStandaloneBuild() ? tryBase44Core("UploadFile") : null;
+      if (!upload) {
+        setPriorUploading(false);
+        return;
+      }
       try {
         const urls = await Promise.all(
           newFiles.map(async (f) => {
             const optimized = await downscaleImageFile(f, { autoLandscape: true });
-            return requireBase44Core("UploadFile")({ file: optimized });
+            return upload({ file: optimized });
           })
         );
-        setPriorUrls(urls.map((r) => r.file_url));
+        setPriorUrls(urls.map((r) => r.file_url).filter(Boolean));
       } catch (err) {
         console.error("prior upload failed", err);
-        setError(humanizeAnalysisError(err, t("analysis.error_fallback")));
       } finally {
         setPriorUploading(false);
       }

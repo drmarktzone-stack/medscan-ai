@@ -11,10 +11,11 @@
  */
 
 import { base44 } from "@/api/base44Client";
-import { downscaleImageFile } from "@/lib/imageOptimize";
-import { createVisionInvokeLLM, requireBase44Core } from "@/lib/medscan/llmAdapter";
+import { createVisionInvokeLLM } from "@/lib/medscan/llmAdapter";
 import { runSkinEngine } from "@/lib/skinEngine";
 import { assembleSkinResult } from "./skinResultBuilder.js";
+import { resolveVisionInput, runHostedVisionOrLocal } from "@/lib/clinic/visionRuntime.js";
+import { onDeviceSkinEngine } from "@/lib/clinic/onDeviceVision.js";
 
 const abstainErrors = {
   he: (r) => `לא ניתן להפיק פענוח אמין: ${r} נא להעלות תצלום עור חד וברור.`,
@@ -33,28 +34,25 @@ export async function runSkinFastAnalysis({
   invokeLLM,
 }) {
   onStage?.("uploading");
-  const [fileUrls, allCases] = await Promise.all([
-    preUploadedUrls && preUploadedUrls.length > 0
-      ? Promise.resolve(preUploadedUrls)
-      : Promise.all((files || []).map(async (f) => {
-          const optimized = await downscaleImageFile(f);
-          const r = await requireBase44Core("UploadFile")({ file: optimized });
-          return r.file_url;
-        })),
-    base44.entities.SkinCase.list("-created_date", 1000).catch(() => []),
-  ]);
-  const file_url = fileUrls[0];
+  const input = await resolveVisionInput({ files, preUploadedUrls });
+  const fileUrls = input.fileUrls;
+  const file_url = input.fileUrl;
+  const allCases = await base44.entities.SkinCase.list("-created_date", 1000).catch(() => []);
 
   onStage?.("interpreting");
   const invoke = invokeLLM || createVisionInvokeLLM({ purpose: "skin_fast" });
-  const engineResult = await runSkinEngine({
-    fileUrls,
-    clinicalContext,
-    language,
-    pediatric,
-    invokeLLM: invoke,
-    onStage,
-  });
+  const engineResult = await runHostedVisionOrLocal(
+    () => runSkinEngine({
+      fileUrls,
+      clinicalContext,
+      language,
+      pediatric,
+      invokeLLM: invoke,
+      onStage,
+      imageData: input.imageData,
+    }),
+    () => onDeviceSkinEngine(input.imageData, { language }),
+  );
 
   if (!engineResult || engineResult.abstain) {
     const build = abstainErrors[language] || abstainErrors.he;
