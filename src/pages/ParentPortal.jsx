@@ -35,6 +35,7 @@ export default function ParentPortal() {
   const [ageMonths, setAgeMonths] = useState("");
   const [selected, setSelected] = useState([]);
   const [mchat, setMchat] = useState("");
+  const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [acked, setAcked] = useState(false);
@@ -46,7 +47,7 @@ export default function ParentPortal() {
     setSelected((s) => (s.includes(key) ? s.filter((x) => x !== key) : [...s, key]));
   };
 
-  const handleRun = () => {
+  const handleRun = (extra = {}) => {
     setLoading(true);
     setAcked(false);
     try {
@@ -56,13 +57,15 @@ export default function ParentPortal() {
         patient: parseAgeParts({ ageYears, ageMonths }),
         findings: selected,
         presentation: selected.join(", "),
-        proceed: true,
+        answers: { ...answers, ...extra.answers },
         questionnaires: mchat !== "" ? { mchat_total: Number(mchat) } : {},
         locale: lang,
         mode: "development",
       });
       setResult(next);
-      persistDoctorPedEncounter({ result: next, locale: lang }).catch(() => {});
+      if (next?.ok && !next.awaiting_anamnesis) {
+        persistDoctorPedEncounter({ result: next, locale: lang }).catch(() => {});
+      }
     } finally {
       setLoading(false);
     }
@@ -124,6 +127,24 @@ export default function ParentPortal() {
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t("dp.parent_run")}
         </Button>
 
+        {result?.awaiting_anamnesis && (
+          <div className="clinic-card p-5 space-y-3">
+            <p className="text-sm font-bold">{t("dp.anamnesis")}</p>
+            {(result.anamnesis?.questions ?? []).map((q) => (
+              <div key={q.id} className="space-y-1 clinic-card p-3">
+                <p className="text-sm text-amber-950">{q.question_he}</p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant={answers[q.need] === true ? "default" : "outline"} onClick={() => setAnswers((a) => ({ ...a, [q.need]: true }))}>{t("dp.yes")}</Button>
+                  <Button size="sm" variant={answers[q.need] === false ? "default" : "outline"} onClick={() => setAnswers((a) => ({ ...a, [q.need]: false }))}>{t("dp.no")}</Button>
+                </div>
+              </div>
+            ))}
+            <Button className="w-full h-12 font-bold rounded-full" onClick={() => handleRun({ answers })}>
+              {t("dp.parent_run")}
+            </Button>
+          </div>
+        )}
+
         {emergency && (
           <div className="bg-red-600 text-white rounded-3xl p-6 space-y-3 shadow-lg">
             <p className="font-extrabold text-2xl flex items-center gap-2">
@@ -138,7 +159,7 @@ export default function ParentPortal() {
           </div>
         )}
 
-        {result && !emergency && (
+        {result && !emergency && !result.awaiting_anamnesis && (
           <div id="clinic-draft-print" className={`clinic-card p-5 space-y-2 border-2 ${urgency === "home_care" ? "border-emerald-300 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
             <p className="font-extrabold text-lg">
               {urgency === "home_care" ? t("dp.parent_home") : t("dp.parent_hmo")}

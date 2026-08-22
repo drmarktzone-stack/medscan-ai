@@ -296,7 +296,7 @@ await t('טוקסיקולוגיה מצורת דף הכלי מחזירה דגל �
   assert((r.notes_he || []).length > 0 || r.message_he);
 });
 
-await t('מעבדה במצב פיתוח מחזירה מעטפת קוד בלי לחכות ל-LLM', async () => {
+await t('מעבדה בלי InvokeLLM מחזירה מעטפת קוד בלי לחכות לרשת', async () => {
   const started = Date.now();
   const r = await runLabInterpreter({
     patient: { age_months: 24 },

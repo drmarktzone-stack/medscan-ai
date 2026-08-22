@@ -118,6 +118,28 @@ t('מצב כלי עצמאי: toxicology לפי moduleId', () => {
   assert(r.instrument.matched_patterns.includes('tox.opioid'));
 });
 
+t('הורה: חום + כאב בטן בילד מעל 90 יום אינו מיון — רצועת קופה לפי התוכנית', () => {
+  const r = runDoctorPedAI({
+    persona: 'parent', integrationMode: 'unified', proceed: true,
+    patient: { age_days: 800 }, findings: ['fever', 'abdominal pain'],
+    presentation: 'fever, abdominal pain',
+    locale: 'he', mode: 'development',
+  });
+  eq(r.triage.urgency, URGENCY.hmo_visit);
+  assert(!r.emergency, 'engine red flags must not override parent triage band');
+  assert(r.hides_mg);
+});
+
+t('הורה: חום בלי תשובות הבהרה מחזיר שאלות ולא מסקנה', () => {
+  const r = runDoctorPedAI({
+    persona: 'parent', integrationMode: 'unified',
+    patient: { age_years: 3 }, findings: ['fever'], presentation: 'fever',
+    locale: 'he', mode: 'development',
+  });
+  assert(r.awaiting_anamnesis);
+  assert(!r.emergency);
+});
+
 t('הורה: חירום בעברית/אנגלית/ערבית; hides_mg; locale+dir', () => {
   for (const loc of ['he', 'en', 'ar']) {
     const r = runDoctorPedAI({

@@ -319,7 +319,7 @@ export function runDoctorPedAI({
   const encounter = buildEncounterRecord({
     persona: role, locale: loc, dir: loc === 'en' ? 'ltr' : 'rtl',
     triage, engines_run, questionnaire: questionnaires,
-    output: { ok: true, emergency: emergency || red_flags.some((f) => f.severity === 'critical'), awaiting_anamnesis: false },
+    output: { ok: true, emergency, awaiting_anamnesis: false },
   });
 
   return shapeForPersona(finalizeLocale({
@@ -335,7 +335,7 @@ export function runDoctorPedAI({
     toolbox: listToolboxModules().map((m) => ({ id: m.id, route: m.route, i18n_key: m.i18n_key, title_he: t(loc, m.i18n_key) })),
     kbItems,
     red_flags,
-    emergency: emergency || red_flags.some((f) => f.severity === 'critical'),
+    emergency,
     differential: ranked,
     recommended_tests: tests,
     referrals,

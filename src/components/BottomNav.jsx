@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutGrid, Stethoscope, Heart, Clock } from "lucide-react";
+import { LayoutGrid, Clock, BookOpen, Target, Heart } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { loadAccount } from "@/lib/clinic/account";
 
@@ -14,13 +14,14 @@ export default function BottomNav() {
       ]
     : [
         { to: "/", label: t("nav.tools"), icon: LayoutGrid, end: true },
-        { to: "/doctorped", label: t("nav.workbench"), icon: Stethoscope, end: false },
         { to: "/history", label: t("nav.history"), icon: Clock, end: false },
+        { to: "/knowledge-base", label: t("nav.kb"), icon: BookOpen, end: false },
+        { to: "/evaluation", label: t("nav.evaluation"), icon: Target, end: false },
       ];
 
   return (
     <nav className="fixed bottom-4 inset-x-0 z-30 px-4 no-print safe-bottom select-none">
-      <div className={`max-w-md mx-auto clinic-card grid p-1.5 rounded-full ${tabs.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
+      <div className={`max-w-md mx-auto clinic-card grid p-1.5 rounded-full ${tabs.length === 2 ? "grid-cols-2" : "grid-cols-4"}`}>
         {tabs.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}

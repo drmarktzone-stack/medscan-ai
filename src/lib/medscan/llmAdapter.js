@@ -14,10 +14,12 @@
  */
 
 import { base44 } from '../../api/base44Client.js';
+import { appParams } from '../app-params.js';
 import { DIAGNOSIS_MODEL, FAST_MODEL, VISION_MODEL } from '../aiConfig.js';
 import { seedToEntityRows } from './deterministic/referenceRangeSeed.js';
 import { listPediatricPathways, toProtocolView } from './engines/pediatricPathways.js';
 import { isStandaloneBuild, withDeadline } from '../clinic/standalone.js';
+import { decideCodeFirst } from './codeFirstPolicy.js';
 
 const BASE44_REQUIRED_HE =
   'ניתוח תמונה דורש מנוע ראייה (Claude) בתשלום. כלי הטקסט (רעלים, טראומה, גדילה, שולחן רופא) פועלים בחינם במכשיר זה.';
@@ -51,18 +53,29 @@ export function tryBase44Core(action) {
   return typeof fn === 'function' ? fn.bind(base44.integrations.Core) : null;
 }
 
-/** Text tools must answer from code when Base44 is missing, standalone, or the hosted LLM hangs. */
-export function shouldUseCodeFirst(mode) {
-  if (isStandaloneBuild()) return true;
-  try {
-    requireBase44Core('InvokeLLM');
-  } catch {
-    return true;
-  }
-  return String(mode || '').toLowerCase() === 'development';
+/**
+ * Code-first only when Claude cannot actually run:
+ * standalone host, no app id, or InvokeLLM is not a function.
+ * `mode: development` still lets draft KB enter the FactBlock inside groundedInvoke.
+ * It must not skip the language gate.
+ */
+export function shouldUseCodeFirst(mode, deps = {}) {
+  void mode;
+  const invoke = Object.prototype.hasOwnProperty.call(deps, 'invokeLLM')
+    ? deps.invokeLLM
+    : base44?.integrations?.Core?.InvokeLLM;
+  return decideCodeFirst({
+    standalone: isStandaloneBuild(deps.env),
+    appId: Object.prototype.hasOwnProperty.call(deps, 'appId') ? deps.appId : appParams?.appId,
+    invokeLLM: invoke,
+  });
 }
 
-function callCoreOrTimeout(fn, request, ms = 2000) {
+function invokeTimeoutMs() {
+  return isStandaloneBuild() ? 2000 : 45_000;
+}
+
+function callCoreOrTimeout(fn, request, ms = invokeTimeoutMs()) {
   return withDeadline(Promise.resolve().then(() => fn(request)), ms, BASE44_REQUIRED_HE);
 }
 
