@@ -56,23 +56,28 @@ const CLUSTERS = Object.freeze([
   },
 ]);
 
+function firstNeed(need) {
+  return Array.isArray(need) ? need[0] : need;
+}
+
 function answered(need, { patient = {}, features = {}, findings = [], answers = {} }) {
-  if (answers[need] != null && answers[need] !== '') return true;
-  if (need === 'age') return Number.isFinite(Number(patient.age_days ?? patient.age_months ?? patient.age_years));
-  if (need === 'duration') return features.duration_months != null || features.duration_hours != null || answers.duration != null;
-  if (need === 'alertness') return features.alert === true || features.lethargy === true || /letharg|alert|אפתי|ערני/.test((findings ?? []).join(' '));
-  if (need === 'rash') return features.rash === true || features.petechiae === true || /rash|petech|פריחה|פטכי/.test((findings ?? []).join(' '));
-  if (need === 'blood_stool') return features.blood_in_stool === true || features.no_blood === true;
-  if (need === 'projectile') return features.projectile_vomiting === true || features.not_projectile === true;
-  if (need === 'two_settings') return (features.settings ?? []).length >= 2 || answers.two_settings === true;
-  if (need === 'questionnaire') return features.mchat_total != null || features.vanderbilt || answers.questionnaire === true;
-  if (need === 'vision_hearing') return features.vision_tested === true && features.hearing_tested === true;
-  if (need === 'substance') return Boolean(features.ingestion_type || answers.substance);
-  if (need === 'time') return answers.time != null || features.ingestion_time != null;
-  if (need === 'amount') return answers.amount != null || features.ingested_mg != null;
-  if (need === 'morning_vomiting') return features.morning_vomiting === true || features.no_morning_vomiting === true;
-  if (need === 'wakes_from_sleep') return features.wakes_from_sleep === true || features.no_night_waking === true;
-  if (need === 'focal') return features.focal_deficit === true || features.no_focal === true;
+  const key = firstNeed(need);
+  if (answers[key] != null && answers[key] !== '') return true;
+  if (key === 'age') return Number.isFinite(Number(patient.age_days ?? patient.age_months ?? patient.age_years));
+  if (key === 'duration') return features.duration_months != null || features.duration_hours != null || answers.duration != null;
+  if (key === 'alertness') return features.alert === true || features.lethargy === true || /letharg|alert|אפתי|ערני/.test((findings ?? []).join(' '));
+  if (key === 'rash') return features.rash === true || features.petechiae === true || /rash|petech|פריחה|פטכי/.test((findings ?? []).join(' '));
+  if (key === 'blood_stool') return features.blood_in_stool === true || features.no_blood === true;
+  if (key === 'projectile') return features.projectile_vomiting === true || features.not_projectile === true;
+  if (key === 'two_settings') return (features.settings ?? []).length >= 2 || answers.two_settings === true;
+  if (key === 'questionnaire') return features.mchat_total != null || features.vanderbilt || answers.questionnaire === true;
+  if (key === 'vision_hearing') return features.vision_tested === true && features.hearing_tested === true;
+  if (key === 'substance') return Boolean(features.ingestion_type || answers.substance);
+  if (key === 'time') return answers.time != null || features.ingestion_time != null;
+  if (key === 'amount') return answers.amount != null || features.ingested_mg != null;
+  if (key === 'morning_vomiting') return features.morning_vomiting === true || features.no_morning_vomiting === true;
+  if (key === 'wakes_from_sleep') return features.wakes_from_sleep === true || features.no_night_waking === true;
+  if (key === 'focal') return features.focal_deficit === true || features.no_focal === true;
   return false;
 }
 
