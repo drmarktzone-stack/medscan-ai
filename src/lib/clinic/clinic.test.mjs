@@ -12,7 +12,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   isValidNationalId, isValidLicenseNumber, isClinicianComplete, isParentComplete,
-  isParentAllowedPath, postAuthPath, saveAccount, emptyAccount,
+  isParentAllowedPath, visibleHomeDoors, postAuthPath, saveAccount, emptyAccount,
   hasChosenRole, needsRoleSelection, mustCompleteClinicianProfile,
   clinicianBlockingFields, isClinicianSwitchRequest, CLINICIAN_SWITCH_PATH,
 } from './account.js';
@@ -170,6 +170,12 @@ t('הורה מוכן עם שם בלבד ונכנס רק לפורטל', () => {
   assert(isClinicianSwitchRequest(parent, 'clinician') === true);
   assert(isClinicianSwitchRequest(parent, 'parent') === false);
   assert(CLINICIAN_SWITCH_PATH === '/register?role=clinician');
+});
+
+t('בית מציג שולחן רופא ושולחן הורים גם לרופא', () => {
+  assert(visibleHomeDoors('clinician').includes('/doctorped'));
+  assert(visibleHomeDoors('clinician').includes('/parent'));
+  assert(visibleHomeDoors('parent').includes('/parent'));
 });
 
 t('רופא בלי רישיון והתמחות נשאר בהרשמה', () => {
