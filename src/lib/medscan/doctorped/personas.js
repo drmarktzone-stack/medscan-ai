@@ -54,6 +54,11 @@ export function shapeForPersona(result, { persona = 'clinician', locale = 'he' }
   delete rest.dosing;
   delete rest.dose;
   delete rest.calculators;
+  delete rest.differential;
+  delete rest.diagnostic_trees;
+  delete rest.recommended_tests;
+  delete rest.toolbox;
+  delete rest.kbItems;
   const facts = (rest.factBlock?.facts ?? []).filter((f) => {
     const unit = String(f.unit ?? '');
     const key = String(f.key ?? f.entity_key ?? '');

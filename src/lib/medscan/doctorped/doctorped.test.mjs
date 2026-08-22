@@ -6,6 +6,8 @@ import {
   runDoctorPedAI, computeDose, listToolboxModules, classifyUrgency, URGENCY,
   evaluateAsdAdhdReferral, evaluateCeliacReferral, evaluateShortStatureReferral,
   specialistAllowed, parentMedicationGuide,
+  tokensFromComplaintIds, classifyParentQuestion, buildParentHelp, parentSafeResult,
+  buildParentMilestones, buildParentVaccines, buildParentAdhd, buildParentTrauma, buildParentSkin,
 } from './index.js';
 
 let pass = 0, fail = 0;
@@ -166,6 +168,93 @@ t('שער הפניה בזרימה מאוחדת ל-ADHD בלי תנאים מוק�
   eq(r.referral_gate.asd_adhd.allowed, false);
   assert(/Do not issue a referral/.test(r.referral_gate.asd_adhd.message_he));
   assert(r.diagnostic_trees.some((tr) => tr.pathway === 'asd_adhd' && tr.tiers.length === 3));
+});
+
+t('הורה: בחירה מרובה כוללת חום; שאלת מיון מזוהה', () => {
+  const toks = tokensFromComplaintIds(['fever', 'cough']);
+  assert(toks.includes('fever') && toks.includes('cough'));
+  eq(classifyParentQuestion('האם צריך מיון').intent, 'urgency');
+});
+
+t('הורה: שאלת תרופה אינה מייצרת מ״ג, ואין האבחנה היא', () => {
+  const r = runDoctorPedAI({
+    persona: 'parent', integrationMode: 'unified', proceed: true,
+    patient: { age_years: 3 }, findings: ['fever'], presentation: 'fever',
+    locale: 'he', mode: 'development',
+  });
+  assert(r.hides_mg);
+  assert(!r.differential);
+  const help = buildParentHelp({ result: r, question: 'כמה אקמול לתת', complaints_he: ['חום'] });
+  assert(help.not_a_diagnosis);
+  assert(help.intent === 'medicine');
+  assert(!/mg/i.test(JSON.stringify(help)));
+  assert(!/האבחנה היא/.test(help.picture_he));
+  assert(/התמונה שתיארתם מתאימה/.test(help.picture_he));
+  const safe = parentSafeResult(r, help);
+  assert(!safe.differential);
+});
+
+t('הורה: אבני דרך בלי הליכה ב־18 חודשים — בירור, בלי נפח תמ״ל', () => {
+  const help = buildParentMilestones({
+    patient: { age_years: 1, age_months: 6 },
+    can_do: ['social_smile', 'head_control', 'sits'],
+    locale: 'he',
+  });
+  assert(help.ok && help.delayed);
+  assert(help.volume == null);
+  assert(!/150/.test(JSON.stringify(help)));
+  assert(!/האבחנה היא/.test(help.picture_he));
+});
+
+t('הורה: חיסון חסר אינו ממציא מרווחים או מ״ג', () => {
+  const help = buildParentVaccines({
+    patient: { age_years: 2 },
+    immunization: { delayed: true },
+    locale: 'he',
+  });
+  assert(help.ok);
+  assert(help.z_score == null);
+  const spoken = `${help.picture_he} ${(help.ask_doctor_he || []).join(' ')} ${(help.recommend_do_he || []).join(' ')}`;
+  assert(!/\d+\s*(שבוע|יום|weeks)/.test(spoken));
+  assert(!/mg\/kg|\bmg\b/i.test(spoken));
+});
+
+t('הורה: קשב מסומן אינו אבחנה', () => {
+  const help = buildParentAdhd({
+    patient: { age_years: 7 },
+    findings: ['does not listen', 'fidgets'],
+    settings: ['home', 'school'],
+    locale: 'he',
+  });
+  assert(help.ok);
+  assert(!/האבחנה היא/.test(JSON.stringify(help)));
+});
+
+t('הורה: חבלת ראש עם איבוד הכרה — בלי הזמנת סי־טי מהיישום', () => {
+  const help = buildParentTrauma({
+    patient: { age_years: 4 },
+    head: true,
+    features: { loc: true },
+    locale: 'he',
+  });
+  assert(help.ok);
+  assert(help.mentions_ct === false);
+  assert(!/PECARN/.test(help.picture_he));
+  assert(!/הזמינו סי־טי|order a CT/i.test(JSON.stringify(help)));
+});
+
+t('הורה: תמונת עור עם פטכיות וחום — מיון בלי אבחנת עור', () => {
+  const help = buildParentSkin({
+    patient: { age_years: 3 },
+    findings: ['fever', 'non-blanching rash'],
+    features: { rash: true, petechiae: true },
+    photoReady: true,
+    locale: 'he',
+  });
+  assert(help.ok);
+  assert(help.emergency);
+  assert(help.hides_ddx);
+  assert(!help.differential);
 });
 
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);
