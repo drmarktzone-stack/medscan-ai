@@ -12,6 +12,7 @@ import {
   CLINICIAN_SPECIALTIES,
   clinicianBlockingFields,
   isAccountReady,
+  isClinicianSwitchRequest,
   loadAccount,
   postAuthPath,
 } from "@/lib/clinic/account";
@@ -62,8 +63,9 @@ export default function Register() {
     () => (form.role === "clinician" ? clinicianBlockingFields(form) : []),
     [form],
   );
+  const switchingFromParent = isClinicianSwitchRequest(existing, params.get("role"));
 
-  if (isAuthenticated && isAccountReady(existing)) {
+  if (isAuthenticated && isAccountReady(existing) && !switchingFromParent) {
     return <Navigate to={postAuthPath(existing)} replace />;
   }
 
@@ -162,6 +164,12 @@ export default function Register() {
             <h2 className="text-lg font-extrabold">{t("register.title")}</h2>
             <p className="text-xs text-muted-foreground">{t("register.subtitle")}</p>
           </div>
+
+          {switchingFromParent ? (
+            <p className="text-sm text-sky-900 bg-sky-50 border border-sky-200 rounded-md p-3">
+              {t("register.switch_from_parent")}
+            </p>
+          ) : null}
 
           <RolePicker value={form.role} onChange={(role) => patch({ role })} />
 

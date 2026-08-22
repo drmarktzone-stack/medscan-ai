@@ -143,6 +143,13 @@ export function postAuthPath(account) {
   return "/register";
 }
 
+/** Parent accounts stay off professional tools. Switching to clinician is a license form, not a silent bounce. */
+export const CLINICIAN_SWITCH_PATH = "/register?role=clinician";
+
+export function isClinicianSwitchRequest(account, searchRole) {
+  return normalizeAccount(account).role === "parent" && searchRole === "clinician";
+}
+
 export function isParentAllowedPath(pathname) {
   return pathname === "/parent" || pathname === "/history";
 }

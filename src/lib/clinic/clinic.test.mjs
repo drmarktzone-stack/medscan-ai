@@ -11,7 +11,7 @@ import {
   isValidNationalId, isValidLicenseNumber, isClinicianComplete, isParentComplete,
   isParentAllowedPath, postAuthPath, saveAccount, emptyAccount,
   hasChosenRole, needsRoleSelection, mustCompleteClinicianProfile,
-  clinicianBlockingFields,
+  clinicianBlockingFields, isClinicianSwitchRequest, CLINICIAN_SWITCH_PATH,
 } from './account.js';
 import { reasonHe, displayText } from './engineDisplay.js';
 import { AUTH_BOOT_DEADLINE_MS, isBase44CreditFailure, readStandaloneFlag, routerBasename, absoluteAppPath } from './standalone.js';
@@ -163,6 +163,9 @@ t('הורה מוכן עם שם בלבד ונכנס רק לפורטל', () => {
   assert(postAuthPath(parent) === '/parent');
   assert(isParentAllowedPath('/parent') === true);
   assert(isParentAllowedPath('/doctorped') === false);
+  assert(isClinicianSwitchRequest(parent, 'clinician') === true);
+  assert(isClinicianSwitchRequest(parent, 'parent') === false);
+  assert(CLINICIAN_SWITCH_PATH === '/register?role=clinician');
 });
 
 t('רופא בלי רישיון והתמחות נשאר בהרשמה', () => {
