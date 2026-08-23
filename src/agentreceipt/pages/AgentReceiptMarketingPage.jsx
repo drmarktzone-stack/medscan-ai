@@ -16,6 +16,51 @@ import {
   DIRECTORY_PACK,
 } from "@/agentreceipt/lib/templates.js";
 
+const OUTREACH_SNIPPETS = [
+  {
+    id: "hn1",
+    titleHe: "HN #1 — Silent failures (הכי חשוב)",
+    url: "https://news.ycombinator.com/item?id=47802170",
+    text: `We've been hitting the same class of failures with coding agents (Cursor Cloud / multi-agent handoffs): step N "succeeds", step N+1 inherits garbage, nothing throws.
+
+What helped us was a hard gate between steps — not just tracing:
+
+1. Run verification (build/tests) after each agent
+2. Emit a machine-readable receipt (JSON: exit codes, files, git sha)
+3. Block the next agent unless the previous receipt passes
+
+We open-sourced a tiny version of that as AgentReceipt:
+https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
+
+Curious if others enforce contracts between agent steps, or still rely on logs after the fact.`,
+  },
+  {
+    id: "reddit",
+    titleHe: "Reddit r/CursorAI",
+    url: "https://www.reddit.com/r/CursorAI/submit",
+    text: `After a few Cloud Agent runs that said "done" with a red build, I wanted a dumb hard gate:
+
+• run verify (npm run build / tests)
+• store a JSON receipt
+• block the next agent unless the previous receipt passes
+
+Open-sourced as AgentReceipt (free OSS):
+https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
+
+Anyone else gating handoffs between agents, or just hoping CI catches it later?`,
+  },
+  {
+    id: "showhn",
+    titleHe: "Show HN — submit חדש",
+    url: "https://news.ycombinator.com/submit",
+    text: `Show HN: AgentReceipt – proof-of-done for AI coding agents
+
+URL: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
+
+When Cursor/Cloud agents say "done", there's often no structured proof that build/tests passed. AgentReceipt runs verification, stores a JSON receipt, and blocks the next agent handoff on failure. Free OSS CLI.`,
+  },
+];
+
 function CopyBlock({ label, text }) {
   const [ok, setOk] = useState(false);
   const copy = () => {
@@ -63,6 +108,23 @@ export default function AgentReceiptMarketingPage() {
         <p><strong>Checkout:</strong> <a href={checkout} className="text-violet-300 underline break-all">{LIVE.checkout}</a></p>
         <p><strong>Bit:</strong> {LIVE.bitPhone} · Team ₪149</p>
       </div>
+
+      <section className="mb-10">
+        <h2 className="font-bold text-lg mb-1 text-amber-300">מציאת קונים — תגובות מוכנות</h2>
+        <p className="text-xs text-white/50 mb-4">
+          העתק → פתח את הקישור → הדבק. אני לא יכול להתחבר ל-HN/Reddit בלי החשבון שלך.
+        </p>
+        <div className="space-y-3">
+          {OUTREACH_SNIPPETS.map((o) => (
+            <div key={o.id} className="space-y-1">
+              <a href={o.url} target="_blank" rel="noopener noreferrer" className="text-xs text-violet-300 flex items-center gap-1 hover:underline">
+                <ExternalLink className="w-3 h-3" /> פתח thread / submit
+              </a>
+              <CopyBlock label={o.titleHe} text={o.text} />
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="mb-10">
         <h2 className="font-bold text-lg mb-1 text-emerald-300">תשובות WhatsApp שלך</h2>
