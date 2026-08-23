@@ -361,5 +361,12 @@ t('מניפסט ההתקנה משתמש בנתיבים יחסיים', () => {
   assert(manifest.icons.every((icon) => !String(icon.src).startsWith('/')));
 });
 
+t('App.jsx מייבא Login (מונע מסך לבן בפרודקשן)', () => {
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+  const app = readFileSync(resolve(root, 'src/App.jsx'), 'utf8');
+  assert(/import Login from ['"]@\/pages\/Login['"]/.test(app), 'missing Login import');
+  assert(/element=\{<Login\s*\/>/.test(app), 'missing Login route');
+});
+
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);
 if (fail) process.exit(1);
