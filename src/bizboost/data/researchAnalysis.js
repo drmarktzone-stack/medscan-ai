@@ -12,3 +12,8 @@ export {
   approvedProspects,
   prospectStats,
 } from './prospectsCatalog.js';
+export {
+  ENTERPRISE_PROSPECTS,
+  enterpriseWithEmail,
+  enterpriseStats,
+} from './enterpriseProspects.js';

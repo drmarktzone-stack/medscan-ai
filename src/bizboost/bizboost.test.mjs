@@ -46,4 +46,13 @@ const audit = auditWebsite({ url: 'https://example.com', html: sampleHtml });
 assert.ok(audit.score >= 70, `expected good score, got ${audit.score}`);
 assert.ok(audit.recommendations.length >= 0);
 
+// Enterprise email outreach
+const { enterpriseWithEmail } = await import('./data/enterpriseProspects.js');
+const { buildEnterpriseOutreachBatch } = await import('./lib/outreachEngine.js');
+const entBatch = buildEnterpriseOutreachBatch(enterpriseWithEmail());
+assert.ok(entBatch.length >= 25, 'enterprise targets');
+assert.ok(entBatch[0].emailSubject.includes('BizBoost'));
+assert.ok(entBatch[0].emailBody.includes('LeadBot'));
+assert.ok(!entBatch[0].whatsappUrl, 'enterprise is email-only');
+
 console.log('bizboost tests passed');

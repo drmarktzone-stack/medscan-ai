@@ -173,19 +173,25 @@ export default function BizBoostMarketingPage() {
         </div>
       </section>
 
-      {/* Social posts kit */}
+      {/* Social posts kit — אחרי מיילים לחברות גדולות */}
       <section className="mb-14">
         <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-          <Megaphone className="w-5 h-5 text-sky-400" /> ערכת פוסטים מוכנים
+          <Megaphone className="w-5 h-5 text-sky-400" /> ערכת פוסטים — אחרי מיילים
         </h2>
-        <p className="text-white/55 text-sm mb-6">העתיקו ל-Facebook, LinkedIn, Instagram, X — או שלחו לסטטוס WhatsApp</p>
+        <p className="text-white/55 text-sm mb-4">
+          <strong className="text-amber-300">קודם:</strong>{' '}
+          <Link to="/bizboost/outreach" className="text-emerald-400 hover:underline">
+            שלחו מייל לחברות גדולות
+          </Link>
+          . Facebook / LinkedIn — רק אחרי.
+        </p>
         <div className="grid md:grid-cols-2 gap-4">
-          <CopyBlock label="Facebook / קהילות" text={posts.facebook_he} />
-          <CopyBlock label="LinkedIn" text={posts.linkedin_he} />
+          <CopyBlock label="LinkedIn (עדיפות)" text={posts.linkedin_he} />
+          <CopyBlock label="אימייל B2B ארוך" text={`${posts.email_subject_he}\n\n${posts.email_body_he}`} />
+          <CopyBlock label="WhatsApp Status" text={posts.whatsapp_status_he} />
           <CopyBlock label="Instagram caption" text={posts.instagram_he} />
           <CopyBlock label="X / Twitter (EN)" text={posts.twitter_en} />
-          <CopyBlock label="WhatsApp Status" text={posts.whatsapp_status_he} />
-          <CopyBlock label="אימייל קצר" text={`${posts.email_subject_he}\n\n${posts.email_body_he}`} />
+          <CopyBlock label="Facebook — אחרון" text={posts.facebook_he} />
         </div>
       </section>
 
@@ -195,12 +201,12 @@ export default function BizBoostMarketingPage() {
           <Share2 className="w-5 h-5" /> שיתוף בלחיצה
         </h2>
         <div className="flex flex-wrap gap-2">
+          <ShareBtn href={emailShareUrl()} icon={Mail} label="אימייל (קודם)" className="bg-violet-700 ring-2 ring-violet-400/50" />
+          <ShareBtn href={linkedInShareUrl()} label="LinkedIn" className="bg-blue-600" />
           <ShareBtn href={whatsAppBroadcastUrl('he')} icon={MessageCircle} label="WhatsApp" className="bg-green-600" />
           <ShareBtn href={telegramShareUrl()} label="Telegram" className="bg-sky-600" />
-          <ShareBtn href={facebookShareUrl()} label="Facebook" className="bg-blue-700" />
-          <ShareBtn href={linkedInShareUrl()} label="LinkedIn" className="bg-blue-600" />
           <ShareBtn href={twitterShareUrl()} label="X" className="bg-slate-700" />
-          <ShareBtn href={emailShareUrl()} icon={Mail} label="אימייל" className="bg-violet-700" />
+          <ShareBtn href={facebookShareUrl()} label="Facebook (אחרון)" className="bg-blue-700 opacity-70" />
         </div>
         <p className="text-xs text-white/40 mt-4 break-all" dir="ltr">{home}</p>
       </section>
@@ -250,14 +256,16 @@ export default function BizBoostMarketingPage() {
         </div>
       </section>
 
-      <div className="text-center pb-8">
+      <div className="text-center pb-8 space-y-4">
         <Link
           to="/bizboost/outreach"
           className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold hover:opacity-90"
         >
-          למרכז המכירות — שליחה ליעדים
+          <Mail className="w-4 h-4" />
+          מייל לחברות גדולות — 30 מוכנים
           <ArrowLeft className="w-4 h-4" />
         </Link>
+        <p className="text-white/40 text-sm">Facebook ורשתות — רק אחרי המיילים</p>
       </div>
     </BizBoostLayout>
   );
