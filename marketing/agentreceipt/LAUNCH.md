@@ -2,25 +2,26 @@
 
 **Live:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt  
 **Checkout:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/checkout  
-**Marketing kit (copy buttons):** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/marketing  
-**Full copy-paste file:** `marketing/agentreceipt/COPY_PASTE.md`
+**Marketing + outreach:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/marketing  
+
+## Buyer finding
+
+See:
+- `BUYERS.md` — who pays and where
+- `OUTREACH_QUEUE.md` — warm HN/Reddit threads + ready replies
+- Marketing page section "מציאת קונים"
+
+**Blocker:** Agent cannot post to HN/Reddit without your login. Add secrets or post yourself.
 
 ## Sales flow
 
-1. Customer → `/agentreceipt/checkout`
-2. WhatsApp opens (pre-filled) → Bit ₪149 to **052-888-5800**
-3. Screenshot in chat
-4. **You** paste reply #1 from marketing page / COPY_PASTE.md
+1. Customer → checkout → WhatsApp + Bit ₪149
+2. You paste WhatsApp reply #1
 
-## Your 15-minute checklist
+## Week-1 checklist
 
-1. Open marketing page → WhatsApp share to 1 group
-2. Paste Show HN → https://news.ycombinator.com/submit
-3. Paste Reddit → r/cursor
-4. Keep WhatsApp ready for Bit screenshots
-
-## Honest limits
-
-- No Stripe auto-billing
-- TAAFT costs $49 — skip unless you want to pay
-- You must reply on WhatsApp to close sales
+1. [ ] Show HN submit
+2. [ ] Comment on HN silent-failures thread
+3. [ ] Reddit r/CursorAI
+4. [ ] WhatsApp share ×1
+5. [ ] Reply to first Bit payment
