@@ -160,6 +160,14 @@ t('תעודת זהות ישראלית נבדקת לפי ספרת ביקורת', 
   assert(isValidLicenseNumber('ab') === false);
 });
 
+t('הורה — נתיבי מסע משפחתי מאושרים', () => {
+  assert(isParentAllowedPath('/parent') === true);
+  assert(isParentAllowedPath('/parent/visit') === true);
+  assert(isParentAllowedPath('/parent/results') === true);
+  assert(isParentAllowedPath('/parent/follow-up') === true);
+  assert(isParentAllowedPath('/doctorped') === false);
+});
+
 t('הורה מוכן עם שם בלבד ונכנס רק לפורטל', () => {
   const parent = saveAccount({ role: 'parent', fullName: 'הורה בדיקה' }, memoryStore());
   assert(isParentComplete(parent) === true);

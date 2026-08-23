@@ -151,7 +151,10 @@ export function isClinicianSwitchRequest(account, searchRole) {
 }
 
 export function isParentAllowedPath(pathname) {
-  return pathname === "/parent" || pathname === "/history";
+  if (pathname === "/history") return true;
+  if (pathname === "/parent") return true;
+  if (pathname.startsWith("/parent/")) return true;
+  return false;
 }
 
 /** Both desks of one product. Parents never land on `/` (RoleGate). */

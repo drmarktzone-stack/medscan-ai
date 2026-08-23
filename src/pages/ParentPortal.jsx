@@ -27,6 +27,7 @@ import {
 import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
 import { ParentSkinPanel, ParentTraumaPanel, ParentDevelopPanel } from "@/components/parent/ParentExtraTools";
 import { CLINICIAN_SWITCH_PATH } from "@/lib/clinic/account";
+import JourneyTimeline, { JourneyBackLink } from "@/components/journey/JourneyTimeline";
 
 function durationHours(n, unit) {
   const v = Number(n);
@@ -198,8 +199,9 @@ export default function ParentPortal() {
     <div className="clinic-page">
       <ClinicHeader
         title={t("dp.parent_title")}
+        subtitle={t("journey.step_before")}
         icon={Heart}
-        tone="parent"
+        tone="rose"
         backTo="/parent"
         extra={(
           <div className="flex items-center gap-1">
@@ -216,8 +218,12 @@ export default function ParentPortal() {
           </div>
         )}
       />
-      <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
-        <p className="text-base text-slate-700 leading-relaxed clinic-card p-4">{t("dp.parent_intro")}</p>
+      <div className="max-w-lg mx-auto px-4 sm:px-5 py-5 space-y-4">
+        <JourneyBackLink />
+        <div className="clinic-panel !p-3">
+          <JourneyTimeline activePhaseId="before" compact />
+        </div>
+        <p className="clinic-sub clinic-panel">{t("dp.parent_intro")}</p>
         <div className="grid grid-cols-4 gap-1 clinic-card p-1">
           {[
             ["visit", "parent.tab_visit"],

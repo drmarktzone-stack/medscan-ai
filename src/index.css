@@ -125,6 +125,97 @@
     position: relative;
     z-index: 1;
   }
+
+  /* Higher-contrast surface for reading content, not just chrome. */
+  .clinic-panel {
+    @apply rounded-[1.35rem] border p-4 sm:p-5;
+    background: rgba(255, 255, 255, 0.78);
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow:
+      0 10px 30px -22px rgba(20, 70, 160, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+
+  /* Section heading used across hub pages so hierarchy is identical everywhere. */
+  .clinic-eyebrow {
+    @apply text-[10px] font-black uppercase tracking-[0.14em] text-sky-700/90;
+  }
+  .clinic-h2 {
+    @apply text-base sm:text-lg font-extrabold text-slate-900 tracking-tight;
+  }
+  .clinic-sub {
+    @apply text-xs sm:text-sm text-slate-600 leading-relaxed;
+  }
+
+  /* Numbered step marker for the family journey. */
+  .clinic-step-num {
+    @apply w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(226, 240, 255, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    color: rgb(12, 74, 150);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+  .clinic-step-num-on {
+    background: linear-gradient(180deg, rgba(90, 170, 255, 0.98), rgba(30, 110, 230, 0.95));
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* Primary action with a thumb-sized target on phones. */
+  .clinic-cta {
+    @apply w-full h-14 rounded-full text-base font-extrabold text-white transition-all;
+    background: linear-gradient(180deg, rgba(90, 170, 255, 0.98), rgba(24, 104, 226, 0.96));
+    box-shadow:
+      0 14px 28px -14px rgba(24, 104, 226, 0.75),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+  .clinic-cta:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
+  .clinic-cta:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .clinic-cta:disabled {
+    opacity: 0.5;
+    box-shadow: none;
+  }
+
+  /* Hebrew and Arabic descenders (ן ע ק ج ط) clip at tiny sizes unless the
+     line box is taller than the glyphs. Every micro-label uses this. */
+  .clinic-micro {
+    @apply text-[10px] font-bold;
+    line-height: 1.65;
+  }
+  .clinic-micro-sm {
+    @apply text-[11px] font-bold;
+    line-height: 1.55;
+  }
+
+  /* Tone accents — one source of truth for phase colors. */
+  .tone-rose { background: linear-gradient(160deg, #fda4af 0%, #fb7185 45%, #e11d48 100%); }
+  .tone-sky { background: linear-gradient(160deg, #7dd3fc 0%, #38bdf8 45%, #0284c7 100%); }
+  .tone-amber { background: linear-gradient(160deg, #fcd34d 0%, #fbbf24 45%, #d97706 100%); }
+  .tone-slate { background: linear-gradient(160deg, #cbd5e1 0%, #94a3b8 45%, #475569 100%); }
+}
+
+@layer utilities {
+  /* Visible keyboard focus on every interactive surface. */
+  .clinic-page a:focus-visible,
+  .clinic-page button:focus-visible,
+  .clinic-page input:focus-visible,
+  .clinic-page select:focus-visible,
+  .clinic-page textarea:focus-visible {
+    outline: 2px solid rgb(14, 116, 214);
+    outline-offset: 2px;
+    border-radius: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 @layer utilities {
@@ -139,6 +230,13 @@
   background: rgba(255, 255, 255, 0.55);
   border-color: rgba(255, 255, 255, 0.8);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* The app draws its own clear button; the native one would sit on top of it. */
+.clinic-page input[type="search"]::-webkit-search-cancel-button,
+.clinic-page input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
