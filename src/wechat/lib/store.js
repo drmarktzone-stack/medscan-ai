@@ -2,7 +2,7 @@ import { createContext, createElement, useContext, useMemo, useSyncExternalStore
 import { createSeedState, ME_ID } from './seedData.js';
 import { uid } from './format.js';
 
-const STORAGE_KEY = 'wechat_mvp_v1';
+const STORAGE_KEY = 'wechat_mvp_v2';
 
 function loadState() {
   try {
@@ -185,6 +185,41 @@ export const wechatActions = {
       messages: { ...s.messages, [chatId]: [] },
     }));
     return chatId;
+  },
+
+  addContactByWechatId(wechatId, { name, avatar = '👤' } = {}) {
+    const id = wechatId?.trim()?.toLowerCase();
+    if (!id) return { ok: false, error: 'WeChat ID חסר' };
+    if (id === state.profile.wechatId?.toLowerCase()) {
+      return { ok: false, error: 'זה הפרופיל שלך' };
+    }
+    const existing = state.contacts.find((c) => c.wechatId?.toLowerCase() === id);
+    if (existing) return { ok: true, contact: existing, existed: true };
+
+    const contact = {
+      id: uid('c'),
+      name: name || id,
+      wechatId: id,
+      avatar,
+      remark: '',
+      region: '',
+      tags: [],
+    };
+    setState((s) => ({ ...s, contacts: [...s.contacts, contact] }));
+    return { ok: true, contact, existed: false };
+  },
+
+  updateWallet(delta) {
+    setState((s) => ({
+      ...s,
+      profile: {
+        ...s.profile,
+        wallet: {
+          ...s.profile.wallet,
+          balance: Math.max(0, (s.profile.wallet?.balance ?? 0) + delta),
+        },
+      },
+    }));
   },
 };
 

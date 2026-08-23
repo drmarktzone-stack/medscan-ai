@@ -4,17 +4,20 @@ import { Pin } from 'lucide-react';
 import { ChatsHeader } from '@/wechat/components/WeChatLayout.jsx';
 import SearchBar from '@/wechat/components/SearchBar.jsx';
 import WeChatAvatar from '@/wechat/components/WeChatAvatar.jsx';
+import NewChatSheet from '@/wechat/components/NewChatSheet.jsx';
 import { useWeChat, useSortedChats, getChatTitle, getChatAvatar } from '@/wechat/lib/store.js';
 import { formatChatTime } from '@/wechat/lib/format.js';
 
 export default function ChatsPage() {
   const [query, setQuery] = useState('');
+  const [newChatOpen, setNewChatOpen] = useState(false);
   const { state } = useWeChat();
   const chats = useSortedChats(query);
 
   return (
     <>
-      <ChatsHeader />
+      <ChatsHeader onNewChat={() => setNewChatOpen(true)} />
+      <NewChatSheet open={newChatOpen} onClose={() => setNewChatOpen(false)} />
       <SearchBar value={query} onChange={setQuery} placeholder="חיפוש" />
 
       <ul className="bg-white divide-y divide-[#ededed]">

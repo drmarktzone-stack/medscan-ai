@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { createSeedState, ME_ID } from './lib/seedData.js';
 import { formatChatTime, uid } from './lib/format.js';
+import { profileQrValue, parseProfileQr } from './lib/qr.js';
+import { getMiniApp, MINI_APPS } from './miniapps/registry.js';
 
 // In-memory store simulation (no DOM/localStorage in node tests)
 let memState = createSeedState();
@@ -45,5 +47,20 @@ assert.equal(msgs[msgs.length - 1].content, 'בדיקה');
 const updatedChat = memState.chats.find((c) => c.id === chatId);
 assert.equal(updatedChat.lastMessage, 'בדיקה');
 assert.equal(updatedChat.unread, 0);
+
+// --- QR ---
+const qr = profileQrValue('dr_samar');
+assert.ok(qr.startsWith('wechat://user/'));
+assert.deepEqual(parseProfileQr(qr), { wechatId: 'dr_samar' });
+assert.deepEqual(parseProfileQr('david_wu'), { wechatId: 'david_wu' });
+
+// --- mini apps ---
+assert.ok(MINI_APPS.length >= 3);
+assert.ok(getMiniApp('calculator')?.name);
+assert.equal(getMiniApp('missing'), undefined);
+
+// --- wallet in seed ---
+assert.ok(seed.profile.wallet?.balance > 0);
+assert.ok(seed.contacts.every((c) => c.wechatId));
 
 console.log('wechat.test.mjs: ok');

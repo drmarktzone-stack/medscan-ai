@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavLink, Outlet, useLocation, Link } from 'react-router-dom';
-import { MessageCircle, Users, Compass, User, Plus, ChevronLeft } from 'lucide-react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { MessageCircle, Users, Compass, User, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const TABS = [
@@ -10,46 +10,17 @@ const TABS = [
   { to: '/wechat/me', label: '我', labelHe: 'אני', icon: User, end: true },
 ];
 
-function WeChatHeader({ title, backTo, rightAction }) {
-  return (
-    <header className="sticky top-0 z-40 bg-[#ededed] border-b border-[#d9d9d9]">
-      <div className="max-w-lg mx-auto flex items-center h-11 px-2">
-        {backTo ? (
-          <Link to={backTo} className="p-2 text-[#191919]">
-            <ChevronLeft className="w-6 h-6" />
-          </Link>
-        ) : (
-          <div className="w-10" />
-        )}
-        <h1 className="flex-1 text-center font-semibold text-[17px] text-[#191919] truncate">
-          {title}
-        </h1>
-        <div className="w-10 flex justify-end">{rightAction || null}</div>
-      </div>
-    </header>
-  );
-}
-
-export default function WeChatLayout({ title, backTo, rightAction, hideTabs = false }) {
+export default function WeChatLayout() {
   const location = useLocation();
-  const isChatRoom = location.pathname.includes('/chat/');
-  const isMoments = location.pathname.includes('/moments');
+  const isFullscreen = /\/(chat|moments|mini|scan|qr|pay)(\/|$)/.test(location.pathname);
 
   return (
     <div className="min-h-screen bg-[#ededed] flex flex-col max-w-lg mx-auto shadow-xl">
-      {(title || isChatRoom || isMoments) && (
-        <WeChatHeader
-          title={title}
-          backTo={backTo}
-          rightAction={rightAction}
-        />
-      )}
-
-      <main className={cn('flex-1 overflow-y-auto', !hideTabs && !isChatRoom && 'pb-16')}>
-        <Outlet context={{ setHeader: () => {} }} />
+      <main className={cn('flex-1 overflow-y-auto', !isFullscreen && 'pb-16')}>
+        <Outlet />
       </main>
 
-      {!hideTabs && !isChatRoom && !isMoments && (
+      {!isFullscreen && (
         <nav className="fixed bottom-0 inset-x-0 z-50 bg-[#f7f7f7] border-t border-[#d9d9d9] safe-area-pb">
           <div className="max-w-lg mx-auto grid grid-cols-4 h-14">
             {TABS.map(({ to, labelHe, icon: Icon, end }) => (
@@ -75,12 +46,17 @@ export default function WeChatLayout({ title, backTo, rightAction, hideTabs = fa
   );
 }
 
-export function ChatsHeader() {
+export function ChatsHeader({ onNewChat }) {
   return (
     <header className="sticky top-0 z-40 bg-[#ededed] border-b border-[#d9d9d9]">
       <div className="max-w-lg mx-auto flex items-center justify-between h-11 px-4">
         <h1 className="font-semibold text-[17px] text-[#191919]">微信 WeChat</h1>
-        <button type="button" className="p-1 text-[#191919]" aria-label="חדש">
+        <button
+          type="button"
+          onClick={onNewChat}
+          className="p-1 text-[#191919]"
+          aria-label="צ\'אט חדש"
+        >
           <Plus className="w-6 h-6" strokeWidth={1.75} />
         </button>
       </div>

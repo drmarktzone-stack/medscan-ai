@@ -14,17 +14,15 @@ const ITEMS = [
     icon: ScanLine,
     label: 'סריקה',
     labelCn: '扫一扫',
-    to: '#',
+    to: '/wechat/scan',
     color: 'bg-[#10aeff]',
-    badge: 'MVP',
   },
   {
     icon: ShoppingBag,
     label: 'Mini Programs',
     labelCn: '小程序',
-    to: '#',
+    to: '/wechat/discover/mini',
     color: 'bg-[#6467f0]',
-    badge: 'בקרוב',
   },
   {
     icon: Gamepad2,
@@ -32,6 +30,7 @@ const ITEMS = [
     labelCn: '游戏',
     to: '#',
     color: 'bg-[#07c160]',
+    badge: 'בקרוב',
   },
   {
     icon: Music,
@@ -87,7 +86,7 @@ export default function DiscoverPage() {
       </ul>
 
       <p className="text-center text-xs text-[#b2b2b2] mt-8 px-6">
-        MVP — צ\'אטים, אנשי קשר, Moments ופרופיל. תשלומים, Mini Programs ו-Channels יגיעו בגרסה הבאה.
+        Mini Programs, סריקת QR, Moments ותשלומים (דמו) — MVP v2
       </p>
     </>
   );

@@ -14,14 +14,15 @@ export function createSeedState() {
     avatar: '🩺',
     status: 'זמין/ה',
     region: 'ישראל',
+    wallet: { balance: 188.88, currency: 'CNY' },
   };
 
   const contacts = [
-    { id: 'c1', name: '李明 Li Ming', avatar: '👨‍💼', remark: 'שותף עסקי', region: 'שנגחאי', tags: ['work'] },
-    { id: 'c2', name: 'Sarah Chen', avatar: '👩‍⚕️', remark: 'רופאת ילדים', region: 'בייג\'ינג', tags: ['medical'] },
-    { id: 'c3', name: 'משפחת כהן', avatar: '👨‍👩‍👧', remark: '', region: 'תל אביב', tags: ['family'] },
-    { id: 'c4', name: 'קבוצת MedScan', avatar: '💬', remark: 'צוות פיתוח', region: '', tags: ['group'], isGroup: true, members: [ME_ID, 'c1', 'c2'] },
-    { id: 'c5', name: 'David Wu', avatar: '🧑‍💻', remark: 'WeChat Dev', region: 'שנז\'ן', tags: ['tech'] },
+    { id: 'c1', name: '李明 Li Ming', wechatId: 'li_ming', avatar: '👨‍💼', remark: 'שותף עסקי', region: 'שנגחאי', tags: ['work'] },
+    { id: 'c2', name: 'Sarah Chen', wechatId: 'sarah_chen', avatar: '👩‍⚕️', remark: 'רופאת ילדים', region: 'בייג\'ינג', tags: ['medical'] },
+    { id: 'c3', name: 'משפחת כהן', wechatId: 'cohen_family', avatar: '👨‍👩‍👧', remark: '', region: 'תל אביב', tags: ['family'] },
+    { id: 'c4', name: 'קבוצת MedScan', wechatId: 'medscan_team', avatar: '💬', remark: 'צוות פיתוח', region: '', tags: ['group'], isGroup: true, members: [ME_ID, 'c1', 'c2'] },
+    { id: 'c5', name: 'David Wu', wechatId: 'david_wu', avatar: '🧑‍💻', remark: 'WeChat Dev', region: 'שנז\'ן', tags: ['tech'] },
   ];
 
   const chats = [
