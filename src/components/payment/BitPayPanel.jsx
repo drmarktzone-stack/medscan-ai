@@ -6,6 +6,7 @@ import {
   bitPaymentSummary,
   copyToClipboard,
   markBitPaymentPending,
+  notifyMerchantViaWhatsApp,
   openBitApp,
   readBitPaymentPending,
   clearBitPaymentPending,
@@ -41,7 +42,8 @@ export default function BitPayPanel({ amountIls, noteKey = "checkout.vision_note
   };
 
   const handlePaid = () => {
-    markBitPaymentPending({ amountIls: summary.amountIls, phone: summary.phone });
+    markBitPaymentPending({ amountIls: summary.amountIls, phone: summary.phone, note: summary.note });
+    notifyMerchantViaWhatsApp({ amountIls: summary.amountIls, note: summary.note });
     setConfirmed(true);
   };
 

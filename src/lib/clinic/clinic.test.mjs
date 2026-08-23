@@ -20,7 +20,7 @@ import { reasonHe, displayText } from './engineDisplay.js';
 import { AUTH_BOOT_DEADLINE_MS, isBase44CreditFailure, readStandaloneFlag, routerBasename, absoluteAppPath } from './standalone.js';
 import { registerClinicPwa, serviceWorkerUrl } from './pwa.js';
 import { decideCodeFirst } from '../medscan/codeFirstPolicy.js';
-import { VISION_BILLING_GROUP, isVisionBillingRoute, visionPaywallOn } from './billingGroups.js';
+import { VISION_BILLING_GROUP, isVisionBillingRoute, visionPaywallOn, readVisionPaywallFlag } from './billingGroups.js';
 import { onDeviceSkinEngine, onDeviceRadiologyEngine, onDeviceEcgReading } from './onDeviceVision.js';
 import { assembleSkinResult } from '../medscan/engines/skinResultBuilder.js';
 import { assembleRadiologyResult } from '../medscan/engines/radiologyResultBuilder.js';
@@ -257,14 +257,17 @@ t('דדליין אתחול Base44 מוגדר כדי שהמסך לא יישאר �
   assert(AUTH_BOOT_DEADLINE_MS >= 1000);
 });
 
-t('כלי דימות מסומנים כקבוצת תשלום עתידית בלי חומה עכשיו', () => {
-  assert(visionPaywallOn() === false);
+t('קבוצת דימות — paywall לפי Bit ב-standalone', () => {
+  assert(readVisionPaywallFlag({}) === false);
+  assert(readVisionPaywallFlag({ VITE_BIT_MERCHANT_PHONE: '0501234567' }) === true);
+  assert(readVisionPaywallFlag({ VITE_VISION_PAYWALL: 'false', VITE_BIT_MERCHANT_PHONE: '0501234567' }) === false);
+  assert(visionPaywallOn({ VITE_STANDALONE: 'true', VITE_BIT_MERCHANT_PHONE: '0501234567' }) === true);
+  assert(visionPaywallOn({ VITE_STANDALONE: 'false', VITE_BIT_MERCHANT_PHONE: '0501234567' }) === false);
   assert(isVisionBillingRoute('/ecg') === true);
   assert(isVisionBillingRoute('/ecg-compare') === true);
   assert(isVisionBillingRoute('/skin') === true);
   assert(isVisionBillingRoute('/radiology') === true);
   assert(isVisionBillingRoute('/tox') === false);
-  assert(VISION_BILLING_GROUP.paywall_enabled === false);
   assert(VISION_BILLING_GROUP.id === 'vision');
 });
 

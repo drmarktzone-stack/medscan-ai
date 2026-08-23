@@ -6,6 +6,7 @@ import OnboardingOverlay from "@/components/clinic/OnboardingOverlay";
 import AppTopBar from "@/components/journey/AppTopBar";
 import PageHero from "@/components/journey/PageHero";
 import ValuePillars from "@/components/journey/ValuePillars";
+import MarketingCTA from "@/components/marketing/MarketingCTA";
 import ClinicianToolShelves from "@/components/journey/ClinicianToolShelves";
 import JourneyTimeline from "@/components/journey/JourneyTimeline";
 import { useI18n } from "@/lib/i18n";
@@ -31,6 +32,8 @@ export default function Home() {
       />
 
       <main className="clinic-wrap pb-10 space-y-8">
+        <MarketingCTA />
+
         <section className="space-y-3">
           <div className="text-center">
             <p className="clinic-eyebrow">{t("journey.what_is_label")}</p>
@@ -74,6 +77,8 @@ export default function Home() {
         <DisclaimerBanner />
 
         <footer className="flex flex-wrap justify-center gap-3 pt-2 pb-4 text-xs">
+          <Link to="/start" className="text-sky-800/80 hover:text-sky-950 font-semibold">{t("marketing.nav")}</Link>
+          <span className="text-slate-300">·</span>
           <Link to="/launch" className="text-sky-800/80 hover:text-sky-950 font-semibold">{t("launch.nav")}</Link>
           <span className="text-slate-300">·</span>
           <Link to="/pricing" className="text-sky-800/80 hover:text-sky-950 font-semibold">{t("pricing.nav")}</Link>
