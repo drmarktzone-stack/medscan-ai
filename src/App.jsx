@@ -66,6 +66,7 @@ import FreeAIPricingPage from '@/freeai/pages/FreeAIPricingPage';
 import FreeAICheckoutPage from '@/freeai/pages/FreeAICheckoutPage';
 import FreeAIMarketingPage from '@/freeai/pages/FreeAIMarketingPage';
 import CreditPassportPage from '@/freeai/pages/CreditPassportPage';
+import WeChatApp from '@/wechat/pages/WeChatApp.jsx';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -94,6 +95,9 @@ const AuthenticatedApp = () => {
       <Route path="/freeai/passport" element={<CreditPassportPage />} />
       <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
       <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />
+
+      {/* WeChat MVP — messaging super-app demo (public, no auth) */}
+      <Route path="/wechat/*" element={<WeChatApp />} />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
