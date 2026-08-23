@@ -17,6 +17,7 @@ export default function AgentReceiptLayout({ children, backTo = "/agentreceipt" 
             <Link to="/agentreceipt/console" className="text-white/70 hover:text-white">Console</Link>
             <Link to="/agentreceipt/pricing" className="text-violet-300 font-semibold hover:text-violet-200">מחירים</Link>
             <Link to="/agentreceipt/marketing" className="text-white/70 hover:text-white">שיווק</Link>
+            <Link to="/agentreceipt/checkout" className="text-emerald-400 font-semibold hover:text-emerald-300">קנה</Link>
           </nav>
         </div>
       </header>
