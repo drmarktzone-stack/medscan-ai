@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import {
   Send, Paperclip, Mic, Image, Code2, Video, Palette, Rocket,
   Scissors, MessageSquare, Plus, X, Download, Copy, ExternalLink,
