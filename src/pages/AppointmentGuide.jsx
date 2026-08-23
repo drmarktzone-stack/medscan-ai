@@ -93,7 +93,7 @@ export default function AppointmentGuide({ initialService = "", initialUrgency =
   if (confirmed) {
     return (
       <div className="clinic-panel text-center py-10 space-y-3">
-        <div className="clinic-icon w-14 h-14 mx-auto tone-emerald">
+        <div className="clinic-icon w-14 h-14 mx-auto tone-sky">
           <Check className="w-7 h-7 text-white" />
         </div>
         <p className="text-lg font-extrabold text-slate-900">{t("appt.confirm_done_title")}</p>
