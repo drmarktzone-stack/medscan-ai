@@ -7,6 +7,7 @@ import { extractDermatologyFeatures } from "../medscan/vision/dermatologyFeature
 import { extractRadiologyFeatures } from "../medscan/vision/radiologyFeatures.js";
 import { digitizeFromImageData } from "../ecgDigitize.js";
 import { screenEcgImageData } from "../medscan/signal/ecgImageScreen.js";
+import { assessImageQuality, qualitySummaryHe } from "../medscan/vision/imageQuality.js";
 import { INCOMPLETE_HEADLINE_HE, INCOMPLETE_GUIDELINE_HE } from "./incompleteVision.js";
 import { VISION_BILLING_GROUP } from "./billingGroups.js";
 
@@ -17,6 +18,7 @@ const NEXT = [
 ];
 
 export function onDeviceSkinEngine(imageData, { language = "he" } = {}) {
+  const quality = imageData ? assessImageQuality(imageData, { modality: "skin" }) : { ok: false, reason: "no_image" };
   const morphology = imageData ? extractDermatologyFeatures(imageData) : { ok: false, reason: "no_image" };
   const mean = morphology.color?.mean_rgb;
   const color = morphology.ok && mean
@@ -41,12 +43,17 @@ export function onDeviceSkinEngine(imageData, { language = "he" } = {}) {
     critical_red_flags: [],
     recommended_next_steps: NEXT,
     dermoscopy: { is_dermoscopic: false },
+    image_quality: quality.ok ? quality : null,
   };
   return {
     abstain: false,
     structured,
     morphology,
-    warnings: morphology.ok ? [] : [`מדידה מורפולוגית נכשלה (${morphology.reason || "unknown"}) — אין ניחוש נגע.`],
+    image_quality: quality.ok ? quality : null,
+    warnings: [
+      ...(morphology.ok ? [] : [`מדידה מורפולוגית נכשלה (${morphology.reason || "unknown"}) — אין ניחוש נגע.`]),
+      ...(quality.ok && quality.verdict !== "good" ? [qualitySummaryHe(quality)] : []),
+    ],
     confidence: 30,
     uncertaintyLevel: "high",
     dermoscopy: null,
@@ -59,6 +66,7 @@ export function onDeviceSkinEngine(imageData, { language = "he" } = {}) {
 }
 
 export function onDeviceRadiologyEngine(imageData, { language = "he" } = {}) {
+  const quality = imageData ? assessImageQuality(imageData, { modality: "radiology" }) : { ok: false, reason: "no_image" };
   const morphology = imageData ? extractRadiologyFeatures(imageData) : { ok: false, reason: "no_image" };
   const dens = morphology.densities || {};
   const structured = {
@@ -70,7 +78,7 @@ export function onDeviceRadiologyEngine(imageData, { language = "he" } = {}) {
     image_metadata: {
       modality_detected: "לא נקבע בלי מנוע ראייה",
       anatomical_region: "לא נקבע",
-      technical_quality: morphology.ok ? "פיקסלים נקראו במכשיר" : "לא ניתן לקרוא",
+      technical_quality: quality.ok ? qualitySummaryHe(quality) : (morphology.ok ? "פיקסלים נקראו במכשיר" : "לא ניתן לקרוא"),
     },
     systematic_findings: morphology.ok
       ? [
@@ -85,13 +93,18 @@ export function onDeviceRadiologyEngine(imageData, { language = "he" } = {}) {
     measurements: [],
     regions: [],
     recommended_next_steps: NEXT,
+    image_quality: quality.ok ? quality : null,
   };
   return {
     abstain: false,
     structured,
     morphology,
+    image_quality: quality.ok ? quality : null,
     measurement_eval: [],
-    warnings: morphology.ok ? [] : [`מדידת הדמיה נכשלה (${morphology.reason || "unknown"}) — אין ניחוש ממצא.`],
+    warnings: [
+      ...(morphology.ok ? [] : [`מדידת הדמיה נכשלה (${morphology.reason || "unknown"}) — אין ניחוש ממצא.`]),
+      ...(quality.ok && quality.verdict !== "good" ? [qualitySummaryHe(quality)] : []),
+    ],
     confidence: 30,
     uncertaintyLevel: "high",
     on_device: true,
@@ -117,11 +130,15 @@ function stScreenCandidate(screen) {
 }
 
 export function onDeviceEcgReading({ digitize = null, imageData = null, language = "he" } = {}) {
-  const fromPixels = (!digitize || digitize.ok === false) && imageData
+  const quality = imageData ? assessImageQuality(imageData, { modality: "ecg" }) : { ok: false, reason: "no_image" };
+  const usable = quality.ok ? quality.usable : false;
+  const fromPixels = (!digitize || digitize.ok === false) && imageData && usable
     ? digitizeFromImageData(imageData)
     : null;
   const cal = (digitize && digitize.ok !== false && digitize) || fromPixels || digitize || null;
-  const screen = imageData ? screenEcgImageData(imageData, { digitize: cal }) : { ok: false, reason: "no_image" };
+  const screen = imageData && usable
+    ? screenEcgImageData(imageData, { digitize: cal })
+    : { ok: false, reason: quality.ok ? "image_quality_insufficient" : "no_image" };
   const hr = Number(cal?.hr_measured ?? cal?.rate?.hr_bpm);
   const hasHr = cal?.ok === true && Number.isFinite(hr);
   const candidate = stScreenCandidate(screen);
@@ -138,7 +155,12 @@ export function onDeviceEcgReading({ digitize = null, imageData = null, language
       axis: {},
     },
     perception: {
-      quality: { is_ecg: true, interpretable: hasHr || Boolean(screen.ok) },
+      quality: {
+        is_ecg: true,
+        interpretable: hasHr || Boolean(screen.ok),
+        issues_he: quality.ok ? quality.issues_he : [],
+        image_quality: quality.ok ? quality : null,
+      },
       calibration: {
         reliable: Boolean(cal?.ok && cal?.calibration?.px_per_small_box),
         paper_speed_mm_s: cal?.calibration?.speed_mm_s,
@@ -160,6 +182,7 @@ export function onDeviceEcgReading({ digitize = null, imageData = null, language
       interval_warnings: [
         "טיוטה במכשיר. אינה פענוח אק״ג ואינה אבחנה.",
         INCOMPLETE_GUIDELINE_HE.ecg,
+        ...(quality.ok && quality.verdict !== "good" ? [qualitySummaryHe(quality)] : []),
       ],
     },
     pathologyMatch: {
@@ -172,6 +195,7 @@ export function onDeviceEcgReading({ digitize = null, imageData = null, language
     billing_group: VISION_BILLING_GROUP.id,
     verification_status: DRAFT,
     locale: language,
+    image_quality: quality.ok ? quality : null,
     pixel_screen: screen,
     digitize: cal || null,
   };

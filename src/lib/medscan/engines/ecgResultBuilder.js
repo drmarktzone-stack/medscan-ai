@@ -11,6 +11,7 @@
 
 import { finalizeLocale } from "../i18n/localize.js";
 import { INCOMPLETE_GUIDELINE_HE, INCOMPLETE_HEADLINE_HE } from "../../clinic/incompleteVision.js";
+import { atlasByKey, withAtlasFallback } from "../knowledge/referenceAtlas.js";
 
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 2);
@@ -77,26 +78,29 @@ const TERRITORY_WORD = { inferior: "inferior", anteroseptal: "anterior", anterio
 
 /** Pick the best KB reference case for a candidate using explicit hints, then token overlap. */
 function pickKbCase(c, cases) {
+  const withImage = (cases || []).filter((cs) => cs && cs.image_url);
   const hints = [...(KB_HINTS[c.key] || [])];
   if (c.territory && TERRITORY_WORD[c.territory]) hints.push(TERRITORY_WORD[c.territory]);
   let best = null;
   if (hints.length) {
-    for (const cs of cases || []) {
+    for (const cs of withImage) {
       const text = `${cs.diagnosis || ""} ${cs.title || ""}`.toLowerCase();
       const score = hints.reduce((n, h) => n + (text.includes(h) ? 1 : 0), 0);
       if (score >= 1 && (!best || score > best.score)) best = { cs, score };
     }
   }
   if (best) return best.cs;
-  // fallback: ≥2 token overlap
   const ct = new Set(candTokens(c));
   let fb = null;
-  for (const cs of cases || []) {
+  for (const cs of withImage) {
     const dset = [...tok(cs.diagnosis), ...tok(cs.title)].filter((w) => !STOP.has(w));
     const overlap = dset.filter((w) => ct.has(w)).length;
     if (overlap >= 2 && (!fb || overlap > fb.overlap)) fb = { cs, overlap };
   }
-  return fb ? fb.cs : null;
+  if (fb) return fb.cs;
+  // No licensed image: fall back to the text descriptor so the comparison
+  // panel still tells the clinician what the reference pattern looks like.
+  return atlasByKey("ecg", c.key);
 }
 
 /**
@@ -115,8 +119,9 @@ export function matchKbCases(candidates, cases) {
       diagnosis: c.name_en,
       confidence: Math.round(c.score || 0),
       reasoning: `${(c.criteria || []).map((x) => `${x.ok === false ? "✗" : x.ok === null ? "?" : "✓"} ${x.text}`).join(" · ")}${c.note_he ? " — " + c.note_he : ""}`,
-      image_url: kb ? kb.image_url : undefined,
+      image_url: kb && kb.image_url ? kb.image_url : undefined,
       kb_reference: kb ? kb.title : undefined,
+      reference_features: kb ? (kb.key_features || kb.diagnostic_criteria || "") : "",
     });
   }
   return out;
@@ -234,7 +239,9 @@ export function buildAnalysisMd(reading, kbMatches) {
   lines.push("");
   if (kbMatches.length > 0) {
     lines.push(`## השוואה למאגר הידע`);
-    kbMatches.slice(0, 5).forEach((k) => lines.push(`- **${k.title}** (${k.diagnosis}) — ביטחון ${k.confidence}%`));
+    kbMatches.slice(0, 5).forEach((k) => lines.push(
+      `- **${k.title}** (${k.diagnosis}) — ביטחון ${k.confidence}%${k.kb_reference ? ` · ייחוס: ${k.kb_reference}` : ""}${k.reference_features ? ` — ${k.reference_features}` : ""}`,
+    ));
     lines.push("");
   }
   lines.push(`> כלי תמיכה בהחלטות קליניות — אינו אבחנה סופית ואינו תחליף לשיקול דעת רפואי.`);
@@ -269,7 +276,7 @@ export function measurementsList(measured) {
  */
 export function assembleEcgResult(reading, allCases, { sex, fileUrl, locale = "he" } = {}) {
   const pathologyMatch = reading.pathologyMatch || { candidates: [], maxSeverity: "normal", mustNotMiss: [] };
-  const kbMatches = matchKbCases(pathologyMatch.candidates, allCases);
+  const kbMatches = matchKbCases(pathologyMatch.candidates, withAtlasFallback("ecg", allCases));
   const incomplete = incompleteEcgRead(reading);
   const { severity, urgency } = mapSeverity(pathologyMatch, reading);
   const structuredInterpretation = buildStructured(reading, { sex, urgency });
