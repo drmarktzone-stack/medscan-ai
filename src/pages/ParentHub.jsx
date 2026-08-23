@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ClipboardCheck, CalendarPlus, Clock, ArrowLeft, ArrowRight } from "lucide-react";
+import { Heart, Stethoscope, ClipboardCheck, CalendarPlus, Clock, AlertTriangle, MessageSquareText, School, ArrowLeft, ArrowRight } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AppTopBar from "@/components/journey/AppTopBar";
 import PageHero from "@/components/journey/PageHero";
@@ -34,6 +34,28 @@ export default function ParentHub() {
       <main className="clinic-wrap pb-10 space-y-7 max-w-3xl">
         <section className="clinic-panel">
           <JourneyTimeline />
+        </section>
+
+        <section className="space-y-2">
+          <p className="clinic-eyebrow">{t("life.hub_label")}</p>
+          <h2 className="clinic-h2">{t("life.hub_title")}</h2>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <Link to="/parent/emergency" className="clinic-panel !border-red-200 !bg-red-50/90 hover:!bg-red-50 flex flex-col gap-2 !p-4">
+              <AlertTriangle className="w-6 h-6 text-red-700" />
+              <p className="text-sm font-extrabold text-red-900">{t("life.emergency_short")}</p>
+              <p className="text-[10px] text-red-800/80 leading-snug">{t("life.emergency_short_desc")}</p>
+            </Link>
+            <Link to="/parent/visit-notes" className="clinic-panel !border-amber-200 !bg-amber-50/80 hover:!bg-amber-50 flex flex-col gap-2 !p-4">
+              <MessageSquareText className="w-6 h-6 text-amber-800" />
+              <p className="text-sm font-extrabold text-amber-950">{t("life.visit_short")}</p>
+              <p className="text-[10px] text-amber-900/80 leading-snug">{t("life.visit_short_desc")}</p>
+            </Link>
+            <Link to="/parent/gan" className="clinic-panel flex flex-col gap-2 !p-4 hover:!bg-white/90">
+              <School className="w-6 h-6 text-sky-700" />
+              <p className="text-sm font-extrabold text-slate-900">{t("gan.short")}</p>
+              <p className="text-[10px] text-slate-600 leading-snug">{t("gan.short_desc")}</p>
+            </Link>
+          </div>
         </section>
 
         <Link
