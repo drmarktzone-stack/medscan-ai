@@ -38,6 +38,9 @@ export default function BizBoostLanding() {
           <Link to="/bizboost/leadbot" className="px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 font-semibold hover:opacity-90">
             נסו LeadBot חינם
           </Link>
+          <Link to="/bizboost/outreach" className="px-6 py-3 rounded-xl bg-green-600 font-semibold hover:bg-green-500">
+            מרכז מכירות — 20 עסקים
+          </Link>
           <Link to="/bizboost/pricing" className="px-6 py-3 rounded-xl border border-white/30 hover:bg-white/10 font-semibold">
             ראו מחירים
           </Link>
