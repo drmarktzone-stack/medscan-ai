@@ -16,6 +16,7 @@ import { routerBasename } from '@/lib/clinic/standalone';
 import LaunchGuidePage from '@/pages/LaunchGuidePage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import PricingPage from '@/pages/PricingPage';
+import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
