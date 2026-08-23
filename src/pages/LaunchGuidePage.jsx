@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import AppTopBar from "@/components/journey/AppTopBar";
 import PageHero from "@/components/journey/PageHero";
+import ShareKit from "@/components/marketing/ShareKit";
 import { useI18n } from "@/lib/i18n";
 
 function StepCard({ n, title, body, done = false }) {
@@ -72,7 +73,12 @@ export default function LaunchGuidePage() {
           </div>
         </section>
 
+        <ShareKit />
+
         <div className="flex flex-wrap gap-3 justify-center">
+          <Link to="/start" className="clinic-cta inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold">
+            {t("marketing.nav")}
+          </Link>
           <Link to="/privacy" className="clinic-chip inline-flex items-center gap-2">
             <Shield className="w-4 h-4" />
             {t("privacy.nav")}
