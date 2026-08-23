@@ -368,5 +368,12 @@ t('App.jsx מייבא Login (מונע מסך לבן בפרודקשן)', () => {
   assert(/element=\{<Login\s*\/>/.test(app), 'missing Login route');
 });
 
+t('App.jsx מייבא CheckoutPage (תשלום ביט)', () => {
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+  const app = readFileSync(resolve(root, 'src/App.jsx'), 'utf8');
+  assert(/import CheckoutPage from ['"]@\/pages\/CheckoutPage['"]/.test(app), 'missing CheckoutPage import');
+  assert(/path="\/checkout"/.test(app), 'missing /checkout route');
+});
+
 console.log(`\n  ${pass} עברו, ${fail} נכשלו\n`);
 if (fail) process.exit(1);

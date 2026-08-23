@@ -1,14 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { CreditCard, Sparkles, Smartphone, ExternalLink } from "lucide-react";
+import { CreditCard, Sparkles, Smartphone, ExternalLink, Wallet } from "lucide-react";
 import AppTopBar from "@/components/journey/AppTopBar";
 import PageHero from "@/components/journey/PageHero";
 import { VISION_BILLING_GROUP } from "@/lib/clinic/billingGroups";
+import { isBitConfigured, getVisionPriceIls } from "@/lib/clinic/paymentConfig";
 import { useI18n } from "@/lib/i18n";
 
 export default function PricingPage() {
   const { t } = useI18n();
   const visionOpen = !VISION_BILLING_GROUP.paywall_enabled;
+  const bitReady = isBitConfigured();
+  const price = getVisionPriceIls();
 
   return (
     <div className="clinic-page">
@@ -66,7 +69,13 @@ export default function PricingPage() {
         </div>
 
         <div className="flex flex-wrap gap-3 justify-center pt-2">
-          <Link to="/launch" className="clinic-cta inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold">
+          {bitReady ? (
+            <Link to="/checkout" className="clinic-cta inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold">
+              <Wallet className="w-4 h-4" />
+              {t("pricing.checkout_cta")} — ₪{price}
+            </Link>
+          ) : null}
+          <Link to="/launch" className="clinic-chip inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold">
             <Smartphone className="w-4 h-4" />
             {t("launch.nav")}
           </Link>

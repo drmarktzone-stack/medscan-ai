@@ -29,6 +29,9 @@ jobs:
         env:
           VITE_STANDALONE: "true"
           VITE_LOCAL_CLINIC: "true"
+          VITE_BIT_MERCHANT_PHONE: ${{ secrets.BIT_MERCHANT_PHONE }}
+          VITE_VISION_PRICE_ILS: ${{ vars.VISION_PRICE_ILS || '49' }}
+          VITE_STRIPE_PAYMENT_LINK: ${{ secrets.STRIPE_PAYMENT_LINK }}
         run: |
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"

@@ -19,16 +19,20 @@ export function I18nProvider({ children }) {
     localStorage.setItem("medscan_lang", lang);
   }, [lang, dir]);
 
+  const applyParams = (str, params) => {
+    if (!params) return String(str);
+    let out = String(str);
+    Object.entries(params).forEach(([k, v]) => {
+      out = out.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
+    });
+    return out;
+  };
+
   const t = (key, params) => {
     let val = translations[lang]?.[key] ?? translations.he[key] ?? key;
-    if (Array.isArray(val) || (val && typeof val === "object")) return val;
-    let str = String(val);
-    if (params) {
-      Object.entries(params).forEach(([k, v]) => {
-        str = str.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
-      });
-    }
-    return str;
+    if (Array.isArray(val)) return val.map((item) => applyParams(item, params));
+    if (val && typeof val === "object") return val;
+    return applyParams(val, params);
   };
 
   return (

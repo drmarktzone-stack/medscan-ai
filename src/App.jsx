@@ -16,6 +16,7 @@ import { routerBasename } from '@/lib/clinic/standalone';
 import LaunchGuidePage from '@/pages/LaunchGuidePage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import PricingPage from '@/pages/PricingPage';
+import CheckoutPage from '@/pages/CheckoutPage';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -78,6 +79,7 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/launch" element={<LaunchGuidePage />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<RoleGate />}>
