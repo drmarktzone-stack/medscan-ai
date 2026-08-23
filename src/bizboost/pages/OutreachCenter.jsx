@@ -7,6 +7,7 @@ import {
   markOutreach,
 } from '@/bizboost/lib/outreachEngine';
 import { FREE_PAYMENT_CONFIG } from '@/bizboost/data/paymentMethods';
+import { SELLER } from '@/bizboost/data/sellerIdentity';
 import { MessageCircle, Mail, Phone, Copy, CheckCircle2, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -66,11 +67,12 @@ export default function OutreachCenter() {
   return (
     <BizBoostLayout
       title="מרכז מכירות"
-      subtitle={`${stats.total} עסקים עם קשר · ${stats.withWa} WhatsApp · Bit ${FREE_PAYMENT_CONFIG.bit.phone}`}
+      subtitle={`${SELLER.email} · Bit/WhatsApp ${SELLER.phoneDisplay} · ${stats.withWa} הודעות מוכנות`}
     >
-      <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 mb-6 text-sm">
-        <strong>איך מוכרים:</strong> לחצו WhatsApp / אימייל לכל שורה → שלחו מהטלפון שלכם → סמנו &quot;נשלח&quot;.
-        אני לא יכול לשלוח בשמכם — ההודעות מוכנות עם מחיר + Bit + בנק.
+      <div className="rounded-2xl border border-red-500/40 bg-red-500/10 p-4 mb-6 text-sm">
+        <strong>אין שליחה אוטומטית מהענן.</strong> הסוכן לא יכול לשלוח WhatsApp מ-{SELLER.phoneDisplay}
+        או מייל מ-{SELLER.email} בלי App Password / WhatsApp API אצלך.
+        לחץ WhatsApp/אימייל למטה — נפתח אצלך. מדריך: marketing/WHY-NO-AUTO-SEND.md
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">

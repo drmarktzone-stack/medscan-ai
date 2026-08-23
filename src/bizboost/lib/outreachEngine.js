@@ -4,6 +4,7 @@
 
 import { FREE_PAYMENT_CONFIG } from '../data/paymentMethods.js';
 import { STANDALONE_SERVICES, PRICING_PLANS } from '../data/researchCore.js';
+import { SELLER } from '../data/sellerIdentity.js';
 
 const BIT = FREE_PAYMENT_CONFIG.bit.phone;
 const BANK = FREE_PAYMENT_CONFIG.bank;
@@ -39,13 +40,15 @@ export function buildOutreachMessage(prospect) {
     `• אחר כך ${priceLabel}\n` +
     `• תשלום ב-Bit ל-${BIT} או העברה (הפועלים ${BANK.branch} ח-ן ${BANK.account})\n\n` +
     `רוצים דמו קצר / להתחיל ניסיון?\n` +
-    `סאמר — BizBoost AI`;
+    `${SELLER.nameHe} — BizBoost AI\n` +
+    `WhatsApp/Bit: ${SELLER.phoneDisplay}\n` +
+    `מייל: ${SELLER.email}`;
 
   const emailSubject = `${prospect.name} — ${productName} ל-${prospect.industry} (14 יום חינם)`;
 
   const emailBody =
     `שלום צוות ${prospect.name},\n\n` +
-    `אני סאמר מ-BizBoost AI. בדקתי את ${prospect.url}.\n\n` +
+    `אני ${SELLER.nameHe} מ-BizBoost AI (${SELLER.email}). בדקתי את ${prospect.url}.\n\n` +
     `הפער שזיהיתי: ${(prospect.gaps || []).join(', ') || 'מענה ללידים / תוכן / המרות'}.\n` +
     `${prospect.outreachAngle}\n\n` +
     `הפתרון המומלץ: ${productName} — ${priceLabel}\n` +
@@ -53,11 +56,11 @@ export function buildOutreachMessage(prospect) {
     `פרטי העברה:\n` +
     `${BANK.bankName} · סניף ${BANK.branch} · ח-ן ${BANK.account} · ${BANK.accountHolder}\n\n` +
     `אשמח לשיחה קצרה / שליחת דמו.\n\n` +
-    `בברכה,\nסאמר\nBizBoost AI\nWhatsApp: ${BIT}`;
+    `בברכה,\n${SELLER.nameHe}\nBizBoost AI\n${SELLER.email}\nWhatsApp: ${BIT}`;
 
   const smsBody =
-    `שלום ${prospect.name}, BizBoost AI — ${productName} מתאים לכם (${prospect.outreachAngle}). ` +
-    `14 יום חינם, אחר כך ${priceLabel}. Bit: ${BIT}. סאמר`;
+    `שלום ${prospect.name}, BizBoost AI — ${productName}. ` +
+    `14 יום חינם, אחר כך ${priceLabel}. Bit: ${BIT}. ${SELLER.nameHe} ${SELLER.email}`;
 
   const waPhone = prospect.whatsapp || (prospect.phone ? phoneToWa(prospect.phone) : null);
   const whatsappUrl = waPhone
