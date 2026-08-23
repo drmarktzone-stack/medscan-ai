@@ -1,44 +1,26 @@
 # AgentReceipt — Launch (live)
 
-**Live URL:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
+**Live:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt  
+**Checkout:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/checkout  
+**Marketing kit (copy buttons):** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/marketing  
+**Full copy-paste file:** `marketing/agentreceipt/COPY_PASTE.md`
 
-| Page | URL |
-|------|-----|
-| Landing | /agentreceipt |
-| Checkout (Bit+WhatsApp) | /agentreceipt/checkout |
-| Pricing | /agentreceipt/pricing |
-| Marketing kit | /agentreceipt/marketing |
+## Sales flow
 
-## Sales flow (active)
+1. Customer → `/agentreceipt/checkout`
+2. WhatsApp opens (pre-filled) → Bit ₪149 to **052-888-5800**
+3. Screenshot in chat
+4. **You** paste reply #1 from marketing page / COPY_PASTE.md
 
-1. Customer opens `/agentreceipt/checkout`
-2. Fills email → WhatsApp opens with pre-filled message
-3. Pays ₪149 Bit to **052-888-5800**
-4. Sends screenshot in same WhatsApp thread
-5. Manual activation within 24h
+## Your 15-minute checklist
 
-## Outreach done by agent
-
-- [ ] Merge PR #12 → GitHub Pages deploy
-- [ ] GitHub Issue: launch tracker
-- [ ] PR comment with live links
-
-## Copy-paste for directories
-
-**Name:** AgentReceipt  
-**Tagline:** Proof-of-done for AI coding agents  
-**URL:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt  
-**Category:** Developer Tools, AI Agents  
-
-**Description (EN):**  
-When your Cursor or Cloud agent says "done", there's no structured proof that build/tests passed. AgentReceipt runs verification, stores a machine-readable JSON receipt, and blocks the next agent handoff on failure. Free open-source CLI; Team plan via Bit.
-
-## WhatsApp broadcast
-
-Open `/agentreceipt/marketing` → "שתף ב-WhatsApp"
+1. Open marketing page → WhatsApp share to 1 group
+2. Paste Show HN → https://news.ycombinator.com/submit
+3. Paste Reddit → r/cursor
+4. Keep WhatsApp ready for Bit screenshots
 
 ## Honest limits
 
-- No automated Stripe yet
-- Sales = WhatsApp + Bit manual
-- You (Dr.) must reply to WhatsApp to close sales
+- No Stripe auto-billing
+- TAAFT costs $49 — skip unless you want to pay
+- You must reply on WhatsApp to close sales
