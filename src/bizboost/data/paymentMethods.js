@@ -1,41 +1,45 @@
 /**
  * BizBoost — אמצעי תשלום ללא עלות חודשית (Bit, העברה, PayPal אופציונלי)
- * עדכנו את הפרטים שלכם כאן או דרך env (ראו README ב-marketing).
  */
 
+function env(key, fallback) {
+  try {
+    const v = import.meta?.env?.[key];
+    if (v) return v;
+  } catch {
+    /* node / no vite */
+  }
+  return fallback;
+}
+
 export const FREE_PAYMENT_CONFIG = {
-  /** Bit — חינם, ללא עמלות לרוב המשתמשים */
   bit: {
     enabled: true,
     labelHe: 'Bit',
-    phone: import.meta.env.VITE_BIZBOOST_BIT_PHONE || '052-888-5800',
+    phone: env('VITE_BIZBOOST_BIT_PHONE', '052-888-5800'),
     noteHe: 'שלחו Bit ל-052-888-5800 עם שם העסק + החבילה (למשל "BizBoost Growth").',
   },
-  /** העברה בנקאית — ללא עלות */
   bank: {
     enabled: true,
     labelHe: 'העברה בנקאית',
-    bankName: import.meta.env.VITE_BIZBOOST_BANK_NAME || 'בנק הפועלים',
-    branch: import.meta.env.VITE_BIZBOOST_BANK_BRANCH || '666 (באקה)',
-    account: import.meta.env.VITE_BIZBOOST_BANK_ACCOUNT || '422494',
-    accountHolder: import.meta.env.VITE_BIZBOOST_ACCOUNT_HOLDER || 'אבו מוח סאמר',
+    bankName: env('VITE_BIZBOOST_BANK_NAME', 'בנק הפועלים'),
+    branch: env('VITE_BIZBOOST_BANK_BRANCH', '666 (באקה)'),
+    account: env('VITE_BIZBOOST_BANK_ACCOUNT', '422494'),
+    accountHolder: env('VITE_BIZBOOST_ACCOUNT_HOLDER', 'אבו מוח סאמר'),
     noteHe: 'בהערות: שם העסק + אימייל + החבילה (למשל BizBoost Growth).',
   },
-  /** PayPal — אין דמי מנוי; עמלה רק כשמקבלים כסף (~3%) */
   paypal: {
-    enabled: Boolean(import.meta.env.VITE_BIZBOOST_PAYPAL_ME),
+    enabled: Boolean(env('VITE_BIZBOOST_PAYPAL_ME', '')),
     labelHe: 'PayPal',
-    meUrl: import.meta.env.VITE_BIZBOOST_PAYPAL_ME || '',
+    meUrl: env('VITE_BIZBOOST_PAYPAL_ME', ''),
     noteHe: 'מתאים ללקוחות מחו"ל. עמלה רק על סכום ששולם.',
   },
-  /** WhatsApp — סגירת עסקה ידנית */
   whatsapp: {
     enabled: true,
-    phone: import.meta.env.VITE_BIZBOOST_WHATSAPP || '972528885800',
+    phone: env('VITE_BIZBOOST_WHATSAPP', '972528885800'),
     noteHe: 'אחרי טופס — נשלח הודעה עם סכום ואיך לשלם.',
   },
   trialDays: 14,
-  /** אין Stripe / Tranzila — אפס עלות קבועה */
   noPaidGateway: true,
 };
 
