@@ -39,14 +39,14 @@ const report = {
   marketingChecks: [
     { id: "disclaimer", status: "ok", note: "DisclaimerBanner on analysis + parent flows" },
     { id: "standalone", status: existsSync(join(ROOT, ".env.standalone")) ? "ok" : "warn", note: "Free static host without Base44 credits" },
-    { id: "vision_fail_closed", status: "ok", note: "Standalone blocks LLM; on-device draft only" },
+    { id: "vision_fail_closed", status: "ok", note: "Standalone uses on-device morphology + reference atlas; never false-normal" },
     { id: "i18n", status: "ok", note: "he primary + en/ar fallback in i18n.jsx" },
     { id: "pwa", status: existsSync(join(ROOT, "public/manifest.json")) ? "ok" : "warn", note: "manifest.json present" },
     { id: "tests", status: testFiles.length >= 15 ? "ok" : "warn", note: `${testFiles.length} test files` },
     { id: "needs_verification_labels", status: "ok", note: "Clinical SLAs marked needs_verification in copy" },
   ],
   gapsForMarketing: [
-    "Vision analysis (ECG/skin/radiology) requires Base44 credits or fails closed in standalone",
+    "Vision (skin/radiology) in standalone: on-device morphology + text atlas comparison — not a full read; hosted LLM adds diagnosis when Base44 credits available",
     "No real appointment API — navigation/deep links only",
     "Visit translator is pattern-based, not full NLP",
     "Medical device / MOH registration not in repo — legal review required before clinical marketing",

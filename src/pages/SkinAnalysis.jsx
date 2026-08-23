@@ -13,7 +13,10 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import GroundedInterpretation from "@/components/GroundedInterpretation";
 import LesionMorphometry from "@/components/LesionMorphometry";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
+import OnDeviceDraftBanner from "@/components/OnDeviceDraftBanner";
 import { useI18n } from "@/lib/i18n";
+import { atlasFor } from "@/lib/medscan/knowledge/referenceAtlas";
+import { isStandaloneBuild } from "@/lib/clinic/standalone";
 
 export default function SkinAnalysis() {
   const { t, lang } = useI18n();
@@ -32,6 +35,9 @@ export default function SkinAnalysis() {
   useEffect(() => {
     base44.entities.SkinCase.list("-created_date", 500).then((cases) => setKbCount(cases.length)).catch(() => {});
   }, []);
+
+  const atlasCount = atlasFor("skin").length;
+  const showAtlasLink = kbCount === 0 && (isStandaloneBuild() || atlasCount > 0);
 
   const handleFilesChange = (newFiles) => {
     setFiles(newFiles);
@@ -87,6 +93,12 @@ export default function SkinAnalysis() {
             {t("analysis.skin_kb_link", { n: kbCount })}
           </Link>
         )}
+        {showAtlasLink && (
+          <div className="flex items-center gap-2 text-xs text-teal-700 bg-teal-50/70 border border-teal-200/80 rounded-lg px-3 py-2">
+            <BookOpen className="w-4 h-4 shrink-0" />
+            {t("analysis.skin_atlas_link", { n: atlasCount })}
+          </div>
+        )}
 
         <ImageUploader
           files={files}
@@ -122,6 +134,10 @@ export default function SkinAnalysis() {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
             {error}
           </div>
+        )}
+
+        {result && result.structuredInterpretation?.on_device && (
+          <OnDeviceDraftBanner analysisType="skin" />
         )}
 
         {result && (

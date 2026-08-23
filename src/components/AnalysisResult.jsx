@@ -89,6 +89,9 @@ export default function AnalysisResult({ result, severity, summary, matchedCases
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-foreground">{m.title}</p>
+                    {m.reference_only && (
+                      <p className="text-[10px] font-medium text-amber-700 mt-0.5">{t("result.reference_only")}</p>
+                    )}
                     {m.diagnosis && <p className="text-xs text-muted-foreground mt-0.5">{m.diagnosis}</p>}
                     {m.reasoning && <p className="text-xs text-muted-foreground/80 mt-1 leading-relaxed">{m.reasoning}</p>}
                   </div>

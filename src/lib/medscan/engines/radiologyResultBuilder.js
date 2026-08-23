@@ -12,6 +12,7 @@
 import { finalizeLocale } from "../i18n/localize.js";
 import { cannotCallNormalVision, INCOMPLETE_HEADLINE_HE } from "../../clinic/incompleteVision.js";
 import { withAtlasFallback } from "../knowledge/referenceAtlas.js";
+import { radiologyMorphologyAtlasHints } from "../knowledge/onDeviceAtlasHints.js";
 
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
@@ -67,7 +68,7 @@ export function clampRegions(regions) {
 }
 
 /** KB comparison rows: one per top differential (the tool's OWN diagnosis), with a KB reference when found. */
-export function buildRadiologyMatches(st, cases) {
+export function buildRadiologyMatches(st, cases, engineResult = null) {
   const dds = (st?.differential_diagnoses || []).filter((d) => d && d.diagnosis);
   const rows = [];
   if (dds.length) {
@@ -82,7 +83,12 @@ export function buildRadiologyMatches(st, cases) {
         kb_reference: kb ? kb.title : undefined,
       });
     }
-  } else if (st?.primary_impression) {
+    return rows;
+  }
+  if (engineResult?.on_device && engineResult?.morphology?.ok) {
+    return radiologyMorphologyAtlasHints(engineResult.morphology);
+  }
+  if (st?.primary_impression && !engineResult?.on_device) {
     const kb = matchRadiologyKb(st.primary_impression, cases);
     rows.push({
       title: st.primary_impression,
@@ -154,8 +160,14 @@ export function buildRadiologyAnalysisMd(engineResult, matches) {
   }
 
   if (matches.length) {
-    lines.push(`## השוואה למאגר הידע (אבחנות מבדלות)`);
-    matches.slice(0, 5).forEach((m) => lines.push(`- **${m.title}** — ביטחון ${m.confidence}%${m.kb_reference ? ` (דומה במאגר: ${m.kb_reference})` : ""}`));
+    lines.push(matches.every((m) => m.reference_only) ? `## דפוסי ייחוס להשוואה (לא אבחנה)` : `## השוואה למאגר הידע (אבחנות מבדלות)`);
+    matches.slice(0, 5).forEach((m) => {
+      if (m.reference_only) {
+        lines.push(`- **${m.title}** — ${m.reasoning || ""}${m.reference_features ? `\n  _ייחוס:_ ${m.reference_features}` : ""}`);
+      } else {
+        lines.push(`- **${m.title}** — ביטחון ${m.confidence}%${m.kb_reference ? ` (דומה במאגר: ${m.kb_reference})` : ""}`);
+      }
+    });
     lines.push("");
   }
 
@@ -180,7 +192,7 @@ const UNCERTAINTY_REASON = {
 export function assembleRadiologyResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
   const { severity, urgency } = mapRadiologySeverity(st, engineResult);
-  const matches = buildRadiologyMatches(st, withAtlasFallback("radiology", allCases));
+  const matches = buildRadiologyMatches(st, withAtlasFallback("radiology", allCases), engineResult);
 
   const abn = (st.key_abnormalities || []).filter((a) => a && a.finding);
   const summary = st.primary_impression

@@ -11,6 +11,7 @@
 import { finalizeLocale } from "../i18n/localize.js";
 import { cannotCallNormalVision } from "../../clinic/incompleteVision.js";
 import { withAtlasFallback } from "../knowledge/referenceAtlas.js";
+import { skinMorphologyAtlasHints } from "../knowledge/onDeviceAtlasHints.js";
 
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
@@ -46,19 +47,25 @@ export function mapSkinSeverity(engineResult) {
   return { severity: "normal", urgency: "Normal" };
 }
 
-export function buildSkinMatches(st, cases) {
+export function buildSkinMatches(st, cases, engineResult = null) {
   const dds = (st?.differential_diagnoses || []).filter((d) => d && d.diagnosis);
-  return dds.slice(0, 5).map((d) => {
-    const kb = matchSkinKb(d.diagnosis, cases);
-    return {
-      title: d.diagnosis,
-      diagnosis: d.diagnosis,
-      confidence: likelihoodToConf(d.likelihood),
-      reasoning: [d.supporting_features, d.refuting_features ? `(שולל: ${d.refuting_features})` : ""].filter(Boolean).join(" "),
-      image_url: kb && kb.image_url ? kb.image_url : undefined,
-      kb_reference: kb ? kb.title : undefined,
-    };
-  });
+  if (dds.length) {
+    return dds.slice(0, 5).map((d) => {
+      const kb = matchSkinKb(d.diagnosis, cases);
+      return {
+        title: d.diagnosis,
+        diagnosis: d.diagnosis,
+        confidence: likelihoodToConf(d.likelihood),
+        reasoning: [d.supporting_features, d.refuting_features ? `(שולל: ${d.refuting_features})` : ""].filter(Boolean).join(" "),
+        image_url: kb && kb.image_url ? kb.image_url : undefined,
+        kb_reference: kb ? kb.title : undefined,
+      };
+    });
+  }
+  if (engineResult?.on_device && engineResult?.morphology?.ok) {
+    return skinMorphologyAtlasHints(engineResult.morphology);
+  }
+  return [];
 }
 
 export function buildSkinAnalysisMd(engineResult, matches) {
@@ -94,6 +101,9 @@ export function buildSkinAnalysisMd(engineResult, matches) {
   lines.push(`## אבחנה מבדלת`);
   if (matches.length === 0) {
     lines.push(`לא זוהתה אבחנה מבדלת חד-משמעית — נדרש מתאם קליני.`);
+  } else if (matches.every((m) => m.reference_only)) {
+    lines.push(`> דפוסי ייחוס להשוואה בלבד — לא אבחנה ולא המלצה טיפולית.`);
+    matches.forEach((m) => lines.push(`- **${m.title}** — ${m.reasoning || ""}${m.reference_features ? `\n  _ייחוס:_ ${m.reference_features}` : ""}`));
   } else {
     matches.forEach((m) => lines.push(`- **${m.title}** — ביטחון ${m.confidence}%${m.reasoning ? `: ${m.reasoning}` : ""}${m.kb_reference ? ` (דומה במאגר: ${m.kb_reference})` : ""}`));
   }
@@ -132,7 +142,7 @@ const UNCERTAINTY_REASON = {
 export function assembleSkinResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
   const { severity, urgency } = mapSkinSeverity(engineResult);
-  const matches = buildSkinMatches(st, withAtlasFallback("skin", allCases));
+  const matches = buildSkinMatches(st, withAtlasFallback("skin", allCases), engineResult);
 
   const summary = st.primary_impression
     || (matches[0] ? matches[0].diagnosis : "ללא ממצא חד-משמעי — נדרש מתאם קליני");

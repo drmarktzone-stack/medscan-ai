@@ -296,7 +296,10 @@ t('עור במכשיר מחזיר טיוטה בלי שם אבחנה', () => {
   const ui = assembleSkinResult(engine, [], { fileUrl: 'blob:test', locale: 'he' });
   assert(ui.analysis && ui.summary);
   assert(ui.severity !== 'normal', 'on-device skin must not be called normal');
-  assert(!/מלנומה|פסוריאזיס|melanoma/i.test(JSON.stringify(ui)));
+  assert(!/מלנומה|פסוריאזיס|melanoma/i.test(ui.summary), ui.summary);
+  if (ui.matchedCases?.length) {
+    assert(ui.matchedCases.every((m) => m.reference_only), 'atlas rows must be reference-only');
+  }
 });
 
 t('צילום במכשיר מחזיר טיוטת צפיפויות בלי אבחנת ריאות', () => {
