@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Activity, Loader2, BookOpen, ShieldCheck } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Activity, Loader2, BookOpen, ShieldCheck, FileUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
@@ -17,6 +17,7 @@ import { downscaleImageFile } from "@/lib/imageOptimize";
 import { runEcgComparison } from "@/lib/ecgCompare";
 import { createVisionInvokeLLM, tryBase44Core } from "@/lib/medscan/llmAdapter";
 import { isStandaloneBuild } from "@/lib/clinic/standalone";
+import { runEcgSignalAnalysis, SIGNAL_FILE_ACCEPT } from "@/lib/medscan/engines/ecgSignalPipeline";
 
 export default function ECGAnalysis() {
   const { t, lang } = useI18n();
@@ -41,6 +42,8 @@ export default function ECGAnalysis() {
   const [comparisonLoading, setComparisonLoading] = useState(false);
   const [microReading, setMicroReading] = useState(null);
   const [microLoading, setMicroLoading] = useState(false);
+  const [signalInfo, setSignalInfo] = useState(null);
+  const signalInputRef = useRef(null);
 
   const updateUploadedUrls = (urls) => {
     setUploadedUrls(urls);
@@ -116,6 +119,44 @@ export default function ECGAnalysis() {
       }
     } else {
       setPriorUrls([]);
+    }
+  };
+
+  /**
+   * A waveform file measures in true millivolts, so it never needs the vision
+   * model and never needs the network.
+   */
+  const handleSignalFile = async (event) => {
+    const file = event.target.files?.[0];
+    if (event.target) event.target.value = "";
+    if (!file) return;
+    setResult(null);
+    setGrounded(null);
+    setComparison(null);
+    setMicroReading(null);
+    setSignalInfo(null);
+    setError(null);
+    setLoading(true);
+    try {
+      const text = await file.text();
+      const res = await runEcgSignalAnalysis({
+        text,
+        filename: file.name,
+        patientAgeYears: patientMeta.age ? Number(patientMeta.age) : undefined,
+        patientSex: patientMeta.sex || undefined,
+        patientRef: patientMeta.patient_ref || undefined,
+        language: lang,
+        onStage: setStage,
+      });
+      setResult(res);
+      if (res.microReading) setMicroReading(res.microReading);
+      setSignalInfo(res.signal || null);
+    } catch (err) {
+      console.error("ecg signal analysis failed", err);
+      setError(err?.message || t("analysis.error_fallback"));
+    } finally {
+      setLoading(false);
+      setStage("");
     }
   };
 
@@ -204,6 +245,51 @@ export default function ECGAnalysis() {
           imageUrls={uploadedUrls}
           onImageUrlsChange={updateUploadedUrls}
         />
+
+        <div className="rounded-xl border border-teal-200/80 bg-teal-50/40 p-4 space-y-3">
+          <div>
+            <p className="text-sm font-semibold text-teal-900">{t("analysis.ecg_signal_title")}</p>
+            <p className="text-[11px] text-teal-800/80 leading-relaxed mt-1">{t("analysis.ecg_signal_hint")}</p>
+          </div>
+          <input
+            ref={signalInputRef}
+            type="file"
+            accept={SIGNAL_FILE_ACCEPT}
+            className="hidden"
+            onChange={handleSignalFile}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            disabled={loading}
+            onClick={() => signalInputRef.current?.click()}
+            className="w-full h-11 rounded-xl border-teal-300 text-teal-900 hover:bg-teal-100/60"
+          >
+            {loading && stage ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                {stageLabel}
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <FileUp className="w-4 h-4" />
+                {t("analysis.ecg_signal_button")}
+              </span>
+            )}
+          </Button>
+          {signalInfo && (
+            <div className="text-[11px] text-teal-900/90 bg-white/70 border border-teal-100 rounded-lg px-3 py-2 space-y-1">
+              <div className="font-semibold">{t("analysis.ecg_signal_loaded")}</div>
+              <div>{t("analysis.ecg_signal_meta", {
+                rate: signalInfo.sample_rate_hz ?? "—",
+                beats: signalInfo.beats_analysed ?? "—",
+                leads: (signalInfo.leads_present || []).length,
+              })}</div>
+              <div className="text-teal-800/70">{t("analysis.ecg_signal_source", { source: signalInfo.source || "—" })}</div>
+            </div>
+          )}
+        </div>
+
         <p className="text-[11px] text-slate-500 leading-relaxed">{t("analysis.needs_base44")}</p>
 
         {(files.length > 0 || uploadedUrls.length > 0) && !result && (
