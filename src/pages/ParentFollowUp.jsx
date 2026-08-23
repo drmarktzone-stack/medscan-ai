@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ClipboardCheck, Plus, Trash2, ChevronDown, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ClipboardCheck, Plus, Trash2, ChevronDown, ShieldCheck, CalendarPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
@@ -140,7 +141,14 @@ export default function ParentFollowUp() {
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5 flex-wrap">
+                  <Link
+                    to={`/appointments?followUpType=${encodeURIComponent(item.type)}&urgency=${item.status === "stuck" ? "urgent" : "routine"}`}
+                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[11px] font-bold clinic-chip-on"
+                  >
+                    <CalendarPlus className="w-3.5 h-3.5" />
+                    {t("appt.book_from_followup")}
+                  </Link>
                   {FOLLOWUP_STATUS.map((s) => (
                     <button
                       key={s}

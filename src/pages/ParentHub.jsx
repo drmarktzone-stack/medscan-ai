@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ClipboardCheck, ArrowLeft, ArrowRight } from "lucide-react";
+import { Heart, Stethoscope, ClipboardCheck, CalendarPlus, ArrowLeft, ArrowRight } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AppTopBar from "@/components/journey/AppTopBar";
 import PageHero from "@/components/journey/PageHero";
@@ -33,6 +33,20 @@ export default function ParentHub() {
         <section className="clinic-panel">
           <JourneyTimeline />
         </section>
+
+        <Link
+          to="/appointments"
+          className="clinic-panel flex items-center gap-3 !border-sky-200 !bg-sky-50/90 hover:!bg-sky-50"
+        >
+          <div className="clinic-icon w-10 h-10 tone-sky">
+            <CalendarPlus className="w-5 h-5 text-white" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-extrabold text-sky-900">{t("appt.page_title")}</p>
+            <p className="text-[11px] text-sky-800/80 mt-0.5">{t("journey.open_appointments")}</p>
+          </div>
+          <Arrow className="w-4 h-4 text-sky-700 shrink-0" />
+        </Link>
 
         {stats.pending > 0 ? (
           <Link

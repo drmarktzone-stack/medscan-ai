@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Activity, Loader2, BookOpen, ShieldCheck, FileUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Activity, Loader2, BookOpen, ShieldCheck, FileUp, CalendarPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { analyzeEcgPhoto, humanizeAnalysisError } from "@/lib/analysisPipeline";
@@ -324,6 +324,16 @@ export default function ECGAnalysis() {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
             {error}
           </div>
+        )}
+
+        {result && (result.severity === "urgent" || result.severity === "critical") && (
+          <Link
+            to={`/appointments?context=ecg&urgency=urgent&service=${signalInfo ? "urgent_care" : "urgent_care"}`}
+            className="flex items-center gap-3 rounded-2xl border-2 border-red-200 bg-red-50 p-4 text-red-900 hover:bg-red-100/80 transition-colors"
+          >
+            <CalendarPlus className="w-5 h-5 shrink-0" />
+            <span className="text-sm font-bold">{t("appt.ecg_urgent_cta")}</span>
+          </Link>
         )}
 
         {result && (
