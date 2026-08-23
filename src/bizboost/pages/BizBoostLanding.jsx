@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import BizBoostLayout from '@/bizboost/components/BizBoostLayout';
-import { COMMON_PROBLEMS, TARGET_BUSINESSES, PRICING_PLANS } from '@/bizboost/data/researchAnalysis';
+import { COMMON_PROBLEMS, PRICING_PLANS, prospectStats } from '@/bizboost/data/researchAnalysis';
+import { PROSPECTS_CATALOG } from '@/bizboost/data/prospectsCatalog';
 import { MessageCircle, PenLine, ScanSearch, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 const TOOL_ICONS = { leadbot: MessageCircle, contentflow: PenLine, convertscan: ScanSearch };
@@ -12,11 +13,14 @@ const TOOL_COLORS = {
 };
 
 export default function BizBoostLanding() {
+  const stats = prospectStats();
+  const topProspects = PROSPECTS_CATALOG.filter((p) => p.priority === 'high').slice(0, 8);
+
   return (
     <BizBoostLayout>
       <section className="text-center py-12">
         <div className="inline-block px-4 py-1 rounded-full bg-violet-500/20 text-violet-300 text-sm mb-6">
-          מחקר על 4+ עסקים ישראליים · 3 בעיות משותפות · 3 כלי AI
+          {stats.total} עסקים · {stats.withContact} עם פרטי קשר · 3 כלי AI
         </div>
         <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
           כלי AI שפותרים
@@ -87,19 +91,23 @@ export default function BizBoostLanding() {
       </section>
 
       <section className="py-12">
-        <h2 className="text-2xl font-bold mb-2 text-center">עסקים שזיהינו כיעדים</h2>
-        <p className="text-white/60 text-center mb-6 text-sm">מחקר על אתרים אמיתיים — עם זווית שיווק מותאמת</p>
-        <div className="grid md:grid-cols-2 gap-4">
-          {TARGET_BUSINESSES.map((b) => (
-            <div key={b.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">יעדים עם פוטנציאל גבוה</h2>
+          <Link to="/bizboost/prospects" className="text-violet-400 text-sm hover:underline">
+            כל {stats.total} היעדים →
+          </Link>
+        </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {topProspects.map((b) => (
+            <div key={b.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
               <div className="flex justify-between items-start gap-2">
                 <div>
-                  <h3 className="font-bold">{b.name}</h3>
-                  <a href={b.url} target="_blank" rel="noreferrer" className="text-violet-400 text-xs hover:underline">{b.url}</a>
+                  <h3 className="font-bold text-sm">{b.name}</h3>
+                  <a href={b.url} target="_blank" rel="noreferrer" className="text-violet-400 text-xs hover:underline">{b.url.replace('https://', '')}</a>
                 </div>
-                <span className="text-xs px-2 py-1 rounded-full bg-violet-500/20 text-violet-300">{b.recommendedTool}</span>
+                <span className="text-xs px-2 py-1 rounded-full bg-violet-500/20 text-violet-300">{b.recommendedTool.split(' ')[0]}</span>
               </div>
-              <p className="text-sm text-white/60 mt-2">{b.outreachAngle}</p>
+              <p className="text-xs text-white/60 mt-2">{b.outreachAngle}</p>
             </div>
           ))}
         </div>

@@ -56,6 +56,7 @@ import LeadBotTool from '@/bizboost/pages/LeadBotTool';
 import ContentFlowTool from '@/bizboost/pages/ContentFlowTool';
 import ConvertScanTool from '@/bizboost/pages/ConvertScanTool';
 import BizBoostPricing from '@/bizboost/pages/BizBoostPricing';
+import ProspectsPage from '@/bizboost/pages/ProspectsPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -80,6 +81,7 @@ const AuthenticatedApp = () => {
       <Route path="/bizboost/contentflow" element={<ContentFlowTool />} />
       <Route path="/bizboost/convertscan" element={<ConvertScanTool />} />
       <Route path="/bizboost/pricing" element={<BizBoostPricing />} />
+      <Route path="/bizboost/prospects" element={<ProspectsPage />} />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
