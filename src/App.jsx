@@ -64,6 +64,7 @@ import ConvertScanTool from '@/bizboost/pages/ConvertScanTool';
 import BizBoostPricing from '@/bizboost/pages/BizBoostPricing';
 import ProspectsPage from '@/bizboost/pages/ProspectsPage';
 import OutreachCenter from '@/bizboost/pages/OutreachCenter';
+import BizBoostMarketingPage from '@/bizboost/pages/BizBoostMarketingPage';
 import FreeAIHub from '@/freeai/pages/FreeAIHub';
 import FreeAIPlannerPage from '@/freeai/pages/FreeAIPlannerPage';
 import FreeAIProvidersPage from '@/freeai/pages/FreeAIProvidersPage';
@@ -105,6 +106,7 @@ const AuthenticatedApp = () => {
       <Route path="/bizboost/pricing" element={<BizBoostPricing />} />
       <Route path="/bizboost/prospects" element={<ProspectsPage />} />
       <Route path="/bizboost/outreach" element={<OutreachCenter />} />
+      <Route path="/bizboost/marketing" element={<BizBoostMarketingPage />} />
 
       {/* FreeAI Hub — creative AI with free credits (public, no auth) */}
       <Route path="/freeai" element={<FreeAIHub />} />

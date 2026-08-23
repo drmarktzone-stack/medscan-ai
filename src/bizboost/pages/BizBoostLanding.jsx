@@ -19,30 +19,27 @@ export default function BizBoostLanding() {
   return (
     <BizBoostLayout>
       <section className="text-center py-12">
-        <div className="inline-block px-4 py-1 rounded-full bg-violet-500/20 text-violet-300 text-sm mb-6">
-          {stats.total} עסקים · {stats.withContact} עם פרטי קשר · 3 כלי AI
+        <div className="inline-block px-4 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-sm mb-6 border border-emerald-500/30">
+          {stats.total} יעדים · 3 כלי AI · מ־₪299
         </div>
-        <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
-          כלי AI שפותרים
-          <br />
-          <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-            את 3 הבעיות הגדולות
-          </span>
-          <br />
-          של עסקים קטנים
+        <h1 className="text-4xl md:text-6xl font-black mb-3 leading-tight tracking-tight">
+          BizBoost AI
         </h1>
-        <p className="text-white/70 text-lg max-w-2xl mx-auto mb-8">
-          בדקנו אתרים ועסקים בישראל. זיהינו 3 כאבים חוזרים — ובנינו כלי AI שפותרים אותם. נסו עכשיו, הירשמו למנוי.
+        <p className="text-2xl md:text-3xl font-semibold text-white/90 mb-4">
+          הליד לא מחכה עד הבוקר.
+        </p>
+        <p className="text-white/60 text-lg max-w-2xl mx-auto mb-8">
+          LeadBot · ContentFlow · ConvertScan — מענה WhatsApp, תוכן דו-לשוני, ואתר שממיר.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link to="/bizboost/leadbot" className="px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 font-semibold hover:opacity-90">
-            נסו LeadBot חינם
+          <Link to="/bizboost/pricing" className="px-6 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold hover:bg-emerald-400">
+            14 יום חינם
           </Link>
-          <Link to="/bizboost/outreach" className="px-6 py-3 rounded-xl bg-green-600 font-semibold hover:bg-green-500">
-            מרכז מכירות — 20 עסקים
+          <Link to="/bizboost/marketing" className="px-6 py-3 rounded-xl bg-white/10 border border-white/20 font-semibold hover:bg-white/15">
+            ערכת שיווק
           </Link>
-          <Link to="/bizboost/pricing" className="px-6 py-3 rounded-xl border border-white/30 hover:bg-white/10 font-semibold">
-            ראו מחירים
+          <Link to="/bizboost/outreach" className="px-6 py-3 rounded-xl border border-white/30 hover:bg-white/10 font-semibold">
+            מרכז מכירות
           </Link>
         </div>
       </section>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sparkles, MessageCircle, PenLine, ScanSearch, CreditCard, ArrowRight, Users, Send } from 'lucide-react';
+import { Sparkles, MessageCircle, PenLine, ScanSearch, CreditCard, ArrowRight, Users, Send, Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV = [
@@ -10,6 +10,7 @@ const NAV = [
   { to: '/bizboost/convertscan', label: 'ConvertScan', icon: ScanSearch },
   { to: '/bizboost/prospects', label: 'יעדים', icon: Users },
   { to: '/bizboost/outreach', label: 'מכירות', icon: Send },
+  { to: '/bizboost/marketing', label: 'שיווק', icon: Megaphone },
   { to: '/bizboost/pricing', label: 'מחירים', icon: CreditCard },
 ];
 
