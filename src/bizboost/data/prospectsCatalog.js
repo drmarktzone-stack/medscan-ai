@@ -3,6 +3,8 @@
  * סטטוס ברירת מחדל: prospect — לא אישור. רק leads עם status=approved מוצגים כ"מאשרים".
  */
 
+import { generateProspectSeeds, mergeCatalog } from '../lib/prospectGenerator.js';
+
 export const PROSPECT_CATEGORIES = [
   { id: 'marketing', labelHe: 'שיווק דיגיטלי', icon: '📣' },
   { id: 'professional', labelHe: 'שירותים מקצועיים', icon: '💼' },
@@ -16,7 +18,9 @@ export const PROSPECT_CATEGORIES = [
 
 /** @typedef {'prospect'|'contacted'|'approved'|'declined'} ProspectStatus */
 
-export const PROSPECTS_CATALOG = [
+
+/** קטלוג בסיס מאומת */
+const PROSPECTS_BASE = [
   // ── שיווק דיגיטלי ──
   { id: 'nwmedia', name: 'New Way Media', url: 'https://nwmedia.co.il', category: 'marketing', industry: 'שיווק דיגיטלי', email: 'info@nwmedia.co.il', phone: '054-497-1500', whatsapp: '972544971500', recommendedTool: 'LeadBot', gaps: ['טופס ארוך', 'מעקב לא אוטומטי'], outreachAngle: 'LeadBot יענה ללידים תוך 30 שניות גם בלילה', status: 'prospect', priority: 'high' },
   { id: 'pinklime', name: 'PinkLime', url: 'https://pinklime.io', category: 'marketing', industry: 'פיתוח דיגיטלי', email: null, phone: null, whatsapp: null, recommendedTool: 'ContentFlow', gaps: ['CTA כללי', 'פחות SEO עברי'], outreachAngle: 'תוכן עברי ל-LemonAid', status: 'prospect', priority: 'high' },
@@ -102,6 +106,9 @@ export const PROSPECTS_CATALOG = [
   { id: 'growthhack', name: 'GrowthHack IL', url: 'https://growthhack.co.il', category: 'marketing', industry: 'Growth', email: null, phone: null, whatsapp: null, recommendedTool: 'LeadBot', gaps: ['experiments'], outreachAngle: 'LeadBot A/B', status: 'prospect', priority: 'medium' },
   { id: 'funnelpro', name: 'FunnelPro', url: 'https://funnelpro.co.il', category: 'marketing', industry: 'Funnels', email: null, phone: null, whatsapp: null, recommendedTool: 'ConvertScan', gaps: ['funnel audit'], outreachAngle: 'ConvertScan per funnel step', status: 'prospect', priority: 'medium' },
 ];
+
+/** קטלוג מלא: בסיס + ~200 יעדים מיוצרים (דורשים מחקר קשר לפני שליחה) */
+export const PROSPECTS_CATALOG = mergeCatalog(PROSPECTS_BASE, generateProspectSeeds(200));
 
 /** יעדים עם פרטי קשר ידועים — עדיפות לoutreach */
 export function prospectsWithContact() {

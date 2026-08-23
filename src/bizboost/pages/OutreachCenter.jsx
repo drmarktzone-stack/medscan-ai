@@ -19,7 +19,7 @@ const STATUS_UI = {
 
 export default function OutreachCenter() {
   const [statusMap, setStatusMap] = useState({});
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('whatsapp');
   const [copiedId, setCopiedId] = useState(null);
 
   useEffect(() => {

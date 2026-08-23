@@ -61,9 +61,10 @@ export default function ProspectsPage() {
           </div>
         </section>
       ) : (
-        <div className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
-          אין מאשרים עדיין — כל {stats.total} היעדים בסטטוס &quot;פוטנציאל&quot;. שליחת outreach תעדכן ל-contacted/approved.
-        </div>
+            <div className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
+              אין מאשרים עדיין. יש {stats.total} יעדים ({stats.withContact} עם קשר מוכן לשליחה).
+              יעדים מיוצרים דורשים מחקר טלפון/WhatsApp לפני outreach — התחילו מ-/bizboost/outreach.
+            </div>
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
