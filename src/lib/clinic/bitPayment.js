@@ -8,6 +8,8 @@ import {
   getBitMerchantPhone,
   getVisionPriceIls,
 } from "./paymentConfig.js";
+import { setVisionPending } from "./visionSubscription.js";
+import { getSupportWhatsApp, whatsAppShareUrl } from "./marketingConfig.js";
 
 export function bitPaymentSummary({ amountIls = getVisionPriceIls(), note = "MedScan Vision" } = {}) {
   const phone = getBitMerchantPhone();
@@ -55,16 +57,27 @@ export function copyToClipboard(text) {
 
 const PENDING_KEY = "medscan_bit_pending_v1";
 
-export function markBitPaymentPending({ amountIls, phone }) {
+export function markBitPaymentPending({ amountIls, phone, note = "MedScan Vision" }) {
   try {
     localStorage.setItem(PENDING_KEY, JSON.stringify({
       amountIls,
       phone,
       at: new Date().toISOString(),
     }));
+    setVisionPending({ amountIls, phone });
   } catch {
     /* ignore */
   }
+}
+
+/** Open WhatsApp to merchant after customer marks paid. */
+export function notifyMerchantViaWhatsApp({ amountIls, note = "MedScan Vision" }) {
+  if (typeof window === "undefined") return false;
+  const support = getSupportWhatsApp();
+  if (!support) return false;
+  const text = `שלום, שילמתי עבור ${note}\nסכום: ₪${amountIls}\nאנא שלחו קוד פתיחה ל-MedScan Vision.`;
+  window.open(whatsAppShareUrl(text, support), "_blank", "noopener,noreferrer");
+  return true;
 }
 
 export function clearBitPaymentPending() {

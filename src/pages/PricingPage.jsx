@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 import { CreditCard, Sparkles, Smartphone, ExternalLink, Wallet } from "lucide-react";
 import AppTopBar from "@/components/journey/AppTopBar";
 import PageHero from "@/components/journey/PageHero";
-import { VISION_BILLING_GROUP } from "@/lib/clinic/billingGroups";
+import { visionPaywallOn } from "@/lib/clinic/billingGroups";
 import { isBitConfigured, getVisionPriceIls } from "@/lib/clinic/paymentConfig";
 import { useI18n } from "@/lib/i18n";
 
 export default function PricingPage() {
   const { t } = useI18n();
-  const visionOpen = !VISION_BILLING_GROUP.paywall_enabled;
+  const visionOpen = !visionPaywallOn();
   const bitReady = isBitConfigured();
   const price = getVisionPriceIls();
 

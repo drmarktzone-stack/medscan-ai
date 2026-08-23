@@ -13,6 +13,7 @@ import { PatientSessionProvider } from '@/lib/doctorped/patientSession';
 import { ClinicProfileProvider } from '@/lib/clinic/profileContext';
 import { routerBasename } from '@/lib/clinic/standalone';
 
+import VisionPaywallGate from "@/components/payment/VisionPaywallGate";
 import LaunchGuidePage from '@/pages/LaunchGuidePage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import PricingPage from '@/pages/PricingPage';
@@ -87,12 +88,14 @@ const AuthenticatedApp = () => {
         <Route element={<RoleGate />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/ecg" element={<ECGAnalysis />} />
-          <Route path="/ecg-compare" element={<ECGComparison />} />
+          <Route element={<VisionPaywallGate />}>
+            <Route path="/ecg" element={<ECGAnalysis />} />
+            <Route path="/ecg-compare" element={<ECGComparison />} />
+            <Route path="/skin" element={<SkinAnalysis />} />
+            <Route path="/radiology" element={<RadiologyAnalysis />} />
+          </Route>
           <Route path="/ecg-validate" element={<ECGValidation />} />
           <Route path="/skin-validate" element={<SkinValidation />} />
-          <Route path="/skin" element={<SkinAnalysis />} />
-          <Route path="/radiology" element={<RadiologyAnalysis />} />
           <Route path="/labs" element={<LabInterpreter />} />
           <Route path="/patient-context" element={<PatientContext />} />
           <Route path="/protocols" element={<ProtocolRunner />} />

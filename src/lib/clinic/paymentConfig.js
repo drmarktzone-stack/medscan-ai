@@ -40,3 +40,18 @@ export function getGrowConfig() {
 export function getStripePaymentLink() {
   return String(import.meta.env?.VITE_STRIPE_PAYMENT_LINK || "").trim() || null;
 }
+
+export function getVisionUnlockCode() {
+  return String(import.meta.env?.VITE_VISION_UNLOCK_CODE || "").trim() || null;
+}
+
+export function verifyVisionUnlockCode(input) {
+  const expected = getVisionUnlockCode();
+  if (!expected) return false;
+  return String(input || "").trim() === expected;
+}
+
+export function getVisionSubscriptionDays() {
+  const n = Number(import.meta.env?.VITE_VISION_SUBSCRIPTION_DAYS ?? 30);
+  return Number.isFinite(n) && n > 0 ? Math.round(n) : 30;
+}
