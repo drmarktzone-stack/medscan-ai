@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardCheck, Plus, Trash2, ChevronDown, ShieldCheck, CalendarPlus } from "lucide-react";
+import { ClipboardCheck, Plus, Trash2, ChevronDown, ShieldCheck, CalendarPlus, Clock, ListChecks } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import JourneyTimeline, { JourneyBackLink } from "@/components/journey/JourneyTimeline";
 import SectionCard from "@/components/journey/SectionCard";
+import VisitPrepPanel from "@/components/journey/VisitPrepPanel";
+import ResultsWaitPanel from "@/components/journey/ResultsWaitPanel";
+import { serviceFromFollowUpType } from "@/lib/medscan/journey/appointmentCatalog";
 import { useI18n } from "@/lib/i18n";
 import {
   FOLLOWUP_TYPES,
@@ -31,6 +34,7 @@ export default function ParentFollowUp() {
   const [type, setType] = useState("results");
   const [dueDate, setDueDate] = useState("");
   const [tipsOpen, setTipsOpen] = useState(false);
+  const [prepService, setPrepService] = useState("");
 
   const stats = followUpStats(items);
 
@@ -109,6 +113,19 @@ export default function ParentFollowUp() {
           </form>
         </SectionCard>
 
+        <SectionCard titleKey="wait.section_title" descKey="wait.section_desc" icon={Clock}>
+          <ResultsWaitPanel />
+        </SectionCard>
+
+        {prepService ? (
+          <SectionCard titleKey="prep.section_title" descKey="prep.section_desc" icon={ClipboardCheck}>
+            <VisitPrepPanel serviceId={prepService} />
+            <button type="button" className="mt-2 text-xs font-bold text-slate-500" onClick={() => setPrepService("")}>
+              {t("prep.close")}
+            </button>
+          </SectionCard>
+        ) : null}
+
         <section className="space-y-2.5">
           <h2 className="clinic-h2 text-sm px-1">{t("journey.follow_list_title")}</h2>
           {items.length === 0 ? (
@@ -149,6 +166,14 @@ export default function ParentFollowUp() {
                     <CalendarPlus className="w-3.5 h-3.5" />
                     {t("appt.book_from_followup")}
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => setPrepService(serviceFromFollowUpType(item.type))}
+                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[11px] font-bold bg-white/80 border border-sky-200 text-sky-900"
+                  >
+                    <ListChecks className="w-3.5 h-3.5" />
+                    {t("prep.open_checklist")}
+                  </button>
                   {FOLLOWUP_STATUS.map((s) => (
                     <button
                       key={s}

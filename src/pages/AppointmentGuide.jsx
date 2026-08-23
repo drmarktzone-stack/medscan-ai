@@ -20,6 +20,7 @@ import {
   formatPreferredSummary,
 } from "@/lib/medscan/journey/appointmentPlanner";
 import AppointmentDestinationCard from "@/components/journey/AppointmentDestinationCard";
+import VisitPrepPanel from "@/components/journey/VisitPrepPanel";
 import { addFollowUp } from "@/lib/medscan/journey/followUpStore";
 
 const URGENCY_OPTIONS = Object.freeze([
@@ -302,14 +303,7 @@ export default function AppointmentGuide({ initialService = "", initialUrgency =
           ))}
 
           {plan.prepKeys.length > 0 ? (
-            <div className="clinic-panel space-y-2">
-              <p className="text-sm font-bold text-slate-900">{t("appt.prep_title")}</p>
-              <ul className="list-disc pr-5 text-xs text-slate-700 space-y-1">
-                {plan.prepKeys.map((key) => (
-                  <li key={key}>{t(key)}</li>
-                ))}
-              </ul>
-            </div>
+            <VisitPrepPanel serviceId={serviceId} />
           ) : null}
 
           <p className="text-[10px] text-slate-500 leading-relaxed">{t("appt.plan_disclaimer")}</p>

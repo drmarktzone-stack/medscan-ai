@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Stethoscope, ClipboardCheck, CalendarPlus, ArrowLeft, ArrowRight } from "lucide-react";
+import { Heart, Stethoscope, ClipboardCheck, CalendarPlus, Clock, ArrowLeft, ArrowRight } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import AppTopBar from "@/components/journey/AppTopBar";
 import PageHero from "@/components/journey/PageHero";
@@ -8,6 +8,7 @@ import JourneyPhaseCard from "@/components/journey/JourneyPhaseCard";
 import JourneyTimeline from "@/components/journey/JourneyTimeline";
 import { FAMILY_JOURNEY_PHASES } from "@/lib/clinic/journey";
 import { followUpStats, loadFollowUps } from "@/lib/medscan/journey/followUpStore";
+import { resultsWaitStats, loadResultsWait } from "@/lib/medscan/journey/resultsWaitStore";
 import { useI18n } from "@/lib/i18n";
 import { CLINICIAN_SWITCH_PATH } from "@/lib/clinic/account";
 
@@ -15,6 +16,7 @@ export default function ParentHub() {
   const { t, dir } = useI18n();
   const Arrow = dir === "rtl" ? ArrowLeft : ArrowRight;
   const stats = useMemo(() => followUpStats(loadFollowUps()), []);
+  const waitStats = useMemo(() => resultsWaitStats(loadResultsWait()), []);
 
   return (
     <div className="clinic-page">
@@ -47,6 +49,24 @@ export default function ParentHub() {
           </div>
           <Arrow className="w-4 h-4 text-sky-700 shrink-0" />
         </Link>
+
+        {waitStats.overdue > 0 ? (
+          <Link
+            to="/parent/follow-up"
+            className="clinic-panel flex items-center gap-3 !border-red-200 !bg-red-50/90 hover:!bg-red-50"
+          >
+            <div className="clinic-icon w-10 h-10 tone-rose">
+              <Clock className="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-extrabold text-red-900">
+                {t("wait.overdue_banner", { count: waitStats.overdue })}
+              </p>
+              <p className="text-[11px] text-red-800/80 mt-0.5">{t("wait.overdue_banner_hint")}</p>
+            </div>
+            <Arrow className="w-4 h-4 text-red-700 shrink-0" />
+          </Link>
+        ) : null}
 
         {stats.pending > 0 ? (
           <Link

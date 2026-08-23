@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FlaskConical, Loader2, Upload, AlertTriangle, Plus, Trash2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
@@ -12,6 +13,7 @@ import { usePatientSession } from "@/lib/doctorped/patientSession";
 import { parseAgeParts, hasAgeParts } from "@/lib/clinic/ageParts.js";
 import { runLabInterpreter } from "@/lib/medscan/engines/labInterpreter";
 import { buildParentLabHelp } from "@/lib/medscan/journey/parentLabHelp";
+import { addResultsWait } from "@/lib/medscan/journey/resultsWaitStore";
 import { createVisionInvokeLLM, tryBase44Core } from "@/lib/medscan/llmAdapter";
 import { runLabScan, finalizeScan, LAB_SCAN_SCHEMA } from "@/lib/labScanEngine";
 import { downscaleImageFile } from "@/lib/imageOptimize";
@@ -27,6 +29,7 @@ const emptyRow = () => ({
 
 export default function ParentResults() {
   const { t, lang } = useI18n();
+  const navigate = useNavigate();
   const { session, patch } = usePatientSession();
   const fileRef = useRef(null);
 
@@ -279,6 +282,20 @@ export default function ParentResults() {
               ) : null,
             )}
             <p className="text-[11px] text-slate-600">{t("parent.not_doctor")}</p>
+            <button
+              type="button"
+              className="w-full rounded-xl border border-sky-200 bg-sky-50 py-2.5 text-xs font-bold text-sky-900"
+              onClick={() => {
+                addResultsWait({
+                  title: t("wait.from_lab_analysis"),
+                  testType: "blood_routine",
+                  orderedAt: new Date().toISOString().slice(0, 10),
+                });
+                navigate("/parent/follow-up");
+              }}
+            >
+              {t("wait.track_from_results")}
+            </button>
             <PrintDraftButton />
           </div>
         ) : null}
