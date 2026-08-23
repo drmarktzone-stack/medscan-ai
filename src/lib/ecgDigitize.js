@@ -100,65 +100,61 @@ export function rateFromPeaks(peaks, sampleRateHz) {
  * Returns { ok, calibration, hr_measured, confidence, measurement_source, quality }.
  * Fails safe (ok:false) whenever anything is uncertain.
  */
-export async function digitizeFromImage(imgEl, { speedMmS = 25 } = {}) {
-  if (typeof document === "undefined" || !imgEl) return { ok: false, reason: "no_dom" };
-  const w = imgEl.naturalWidth || imgEl.width;
-  const h = imgEl.naturalHeight || imgEl.height;
-  if (!w || !h) return { ok: false, reason: "no_pixels" };
+/**
+ * Pure ImageData digitizer (node + browser). Pink grid or gray grid.
+ * Fails closed unless spacing and trace coverage are plausible.
+ */
+export function digitizeFromImageData(imageData, { speedMmS = 25 } = {}) {
+  const w = imageData?.width;
+  const h = imageData?.height;
+  const data = imageData?.data;
+  if (!w || !h || !data) return { ok: false, reason: "no_pixels" };
 
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  ctx.drawImage(imgEl, 0, 0, w, h);
-  let data;
-  try {
-    data = ctx.getImageData(0, 0, w, h).data;
-  } catch {
-    return { ok: false, reason: "tainted_canvas" }; // cross-origin without CORS
-  }
-
-  // Grid detection: project "pinkness" (grid lines are reddish) per column.
-  const colProj = new Array(w).fill(0);
-  const darkProj = new Array(w).fill(0); // trace darkness per column (for coverage)
+  const pinkProj = new Array(w).fill(0);
+  const grayProj = new Array(w).fill(0);
+  const darkProj = new Array(w).fill(0);
   const traceY = new Array(w).fill(null);
+
   for (let x = 0; x < w; x++) {
     let pink = 0;
+    let gray = 0;
     let darkestVal = 255;
     let darkestY = null;
     for (let y = 0; y < h; y++) {
       const i = (y * w + x) * 4;
       const r = data[i], g = data[i + 1], b = data[i + 2];
-      if (r > 150 && r - g > 30 && r - b > 20) pink++; // reddish grid line
       const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      if (r > 150 && r - g > 30 && r - b > 20) pink += 1;
+      if (lum > 155 && lum < 225 && Math.abs(r - g) < 45 && Math.abs(r - b) < 45) gray += 1;
       if (lum < darkestVal && lum < 110) {
         darkestVal = lum;
         darkestY = y;
       }
     }
-    colProj[x] = pink;
+    pinkProj[x] = pink;
+    grayProj[x] = gray;
     if (darkestY != null) {
       darkProj[x] = 1;
       traceY[x] = darkestY;
     }
   }
 
-  const pxPerSmallBox = dominantSpacing(colProj, 4, 60);
+  const pinkBox = dominantSpacing(pinkProj, 4, 60);
+  const grayBox = dominantSpacing(grayProj, 4, 60);
+  const pxPerSmallBox = pinkBox || grayBox;
+  const gridSource = pinkBox ? "pink" : grayBox ? "gray" : null;
   const coverage = darkProj.reduce((s, v) => s + v, 0) / w;
 
-  // Fail-safe gates: need a plausible grid and enough trace.
   if (!pxPerSmallBox || pxPerSmallBox < 4 || coverage < 0.5) {
     return {
       ok: false,
       reason: !pxPerSmallBox ? "grid_not_detected" : coverage < 0.5 ? "low_trace_coverage" : "calibration_uncertain",
-      quality: { grid_px: pxPerSmallBox, coverage: round2(coverage) },
+      quality: { grid_px: pxPerSmallBox, coverage: round2(coverage), grid_source: gridSource },
     };
   }
 
-  // Calibration: 1 small box = 0.04 s at 25 mm/s. px→seconds.
   const secPerSmallBox = 0.04 * (25 / speedMmS);
-  const sampleRateHz = pxPerSmallBox / secPerSmallBox; // px are our "samples" along x
-  // Build a continuous 1-D signal from the trace (invert y so up = positive).
+  const sampleRateHz = pxPerSmallBox / secPerSmallBox;
   const signal = [];
   for (let x = 0; x < w; x++) signal.push(traceY[x] == null ? null : h - traceY[x]);
   const filled = interpolateGaps(signal);
@@ -174,13 +170,41 @@ export async function digitizeFromImage(imgEl, { speedMmS = 25 } = {}) {
   return {
     ok: hr != null,
     reason: hr == null ? "rate_undetermined" : null,
-    calibration: { px_per_small_box: pxPerSmallBox, sec_per_small_box: round4(secPerSmallBox), speed_mm_s: speedMmS },
+    calibration: {
+      px_per_small_box: pxPerSmallBox,
+      sec_per_small_box: round4(secPerSmallBox),
+      speed_mm_s: speedMmS,
+      sample_rate_hz: round2(sampleRateHz),
+      grid_source: gridSource,
+    },
     hr_measured: hr,
-    intervals: null, // A2b (delineation) — not yet validated
+    intervals: null,
     confidence,
     measurement_source: "cv_digitized",
-    quality: { grid_px: pxPerSmallBox, coverage: round2(coverage), r_peaks: peaks.length },
+    quality: { grid_px: pxPerSmallBox, coverage: round2(coverage), r_peaks: peaks.length, grid_source: gridSource },
+    signal: filled,
+    peaks,
   };
+}
+
+export async function digitizeFromImage(imgEl, { speedMmS = 25 } = {}) {
+  if (typeof document === "undefined" || !imgEl) return { ok: false, reason: "no_dom" };
+  const w = imgEl.naturalWidth || imgEl.width;
+  const h = imgEl.naturalHeight || imgEl.height;
+  if (!w || !h) return { ok: false, reason: "no_pixels" };
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(imgEl, 0, 0, w, h);
+  let imageData;
+  try {
+    imageData = ctx.getImageData(0, 0, w, h);
+  } catch {
+    return { ok: false, reason: "tainted_canvas" };
+  }
+  return digitizeFromImageData(imageData, { speedMmS });
 }
 
 function interpolateGaps(sig) {

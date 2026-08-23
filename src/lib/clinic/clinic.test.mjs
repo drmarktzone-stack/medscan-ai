@@ -287,6 +287,7 @@ t('עור במכשיר מחזיר טיוטה בלי שם אבחנה', () => {
   assert((engine.structured.differential_diagnoses || []).length === 0);
   const ui = assembleSkinResult(engine, [], { fileUrl: 'blob:test', locale: 'he' });
   assert(ui.analysis && ui.summary);
+  assert(ui.severity !== 'normal', 'on-device skin must not be called normal');
   assert(!/מלנומה|פסוריאזיס|melanoma/i.test(JSON.stringify(ui)));
 });
 
@@ -301,6 +302,8 @@ t('צילום במכשיר מחזיר טיוטת צפיפויות בלי אבח�
   assert((engine.structured.key_abnormalities || []).length === 0);
   const ui = assembleRadiologyResult(engine, [], { fileUrl: 'blob:test', locale: 'he' });
   assert(ui.analysis && ui.summary);
+  assert(ui.severity !== 'normal', 'on-device radiology must not be called normal');
+  assert(!/בגבולות הנורמה/.test(ui.analysis));
   assert((engine.structured.differential_diagnoses || []).length === 0);
   assert(!(ui.matchedCases || []).some((c) => /pneumothorax|דלקת ריאות/i.test(c.title || '')));
 });
@@ -312,6 +315,8 @@ t('אק״ג במכשיר לא ממציא PR/QRS בלי כיול', () => {
   const ui = assembleEcgResult(reading, [], { locale: 'he' });
   assert(ui.analysis);
   assert(!/\bPR=\d/.test(ui.analysis));
+  assert(!/ללא ממצא פתולוגי/.test(ui.summary), ui.summary);
+  assert(ui.severity !== 'normal', 'uncalibrated ECG must not be green-normal');
   assert(ui.microReading === reading);
 });
 

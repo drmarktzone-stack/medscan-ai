@@ -100,6 +100,18 @@ t("QTc 520 → long_qt אדום, severity urgent", () => {
   assert(/QT/i.test(r.summary), "summary mentions QT: " + r.summary);
 });
 
+t("תרשים לא-מכויל בלי מורפולוגיה → לא נקרא תקין ולא 'בלי ממצא'", () => {
+  const reading = mkReading({
+    measured: { measurable: false, intervals: { pr_ms: null, qrs_ms: null, qt_ms: null }, rate: { hr_bpm: null, rr_ms: null }, qtc: { bazett: null, fridericia: null }, axis: { degrees: null, label_he: "לא ניתן לחשב" } },
+    interpretation: { rhythm: { rhythm_he: "קצב סינוס" }, conduction: { type: "unknown" }, interval_warnings: [], summary_he: "" },
+    obs: { regular: null, p_before_each_qrs: null, st_elevation_leads: [], st_depression_leads: [], t_inversion_leads: [], pathological_q_leads: [] },
+  });
+  const r = assembleEcgResult(reading, KB, { sex: "male", fileUrl: "http://x/ecg.png" });
+  assert(!/ללא ממצא פתולוגי/.test(r.summary), r.summary);
+  assert(!/בגבולות הנורמה/.test(r.analysis), r.analysis);
+  assert(r.severity !== "normal", "incomplete ECG must not be green");
+});
+
 t("תרשים לא-מכויל (measurable:false) → uncertainty high, אך מזהה STEMI ממורפולוגיה", () => {
   const reading = mkReading({
     measured: { measurable: false, intervals: { pr_ms: null, qrs_ms: null, qt_ms: null }, rate: { hr_bpm: null, rr_ms: null }, qtc: { bazett: null, fridericia: null }, axis: { degrees: null, label_he: "לא ניתן לחשב" } },
