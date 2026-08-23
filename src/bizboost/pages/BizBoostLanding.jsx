@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import BizBoostLayout from '@/bizboost/components/BizBoostLayout';
-import { COMMON_PROBLEMS, PRICING_PLANS, prospectStats } from '@/bizboost/data/researchAnalysis';
+import { COMMON_PROBLEMS, PRICING_PLANS, STANDALONE_SERVICES, prospectStats } from '@/bizboost/data/researchAnalysis';
 import { PROSPECTS_CATALOG } from '@/bizboost/data/prospectsCatalog';
 import { MessageCircle, PenLine, ScanSearch, CheckCircle2, ArrowLeft } from 'lucide-react';
 
@@ -113,12 +113,24 @@ export default function BizBoostLanding() {
         </div>
       </section>
 
-      <section className="py-12 text-center">
-        <h2 className="text-2xl font-bold mb-6">חבילות מנוי</h2>
+      <section className="py-12">
+        <h2 className="text-2xl font-bold mb-2 text-center">מחיר לפי שירות</h2>
+        <p className="text-white/60 text-center mb-6 text-sm">כל כלי בנפרד — או חבילה עם חיסכון</p>
+        <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-10">
+          {STANDALONE_SERVICES.map((s) => (
+            <Link key={s.id} to={s.path} className="rounded-xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition-colors text-center">
+              <h3 className="font-bold text-lg">{s.nameHe}</h3>
+              <div className="text-2xl font-black my-2">{s.currency}{s.price}<span className="text-sm font-normal text-white/60">/חודש</span></div>
+              <p className="text-xs text-white/60">{s.taglineHe}</p>
+            </Link>
+          ))}
+        </div>
+        <h3 className="text-lg font-bold mb-4 text-center">חבילות משולבות</h3>
         <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {PRICING_PLANS.map((plan) => (
             <div key={plan.id} className={`rounded-2xl border p-6 ${plan.popular ? 'border-violet-500 bg-violet-500/10' : 'border-white/10 bg-white/5'}`}>
               {plan.popular && <div className="text-xs text-violet-300 mb-2">הכי פופולרי</div>}
+              {plan.savings > 0 && <div className="text-xs text-emerald-400 mb-1">חיסכון ₪{plan.savings}</div>}
               <h3 className="text-xl font-bold">{plan.nameHe}</h3>
               <div className="text-3xl font-black my-2">{plan.currency}{plan.price}<span className="text-sm font-normal text-white/60">/{plan.period}</span></div>
               <ul className="text-sm text-white/70 space-y-1 text-right">
@@ -130,7 +142,7 @@ export default function BizBoostLanding() {
           ))}
         </div>
         <Link to="/bizboost/pricing" className="inline-block mt-8 px-6 py-3 rounded-xl bg-white text-slate-900 font-semibold hover:bg-white/90">
-          התחילו 14 יום חינם
+          כל המחירים + תוספות
         </Link>
       </section>
     </BizBoostLayout>
