@@ -1,43 +1,44 @@
-# AgentReceipt — Launch kit
+# AgentReceipt — Launch (live)
 
-Product URL (after deploy): `https://<your-domain>/agentreceipt`
+**Live URL:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 
-## One-liner (HE)
+| Page | URL |
+|------|-----|
+| Landing | /agentreceipt |
+| Checkout (Bit+WhatsApp) | /agentreceipt/checkout |
+| Pricing | /agentreceipt/pricing |
+| Marketing kit | /agentreceipt/marketing |
 
-AgentReceipt = receipt מובנה + gate אחרי כל סוכן AI (Cursor/Cloud/Lovable). build נכשל → handoff חסום.
+## Sales flow (active)
 
-## One-liner (EN)
+1. Customer opens `/agentreceipt/checkout`
+2. Fills email → WhatsApp opens with pre-filled message
+3. Pays ₪149 Bit to **052-888-5800**
+4. Sends screenshot in same WhatsApp thread
+5. Manual activation within 24h
 
-AgentReceipt = structured proof-of-done + gate after each AI agent. Failed build → next agent blocked.
+## Outreach done by agent
 
-## Free tier
+- [ ] Merge PR #12 → GitHub Pages deploy
+- [ ] GitHub Issue: launch tracker
+- [ ] PR comment with live links
 
-- OSS in MedScan repo
-- CLI + local ledger
-- `/agentreceipt/docs`
+## Copy-paste for directories
 
-## Paid (waitlist now)
+**Name:** AgentReceipt  
+**Tagline:** Proof-of-done for AI coding agents  
+**URL:** https://drmarktzone-stack.github.io/medscan-ai/agentreceipt  
+**Category:** Developer Tools, AI Agents  
 
-- Team ₪149/mo — shared ledger, CI gate, dashboard
-- Compliance ₪490/mo — audit, MedScan wedge
+**Description (EN):**  
+When your Cursor or Cloud agent says "done", there's no structured proof that build/tests passed. AgentReceipt runs verification, stores a machine-readable JSON receipt, and blocks the next agent handoff on failure. Free open-source CLI; Team plan via Bit.
 
-Collect waitlist: `/agentreceipt/pricing` (localStorage export from console)
+## WhatsApp broadcast
 
-## Submit today (free)
+Open `/agentreceipt/marketing` → "שתף ב-WhatsApp"
 
-1. Product Hunt — use marketing page copy
-2. There's An AI For That
-3. Show HN — "Proof-of-done receipts for AI coding agents"
-4. Reddit r/cursor, r/ClaudeAI — honest post, link to docs
+## Honest limits
 
-## First paying customer (no Stripe yet)
-
-1. Manual Bit / bank transfer
-2. Send ledger export + onboarding call
-3. Wire Stripe when 3+ waitlist confirm
-
-## Do not claim
-
-- "Connects all agents in the world"
-- "Insurance for agents"
-- Payment processing live (waitlist only)
+- No automated Stripe yet
+- Sales = WhatsApp + Bit manual
+- You (Dr.) must reply to WhatsApp to close sales

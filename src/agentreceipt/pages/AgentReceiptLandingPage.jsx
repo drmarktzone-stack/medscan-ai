@@ -36,6 +36,12 @@ export default function AgentReceiptLandingPage() {
           >
             מחירים + Waitlist
           </Link>
+          <Link
+            to="/agentreceipt/checkout"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm"
+          >
+            קנה Team — Bit
+          </Link>
         </div>
       </section>
 

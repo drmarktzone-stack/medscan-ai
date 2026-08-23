@@ -71,6 +71,7 @@ import AgentReceiptPricingPage from '@/agentreceipt/pages/AgentReceiptPricingPag
 import AgentReceiptDocsPage from '@/agentreceipt/pages/AgentReceiptDocsPage';
 import AgentReceiptConsolePage from '@/agentreceipt/pages/AgentReceiptConsolePage';
 import AgentReceiptMarketingPage from '@/agentreceipt/pages/AgentReceiptMarketingPage';
+import AgentReceiptCheckoutPage from '@/agentreceipt/pages/AgentReceiptCheckoutPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -106,6 +107,7 @@ const AuthenticatedApp = () => {
       <Route path="/agentreceipt/docs" element={<AgentReceiptDocsPage />} />
       <Route path="/agentreceipt/console" element={<AgentReceiptConsolePage />} />
       <Route path="/agentreceipt/marketing" element={<AgentReceiptMarketingPage />} />
+      <Route path="/agentreceipt/checkout" element={<AgentReceiptCheckoutPage />} />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
