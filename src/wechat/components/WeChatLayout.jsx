@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { MessageCircle, Users, Compass, User, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import SyncBadge from '@/wechat/components/SyncBadge.jsx';
 
 const TABS = [
   { to: '/wechat', label: '微信', labelHe: 'צ\'אטים', icon: MessageCircle, end: true },
@@ -50,7 +51,10 @@ export function ChatsHeader({ onNewChat }) {
   return (
     <header className="sticky top-0 z-40 bg-[#ededed] border-b border-[#d9d9d9]">
       <div className="max-w-lg mx-auto flex items-center justify-between h-11 px-4">
-        <h1 className="font-semibold text-[17px] text-[#191919]">微信 WeChat</h1>
+        <div className="flex items-center gap-2 min-w-0">
+          <h1 className="font-semibold text-[17px] text-[#191919]">微信 WeChat</h1>
+          <SyncBadge />
+        </div>
         <button
           type="button"
           onClick={onNewChat}

@@ -1,8 +1,20 @@
-import { createContext, createElement, useContext, useMemo, useSyncExternalStore } from 'react';
+import { createContext, createElement, useContext, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { createSeedState, ME_ID } from './seedData.js';
 import { uid } from './format.js';
+import { directChatId } from './chatId.js';
+import {
+  isWeChatSyncAvailable,
+  startWeChatSync,
+  pushMessage,
+  pushMoment,
+  updateMomentRemote,
+  upsertProfile,
+  fetchProfileByWechatId,
+} from './sync.js';
 
-const STORAGE_KEY = 'wechat_mvp_v2';
+const STORAGE_KEY = 'wechat_mvp_v3';
+
+const defaultSyncMeta = { mode: 'local', error: null, lastSync: null };
 
 function loadState() {
   try {
@@ -11,14 +23,17 @@ function loadState() {
   } catch {
     /* ignore */
   }
-  return createSeedState();
+  return { ...createSeedState(), syncMeta: { ...defaultSyncMeta } };
 }
 
 function saveState(state) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const { syncMeta, ...persistable } = state;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...persistable, syncMeta: syncMeta || defaultSyncMeta }));
 }
 
-let state = typeof localStorage !== 'undefined' ? loadState() : createSeedState();
+let state = typeof localStorage !== 'undefined' ? loadState() : { ...createSeedState(), syncMeta: { ...defaultSyncMeta } };
+if (!state.syncMeta) state = { ...state, syncMeta: { ...defaultSyncMeta } };
+
 const listeners = new Set();
 
 function emit() {
@@ -40,9 +55,28 @@ function getSnapshot() {
   return state;
 }
 
+function setSyncMeta(meta) {
+  setState((s) => ({ ...s, syncMeta: { ...s.syncMeta, ...meta } }));
+}
+
+function applyRemotePatch(patch) {
+  setState((s) => {
+    const next = typeof patch === 'function' ? patch(s) : { ...s, ...patch };
+    return { ...next, syncMeta: s.syncMeta };
+  });
+}
+
+function resolveSyncChatId(chat, snapshot = state) {
+  if (chat?.syncChatId) return chat.syncChatId;
+  if (chat?.type !== 'direct') return null;
+  const contact = getContact(snapshot, chat.contactId);
+  if (!contact?.wechatId || contact.isGroup) return null;
+  return directChatId(snapshot.profile.wechatId, contact.wechatId);
+}
+
 /** Reset to demo seed (for testing / demo). */
 export function resetWeChatStore() {
-  state = createSeedState();
+  state = { ...createSeedState(), syncMeta: { ...defaultSyncMeta } };
   saveState(state);
   emit();
 }
@@ -69,6 +103,19 @@ function sortChats(chats) {
   });
 }
 
+function syncPushMessage(msg, chatId) {
+  const chat = state.chats.find((c) => c.id === chatId);
+  const syncId = resolveSyncChatId(chat);
+  if (!syncId || !isWeChatSyncAvailable()) return;
+  pushMessage({
+    id: msg.id,
+    chatId: syncId,
+    senderWechatId: state.profile.wechatId,
+    content: msg.content,
+    type: msg.type,
+  }).catch(() => setSyncMeta({ mode: 'offline', error: 'push_failed' }));
+}
+
 export const wechatActions = {
   sendMessage(chatId, content, senderId = ME_ID) {
     if (!content?.trim()) return;
@@ -88,6 +135,7 @@ export const wechatActions = {
         ),
       ),
     }));
+    if (senderId === ME_ID) syncPushMessage(msg, chatId);
   },
 
   markChatRead(chatId) {
@@ -111,53 +159,65 @@ export const wechatActions = {
       ...s,
       profile: { ...s.profile, ...patch },
     }));
+    if (isWeChatSyncAvailable()) {
+      upsertProfile({ ...state.profile, ...patch }).catch(() => {});
+    }
   },
 
   toggleMomentLike(momentId, userId = ME_ID) {
-    setState((s) => ({
-      ...s,
-      moments: s.moments.map((m) => {
+    setState((s) => {
+      const moments = s.moments.map((m) => {
         if (m.id !== momentId) return m;
         const likes = m.likes.includes(userId)
           ? m.likes.filter((id) => id !== userId)
           : [...m.likes, userId];
         return { ...m, likes };
-      }),
-    }));
+      });
+      const updated = moments.find((m) => m.id === momentId);
+      if (updated && isWeChatSyncAvailable()) {
+        updateMomentRemote(updated, s.profile.wechatId).catch(() => {});
+      }
+      return { ...s, moments };
+    });
   },
 
   addMomentComment(momentId, text, authorId = ME_ID) {
     if (!text?.trim()) return;
-    setState((s) => ({
-      ...s,
-      moments: s.moments.map((m) =>
+    setState((s) => {
+      const moments = s.moments.map((m) =>
         m.id === momentId
           ? {
               ...m,
               comments: [...m.comments, { id: uid('cm'), authorId, text: text.trim() }],
             }
           : m,
-      ),
-    }));
+      );
+      const updated = moments.find((m) => m.id === momentId);
+      if (updated && isWeChatSyncAvailable()) {
+        updateMomentRemote(updated, s.profile.wechatId).catch(() => {});
+      }
+      return { ...s, moments };
+    });
   },
 
   publishMoment(content, images = []) {
     const now = Date.now();
+    const moment = {
+      id: uid('mo'),
+      authorId: ME_ID,
+      content: content.trim(),
+      images,
+      likes: [],
+      comments: [],
+      time: now,
+    };
     setState((s) => ({
       ...s,
-      moments: [
-        {
-          id: uid('mo'),
-          authorId: ME_ID,
-          content: content.trim(),
-          images,
-          likes: [],
-          comments: [],
-          time: now,
-        },
-        ...s.moments,
-      ],
+      moments: [moment, ...s.moments],
     }));
+    if (isWeChatSyncAvailable()) {
+      pushMoment(moment, state.profile.wechatId).catch(() => {});
+    }
   },
 
   startChat(contactId) {
@@ -166,6 +226,11 @@ export const wechatActions = {
     );
     if (existing) return existing.id;
 
+    const contact = getContact(state, contactId);
+    const syncChatId = contact?.wechatId && !contact.isGroup
+      ? directChatId(state.profile.wechatId, contact.wechatId)
+      : null;
+
     const chatId = uid('chat');
     setState((s) => ({
       ...s,
@@ -173,6 +238,7 @@ export const wechatActions = {
         {
           id: chatId,
           contactId,
+          syncChatId,
           type: 'direct',
           pinned: false,
           muted: false,
@@ -206,6 +272,26 @@ export const wechatActions = {
       tags: [],
     };
     setState((s) => ({ ...s, contacts: [...s.contacts, contact] }));
+
+    if (isWeChatSyncAvailable()) {
+      fetchProfileByWechatId(id).then((res) => {
+        if (!res.ok || !res.data) return;
+        setState((s) => ({
+          ...s,
+          contacts: s.contacts.map((c) =>
+            c.wechatId?.toLowerCase() === id
+              ? {
+                  ...c,
+                  name: res.data.display_name || c.name,
+                  avatar: res.data.avatar || c.avatar,
+                  region: res.data.region || c.region,
+                }
+              : c,
+          ),
+        }));
+      }).catch(() => {});
+    }
+
     return { ok: true, contact, existed: false };
   },
 
@@ -228,9 +314,21 @@ const WeChatStoreContext = createContext(null);
 export function WeChatProvider({ children }) {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
+  useEffect(() => {
+    let stop = () => {};
+    startWeChatSync(snapshot.profile, {
+      onPatch: applyRemotePatch,
+      onStatus: setSyncMeta,
+    }).then((fn) => {
+      stop = fn || (() => {});
+    });
+    return () => stop();
+  }, [snapshot.profile.wechatId]);
+
   const value = useMemo(
     () => ({
       state: snapshot,
+      syncMeta: snapshot.syncMeta || defaultSyncMeta,
       actions: wechatActions,
     }),
     [snapshot],
@@ -253,7 +351,8 @@ export function useWeChatSearch(query) {
     const contacts = state.contacts.filter(
       (c) =>
         c.name.toLowerCase().includes(q) ||
-        (c.remark && c.remark.toLowerCase().includes(q)),
+        (c.remark && c.remark.toLowerCase().includes(q)) ||
+        (c.wechatId && c.wechatId.toLowerCase().includes(q)),
     );
     const contactIds = new Set(contacts.map((c) => c.id));
     const chats = state.chats.filter(
@@ -281,4 +380,4 @@ export function useSortedChats(filterQuery = '') {
   }, [state, filterQuery]);
 }
 
-export { ME_ID, sortChats };
+export { ME_ID, sortChats, resolveSyncChatId };

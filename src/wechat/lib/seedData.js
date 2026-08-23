@@ -29,6 +29,7 @@ export function createSeedState() {
     {
       id: 'chat-c1',
       contactId: 'c1',
+      syncChatId: 'direct:dr_samar:li_ming',
       type: 'direct',
       pinned: true,
       muted: false,
@@ -49,6 +50,7 @@ export function createSeedState() {
     {
       id: 'chat-c2',
       contactId: 'c2',
+      syncChatId: 'direct:dr_samar:sarah_chen',
       type: 'direct',
       pinned: false,
       muted: false,
@@ -59,6 +61,7 @@ export function createSeedState() {
     {
       id: 'chat-c3',
       contactId: 'c3',
+      syncChatId: 'direct:cohen_family:dr_samar',
       type: 'direct',
       pinned: false,
       muted: true,
@@ -69,6 +72,7 @@ export function createSeedState() {
     {
       id: 'chat-c5',
       contactId: 'c5',
+      syncChatId: 'direct:david_wu:dr_samar',
       type: 'direct',
       pinned: false,
       muted: false,
