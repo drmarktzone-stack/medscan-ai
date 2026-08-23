@@ -13,7 +13,7 @@ import { calculateCreditScore } from "../lib/creditScore.js";
 import { getPrimaryEmail } from "../lib/creditPassport.js";
 import { formatSavings } from "../lib/savingsCalculator.js";
 import { PROFESSION_TEMPLATES } from "../data/templates.js";
-import { Link } from "react-router-dom";
+import ShareBanner from "../components/ShareBanner";
 
 const MODE_ICONS = {
   chat: MessageSquare, image: Image, code: Code2, video: Video,
@@ -189,6 +189,7 @@ export default function AIWorkspace({ locale = "he" }) {
                 {locale === "he" ? "חבר Passport" : "Link Passport"}
               </Link>
             )}
+            <ShareBanner locale={locale} compact />
           </div>
         </div>
 

@@ -1,14 +1,14 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Sparkles, LayoutDashboard, Route, Settings, Mail, ArrowRight } from "lucide-react";
+import { Sparkles, LayoutDashboard, Route, Settings, Mail, ArrowRight, Crown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 const NAV = [
   { to: "/freeai/create", labelHe: "יצירה", labelEn: "Create", icon: Sparkles, end: false },
+  { to: "/freeai/pricing", labelHe: "Pro ₪20", labelEn: "Pro ₪20", icon: Crown, end: false },
   { to: "/freeai", labelHe: "בית", labelEn: "Home", icon: LayoutDashboard, end: true },
   { to: "/freeai/passport", labelHe: "Passport", labelEn: "Passport", icon: Mail, end: false },
   { to: "/freeai/studio", labelHe: "סטודיו", labelEn: "Studio", icon: Route, end: false },
-  { to: "/freeai/providers", labelHe: "ספקים", labelEn: "Providers", icon: Settings, end: false },
 ];
 
 export default function FreeAILayout({ children }) {

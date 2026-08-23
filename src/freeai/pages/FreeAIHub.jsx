@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Link } from "react-router-dom";
+import ShareBanner from "@/freeai/components/ShareBanner";
 import FreeAILayout from "@/freeai/components/FreeAILayout";
 import GenerationPanel from "@/freeai/components/GenerationPanel";
 import { getCreditsDashboard } from "@/freeai/lib/planner.js";
@@ -69,6 +69,10 @@ export default function FreeAIHub() {
             {locale === "he" ? "🧠 Credit Passport" : "🧠 Credit Passport"}
           </Link>
         </div>
+      </section>
+
+      <section className="mb-10 max-w-2xl mx-auto">
+        <ShareBanner locale={locale} />
       </section>
 
       <section className="grid grid-cols-3 gap-4 mb-10">

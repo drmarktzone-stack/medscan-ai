@@ -242,6 +242,26 @@ describe("Signup Orchestrator", () => {
   });
 });
 
+describe("Subscription & marketing", () => {
+  it("has pricing tiers", async () => {
+    const { PRICING } = await import("./lib/subscription.js");
+    assert.equal(PRICING.pro.priceIls, 20);
+    assert.equal(PRICING.free.priceIls, 0);
+  });
+
+  it("generates share message", async () => {
+    const { shareMessage } = await import("./lib/marketing.js");
+    const msg = shareMessage("he");
+    assert.ok(msg.includes("₪20"));
+    assert.ok(msg.includes("FreeAI"));
+  });
+
+  it("has outreach targets", async () => {
+    const { OUTREACH_TARGETS } = await import("./lib/marketing.js");
+    assert.ok(OUTREACH_TARGETS.length >= 5);
+  });
+});
+
 describe("Workspace engine", () => {
   it("has 7 modes", async () => {
     const { MODES } = await import("./lib/workspaceEngine.js");
