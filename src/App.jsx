@@ -53,6 +53,9 @@ import {
   ChronicPage, SyndromesPage, MetabolicPage, GeneticsPage, CsfPage,
   UltrasoundPage, EegPage, AudioPage, ReferralsPage,
 } from '@/pages/doctorped/tools';
+import FreeAIHub from '@/freeai/pages/FreeAIHub';
+import FreeAIPlannerPage from '@/freeai/pages/FreeAIPlannerPage';
+import FreeAIProvidersPage from '@/freeai/pages/FreeAIProvidersPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -71,6 +74,11 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
+      {/* FreeAI Hub — creative AI with free credits (public, no auth) */}
+      <Route path="/freeai" element={<FreeAIHub />} />
+      <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
+      <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />
+
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
