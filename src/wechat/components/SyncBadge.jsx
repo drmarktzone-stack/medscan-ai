@@ -14,11 +14,14 @@ export default function SyncBadge() {
   const mode = syncMeta?.mode || 'local';
   const cfg = LABELS[mode] || LABELS.local;
   const Icon = mode === 'syncing' ? Loader2 : mode === 'live' ? Cloud : CloudOff;
+  const label = syncMeta?.mock && mode === 'live'
+    ? (syncMeta?.relay ? 'Live · relay' : 'Live · demo')
+    : cfg.text;
 
   return (
     <span className={`flex items-center gap-1 text-[10px] font-medium ${cfg.color}`} title={syncMeta?.error || ''}>
       <Icon className={`w-3 h-3 ${mode === 'syncing' ? 'animate-spin' : ''}`} />
-      {cfg.text}
+      {label}
     </span>
   );
 }

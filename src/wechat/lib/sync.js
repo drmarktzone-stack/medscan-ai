@@ -1,6 +1,5 @@
 /**
- * Supabase sync for WeChat MVP — profiles, messages, moments + Realtime.
- * Falls back silently when VITE_SUPABASE_URL / ANON_KEY are missing.
+ * WeChat sync — Supabase Realtime when configured, BroadcastChannel mock otherwise.
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -12,9 +11,17 @@ import {
   mergeRemoteMoments,
   mergeRemoteProfiles,
 } from './merge.js';
+import {
+  isMockSyncAvailable,
+  startMockSync,
+  mockPushMessage,
+  mockPushMoment,
+  mockUpsertProfile,
+} from './mockSync.js';
 
 let client = null;
 let channel = null;
+let usingMock = false;
 
 function getClient() {
   if (client) return client;
@@ -42,8 +49,14 @@ function getClient() {
   return client;
 }
 
+export function getSyncBackend() {
+  if (isSupabaseConfigured()) return 'supabase';
+  if (isMockSyncAvailable()) return 'mock';
+  return 'local';
+}
+
 export function isWeChatSyncAvailable() {
-  return isSupabaseConfigured();
+  return getSyncBackend() !== 'local';
 }
 
 function profilePayload(profile) {
@@ -59,8 +72,13 @@ function profilePayload(profile) {
 }
 
 export async function upsertProfile(profile) {
+  if (!profile?.wechatId) return { ok: false, reason: 'no_profile' };
+  if (!isSupabaseConfigured()) {
+    return isMockSyncAvailable() ? mockUpsertProfile(profile) : { ok: false, reason: 'no_client' };
+  }
+
   const sb = getClient();
-  if (!sb || !profile?.wechatId) return { ok: false, reason: 'no_client' };
+  if (!sb) return { ok: false, reason: 'no_client' };
 
   const session = loadStoredSession();
   const row = {
@@ -140,6 +158,12 @@ export async function fetchMoments() {
 }
 
 export async function pushMessage({ id, chatId, senderWechatId, content, type = 'text' }) {
+  if (!isSupabaseConfigured()) {
+    return isMockSyncAvailable()
+      ? mockPushMessage({ id, chatId, senderWechatId, content, type })
+      : { ok: false, reason: 'no_client' };
+  }
+
   const sb = getClient();
   if (!sb) return { ok: false, reason: 'no_client' };
 
@@ -160,6 +184,12 @@ export async function pushMessage({ id, chatId, senderWechatId, content, type = 
 }
 
 export async function pushMoment(moment, authorWechatId) {
+  if (!isSupabaseConfigured()) {
+    return isMockSyncAvailable()
+      ? mockPushMoment(moment, authorWechatId)
+      : { ok: false, reason: 'no_client' };
+  }
+
   const sb = getClient();
   if (!sb) return { ok: false, reason: 'no_client' };
 
@@ -191,13 +221,19 @@ export async function updateMomentRemote(moment, authorWechatId) {
   return { ok: true };
 }
 
-/** Full initial pull + Realtime subscription. */
+/** Full initial pull + Realtime subscription (Supabase) or BroadcastChannel (mock). */
 export async function startWeChatSync(profile, { onPatch, onStatus }) {
-  if (!isWeChatSyncAvailable()) {
+  if (!isSupabaseConfigured()) {
+    if (isMockSyncAvailable()) {
+      usingMock = true;
+      mockUpsertProfile(profile);
+      return startMockSync(profile, { onPatch, onStatus });
+    }
     onStatus?.({ mode: 'local', error: null });
     return () => {};
   }
 
+  usingMock = false;
   onStatus?.({ mode: 'syncing', error: null });
 
   const upsert = await upsertProfile(profile);

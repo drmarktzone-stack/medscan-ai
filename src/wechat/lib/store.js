@@ -221,15 +221,20 @@ export const wechatActions = {
   },
 
   startChat(contactId) {
-    const existing = state.chats.find(
-      (c) => c.type === 'direct' && c.contactId === contactId,
-    );
-    if (existing) return existing.id;
-
     const contact = getContact(state, contactId);
     const syncChatId = contact?.wechatId && !contact.isGroup
       ? directChatId(state.profile.wechatId, contact.wechatId)
       : null;
+
+    if (syncChatId) {
+      const bySync = state.chats.find((c) => c.syncChatId === syncChatId);
+      if (bySync) return bySync.id;
+    }
+
+    const existing = state.chats.find(
+      (c) => c.type === 'direct' && c.contactId === contactId,
+    );
+    if (existing) return existing.id;
 
     const chatId = uid('chat');
     setState((s) => ({
