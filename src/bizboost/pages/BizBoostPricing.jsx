@@ -7,8 +7,10 @@ import {
   PRICING_ADDONS,
   allPricingOptions,
 } from '@/bizboost/data/researchAnalysis';
-import { CheckCircle2, Mail, ArrowLeft, Sparkles } from 'lucide-react';
+import { CheckCircle2, Mail, ArrowLeft, Sparkles, Wallet } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import PaymentInstructions from '@/bizboost/components/PaymentInstructions';
+import { FREE_PAYMENT_CONFIG } from '@/bizboost/data/paymentMethods';
 
 export default function BizBoostPricing() {
   const [tab, setTab] = useState('services');
@@ -25,7 +27,7 @@ export default function BizBoostPricing() {
   };
 
   return (
-    <BizBoostLayout title="מחירים" subtitle="מכירה לפי שירות או חבילה · 14 יום חינם · ביטול בכל עת">
+    <BizBoostLayout title="מחירים" subtitle={`${FREE_PAYMENT_CONFIG.trialDays} יום חינם · תשלום ב-Bit / העברה — בלי דמי סליקה חודשיים`}>
       <div className="flex justify-center gap-2 mb-10">
         {[
           { id: 'services', label: 'לפי שירות' },
@@ -181,14 +183,32 @@ export default function BizBoostPricing() {
         </section>
       )}
 
+      <section className="max-w-2xl mx-auto mb-10 rounded-2xl border border-green-500/30 bg-green-500/5 p-6">
+        <h2 className="text-lg font-bold mb-2 flex items-center gap-2">
+          <Wallet className="w-5 h-5 text-green-400" /> איך משלמים? (בחינם — בלי Stripe)
+        </h2>
+        <PaymentInstructions compact />
+        <p className="text-xs text-white/50 mt-3">
+          Stripe ודומיו לא דורשים תשלום מראש — רק אחוז מכל עסקה. אם אין תקציב בכלל: Bit והעברה הם 0 ₪ קבוע.
+        </p>
+      </section>
+
       <section className="max-w-xl mx-auto rounded-2xl border border-white/10 bg-white/5 p-8">
         <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
           <Mail className="w-5 h-5" /> השאירו פרטים — 14 יום חינם
         </h2>
-        <p className="text-white/60 text-sm mb-6">בחרו שירות בודד או חבילה — נחזור תוך 24 שעות</p>
+        <p className="text-white/60 text-sm mb-6">14 יום ניסיון · אחר כך Bit או העברה · בלי כרטיס אשראי באתר</p>
         {submitted ? (
-          <div className="text-center py-8 text-emerald-400">
-            ✓ תודה {form.name}! קיבלנו את הבקשה ל-{options.find((o) => o.id === form.plan)?.label ?? form.plan}.
+          <div className="space-y-6">
+            <div className="text-center text-emerald-400 font-medium">
+              ✓ תודה {form.name}! ניסיון {FREE_PAYMENT_CONFIG.trialDays} יום מתחיל — החבילה: {options.find((o) => o.id === form.plan)?.label ?? form.plan}
+            </div>
+            <PaymentInstructions
+              planLabel={options.find((o) => o.id === form.plan)?.label}
+              amount={options.find((o) => o.id === form.plan)?.price}
+              customerName={form.name}
+              businessName={form.business}
+            />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -1,0 +1,60 @@
+/**
+ * BizBoost — אמצעי תשלום ללא עלות חודשית (Bit, העברה, PayPal אופציונלי)
+ * עדכנו את הפרטים שלכם כאן או דרך env (ראו README ב-marketing).
+ */
+
+export const FREE_PAYMENT_CONFIG = {
+  /** Bit — חינם, ללא עמלות לרוב המשתמשים */
+  bit: {
+    enabled: true,
+    labelHe: 'Bit',
+    phone: import.meta.env.VITE_BIZBOOST_BIT_PHONE || '050-000-0000',
+    noteHe: 'שלחו Bit עם שם העסק + החבילה שבחרתם (למשל "Growth").',
+  },
+  /** העברה בנקאית — ללא עלות */
+  bank: {
+    enabled: true,
+    labelHe: 'העברה בנקאית',
+    bankName: import.meta.env.VITE_BIZBOOST_BANK_NAME || 'בנק (עדכנו)',
+    branch: import.meta.env.VITE_BIZBOOST_BANK_BRANCH || '000',
+    account: import.meta.env.VITE_BIZBOOST_BANK_ACCOUNT || '000000',
+    accountHolder: import.meta.env.VITE_BIZBOOST_ACCOUNT_HOLDER || 'שם בעל העסק',
+    noteHe: 'בהערות: שם העסק + אימייל + החבילה.',
+  },
+  /** PayPal — אין דמי מנוי; עמלה רק כשמקבלים כסף (~3%) */
+  paypal: {
+    enabled: Boolean(import.meta.env.VITE_BIZBOOST_PAYPAL_ME),
+    labelHe: 'PayPal',
+    meUrl: import.meta.env.VITE_BIZBOOST_PAYPAL_ME || '',
+    noteHe: 'מתאים ללקוחות מחו"ל. עמלה רק על סכום ששולם.',
+  },
+  /** WhatsApp — סגירת עסקה ידנית */
+  whatsapp: {
+    enabled: true,
+    phone: import.meta.env.VITE_BIZBOOST_WHATSAPP || '972500000000',
+    noteHe: 'אחרי טופס — נשלח הודעה עם סכום ואיך לשלם.',
+  },
+  trialDays: 14,
+  /** אין Stripe / Tranzila — אפס עלות קבועה */
+  noPaidGateway: true,
+};
+
+export function bitPhoneDigits() {
+  return FREE_PAYMENT_CONFIG.bit.phone.replace(/\D/g, '');
+}
+
+export function whatsappPaymentMessage({ name, business, planLabel, amount }) {
+  return encodeURIComponent(
+    `שלום, אני ${name} מ-${business}. בחרתי ${planLabel}${amount ? ` (${amount})` : ''}. איך לשלם (Bit/העברה)?`,
+  );
+}
+
+export function activePaymentMethods() {
+  const c = FREE_PAYMENT_CONFIG;
+  return [
+    c.bit.enabled && { id: 'bit', ...c.bit },
+    c.bank.enabled && { id: 'bank', ...c.bank },
+    c.paypal.enabled && c.paypal.meUrl && { id: 'paypal', ...c.paypal },
+    c.whatsapp.enabled && { id: 'whatsapp', ...c.whatsapp },
+  ].filter(Boolean);
+}
