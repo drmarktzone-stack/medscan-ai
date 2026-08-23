@@ -4,10 +4,10 @@ import { Sparkles, LayoutDashboard, Route, Settings, Mail, ArrowRight } from "lu
 import { useI18n } from "@/lib/i18n";
 
 const NAV = [
-  { to: "/freeai", labelHe: "בית", labelEn: "Home", icon: Sparkles, end: true },
+  { to: "/freeai/create", labelHe: "יצירה", labelEn: "Create", icon: Sparkles, end: false },
+  { to: "/freeai", labelHe: "בית", labelEn: "Home", icon: LayoutDashboard, end: true },
   { to: "/freeai/passport", labelHe: "Passport", labelEn: "Passport", icon: Mail, end: false },
-  { to: "/freeai/studio", labelHe: "סטודיו", labelEn: "Studio", icon: LayoutDashboard, end: false },
-  { to: "/freeai/planner", labelHe: "מתכנן", labelEn: "Planner", icon: Route, end: false },
+  { to: "/freeai/studio", labelHe: "סטודיו", labelEn: "Studio", icon: Route, end: false },
   { to: "/freeai/providers", labelHe: "ספקים", labelEn: "Providers", icon: Settings, end: false },
 ];
 

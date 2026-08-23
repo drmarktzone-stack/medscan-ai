@@ -56,18 +56,17 @@ export default function FreeAIHub() {
 
         <div className="flex flex-wrap justify-center gap-3">
           <Link
+            to="/freeai/create"
+            className="px-8 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 font-bold text-lg hover:opacity-90 flex items-center gap-2 shadow-lg shadow-violet-500/25"
+          >
+            <Sparkles className="w-5 h-5" />
+            {locale === "he" ? "✨ התחל ליצור" : "✨ Start creating"}
+          </Link>
+          <Link
             to="/freeai/passport"
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 font-semibold hover:opacity-90 flex items-center gap-2"
           >
-            <Sparkles className="w-4 h-4" />
-            {locale === "he" ? "🧠 Credit Passport — אסוף כל הקרדיטים" : "🧠 Credit Passport — harvest all credits"}
-          </Link>
-          <Link
-            to="/freeai/studio"
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 font-semibold hover:opacity-90 flex items-center gap-2"
-          >
-            <Sparkles className="w-4 h-4" />
-            {locale === "he" ? "Studio — קוד + עיצוב + Deploy" : "Studio — code + design + deploy"}
+            {locale === "he" ? "🧠 Credit Passport" : "🧠 Credit Passport"}
           </Link>
         </div>
       </section>

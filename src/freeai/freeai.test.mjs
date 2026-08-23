@@ -237,8 +237,42 @@ describe("Signup Orchestrator", () => {
     resetOrchestrator();
     const state = initOrchestrator("test@example.com");
     assert.ok(state.steps.length > 0);
-    const step = getCurrentStep();
-    assert.ok(step);
+    assert.ok(getCurrentStep());
     resetOrchestrator();
+  });
+});
+
+describe("Workspace engine", () => {
+  it("has 7 modes", async () => {
+    const { MODES } = await import("./lib/workspaceEngine.js");
+    assert.equal(MODES.length, 7);
+  });
+
+  it("creates session", async () => {
+    const { createSession } = await import("./lib/workspaceEngine.js");
+    const s = createSession("image");
+    assert.ok(s.id);
+    assert.equal(s.mode, "image");
+  });
+
+  it("processes image request", async () => {
+    const { processWorkspaceRequest } = await import("./lib/workspaceEngine.js");
+    const res = await processWorkspaceRequest({ prompt: "a cat", mode: "image" });
+    assert.equal(res.ok, true);
+    assert.ok(res.images?.length > 0);
+  });
+
+  it("processes code request", async () => {
+    const { processWorkspaceRequest } = await import("./lib/workspaceEngine.js");
+    const res = await processWorkspaceRequest({ prompt: "landing page for startup", mode: "code" });
+    assert.equal(res.ok, true);
+    assert.ok(res.code?.includes("<!DOCTYPE html>"));
+  });
+
+  it("processes chat request", async () => {
+    const { processWorkspaceRequest } = await import("./lib/workspaceEngine.js");
+    const res = await processWorkspaceRequest({ prompt: "מה אתה יודע לעשות?", mode: "chat" });
+    assert.equal(res.ok, true);
+    assert.ok(res.text?.length > 10);
   });
 });
