@@ -13,7 +13,7 @@ export default function LeadBotTool() {
     urgency: 'this_week',
     responseTime: 'immediate',
     hasPhone: true,
-    businessPhone: '972544971500',
+    businessPhone: '972528885800',
     socialProof: '150+ לקוחות מרוצים',
     cta: 'לחצו לתיאום ייעוץ חינם',
   });

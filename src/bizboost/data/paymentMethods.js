@@ -8,8 +8,8 @@ export const FREE_PAYMENT_CONFIG = {
   bit: {
     enabled: true,
     labelHe: 'Bit',
-    phone: import.meta.env.VITE_BIZBOOST_BIT_PHONE || '050-000-0000',
-    noteHe: 'שלחו Bit עם שם העסק + החבילה שבחרתם (למשל "Growth").',
+    phone: import.meta.env.VITE_BIZBOOST_BIT_PHONE || '052-888-5800',
+    noteHe: 'שלחו Bit ל-052-888-5800 עם שם העסק + החבילה (למשל "BizBoost Growth").',
   },
   /** העברה בנקאית — ללא עלות */
   bank: {
@@ -31,7 +31,7 @@ export const FREE_PAYMENT_CONFIG = {
   /** WhatsApp — סגירת עסקה ידנית */
   whatsapp: {
     enabled: true,
-    phone: import.meta.env.VITE_BIZBOOST_WHATSAPP || '972500000000',
+    phone: import.meta.env.VITE_BIZBOOST_WHATSAPP || '972528885800',
     noteHe: 'אחרי טופס — נשלח הודעה עם סכום ואיך לשלם.',
   },
   trialDays: 14,
@@ -45,7 +45,8 @@ export function bitPhoneDigits() {
 
 export function whatsappPaymentMessage({ name, business, planLabel, amount }) {
   return encodeURIComponent(
-    `שלום, אני ${name} מ-${business}. בחרתי ${planLabel}${amount ? ` (${amount})` : ''}. איך לשלם (Bit/העברה)?`,
+    `שלום, אני ${name} מ-${business}. בחרתי ${planLabel}${amount ? ` (${amount})` : ''}. ` +
+      `אשמח לפרטי תשלום — Bit ל-052-888-5800 או העברה.`,
   );
 }
 
