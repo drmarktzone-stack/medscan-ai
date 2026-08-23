@@ -37,7 +37,11 @@ import ECGValidation from '@/pages/ECGValidation';
 import SkinValidation from '@/pages/SkinValidation';
 import KnowledgeCoverage from '@/pages/KnowledgeCoverage';
 import DoctorPedWorkbench from '@/pages/DoctorPedWorkbench';
+import ParentHub from '@/pages/ParentHub';
 import ParentPortal from '@/pages/ParentPortal';
+import ParentResults from '@/pages/ParentResults';
+import ParentFollowUp from '@/pages/ParentFollowUp';
+import ParentRights from '@/pages/ParentRights';
 import RoleGate from "@/components/clinic/RoleGate";
 import {
   ToxicologyPage, TraumaPage, GrowthPage, NutritionPage, NeurodevPage,
@@ -89,7 +93,11 @@ const AuthenticatedApp = () => {
           <Route path="/evaluation" element={<Evaluation />} />
           <Route path="/knowledge-coverage" element={<KnowledgeCoverage />} />
           <Route path="/doctorped" element={<DoctorPedWorkbench />} />
-          <Route path="/parent" element={<ParentPortal />} />
+          <Route path="/parent" element={<ParentHub />} />
+          <Route path="/parent/visit" element={<ParentPortal />} />
+          <Route path="/parent/results" element={<ParentResults />} />
+          <Route path="/parent/follow-up" element={<ParentFollowUp />} />
+          <Route path="/parent/rights" element={<ParentRights />} />
           <Route path="/tox" element={<ToxicologyPage />} />
           <Route path="/trauma" element={<TraumaPage />} />
           <Route path="/growth" element={<GrowthPage />} />

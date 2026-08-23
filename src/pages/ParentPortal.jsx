@@ -27,6 +27,7 @@ import {
 import { persistDoctorPedEncounter } from "@/lib/supabase/encounters.js";
 import { ParentSkinPanel, ParentTraumaPanel, ParentDevelopPanel } from "@/components/parent/ParentExtraTools";
 import { CLINICIAN_SWITCH_PATH } from "@/lib/clinic/account";
+import JourneyTimeline, { JourneyBackLink } from "@/components/journey/JourneyTimeline";
 
 function durationHours(n, unit) {
   const v = Number(n);
@@ -217,6 +218,10 @@ export default function ParentPortal() {
         )}
       />
       <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
+        <JourneyBackLink />
+        <section className="clinic-card p-3">
+          <JourneyTimeline activePhaseId="before" compact />
+        </section>
         <p className="text-base text-slate-700 leading-relaxed clinic-card p-4">{t("dp.parent_intro")}</p>
         <div className="grid grid-cols-4 gap-1 clinic-card p-1">
           {[
