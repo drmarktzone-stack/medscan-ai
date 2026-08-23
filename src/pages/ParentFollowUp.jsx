@@ -65,9 +65,9 @@ export default function ParentFollowUp() {
             ["done", stats.done, "text-emerald-800", "bg-emerald-50/70 border-emerald-200"],
             ["stuck", stats.stuck, "text-red-800", "bg-red-50/70 border-red-200"],
           ].map(([key, count, color, surface]) => (
-            <div key={key} className={`rounded-2xl border p-3 ${surface}`}>
-              <p className={`text-2xl font-black ${color}`}>{count}</p>
-              <p className="text-[10px] font-bold text-slate-600 mt-0.5">
+            <div key={key} className={`rounded-2xl border px-2 py-3 ${surface}`}>
+              <p className={`text-2xl font-black leading-none ${color}`}>{count}</p>
+              <p className="clinic-micro text-slate-600 mt-1">
                 {t(`journey.follow_stat_${key}`)}
               </p>
             </div>

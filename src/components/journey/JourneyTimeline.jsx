@@ -48,10 +48,8 @@ export default function JourneyTimeline({ activePhaseId, compact = false }) {
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   )}
                 </span>
-                <span className="text-[9px] sm:text-[11px] font-black text-slate-800 leading-tight">
-                  {index + 1}
-                </span>
-                <span className="text-[9px] sm:text-[11px] font-bold text-slate-700 leading-tight line-clamp-2">
+                <span className="clinic-micro text-slate-800 !font-black">{index + 1}</span>
+                <span className="clinic-micro text-slate-700 line-clamp-2">
                   {t(phase.stepKey)}
                 </span>
               </Link>

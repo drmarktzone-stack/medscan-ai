@@ -180,6 +180,17 @@
     box-shadow: none;
   }
 
+  /* Hebrew and Arabic descenders (ן ע ק ج ط) clip at tiny sizes unless the
+     line box is taller than the glyphs. Every micro-label uses this. */
+  .clinic-micro {
+    @apply text-[10px] font-bold;
+    line-height: 1.65;
+  }
+  .clinic-micro-sm {
+    @apply text-[11px] font-bold;
+    line-height: 1.55;
+  }
+
   /* Tone accents — one source of truth for phase colors. */
   .tone-rose { background: linear-gradient(160deg, #fda4af 0%, #fb7185 45%, #e11d48 100%); }
   .tone-sky { background: linear-gradient(160deg, #7dd3fc 0%, #38bdf8 45%, #0284c7 100%); }
@@ -219,6 +230,13 @@
   background: rgba(255, 255, 255, 0.55);
   border-color: rgba(255, 255, 255, 0.8);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* The app draws its own clear button; the native one would sit on top of it. */
+.clinic-page input[type="search"]::-webkit-search-cancel-button,
+.clinic-page input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
