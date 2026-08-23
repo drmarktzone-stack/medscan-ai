@@ -1,97 +1,79 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Settings, Stethoscope, LogIn, UserPlus, Sparkles } from "lucide-react";
+import { Heart, Stethoscope, ClipboardCheck, ArrowLeft, ArrowRight } from "lucide-react";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
-import AccountSettings from "@/components/AccountSettings";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import AppTopBar from "@/components/journey/AppTopBar";
+import PageHero from "@/components/journey/PageHero";
 import JourneyPhaseCard from "@/components/journey/JourneyPhaseCard";
 import JourneyTimeline from "@/components/journey/JourneyTimeline";
 import { FAMILY_JOURNEY_PHASES } from "@/lib/clinic/journey";
 import { followUpStats, loadFollowUps } from "@/lib/medscan/journey/followUpStore";
 import { useI18n } from "@/lib/i18n";
-import { useAuth } from "@/lib/AuthContext";
 import { CLINICIAN_SWITCH_PATH } from "@/lib/clinic/account";
-import { useState } from "react";
 
 export default function ParentHub() {
-  const { t } = useI18n();
-  const { user, isLocalClinic } = useAuth();
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const showAuthLinks = isLocalClinic || !user?.email;
-
+  const { t, dir } = useI18n();
+  const Arrow = dir === "rtl" ? ArrowLeft : ArrowRight;
   const stats = useMemo(() => followUpStats(loadFollowUps()), []);
 
   return (
     <div className="clinic-page">
-      <div className="flex items-center justify-between clinic-wrap pt-[calc(env(safe-area-inset-top)+1rem)] gap-2">
-        <div className="clinic-card px-3 py-1.5">
-          <LanguageSwitcher />
-        </div>
-        <div className="flex items-center gap-2">
-          {showAuthLinks ? (
-            <>
-              <Link to="/login" className="clinic-card text-xs text-slate-600 hover:text-foreground flex items-center gap-1.5 px-3 py-2">
-                <LogIn className="w-4 h-4" />
-                {t("login.title")}
-              </Link>
-              <Link to="/register" className="clinic-card text-xs font-bold text-primary hover:text-sky-800 flex items-center gap-1.5 px-3 py-2">
-                <UserPlus className="w-4 h-4" />
-                {t("register.title")}
-              </Link>
-            </>
-          ) : (
-            <span className="clinic-card text-xs text-slate-600 px-3 py-2 truncate max-w-[180px]">{user.email}</span>
-          )}
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="clinic-card text-xs text-slate-600 hover:text-foreground flex items-center gap-1.5 px-3 py-2"
-          >
-            <Settings className="w-4 h-4" />
-            {t("home.settings")}
-          </button>
-        </div>
-      </div>
+      <AppTopBar />
 
-      <header className="clinic-wrap pt-6 pb-6 text-center">
-        <div className="clinic-icon w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-rose-400 to-orange-300">
-          <Heart className="w-8 h-8 text-white" />
-        </div>
-        <p className="inline-flex items-center gap-1.5 clinic-chip-on text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full mb-3">
-          <Sparkles className="w-3.5 h-3.5" />
-          {t("journey.badge")}
-        </p>
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">{t("journey.parent_hub_title")}</h1>
-        <p className="text-muted-foreground mt-3 max-w-lg mx-auto text-sm leading-relaxed">
-          {t("journey.parent_hub_subtitle")}
-        </p>
-        <p className="text-[11px] text-rose-800/70 mt-2 font-medium">{t("home.not_diagnosis")}</p>
-      </header>
+      <PageHero
+        icon={Heart}
+        tone="rose"
+        badgeKey="journey.badge"
+        titleKey="journey.parent_hub_title"
+        subtitleKey="journey.parent_hub_subtitle"
+        noteKey="home.not_diagnosis"
+      />
 
-      <main className="clinic-wrap pb-10 space-y-8">
-        <section className="clinic-card p-4 sm:p-5">
+      <main className="clinic-wrap pb-10 space-y-7 max-w-3xl">
+        <section className="clinic-panel">
           <JourneyTimeline />
         </section>
 
-        <section className="grid md:grid-cols-2 gap-4">
-          {FAMILY_JOURNEY_PHASES.map((phase) => (
-            <JourneyPhaseCard key={phase.id} phase={phase} featured={phase.id === "before"} />
-          ))}
-        </section>
-
         {stats.pending > 0 ? (
-          <section className="clinic-card p-4 border-amber-200 bg-amber-50/80">
-            <p className="text-sm font-bold text-amber-900">{t("journey.follow_pending_banner", { count: stats.pending })}</p>
-            <Link to="/parent/follow-up" className="text-xs font-bold text-amber-800 underline mt-2 inline-block">
-              {t("journey.open_follow_up")}
-            </Link>
-          </section>
+          <Link
+            to="/parent/follow-up"
+            className="clinic-panel flex items-center gap-3 !border-amber-200 !bg-amber-50/90 hover:!bg-amber-50"
+          >
+            <div className="clinic-icon w-10 h-10 tone-amber">
+              <ClipboardCheck className="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-extrabold text-amber-900">
+                {t("journey.follow_pending_banner", { count: stats.pending })}
+              </p>
+              <p className="text-[11px] text-amber-800/80 mt-0.5">{t("journey.open_follow_up")}</p>
+            </div>
+            <Arrow className="w-4 h-4 text-amber-700 shrink-0" />
+          </Link>
         ) : null}
 
-        <section className="clinic-card p-5 text-center">
-          <p className="text-sm text-slate-600 mb-3">{t("journey.clinician_switch_hint")}</p>
+        <section className="space-y-3">
+          <div>
+            <p className="clinic-eyebrow">{t("journey.steps_label")}</p>
+            <h2 className="clinic-h2 mt-1">{t("journey.steps_title")}</h2>
+          </div>
+          <div className="grid gap-3">
+            {FAMILY_JOURNEY_PHASES.map((phase, index) => (
+              <JourneyPhaseCard
+                key={phase.id}
+                phase={phase}
+                number={index + 1}
+                primary={index === 0}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="clinic-panel text-center">
+          <p className="clinic-sub mb-3">{t("journey.clinician_switch_hint")}</p>
           <Link
             to={CLINICIAN_SWITCH_PATH}
-            className="inline-flex items-center gap-2 clinic-chip-on text-xs font-bold rounded-full px-4 py-2"
+            className="inline-flex items-center gap-2 clinic-chip text-xs font-bold rounded-full px-4 py-2.5 text-slate-700 hover:bg-white/70"
           >
             <Stethoscope className="w-4 h-4" />
             {t("parent.open_clinician")}
@@ -100,8 +82,6 @@ export default function ParentHub() {
 
         <DisclaimerBanner />
       </main>
-
-      <AccountSettings open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }

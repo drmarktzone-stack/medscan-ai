@@ -40,14 +40,17 @@ export const FAMILY_JOURNEY_PHASES = Object.freeze([
   },
 ]);
 
-const toneClasses = Object.freeze({
-  rose: "from-rose-400 to-orange-300",
-  sky: "from-sky-400 to-cyan-300",
-  amber: "from-amber-400 to-yellow-300",
-});
+const TONES = Object.freeze(["rose", "sky", "amber", "slate"]);
 
+/** Tone utility class defined once in index.css. */
 export function journeyPhaseToneClass(tone) {
-  return toneClasses[tone] || toneClasses.sky;
+  return TONES.includes(tone) ? `tone-${tone}` : "tone-sky";
+}
+
+/** 1-based position of a phase, used for the numbered step markers. */
+export function journeyPhaseNumber(phaseId) {
+  const index = FAMILY_JOURNEY_PHASES.findIndex((p) => p.id === phaseId);
+  return index === -1 ? null : index + 1;
 }
 
 /** Clinician home — grouped shelves instead of one flat grid. */

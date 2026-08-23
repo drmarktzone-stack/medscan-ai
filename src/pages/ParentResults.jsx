@@ -1,11 +1,12 @@
 import React, { useRef, useState } from "react";
-import { FlaskConical, Loader2, Upload, AlertTriangle } from "lucide-react";
+import { FlaskConical, Loader2, Upload, AlertTriangle, Plus, Trash2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ClinicHeader from "@/components/clinic/ClinicHeader";
 import AgeFields from "@/components/clinic/AgeFields";
 import PrintDraftButton from "@/components/clinic/PrintDraftButton";
 import JourneyTimeline, { JourneyBackLink } from "@/components/journey/JourneyTimeline";
+import SectionCard from "@/components/journey/SectionCard";
 import { useI18n } from "@/lib/i18n";
 import { usePatientSession } from "@/lib/doctorped/patientSession";
 import { parseAgeParts, hasAgeParts } from "@/lib/clinic/ageParts.js";
@@ -37,7 +38,12 @@ export default function ParentResults() {
   const [help, setHelp] = useState(null);
 
   const filledRows = rows.filter((r) => r.analyte.trim() && String(r.value).trim() !== "");
-  const canRun = filledRows.length > 0 && hasAgeParts({ ageYears: session.ageYears, ageMonths: session.ageMonths });
+  const ageReady = hasAgeParts({ ageYears: session.ageYears, ageMonths: session.ageMonths });
+  const canRun = filledRows.length > 0 && ageReady;
+
+  function setRow(index, field, value) {
+    setRows((cur) => cur.map((r, i) => (i === index ? { ...r, [field]: value } : r)));
+  }
 
   async function scanFile(file) {
     setScanning(true);
@@ -122,96 +128,157 @@ export default function ParentResults() {
 
   return (
     <div className="clinic-page">
-      <ClinicHeader title={t("journey.phase_during_title")} icon={FlaskConical} tone="parent" backTo="/parent" />
-      <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
+      <ClinicHeader
+        title={t("journey.phase_during_title")}
+        subtitle={t("journey.step_during")}
+        icon={FlaskConical}
+        tone="sky"
+        backTo="/parent"
+      />
+      <div className="max-w-lg mx-auto px-4 sm:px-5 py-5 space-y-4">
         <JourneyBackLink />
-        <section className="clinic-card p-3">
+        <div className="clinic-panel !p-3">
           <JourneyTimeline activePhaseId="during" compact />
-        </section>
+        </div>
 
-        <p className="text-sm text-slate-700 leading-relaxed clinic-card p-4">{t("journey.results_intro")}</p>
+        <p className="clinic-sub clinic-panel">{t("journey.results_intro")}</p>
 
-        <section className="clinic-card p-4 space-y-3">
-          <p className="text-sm font-bold">{t("dp.patient_strip")}</p>
+        <SectionCard step={1} titleKey="journey.results_step_child" descKey="journey.results_step_child_desc">
           <AgeFields
             ageYears={session.ageYears}
             ageMonths={session.ageMonths}
             showDays={false}
             onChange={patch}
           />
-        </section>
+        </SectionCard>
 
-        <section className="clinic-card p-4 space-y-3">
-          <p className="text-sm font-bold">{t("journey.results_upload")}</p>
-          <input ref={fileRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && scanFile(e.target.files[0])} />
-          <Button variant="outline" className="w-full" disabled={scanning} onClick={() => fileRef.current?.click()}>
+        <SectionCard step={2} titleKey="journey.results_step_upload" descKey="journey.results_step_upload_desc">
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*,application/pdf"
+            className="hidden"
+            onChange={(e) => e.target.files?.[0] && scanFile(e.target.files[0])}
+          />
+          <Button
+            variant="outline"
+            className="w-full h-12 rounded-xl font-bold"
+            disabled={scanning}
+            onClick={() => fileRef.current?.click()}
+          >
             {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
             {scanning ? t("parent.working") : t("journey.results_upload_btn")}
           </Button>
-          {scanInfo?.error ? <p className="text-xs text-red-700">{scanInfo.error}</p> : null}
-          {scanInfo?.note ? <p className="text-xs text-slate-600">{scanInfo.note}</p> : null}
-        </section>
+          {scanInfo?.error ? (
+            <p className="text-xs text-red-700 flex items-start gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              {scanInfo.error}
+            </p>
+          ) : null}
+          {scanInfo?.note ? (
+            <p className="text-xs text-emerald-800 flex items-start gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              {scanInfo.note}
+            </p>
+          ) : null}
 
-        <section className="clinic-card p-4 space-y-2">
-          <p className="text-sm font-bold">{t("journey.results_manual")}</p>
-          {rows.map((row, i) => (
-            <div key={i} className="grid grid-cols-3 gap-1">
-              <input className="rounded-lg border px-2 py-2 text-xs" placeholder={t("journey.results_analyte")} value={row.analyte} onChange={(e) => setRows((cur) => cur.map((r, idx) => (idx === i ? { ...r, analyte: e.target.value } : r)))} />
-              <input className="rounded-lg border px-2 py-2 text-xs" placeholder={t("journey.results_value")} value={row.value} onChange={(e) => setRows((cur) => cur.map((r, idx) => (idx === i ? { ...r, value: e.target.value } : r)))} />
-              <input className="rounded-lg border px-2 py-2 text-xs" placeholder={t("journey.results_unit")} value={row.unit} onChange={(e) => setRows((cur) => cur.map((r, idx) => (idx === i ? { ...r, unit: e.target.value } : r)))} />
-            </div>
-          ))}
-          <button type="button" className="text-xs text-sky-800 underline" onClick={() => setRows((r) => [...r, emptyRow()])}>
-            {t("journey.results_add_row")}
+          <div className="pt-2 space-y-2 border-t border-white/60">
+            <p className="clinic-label !mb-0">{t("journey.results_manual")}</p>
+            {rows.map((row, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <input
+                  className="flex-[2] min-w-0 rounded-lg border px-2 py-2 text-xs"
+                  placeholder={t("journey.results_analyte")}
+                  value={row.analyte}
+                  onChange={(e) => setRow(i, "analyte", e.target.value)}
+                  aria-label={t("journey.results_analyte")}
+                />
+                <input
+                  className="flex-1 min-w-0 rounded-lg border px-2 py-2 text-xs"
+                  placeholder={t("journey.results_value")}
+                  value={row.value}
+                  onChange={(e) => setRow(i, "value", e.target.value)}
+                  aria-label={t("journey.results_value")}
+                />
+                <input
+                  className="flex-1 min-w-0 rounded-lg border px-2 py-2 text-xs"
+                  placeholder={t("journey.results_unit")}
+                  value={row.unit}
+                  onChange={(e) => setRow(i, "unit", e.target.value)}
+                  aria-label={t("journey.results_unit")}
+                />
+                {rows.length > 1 ? (
+                  <button
+                    type="button"
+                    className="text-slate-400 hover:text-red-600 shrink-0"
+                    onClick={() => setRows((cur) => cur.filter((_, idx) => idx !== i))}
+                    aria-label={t("chart.remove")}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                ) : null}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 text-xs font-bold text-sky-800"
+              onClick={() => setRows((r) => [...r, emptyRow()])}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              {t("journey.results_add_row")}
+            </button>
+          </div>
+        </SectionCard>
+
+        <SectionCard step={3} titleKey="journey.results_step_explain" descKey="journey.results_step_explain_desc">
+          {error ? <div className="rounded-xl bg-red-50 text-red-800 p-3 text-sm">{error}</div> : null}
+          {!canRun ? (
+            <p className="text-[11px] text-slate-500">
+              {!ageReady ? t("parent.need_age") : t("journey.results_need_input")}
+            </p>
+          ) : null}
+          <button type="button" className="clinic-cta" disabled={loading || !canRun} onClick={interpret}>
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+            ) : (
+              t("journey.results_run")
+            )}
           </button>
-        </section>
-
-        {error ? <div className="rounded-2xl bg-red-50 text-red-800 p-3 text-sm">{error}</div> : null}
-
-        <Button
-          className="w-full h-14 text-base font-bold rounded-full bg-sky-500 hover:bg-sky-600"
-          disabled={loading || !canRun}
-          onClick={interpret}
-        >
-          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t("journey.results_run")}
-        </Button>
+        </SectionCard>
 
         {help ? (
-          <div id="clinic-draft-print" className={`clinic-card p-5 space-y-3 border-2 ${help.urgency === "urgent" ? "border-red-300 bg-red-50" : "border-amber-200 bg-amber-50"}`}>
+          <div
+            id="clinic-draft-print"
+            className={`clinic-panel space-y-3 !border-2 ${
+              help.urgency === "urgent" ? "!border-red-300 !bg-red-50/90" : "!border-amber-200 !bg-amber-50/90"
+            }`}
+          >
             {help.urgency === "urgent" ? (
-              <p className="text-sm font-bold text-red-800 flex items-center gap-2">
+              <p className="text-sm font-extrabold text-red-800 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
                 {t("journey.results_urgent_banner")}
               </p>
             ) : (
-              <p className="text-xs font-bold text-amber-800">{t("dp.draft_badge")}</p>
+              <p className="text-[10px] font-black uppercase tracking-wider text-amber-800">
+                {t("dp.draft_badge")}
+              </p>
             )}
-            <p className="font-extrabold text-lg leading-snug">{help.picture}</p>
-            {help.ask_doctor?.length ? (
-              <div>
-                <p className="text-xs font-black text-slate-500">{t("parent.ask_title")}</p>
-                <ul className="list-disc pr-5 text-sm space-y-1">
-                  {help.ask_doctor.map((x) => <li key={x}>{x}</li>)}
-                </ul>
-              </div>
-            ) : null}
-            {help.recommend_do?.length ? (
-              <div>
-                <p className="text-xs font-black text-slate-500">{t("parent.do_title")}</p>
-                <ul className="list-disc pr-5 text-sm space-y-1">
-                  {help.recommend_do.map((x) => <li key={x}>{x}</li>)}
-                </ul>
-              </div>
-            ) : null}
-            {help.next_steps?.length ? (
-              <div>
-                <p className="text-xs font-black text-slate-500">{t("journey.results_next")}</p>
-                <ul className="list-disc pr-5 text-sm space-y-1">
-                  {help.next_steps.map((x) => <li key={x}>{x}</li>)}
-                </ul>
-              </div>
-            ) : null}
-            <p className="text-xs text-slate-600">{t("parent.not_doctor")}</p>
+            <p className="font-extrabold text-lg leading-snug text-slate-900">{help.picture}</p>
+            {[
+              ["parent.ask_title", help.ask_doctor],
+              ["parent.do_title", help.recommend_do],
+              ["journey.results_next", help.next_steps],
+            ].map(([labelKey, list]) =>
+              list?.length ? (
+                <div key={labelKey}>
+                  <p className="clinic-label">{t(labelKey)}</p>
+                  <ul className="list-disc pe-0 ps-5 text-sm space-y-1 text-slate-700">
+                    {list.map((x) => <li key={x}>{x}</li>)}
+                  </ul>
+                </div>
+              ) : null,
+            )}
+            <p className="text-[11px] text-slate-600">{t("parent.not_doctor")}</p>
             <PrintDraftButton />
           </div>
         ) : null}

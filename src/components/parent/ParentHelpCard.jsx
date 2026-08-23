@@ -1,6 +1,5 @@
 import React from "react";
 import { AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import PrintDraftButton from "@/components/clinic/PrintDraftButton";
 import { useI18n } from "@/lib/i18n";
 
