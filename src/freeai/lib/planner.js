@@ -3,7 +3,7 @@
  * Given a project spec, builds an optimal free-credit execution plan.
  */
 
-import { FREE_AI_PROVIDERS, providersForCapability } from "../data/providers.js";
+import { ALL_PROVIDERS, providersForCapability } from "../data/providers.js";
 import { loadCreditState } from "./creditStore.js";
 
 /**
@@ -183,7 +183,7 @@ export function getCreditsDashboard() {
   const byCapability = {};
   let grandTotal = 0;
 
-  for (const p of FREE_AI_PROVIDERS) {
+  for (const p of ALL_PROVIDERS) {
     if (creditState[p.id]?.enabled === false) continue;
     const rem = creditState[p.id]?.remaining ?? 0;
     grandTotal += rem;
@@ -192,7 +192,7 @@ export function getCreditsDashboard() {
     }
   }
 
-  const providers = FREE_AI_PROVIDERS.map((p) => ({
+  const providers = ALL_PROVIDERS.map((p) => ({
     ...p,
     remaining: creditState[p.id]?.remaining ?? 0,
     enabled: creditState[p.id]?.enabled !== false,

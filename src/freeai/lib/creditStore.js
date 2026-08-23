@@ -3,7 +3,7 @@
  * Persists to localStorage; resets tracked by resetPeriod metadata.
  */
 
-import { FREE_AI_PROVIDERS, getProvider } from "../data/providers.js";
+import { ALL_PROVIDERS, getProvider } from "../data/providers.js";
 
 const STORAGE_KEY = "freeai_credits_v1";
 const KEYS_STORAGE = "freeai_api_keys_v1";
@@ -29,7 +29,7 @@ export function loadCreditState() {
   const stored = readJson(STORAGE_KEY, {});
   const state = {};
 
-  for (const p of FREE_AI_PROVIDERS) {
+  for (const p of ALL_PROVIDERS) {
     const s = stored[p.id];
     if (s && !needsReset(s.lastReset, p.resetPeriod)) {
       state[p.id] = { ...s, enabled: s.enabled !== false };
@@ -110,7 +110,7 @@ export function resetProviderCredits(providerId) {
 export function totalAvailableCredits(capability = null) {
   const state = loadCreditState();
   let total = 0;
-  for (const p of FREE_AI_PROVIDERS) {
+  for (const p of ALL_PROVIDERS) {
     if (capability && !p.capabilities.includes(capability)) continue;
     if (state[p.id]?.enabled === false) continue;
     total += state[p.id]?.remaining ?? 0;

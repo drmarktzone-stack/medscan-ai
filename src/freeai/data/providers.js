@@ -3,7 +3,10 @@
  * Credits/limits are approximate defaults; users can override in creditStore.
  */
 
-/** @typedef {'image'|'video'|'design'|'edit'|'upscale'|'audio'|'text'|'3d'} Capability */
+import { CODE_PROVIDERS } from "./codeProviders.js";
+import { DEPLOY_PROVIDERS } from "./deployProviders.js";
+
+/** @typedef {'image'|'video'|'design'|'edit'|'upscale'|'audio'|'text'|'3d'|'code'|'deploy'|'host'} Capability */
 /** @typedef {'api'|'browser'|'app'|'local'} AccessMode */
 /** @typedef {'daily'|'monthly'|'one_time'|'unlimited'} ResetPeriod */
 
@@ -362,6 +365,9 @@ export const FREE_AI_PROVIDERS = [
   },
 ];
 
+/** All providers merged — creative + code + deploy */
+export const ALL_PROVIDERS = [...FREE_AI_PROVIDERS, ...CODE_PROVIDERS, ...DEPLOY_PROVIDERS];
+
 /** @type {Record<Capability, { labelHe: string; labelEn: string; icon: string }>} */
 export const CAPABILITY_META = {
   image: { labelHe: "תמונות", labelEn: "Images", icon: "🖼️" },
@@ -372,25 +378,42 @@ export const CAPABILITY_META = {
   audio: { labelHe: "אודיו", labelEn: "Audio", icon: "🎵" },
   text: { labelHe: "טקסט", labelEn: "Text", icon: "📝" },
   "3d": { labelHe: "תלת-ממד", labelEn: "3D", icon: "🧊" },
+  code: { labelHe: "קוד", labelEn: "Code", icon: "💻" },
+  deploy: { labelHe: "Deploy", labelEn: "Deploy", icon: "🚀" },
+  host: { labelHe: "אירוח", labelEn: "Hosting", icon: "🌐" },
 };
 
 export function getProvider(id) {
-  return FREE_AI_PROVIDERS.find((p) => p.id === id) ?? null;
+  return ALL_PROVIDERS.find((p) => p.id === id) ?? null;
 }
 
 export function providersForCapability(cap) {
-  return FREE_AI_PROVIDERS.filter((p) => p.capabilities.includes(cap))
+  return ALL_PROVIDERS.filter((p) => p.capabilities.includes(cap))
     .sort((a, b) => a.priority - b.priority);
 }
 
+export function providersForStage(stage) {
+  const capMap = { code: "code", design: "image", wrap: "design", deploy: "deploy" };
+  const cap = capMap[stage] || stage;
+  return providersForCapability(cap);
+}
+
 export function apiProviders() {
-  return FREE_AI_PROVIDERS.filter((p) => p.hasApi && p.accessMode === "api");
+  return ALL_PROVIDERS.filter((p) => p.hasApi && p.accessMode === "api");
 }
 
 export function browserProviders() {
-  return FREE_AI_PROVIDERS.filter((p) => p.accessMode === "browser" || p.accessMode === "app");
+  return ALL_PROVIDERS.filter((p) => p.accessMode === "browser" || p.accessMode === "app");
 }
 
 export function googleLabsProviders() {
-  return FREE_AI_PROVIDERS.filter((p) => p.id.startsWith("google_"));
+  return ALL_PROVIDERS.filter((p) => p.id.startsWith("google_"));
+}
+
+export function codeProviders() {
+  return CODE_PROVIDERS;
+}
+
+export function deployProviders() {
+  return DEPLOY_PROVIDERS;
 }

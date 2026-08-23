@@ -56,6 +56,7 @@ import {
 import FreeAIHub from '@/freeai/pages/FreeAIHub';
 import FreeAIPlannerPage from '@/freeai/pages/FreeAIPlannerPage';
 import FreeAIProvidersPage from '@/freeai/pages/FreeAIProvidersPage';
+import FreeAIStudio from '@/freeai/pages/FreeAIStudio';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -76,6 +77,7 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* FreeAI Hub — creative AI with free credits (public, no auth) */}
       <Route path="/freeai" element={<FreeAIHub />} />
+      <Route path="/freeai/studio" element={<FreeAIStudio />} />
       <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
       <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />
 

@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 
 const NAV = [
   { to: "/freeai", labelHe: "בית", labelEn: "Home", icon: Sparkles, end: true },
+  { to: "/freeai/studio", labelHe: "סטודיו", labelEn: "Studio", icon: LayoutDashboard, end: false },
   { to: "/freeai/planner", labelHe: "מתכנן", labelEn: "Planner", icon: Route, end: false },
   { to: "/freeai/providers", labelHe: "ספקים", labelEn: "Providers", icon: Settings, end: false },
 ];
@@ -60,7 +61,7 @@ export default function FreeAILayout({ children }) {
       </main>
 
       <nav className="fixed bottom-4 inset-x-0 z-30 px-4 sm:hidden">
-        <div className="max-w-md mx-auto grid grid-cols-3 gap-1 p-1.5 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
+        <div className="max-w-md mx-auto grid grid-cols-4 gap-1 p-1.5 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
           {NAV.map(({ to, labelHe, labelEn, icon: Icon, end }) => (
             <NavLink
               key={to}
