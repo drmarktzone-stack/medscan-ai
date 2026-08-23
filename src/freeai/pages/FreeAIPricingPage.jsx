@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import FreeAILayout from "@/freeai/components/FreeAILayout";
 import { PRICING, getPaymentUrl, joinWaitlist, activatePro, valueProposition } from "@/freeai/lib/subscription.js";
+import { isPaymentConfigured } from "@/freeai/lib/paymentConfig.js";
 import {
   whatsAppShareUrl, twitterShareUrl, linkedInShareUrl, emailShareUrl,
   nativeShare, OUTREACH_TARGETS, CREATE_URL,
@@ -20,11 +21,15 @@ export default function FreeAIPricingPage() {
   const [waitlistDone, setWaitlistDone] = useState(false);
   const [copied, setCopied] = useState(false);
   const paymentUrl = getPaymentUrl();
+  const paymentReady = isPaymentConfigured() || !!paymentUrl;
 
   const handleSubscribe = () => {
     if (paymentUrl) {
       window.open(paymentUrl, "_blank", "noopener,noreferrer");
       if (email) activatePro({ email, paymentRef: "external" });
+    } else if (paymentReady) {
+      const q = email ? `?email=${encodeURIComponent(email)}` : "";
+      window.location.href = `/freeai/checkout${q}`;
     } else if (email) {
       joinWaitlist(email);
       setWaitlistDone(true);
@@ -100,12 +105,20 @@ export default function FreeAIPricingPage() {
           <button
             type="button"
             onClick={handleSubscribe}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold hover:opacity-90"
+            disabled={!paymentReady && !email.includes("@")}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold hover:opacity-90 disabled:opacity-40"
           >
             {paymentUrl
               ? (locale === "he" ? "הירשם ל-Pro — ₪20/חודש" : "Subscribe Pro — ₪20/month")
-              : (locale === "he" ? "הצטרף לרשימה — ₪20/חודש" : "Join waitlist — ₪20/month")}
+              : paymentReady
+                ? (locale === "he" ? "שלם ב-Bit — ₪20/חודש" : "Pay with Bit — ₪20/month")
+                : (locale === "he" ? "הצטרף לרשימה — ₪20/חודש" : "Join waitlist — ₪20/month")}
           </button>
+          {paymentReady && !paymentUrl && (
+            <p className="text-xs text-white/40 text-center mt-2">
+              {locale === "he" ? "Bit · WhatsApp · ללא עמלות" : "Bit · WhatsApp · zero fees"}
+            </p>
+          )}
           {waitlistDone && (
             <p className="text-xs text-emerald-400 text-center mt-2 flex items-center justify-center gap-1">
               <CheckCircle2 className="w-3 h-3" /> {locale === "he" ? "נרשמת! ניצור קשר" : "Registered!"}

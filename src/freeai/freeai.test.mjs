@@ -249,6 +249,20 @@ describe("Subscription & marketing", () => {
     assert.equal(PRICING.free.priceIls, 0);
   });
 
+  it("Bit payment configured with default phone", async () => {
+    const {
+      getPaymentConfig, isPaymentConfigured, formatBitPhone,
+      buildPaymentConfirmWhatsApp, DEFAULT_BIT_PHONE,
+    } = await import("./lib/paymentConfig.js");
+    const cfg = getPaymentConfig();
+    assert.equal(cfg.bitPhone, DEFAULT_BIT_PHONE);
+    assert.equal(formatBitPhone(cfg.bitPhone), "052-888-5800");
+    assert.ok(isPaymentConfigured());
+    const wa = buildPaymentConfirmWhatsApp("test@example.com");
+    assert.ok(wa?.includes("972528885800"));
+    assert.ok(wa?.includes("test%40example.com"));
+  });
+
   it("generates share message", async () => {
     const { shareMessage } = await import("./lib/marketing.js");
     const msg = shareMessage("he");
