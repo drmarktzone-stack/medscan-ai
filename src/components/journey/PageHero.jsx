@@ -30,7 +30,7 @@ export default function PageHero({
           {t(badgeKey)}
         </p>
       ) : null}
-      <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+      <h1 className="text-2xl md:text-[1.75rem] font-black tracking-tight text-slate-900 leading-tight">
         {t(titleKey)}
       </h1>
       {subtitleKey ? (

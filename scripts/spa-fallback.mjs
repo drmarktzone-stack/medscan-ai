@@ -13,3 +13,8 @@ if (!existsSync(index)) {
 }
 copyFileSync(index, fallback);
 console.log('spa-fallback: wrote dist/404.html');
+
+// GitHub Pages: skip Jekyll processing
+import { writeFileSync } from 'node:fs';
+writeFileSync(resolve(dist, '.nojekyll'), '');
+console.log('spa-fallback: wrote dist/.nojekyll');

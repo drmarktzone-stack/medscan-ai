@@ -6,6 +6,14 @@
 
 **טריגר ידני באמצע סשן:** הקלד `/inbox`.
 
+**AgentReceipt (v0):** אחרי כל פרומפט — הרץ אימות ושמור receipt לפני העברה ל-`done/`:
+
+```bash
+node scripts/agentreceipt.mjs inbox-done --prompt prompts/inbox/FILE.md --agent cursor-cloud
+```
+
+Exit code 0 = build עבר, בטוח להעביר. 1 = אל תעביר.
+
 **להשהות פרומפט (לא לבצע עדיין):** שים אותו ב-`../hold/` במקום כאן. כשתרצה להריץ — העבר אותו לכאן.
 
 > קובץ `README` זה מתעלמים ממנו בסריקה.

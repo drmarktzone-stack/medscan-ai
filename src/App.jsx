@@ -13,6 +13,12 @@ import { PatientSessionProvider } from '@/lib/doctorped/patientSession';
 import { ClinicProfileProvider } from '@/lib/clinic/profileContext';
 import { routerBasename } from '@/lib/clinic/standalone';
 
+import VisionPaywallGate from "@/components/payment/VisionPaywallGate";
+import LaunchGuidePage from '@/pages/LaunchGuidePage';
+import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
+import PricingPage from '@/pages/PricingPage';
+import CheckoutPage from '@/pages/CheckoutPage';
+import StartPage from '@/pages/StartPage';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -58,6 +64,21 @@ import ConvertScanTool from '@/bizboost/pages/ConvertScanTool';
 import BizBoostPricing from '@/bizboost/pages/BizBoostPricing';
 import ProspectsPage from '@/bizboost/pages/ProspectsPage';
 import OutreachCenter from '@/bizboost/pages/OutreachCenter';
+import FreeAIHub from '@/freeai/pages/FreeAIHub';
+import FreeAIPlannerPage from '@/freeai/pages/FreeAIPlannerPage';
+import FreeAIProvidersPage from '@/freeai/pages/FreeAIProvidersPage';
+import FreeAIWorkspacePage from '@/freeai/pages/FreeAIWorkspacePage';
+import FreeAIStudio from '@/freeai/pages/FreeAIStudio';
+import FreeAIPricingPage from '@/freeai/pages/FreeAIPricingPage';
+import FreeAICheckoutPage from '@/freeai/pages/FreeAICheckoutPage';
+import FreeAIMarketingPage from '@/freeai/pages/FreeAIMarketingPage';
+import CreditPassportPage from '@/freeai/pages/CreditPassportPage';
+import AgentReceiptLandingPage from '@/agentreceipt/pages/AgentReceiptLandingPage';
+import AgentReceiptPricingPage from '@/agentreceipt/pages/AgentReceiptPricingPage';
+import AgentReceiptDocsPage from '@/agentreceipt/pages/AgentReceiptDocsPage';
+import AgentReceiptConsolePage from '@/agentreceipt/pages/AgentReceiptConsolePage';
+import AgentReceiptMarketingPage from '@/agentreceipt/pages/AgentReceiptMarketingPage';
+import AgentReceiptCheckoutPage from '@/agentreceipt/pages/AgentReceiptCheckoutPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -85,20 +106,46 @@ const AuthenticatedApp = () => {
       <Route path="/bizboost/prospects" element={<ProspectsPage />} />
       <Route path="/bizboost/outreach" element={<OutreachCenter />} />
 
+      {/* FreeAI Hub — creative AI with free credits (public, no auth) */}
+      <Route path="/freeai" element={<FreeAIHub />} />
+      <Route path="/freeai/create" element={<FreeAIWorkspacePage />} />
+      <Route path="/freeai/studio" element={<FreeAIStudio />} />
+      <Route path="/freeai/pricing" element={<FreeAIPricingPage />} />
+      <Route path="/freeai/checkout" element={<FreeAICheckoutPage />} />
+      <Route path="/freeai/marketing" element={<FreeAIMarketingPage />} />
+      <Route path="/freeai/passport" element={<CreditPassportPage />} />
+      <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
+      <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />
+
+      {/* AgentReceipt — proof-of-done for AI agents (public) */}
+      <Route path="/agentreceipt" element={<AgentReceiptLandingPage />} />
+      <Route path="/agentreceipt/pricing" element={<AgentReceiptPricingPage />} />
+      <Route path="/agentreceipt/docs" element={<AgentReceiptDocsPage />} />
+      <Route path="/agentreceipt/console" element={<AgentReceiptConsolePage />} />
+      <Route path="/agentreceipt/marketing" element={<AgentReceiptMarketingPage />} />
+      <Route path="/agentreceipt/checkout" element={<AgentReceiptCheckoutPage />} />
+
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/start" element={<StartPage />} />
+      <Route path="/launch" element={<LaunchGuidePage />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<RoleGate />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/ecg" element={<ECGAnalysis />} />
-          <Route path="/ecg-compare" element={<ECGComparison />} />
+          <Route element={<VisionPaywallGate />}>
+            <Route path="/ecg" element={<ECGAnalysis />} />
+            <Route path="/ecg-compare" element={<ECGComparison />} />
+            <Route path="/skin" element={<SkinAnalysis />} />
+            <Route path="/radiology" element={<RadiologyAnalysis />} />
+          </Route>
           <Route path="/ecg-validate" element={<ECGValidation />} />
           <Route path="/skin-validate" element={<SkinValidation />} />
-          <Route path="/skin" element={<SkinAnalysis />} />
-          <Route path="/radiology" element={<RadiologyAnalysis />} />
           <Route path="/labs" element={<LabInterpreter />} />
           <Route path="/patient-context" element={<PatientContext />} />
           <Route path="/protocols" element={<ProtocolRunner />} />

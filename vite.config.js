@@ -11,6 +11,12 @@ export default defineConfig(({ mode }) => {
 
   return {
     base,
+    preview: {
+      allowedHosts: true,
+    },
+    server: {
+      allowedHosts: true,
+    },
     plugins: [
       base44({
         // Support for legacy code that imports the base44 SDK with @/integrations, @/entities, etc.

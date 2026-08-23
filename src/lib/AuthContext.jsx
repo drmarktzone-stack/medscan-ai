@@ -5,6 +5,8 @@ import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 import { disableLocalClinic, enableLocalClinic, isLocalClinicSession, LOCAL_CLINIC_USER } from '@/lib/clinic/localMode';
 import { isStandaloneBuild, withDeadline, absoluteAppPath } from '@/lib/clinic/standalone';
 import { setPilotMode } from '@/lib/medscan/runtimeMode';
+import { AUTH_MODES, fetchCurrentUser, getAuthMode, logoutHosted } from '@/lib/auth/authAdapter';
+import { loadStoredSession } from '@/lib/auth/supabaseAuth';
 
 const AuthContext = createContext();
 
@@ -42,7 +44,37 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAppState = async () => {
-    if (isStandaloneBuild() || localClinicAtBoot()) {
+    if (localClinicAtBoot()) {
+      enterLocalClinic(false);
+      return;
+    }
+
+    if (isStandaloneBuild()) {
+      if (getAuthMode() === AUTH_MODES.SUPABASE) {
+        try {
+          setIsLoadingAuth(true);
+          const cached = loadStoredSession();
+          if (cached?.access_token) {
+            const user = await fetchCurrentUser();
+            if (user) {
+              setUser(user);
+              setIsAuthenticated(true);
+              setAuthChecked(true);
+              setIsLoadingAuth(false);
+              setIsLoadingPublicSettings(false);
+              return;
+            }
+          }
+        } catch (e) {
+          console.error('Supabase session check failed:', e);
+        }
+        setUser(null);
+        setIsAuthenticated(false);
+        setAuthChecked(true);
+        setIsLoadingAuth(false);
+        setIsLoadingPublicSettings(false);
+        return;
+      }
       enterLocalClinic(false);
       return;
     }
@@ -114,8 +146,15 @@ export const AuthProvider = ({ children }) => {
 
   const checkUserAuth = async () => {
     try {
-      // Now check if the user is authenticated
       setIsLoadingAuth(true);
+      if (getAuthMode() === AUTH_MODES.SUPABASE) {
+        const user = await fetchCurrentUser();
+        setUser(user);
+        setIsAuthenticated(Boolean(user));
+        setIsLoadingAuth(false);
+        setAuthChecked(true);
+        return;
+      }
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
@@ -137,12 +176,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = (shouldRedirect = true) => {
+  const logout = async (shouldRedirect = true) => {
     const wasLocal = Boolean(user?.local);
+    const wasSupabase = Boolean(user?.supabase);
     disableLocalClinic();
     setUser(null);
     setIsAuthenticated(false);
     if (wasLocal) {
+      if (shouldRedirect && typeof window !== 'undefined') window.location.href = absoluteAppPath('/login');
+      return;
+    }
+    if (wasSupabase || getAuthMode() === AUTH_MODES.SUPABASE) {
+      await logoutHosted();
       if (shouldRedirect && typeof window !== 'undefined') window.location.href = absoluteAppPath('/login');
       return;
     }
@@ -173,6 +218,8 @@ export const AuthProvider = ({ children }) => {
       checkAppState,
       enterLocalClinic,
       isLocalClinic: Boolean(user?.local),
+      authMode: getAuthMode(),
+      supportsEmailAuth: getAuthMode() !== AUTH_MODES.LOCAL,
     }}>
       {children}
     </AuthContext.Provider>

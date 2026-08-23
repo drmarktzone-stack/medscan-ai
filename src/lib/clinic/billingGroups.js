@@ -1,19 +1,30 @@
 /**
- * Future paid tools — catalog only.
- * Paywall stays off until the physician announces which tools are charged together.
+ * Paid vision tools — paywall auto-on in standalone when Bit merchant is configured.
  */
+
+import { normalizeIsraeliMobile } from "./paymentConfig.js";
+import { isStandaloneBuild } from "./standalone.js";
 
 export const VISION_BILLING_GROUP = Object.freeze({
   id: "vision",
-  paywall_enabled: false,
   routes: Object.freeze(["/ecg", "/ecg-compare", "/skin", "/radiology"]),
-  label_he: "דימות — קבוצת תשלום עתידית (עדיין פתוחה לבדיקה)",
+  label_he: "דימות — MedScan Vision (מנוי)",
 });
 
 export function isVisionBillingRoute(path) {
   return VISION_BILLING_GROUP.routes.includes(String(path || ""));
 }
 
-export function visionPaywallOn() {
-  return VISION_BILLING_GROUP.paywall_enabled === true;
+export function readVisionPaywallFlag(env = {}) {
+  const forced = env.VITE_VISION_PAYWALL;
+  if (forced === "false" || forced === "0") return false;
+  if (forced === "true" || forced === "1") return true;
+  const phone = normalizeIsraeliMobile(env.VITE_BIT_MERCHANT_PHONE || "");
+  return Boolean(phone);
+}
+
+export function visionPaywallOn(env) {
+  if (!isStandaloneBuild(env)) return false;
+  const e = env ?? (typeof import.meta !== "undefined" ? import.meta.env : {});
+  return readVisionPaywallFlag(e);
 }

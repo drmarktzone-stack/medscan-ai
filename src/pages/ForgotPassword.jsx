@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Loader2, CheckCircle } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { requestPasswordReset } from "@/lib/auth/authAdapter";
 import AuthShell, { AuthField } from "@/components/clinic/AuthShell";
 
 export default function ForgotPassword() {
@@ -16,7 +16,7 @@ export default function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
     try {
-      await base44.auth.resetPasswordRequest(email);
+      await requestPasswordReset(email);
     } catch {
       /* always show the same sent screen so emails are not enumerated */
     }
@@ -47,7 +47,7 @@ export default function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
           />
-          <Button type="submit" className="w-full h-12 rounded-xl font-bold" disabled={loading}>
+          <Button type="submit" className="w-full h-12 rounded-xl font-bold clinic-cta" disabled={loading}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("forgot.submit")}
           </Button>
           <Link to="/login" className="text-xs text-primary hover:underline block text-center">{t("forgot.back")}</Link>

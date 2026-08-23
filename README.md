@@ -31,6 +31,19 @@ npm run preview:standalone
 
 האתר באוויר זה לא אפליקציה בחנות.
 
+**מדריך מלא באפליקציה:** `/launch` (גם `/privacy`, `/pricing`).
+
+### אימייל וסיסמה (standalone)
+
+1. צרו פרויקט חינמי ב-[Supabase](https://supabase.com).
+2. העתיקו `env.standalone.example` → `.env.standalone` והוסיפו `VITE_SUPABASE_URL` ו-`VITE_SUPABASE_ANON_KEY`.
+3. ב-Supabase Auth → URL Configuration: הוסיפו `https://your-domain/.../reset-password`.
+4. `npm run build:standalone` — התחברות/הרשמה עם אימייל פועלים בלי Base44.
+
+בלי Supabase — אפשר להמשיך כאורח במחשב (localStorage).
+
+### TWA / Play Store
+
 היום בטלפון אנדרואיד:
 
 1. פתחו כרום.
