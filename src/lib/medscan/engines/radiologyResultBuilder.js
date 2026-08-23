@@ -11,6 +11,7 @@
 
 import { finalizeLocale } from "../i18n/localize.js";
 import { cannotCallNormalVision, INCOMPLETE_HEADLINE_HE } from "../../clinic/incompleteVision.js";
+import { withAtlasFallback } from "../knowledge/referenceAtlas.js";
 
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
@@ -179,7 +180,7 @@ const UNCERTAINTY_REASON = {
 export function assembleRadiologyResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
   const { severity, urgency } = mapRadiologySeverity(st, engineResult);
-  const matches = buildRadiologyMatches(st, allCases);
+  const matches = buildRadiologyMatches(st, withAtlasFallback("radiology", allCases));
 
   const abn = (st.key_abnormalities || []).filter((a) => a && a.finding);
   const summary = st.primary_impression

@@ -10,6 +10,7 @@
 
 import { finalizeLocale } from "../i18n/localize.js";
 import { cannotCallNormalVision } from "../../clinic/incompleteVision.js";
+import { withAtlasFallback } from "../knowledge/referenceAtlas.js";
 
 const isNum = (x) => typeof x === "number" && isFinite(x);
 const tok = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter((w) => w.length > 3);
@@ -131,7 +132,7 @@ const UNCERTAINTY_REASON = {
 export function assembleSkinResult(engineResult, allCases, { fileUrl, locale = "he" } = {}) {
   const st = engineResult?.structured || {};
   const { severity, urgency } = mapSkinSeverity(engineResult);
-  const matches = buildSkinMatches(st, allCases);
+  const matches = buildSkinMatches(st, withAtlasFallback("skin", allCases));
 
   const summary = st.primary_impression
     || (matches[0] ? matches[0].diagnosis : "ללא ממצא חד-משמעי — נדרש מתאם קליני");
