@@ -103,6 +103,17 @@ export default function AgentReceiptMarketingPage() {
         </Link>
       </div>
 
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4 mb-8 text-sm space-y-2">
+        <p className="font-bold text-emerald-300">פורסם באתרי מפתחים (לא פייסבוק/וואטסאפ)</p>
+        <ul className="text-white/70 space-y-1 text-xs list-disc list-inside">
+          <li>AI Agent Tools directory — submitted</li>
+          <li>awesome-ai-agents (e2b) — <a className="text-violet-300 underline" href="https://github.com/e2b-dev/awesome-ai-agents/issues/1434" target="_blank" rel="noreferrer">issue #1434</a></li>
+          <li>jim-schwoebel / slavakurilyak / caramaschiHG / Jenqyang — listing issues</li>
+          <li>awesome-cursor-skills — <a className="text-violet-300 underline" href="https://github.com/spencerpauly/awesome-cursor-skills/issues/52" target="_blank" rel="noreferrer">issue #52</a></li>
+        </ul>
+        <p className="text-xs text-white/45">פירוט: marketing/agentreceipt/SUBMISSIONS.md</p>
+      </div>
+
       <div className="rounded-xl border border-violet-500/30 bg-violet-950/20 p-4 mb-8 text-sm space-y-1">
         <p><strong>Live:</strong> <a href={home} className="text-violet-300 underline break-all">{LIVE.home}</a></p>
         <p><strong>Checkout:</strong> <a href={checkout} className="text-violet-300 underline break-all">{LIVE.checkout}</a></p>
