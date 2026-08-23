@@ -15,11 +15,11 @@ export const FREE_PAYMENT_CONFIG = {
   bank: {
     enabled: true,
     labelHe: 'העברה בנקאית',
-    bankName: import.meta.env.VITE_BIZBOOST_BANK_NAME || 'בנק (עדכנו)',
-    branch: import.meta.env.VITE_BIZBOOST_BANK_BRANCH || '000',
-    account: import.meta.env.VITE_BIZBOOST_BANK_ACCOUNT || '000000',
-    accountHolder: import.meta.env.VITE_BIZBOOST_ACCOUNT_HOLDER || 'שם בעל העסק',
-    noteHe: 'בהערות: שם העסק + אימייל + החבילה.',
+    bankName: import.meta.env.VITE_BIZBOOST_BANK_NAME || 'בנק הפועלים',
+    branch: import.meta.env.VITE_BIZBOOST_BANK_BRANCH || '666 (באקה)',
+    account: import.meta.env.VITE_BIZBOOST_BANK_ACCOUNT || '422494',
+    accountHolder: import.meta.env.VITE_BIZBOOST_ACCOUNT_HOLDER || 'אבו מוח סאמר',
+    noteHe: 'בהערות: שם העסק + אימייל + החבילה (למשל BizBoost Growth).',
   },
   /** PayPal — אין דמי מנוי; עמלה רק כשמקבלים כסף (~3%) */
   paypal: {
