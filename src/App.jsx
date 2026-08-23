@@ -51,6 +51,11 @@ import {
   ChronicPage, SyndromesPage, MetabolicPage, GeneticsPage, CsfPage,
   UltrasoundPage, EegPage, AudioPage, ReferralsPage,
 } from '@/pages/doctorped/tools';
+import BizBoostLanding from '@/bizboost/pages/BizBoostLanding';
+import LeadBotTool from '@/bizboost/pages/LeadBotTool';
+import ContentFlowTool from '@/bizboost/pages/ContentFlowTool';
+import ConvertScanTool from '@/bizboost/pages/ConvertScanTool';
+import BizBoostPricing from '@/bizboost/pages/BizBoostPricing';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -69,6 +74,13 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
+      {/* BizBoost AI — public marketing & tools (no auth) */}
+      <Route path="/bizboost" element={<BizBoostLanding />} />
+      <Route path="/bizboost/leadbot" element={<LeadBotTool />} />
+      <Route path="/bizboost/contentflow" element={<ContentFlowTool />} />
+      <Route path="/bizboost/convertscan" element={<ConvertScanTool />} />
+      <Route path="/bizboost/pricing" element={<BizBoostPricing />} />
+
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
