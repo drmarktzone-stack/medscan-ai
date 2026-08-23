@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Lock, Loader2 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { absoluteAppPath } from "@/lib/clinic/standalone";
+import { completePasswordReset, parseRecoveryTokenFromHash } from "@/lib/auth/authAdapter";
 import AuthShell, { AuthField } from "@/components/clinic/AuthShell";
 
 export default function ResetPassword() {
@@ -14,8 +14,12 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get("token");
+  const token = useMemo(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("token")
+      || parseRecoveryTokenFromHash(window.location.hash)
+      || null;
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +34,7 @@ export default function ResetPassword() {
     setLoading(true);
     setError("");
     try {
-      await base44.auth.resetPassword({ resetToken: token, newPassword: password });
+      await completePasswordReset(password, token);
       window.location.href = absoluteAppPath("/login");
     } catch {
       setError(t("reset.error"));
@@ -45,6 +49,9 @@ export default function ResetPassword() {
         <h2 className="text-lg font-extrabold">{t("reset.title")}</h2>
         <p className="text-xs text-muted-foreground">{t("reset.subtitle")}</p>
       </div>
+      {!token ? (
+        <p className="text-xs text-red-600 text-center leading-relaxed">{t("reset.missing_token")}</p>
+      ) : null}
       <form onSubmit={handleSubmit} className="space-y-3">
         <AuthField
           icon={Lock}
@@ -65,7 +72,7 @@ export default function ResetPassword() {
           minLength={8}
         />
         {error ? <p className="text-xs text-red-600 text-center leading-relaxed">{error}</p> : null}
-        <Button type="submit" className="w-full h-12 rounded-xl font-bold" disabled={loading || !token}>
+        <Button type="submit" className="w-full h-12 rounded-xl font-bold clinic-cta" disabled={loading || !token}>
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("reset.submit")}
         </Button>
         <Link to="/login" className="text-xs text-primary hover:underline block text-center">{t("forgot.back")}</Link>

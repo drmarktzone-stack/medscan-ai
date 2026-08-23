@@ -13,7 +13,9 @@ import { PatientSessionProvider } from '@/lib/doctorped/patientSession';
 import { ClinicProfileProvider } from '@/lib/clinic/profileContext';
 import { routerBasename } from '@/lib/clinic/standalone';
 
-import Login from '@/pages/Login';
+import LaunchGuidePage from '@/pages/LaunchGuidePage';
+import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
+import PricingPage from '@/pages/PricingPage';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
@@ -73,6 +75,9 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/launch" element={<LaunchGuidePage />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<RoleGate />}>
         <Route element={<AppLayout />}>

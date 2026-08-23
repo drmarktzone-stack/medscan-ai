@@ -9,6 +9,13 @@ import { useAuth } from "@/lib/AuthContext";
 import { disableLocalClinic, enableLocalClinic } from "@/lib/clinic/localMode";
 import { absoluteAppPath } from "@/lib/clinic/standalone";
 import {
+  AUTH_MODES,
+  getAuthMode,
+  registerWithEmail,
+  resendRegistrationOtp,
+  verifyRegistrationOtp,
+} from "@/lib/auth/authAdapter";
+import {
   CLINICIAN_SPECIALTIES,
   clinicianBlockingFields,
   isAccountReady,
@@ -55,6 +62,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [resent, setResent] = useState(false);
+  const authMode = getAuthMode();
 
   const patch = (partial) => setForm((s) => ({ ...s, ...partial }));
 
@@ -109,8 +117,15 @@ export default function Register() {
     setError("");
     try {
       persist();
-      await base44.auth.register({ email: form.email, password: form.password });
-      setStep("otp");
+      const data = await registerWithEmail(form.email, form.password, {
+        full_name: form.fullName,
+        role: form.role,
+      });
+      if (authMode === AUTH_MODES.SUPABASE && !data?.access_token) {
+        setStep("confirm_email");
+      } else {
+        setStep("otp");
+      }
     } catch {
       setError(t("register.error"));
     } finally {
@@ -122,12 +137,14 @@ export default function Register() {
     setLoading(true);
     setError("");
     try {
-      const result = await base44.auth.verifyOtp({ email: form.email, otpCode: otp });
-      if (result?.access_token) base44.auth.setToken(result.access_token);
-      else await base44.auth.loginViaEmailPassword(form.email, form.password);
+      await verifyRegistrationOtp({ email: form.email, otpCode: otp, password: form.password });
       finish(false);
-    } catch {
-      setError(t("register.otp_bad"));
+    } catch (err) {
+      if (err?.message === 'confirm_email') {
+        setError(t("register.confirm_email"));
+      } else {
+        setError(t("register.otp_bad"));
+      }
     } finally {
       setLoading(false);
     }
@@ -135,10 +152,14 @@ export default function Register() {
 
   const handleResend = async () => {
     try {
-      await base44.auth.resendOtp(form.email);
+      await resendRegistrationOtp(form.email);
       setResent(true);
-    } catch {
-      setError(t("register.error"));
+    } catch (err) {
+      if (err?.message === 'confirm_email_resend') {
+        setError(t("register.confirm_email_resend"));
+      } else {
+        setError(t("register.error"));
+      }
     }
   };
 
@@ -291,7 +312,7 @@ export default function Register() {
             </form>
           ) : null}
 
-          {form.role && !skipHostedSignup ? (
+          {form.role && !skipHostedSignup && authMode === AUTH_MODES.BASE44 ? (
             <>
               <OrDivider />
               <GoogleButton
@@ -304,13 +325,25 @@ export default function Register() {
                 }}
                 label={t("register.google")}
               />
-              <GuestContinue
-                onClick={enterLocal}
-                label={form.role === "parent" ? t("register.guest_parent") : t("register.guest_clinician")}
-              />
             </>
           ) : null}
+          {form.role ? (
+            <GuestContinue
+              onClick={enterLocal}
+              label={form.role === "parent" ? t("register.guest_parent") : t("register.guest_clinician")}
+            />
+          ) : null}
         </>
+      ) : step === "confirm_email" ? (
+        <div className="space-y-5 text-center">
+          <div className="space-y-1">
+            <h2 className="text-lg font-extrabold">{t("register.confirm_email_title")}</h2>
+            <p className="text-xs text-muted-foreground leading-relaxed">{t("register.confirm_email_body", { email: form.email })}</p>
+          </div>
+          <Button onClick={() => window.location.href = absoluteAppPath("/login")} className="w-full h-12 rounded-xl font-bold clinic-cta">
+            {t("register.confirm_email_cta")}
+          </Button>
+        </div>
       ) : (
         <div className="space-y-5">
           <div className="text-center space-y-1">

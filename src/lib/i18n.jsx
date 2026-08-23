@@ -20,7 +20,9 @@ export function I18nProvider({ children }) {
   }, [lang, dir]);
 
   const t = (key, params) => {
-    let str = translations[lang]?.[key] ?? translations.he[key] ?? key;
+    let val = translations[lang]?.[key] ?? translations.he[key] ?? key;
+    if (Array.isArray(val) || (val && typeof val === "object")) return val;
+    let str = String(val);
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
         str = str.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));

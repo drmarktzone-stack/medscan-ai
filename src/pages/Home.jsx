@@ -72,6 +72,14 @@ export default function Home() {
         </section>
 
         <DisclaimerBanner />
+
+        <footer className="flex flex-wrap justify-center gap-3 pt-2 pb-4 text-xs">
+          <Link to="/launch" className="text-sky-800/80 hover:text-sky-950 font-semibold">{t("launch.nav")}</Link>
+          <span className="text-slate-300">·</span>
+          <Link to="/pricing" className="text-sky-800/80 hover:text-sky-950 font-semibold">{t("pricing.nav")}</Link>
+          <span className="text-slate-300">·</span>
+          <Link to="/privacy" className="text-sky-800/80 hover:text-sky-950 font-semibold">{t("privacy.nav")}</Link>
+        </footer>
       </main>
 
       <OnboardingOverlay />

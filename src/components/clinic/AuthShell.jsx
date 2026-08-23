@@ -9,22 +9,23 @@ import { useI18n } from "@/lib/i18n";
 export default function AuthShell({ children }) {
   const { t, dir } = useI18n();
   return (
-    <div className="clinic-page min-h-screen flex flex-col" dir={dir}>
-      <div className="flex justify-end clinic-wrap pt-[calc(env(safe-area-inset-top)+1rem)]">
+    <div className="clinic-page auth-shell min-h-screen flex flex-col" dir={dir}>
+      <div className="auth-shell-glow pointer-events-none" aria-hidden="true" />
+      <div className="flex justify-end clinic-wrap pt-[calc(env(safe-area-inset-top)+1rem)] relative z-10">
         <div className="clinic-card px-3 py-1.5">
           <LanguageSwitcher />
         </div>
       </div>
-      <div className="flex-1 flex items-center justify-center p-5">
+      <div className="flex-1 flex items-center justify-center p-5 relative z-10">
         <div className="w-full max-w-md space-y-5">
           <div className="text-center">
-            <div className="clinic-icon w-16 h-16 mx-auto mb-4">
-              <Stethoscope className="w-8 h-8 text-white" />
+            <div className="clinic-icon w-[4.5rem] h-[4.5rem] mx-auto mb-4 shadow-lg">
+              <Stethoscope className="w-9 h-9 text-white" />
             </div>
-            <h1 className="text-2xl font-extrabold tracking-tight">{t("home.brand")}</h1>
-            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{t("login.tagline")}</p>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900">{t("home.brand")}</h1>
+            <p className="text-sm text-slate-600 mt-2 leading-relaxed max-w-xs mx-auto">{t("login.tagline")}</p>
           </div>
-          <div className="clinic-card p-6 space-y-5">{children}</div>
+          <div className="auth-card clinic-card p-6 sm:p-7 space-y-5">{children}</div>
         </div>
       </div>
     </div>
