@@ -1,10 +1,11 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Sparkles, LayoutDashboard, Route, Settings, ArrowRight } from "lucide-react";
+import { Sparkles, LayoutDashboard, Route, Settings, Mail, ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 const NAV = [
   { to: "/freeai", labelHe: "בית", labelEn: "Home", icon: Sparkles, end: true },
+  { to: "/freeai/passport", labelHe: "Passport", labelEn: "Passport", icon: Mail, end: false },
   { to: "/freeai/studio", labelHe: "סטודיו", labelEn: "Studio", icon: LayoutDashboard, end: false },
   { to: "/freeai/planner", labelHe: "מתכנן", labelEn: "Planner", icon: Route, end: false },
   { to: "/freeai/providers", labelHe: "ספקים", labelEn: "Providers", icon: Settings, end: false },
@@ -61,7 +62,7 @@ export default function FreeAILayout({ children }) {
       </main>
 
       <nav className="fixed bottom-4 inset-x-0 z-30 px-4 sm:hidden">
-        <div className="max-w-md mx-auto grid grid-cols-4 gap-1 p-1.5 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
+        <div className="max-w-lg mx-auto grid grid-cols-5 gap-0.5 p-1 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
           {NAV.map(({ to, labelHe, labelEn, icon: Icon, end }) => (
             <NavLink
               key={to}

@@ -11,6 +11,8 @@ import { topPrompts, addCommunityPrompt } from "@/freeai/lib/communityPrompts";
 import { parseCsv, csvToTasks, csvTemplate } from "@/freeai/lib/csvImport";
 import { getQuotaState } from "@/freeai/lib/projectQuota";
 import { useI18n } from "@/lib/i18n";
+import CreditHarvesterWizard, { CreditScoreBadge } from "@/freeai/components/CreditHarvesterWizard";
+import { getPrimaryEmail } from "@/freeai/lib/creditPassport";
 import {
   Sparkles, Zap, Moon, Star, Upload, Palette, Bell, Gift,
   Code2, Image, MessageCircle,
@@ -32,6 +34,8 @@ export default function FreeAIStudio() {
   const quota = getQuotaState();
   const community = topPrompts(null, 5);
   const queue = loadQueue();
+
+  const hasEmail = !!getPrimaryEmail();
 
   const tabs = [
     { id: "workspace", labelHe: "סטודיו", labelEn: "Studio", icon: Sparkles },
@@ -62,6 +66,15 @@ export default function FreeAIStudio() {
             : "One interface — code → design → deploy. Background auto-switching across all free AI tools."}
         </p>
       </section>
+
+      {/* Credit Passport prompt if no email */}
+      {!hasEmail && (
+        <div className="mb-6">
+          <CreditHarvesterWizard locale={locale} onComplete={() => window.location.reload()} />
+        </div>
+      )}
+
+      {hasEmail && <CreditScoreBadge locale={locale} />}
 
       {/* Credit notifications */}
       {notifications.length > 0 && (

@@ -185,3 +185,60 @@ describe("Community prompts", () => {
     assert.ok(top.length >= 1);
   });
 });
+
+describe("Credit Passport", () => {
+  it("validates email", async () => {
+    const { saveEmail } = await import("./lib/creditPassport.js");
+    assert.equal(saveEmail("bad").ok, false);
+    assert.equal(saveEmail("user@test.com").ok, true);
+  });
+
+  it("generates email aliases", async () => {
+    const { generateEmailAliases } = await import("./lib/creditPassport.js");
+    const aliases = generateEmailAliases("user@gmail.com", 2);
+    assert.equal(aliases.length, 2);
+    assert.ok(aliases[0].includes("+freeai1@"));
+  });
+});
+
+describe("Credit Harvester", () => {
+  it("builds harvest plan", async () => {
+    const { buildHarvestPlan } = await import("./lib/creditHarvester.js");
+    const plan = buildHarvestPlan("test@example.com");
+    assert.ok(plan.steps.length > 0);
+    assert.ok(plan.claimableCredits > 0);
+  });
+
+  it("builds signup URLs", async () => {
+    const { buildSignupUrl } = await import("./lib/creditHarvester.js");
+    const url = buildSignupUrl("huggingface", "test@example.com");
+    assert.ok(url.includes("huggingface.co"));
+  });
+});
+
+describe("Credit Score", () => {
+  it("calculates score", async () => {
+    const { calculateCreditScore } = await import("./lib/creditScore.js");
+    const score = calculateCreditScore();
+    assert.ok(score.score >= 0 && score.score <= 100);
+    assert.ok(score.grade);
+  });
+
+  it("checks project completion", async () => {
+    const { canCompleteProject } = await import("./lib/creditScore.js");
+    const check = canCompleteProject("landing");
+    assert.ok(typeof check.ok === "boolean");
+  });
+});
+
+describe("Signup Orchestrator", () => {
+  it("initializes orchestrator", async () => {
+    const { initOrchestrator, getCurrentStep, resetOrchestrator } = await import("./lib/signupOrchestrator.js");
+    resetOrchestrator();
+    const state = initOrchestrator("test@example.com");
+    assert.ok(state.steps.length > 0);
+    const step = getCurrentStep();
+    assert.ok(step);
+    resetOrchestrator();
+  });
+});

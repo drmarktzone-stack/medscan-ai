@@ -5,6 +5,7 @@
 
 import { providersForStage, getProvider } from "../data/providers.js";
 import { loadCreditState, useCredits, saveProject } from "./creditStore.js";
+import { isProviderClaimed } from "./creditPassport.js";
 import { generateCodeScaffold } from "./generators/codeGenerator.js";
 import { generatePollinationsBatch } from "./generators/pollinations.js";
 import { buildProjectPlan } from "./planner.js";
@@ -46,6 +47,13 @@ export function pickProvider(stage, excludeIds = []) {
     if (creditState[p.id]?.enabled === false) return false;
     const rem = creditState[p.id]?.remaining ?? 0;
     return rem >= (p.costPerUnit ?? 1);
+  }).sort((a, b) => {
+    const aClaimed = isProviderClaimed(a.id) ? 0 : 1;
+    const bClaimed = isProviderClaimed(b.id) ? 0 : 1;
+    if (aClaimed !== bClaimed) return aClaimed - bClaimed;
+    if (a.accessMode === "api" && !a.needsKey) return -1;
+    if (b.accessMode === "api" && !b.needsKey) return 1;
+    return a.priority - b.priority;
   });
 
   const inApp = providers.find((p) =>
