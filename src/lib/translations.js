@@ -326,7 +326,7 @@ export const translations = {
     "prep.item_symptoms_now": "מה קורה עכשיו — חום, כאב, מיקום",
     "prep.item_red_flags_review": "סימני אזהרה: קושי נשימה, חוסר הכרה, פרכוס",
     "prep.item_call_101": "התקשרו 101 או לכו למיון — אל תמתינו",
-    "prep.item_escort_emergency": "אל ת נהגו לבד — מלווה / אמbulance",
+    "prep.item_escort_emergency": "אל תנהגו לבד — מלווה / אמבולנס",
     "prep.item_school_reports": "דוחות גן / בית ספר / התפתחות",
     "prep.item_prior_eval": "הערכות קודמות (פסיכולוג / נוירולוג)",
     "prep.item_comfort_clothes": "בגדים נוחים לתנועה",
