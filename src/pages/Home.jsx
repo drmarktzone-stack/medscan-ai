@@ -34,6 +34,15 @@ export default function Home() {
       <main className="clinic-wrap pb-10 space-y-8">
         <MarketingCTA />
 
+        <Link
+          to="/agentreceipt"
+          className="block clinic-panel border-violet-200/80 bg-gradient-to-l from-violet-50 to-white hover:shadow-md transition-shadow"
+        >
+          <p className="text-xs font-bold text-violet-700 uppercase tracking-wide">חדש</p>
+          <p className="text-lg font-extrabold text-slate-900 mt-1">AgentReceipt — הוכחת סיום לסוכני AI</p>
+          <p className="text-sm text-slate-600 mt-1">Receipt + gate אחרי Cursor / Cloud. build נכשל → handoff חסום.</p>
+        </Link>
+
         <section className="space-y-3">
           <div className="text-center">
             <p className="clinic-eyebrow">{t("journey.what_is_label")}</p>

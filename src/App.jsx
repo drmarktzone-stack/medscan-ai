@@ -66,6 +66,12 @@ import FreeAIPricingPage from '@/freeai/pages/FreeAIPricingPage';
 import FreeAICheckoutPage from '@/freeai/pages/FreeAICheckoutPage';
 import FreeAIMarketingPage from '@/freeai/pages/FreeAIMarketingPage';
 import CreditPassportPage from '@/freeai/pages/CreditPassportPage';
+import AgentReceiptLandingPage from '@/agentreceipt/pages/AgentReceiptLandingPage';
+import AgentReceiptPricingPage from '@/agentreceipt/pages/AgentReceiptPricingPage';
+import AgentReceiptDocsPage from '@/agentreceipt/pages/AgentReceiptDocsPage';
+import AgentReceiptConsolePage from '@/agentreceipt/pages/AgentReceiptConsolePage';
+import AgentReceiptMarketingPage from '@/agentreceipt/pages/AgentReceiptMarketingPage';
+import AgentReceiptCheckoutPage from '@/agentreceipt/pages/AgentReceiptCheckoutPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -94,6 +100,14 @@ const AuthenticatedApp = () => {
       <Route path="/freeai/passport" element={<CreditPassportPage />} />
       <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
       <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />
+
+      {/* AgentReceipt — proof-of-done for AI agents (public) */}
+      <Route path="/agentreceipt" element={<AgentReceiptLandingPage />} />
+      <Route path="/agentreceipt/pricing" element={<AgentReceiptPricingPage />} />
+      <Route path="/agentreceipt/docs" element={<AgentReceiptDocsPage />} />
+      <Route path="/agentreceipt/console" element={<AgentReceiptConsolePage />} />
+      <Route path="/agentreceipt/marketing" element={<AgentReceiptMarketingPage />} />
+      <Route path="/agentreceipt/checkout" element={<AgentReceiptCheckoutPage />} />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
