@@ -60,6 +60,7 @@ import FreeAIWorkspacePage from '@/freeai/pages/FreeAIWorkspacePage';
 import FreeAIStudio from '@/freeai/pages/FreeAIStudio';
 import FreeAIPricingPage from '@/freeai/pages/FreeAIPricingPage';
 import FreeAICheckoutPage from '@/freeai/pages/FreeAICheckoutPage';
+import FreeAIMarketingPage from '@/freeai/pages/FreeAIMarketingPage';
 import CreditPassportPage from '@/freeai/pages/CreditPassportPage';
 
 const AuthenticatedApp = () => {
@@ -85,6 +86,7 @@ const AuthenticatedApp = () => {
       <Route path="/freeai/studio" element={<FreeAIStudio />} />
       <Route path="/freeai/pricing" element={<FreeAIPricingPage />} />
       <Route path="/freeai/checkout" element={<FreeAICheckoutPage />} />
+      <Route path="/freeai/marketing" element={<FreeAIMarketingPage />} />
       <Route path="/freeai/passport" element={<CreditPassportPage />} />
       <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
       <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />

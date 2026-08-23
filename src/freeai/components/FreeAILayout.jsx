@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Sparkles, LayoutDashboard, Route, Settings, Mail, ArrowRight, Crown } from "lucide-react";
+import { Sparkles, LayoutDashboard, Route, Settings, Mail, ArrowRight, Crown, Megaphone } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { captureReferral } from "@/freeai/lib/marketingTracker.js";
 
 const NAV = [
   { to: "/freeai/create", labelHe: "יצירה", labelEn: "Create", icon: Sparkles, end: false },
@@ -9,12 +10,15 @@ const NAV = [
   { to: "/freeai", labelHe: "בית", labelEn: "Home", icon: LayoutDashboard, end: true },
   { to: "/freeai/passport", labelHe: "Passport", labelEn: "Passport", icon: Mail, end: false },
   { to: "/freeai/studio", labelHe: "סטודיו", labelEn: "Studio", icon: Route, end: false },
+  { to: "/freeai/marketing", labelHe: "שיווק", labelEn: "Marketing", icon: Megaphone, end: false },
 ];
 
 export default function FreeAILayout({ children }) {
   const { lang, dir } = useI18n();
   const locale = lang === "en" ? "en" : "he";
   const Arrow = dir === "rtl" ? ArrowRight : ArrowRight;
+
+  useEffect(() => { captureReferral(); }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 text-white" dir={dir}>
@@ -62,7 +66,7 @@ export default function FreeAILayout({ children }) {
       </main>
 
       <nav className="fixed bottom-4 inset-x-0 z-30 px-4 sm:hidden">
-        <div className="max-w-lg mx-auto grid grid-cols-5 gap-0.5 p-1 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
+        <div className="max-w-lg mx-auto grid grid-cols-6 gap-0.5 p-1 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
           {NAV.map(({ to, labelHe, labelEn, icon: Icon, end }) => (
             <NavLink
               key={to}

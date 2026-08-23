@@ -29,13 +29,17 @@ jobs:
         env:
           VITE_STANDALONE: "true"
           VITE_LOCAL_CLINIC: "true"
+          VITE_FREEAI_BIT_PHONE: "0528885800"
+          VITE_FREEAI_SUPPORT_WHATSAPP: "972528885800"
         run: |
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
           if [ "$REPO" = "${OWNER}.github.io" ]; then
             export VITE_BASE="/"
+            export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io"
           else
             export VITE_BASE="/${REPO}/"
+            export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io/${REPO}"
           fi
           echo "VITE_BASE=$VITE_BASE"
           npm run build:standalone

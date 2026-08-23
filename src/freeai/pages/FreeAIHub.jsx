@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ShareBanner from "@/freeai/components/ShareBanner";
 import FreeAILayout from "@/freeai/components/FreeAILayout";
 import GenerationPanel from "@/freeai/components/GenerationPanel";

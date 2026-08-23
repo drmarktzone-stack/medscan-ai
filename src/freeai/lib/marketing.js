@@ -2,12 +2,30 @@
  * Marketing & share utilities for FreeAI Hub outreach.
  */
 
-export const PRODUCT_URL = typeof window !== "undefined"
-  ? `${window.location.origin}${import.meta.env.BASE_URL || ""}/freeai`
-  : "https://your-domain.com/freeai";
+const DEFAULT_PUBLIC_ORIGIN = "https://drmarktzone.github.io/medscan-ai";
 
+function basePath() {
+  if (typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) {
+    return import.meta.env.BASE_URL.replace(/\/$/, "");
+  }
+  return "/medscan-ai";
+}
+
+export function getPublicOrigin() {
+  if (typeof import.meta !== "undefined" && import.meta.env?.VITE_FREEAI_PUBLIC_URL) {
+    return import.meta.env.VITE_FREEAI_PUBLIC_URL.replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}${basePath()}`.replace(/\/$/, "");
+  }
+  return DEFAULT_PUBLIC_ORIGIN;
+}
+
+export const PRODUCT_URL = `${getPublicOrigin()}/freeai`;
 export const CREATE_URL = `${PRODUCT_URL}/create`;
 export const PRICING_URL = `${PRODUCT_URL}/pricing`;
+export const CHECKOUT_URL = `${PRODUCT_URL}/checkout`;
+export const MARKETING_URL = `${PRODUCT_URL}/marketing`;
 
 export function shareMessage(locale = "he") {
   if (locale === "he") {

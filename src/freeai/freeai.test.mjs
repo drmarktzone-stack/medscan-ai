@@ -264,10 +264,19 @@ describe("Subscription & marketing", () => {
   });
 
   it("generates share message", async () => {
-    const { shareMessage } = await import("./lib/marketing.js");
+    const { shareMessage, getPublicOrigin } = await import("./lib/marketing.js");
     const msg = shareMessage("he");
     assert.ok(msg.includes("₪20"));
     assert.ok(msg.includes("FreeAI"));
+    assert.ok(getPublicOrigin().includes("drmarktzone.github.io"));
+  });
+
+  it("tracks marketing events", async () => {
+    const { trackEvent, getProgress, KPI_TARGETS } = await import("./lib/marketingTracker.js");
+    const stats = trackEvent("share", { channel: "test" });
+    assert.ok(stats.shares >= 1);
+    assert.equal(KPI_TARGETS.visits, 500);
+    assert.ok(getProgress(stats, "shares").pct >= 0);
   });
 
   it("has outreach targets", async () => {
