@@ -32,13 +32,17 @@ jobs:
           VITE_BIT_MERCHANT_PHONE: ${{ secrets.BIT_MERCHANT_PHONE }}
           VITE_VISION_PRICE_ILS: ${{ vars.VISION_PRICE_ILS || '49' }}
           VITE_STRIPE_PAYMENT_LINK: ${{ secrets.STRIPE_PAYMENT_LINK }}
+          VITE_FREEAI_BIT_PHONE: "0528885800"
+          VITE_FREEAI_SUPPORT_WHATSAPP: "972528885800"
         run: |
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
           if [ "$REPO" = "${OWNER}.github.io" ]; then
             export VITE_BASE="/"
+            export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io"
           else
             export VITE_BASE="/${REPO}/"
+            export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io/${REPO}"
           fi
           echo "VITE_BASE=$VITE_BASE"
           npm run build:standalone
