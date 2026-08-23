@@ -15,6 +15,7 @@ import {
   removeFollowUp,
   followUpStats,
 } from "@/lib/medscan/journey/followUpStore";
+import { MEDICAL_HEALTH_TIPS } from "@/lib/medscan/journey/medicalHealthTips";
 
 export default function ParentFollowUp() {
   const { t } = useI18n();
@@ -104,6 +105,18 @@ export default function ParentFollowUp() {
               </div>
             ))
           )}
+        </section>
+
+        <section className="clinic-card p-4 space-y-3">
+          <p className="text-sm font-bold">{t("journey.med_tips_title")}</p>
+          <p className="text-xs text-slate-600 leading-relaxed">{t("journey.med_tips_intro")}</p>
+          {MEDICAL_HEALTH_TIPS.map((tip) => (
+            <div key={tip.id} className="rounded-xl border border-sky-100 bg-white/60 p-3">
+              <p className="text-sm font-bold text-slate-900">{t(tip.titleKey)}</p>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">{t(tip.bodyKey)}</p>
+            </div>
+          ))}
+          <p className="text-[10px] text-sky-800/70 font-medium">{t("journey.med_tips_disclaimer")}</p>
         </section>
 
         <DisclaimerBanner />

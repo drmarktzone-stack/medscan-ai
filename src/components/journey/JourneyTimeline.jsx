@@ -14,7 +14,7 @@ export default function JourneyTimeline({ activePhaseId, compact = false }) {
           {t("journey.timeline_label")}
         </p>
       ) : null}
-      <ol className={`grid grid-cols-4 gap-1 ${compact ? "" : "gap-2"}`}>
+      <ol className={`grid gap-1 ${compact ? "" : "gap-2"}`} style={{ gridTemplateColumns: `repeat(${FAMILY_JOURNEY_PHASES.length}, minmax(0, 1fr))` }}>
         {FAMILY_JOURNEY_PHASES.map((phase, index) => {
           const active = phase.id === activePhaseId;
           const Icon = phase.icon;

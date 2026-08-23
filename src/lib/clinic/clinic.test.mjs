@@ -165,7 +165,6 @@ t('הורה — נתיבי מסע משפחתי מאושרים', () => {
   assert(isParentAllowedPath('/parent/visit') === true);
   assert(isParentAllowedPath('/parent/results') === true);
   assert(isParentAllowedPath('/parent/follow-up') === true);
-  assert(isParentAllowedPath('/parent/rights') === true);
   assert(isParentAllowedPath('/doctorped') === false);
 });
 

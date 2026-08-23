@@ -4,7 +4,7 @@
  */
 
 import {
-  Heart, FlaskConical, ClipboardCheck, Scale, Stethoscope,
+  Heart, FlaskConical, ClipboardCheck, Stethoscope,
   Activity, ScanLine, UserCog, GitBranch, ListChecks, Database,
   Biohazard, Flame, Baby, Brain, Bone, Dna, Droplets, Waves, Mic, Pill,
 } from "lucide-react";
@@ -38,22 +38,12 @@ export const FAMILY_JOURNEY_PHASES = Object.freeze([
     icon: ClipboardCheck,
     tone: "amber",
   },
-  {
-    id: "rights",
-    titleKey: "journey.phase_rights_title",
-    descKey: "journey.phase_rights_desc",
-    stepKey: "journey.step_rights",
-    path: "/parent/rights",
-    icon: Scale,
-    tone: "violet",
-  },
 ]);
 
 const toneClasses = Object.freeze({
   rose: "from-rose-400 to-orange-300",
   sky: "from-sky-400 to-cyan-300",
   amber: "from-amber-400 to-yellow-300",
-  violet: "from-violet-400 to-purple-300",
 });
 
 export function journeyPhaseToneClass(tone) {
@@ -141,7 +131,6 @@ export const PARENT_JOURNEY_PATHS = Object.freeze([
   "/parent/visit",
   "/parent/results",
   "/parent/follow-up",
-  "/parent/rights",
   "/history",
 ]);
 

@@ -7,8 +7,9 @@ export const FOLLOWUP_KEY = 'medscan_followup_v1';
 export const FOLLOWUP_TYPES = Object.freeze([
   { id: 'results', labelKey: 'journey.follow_type_results' },
   { id: 'specialist', labelKey: 'journey.follow_type_specialist' },
-  { id: 'refund', labelKey: 'journey.follow_type_refund' },
+  { id: 'hitchayvut', labelKey: 'journey.follow_type_hitchayvut' },
   { id: 'referral', labelKey: 'journey.follow_type_referral' },
+  { id: 'imaging', labelKey: 'journey.follow_type_imaging' },
   { id: 'other', labelKey: 'journey.follow_type_other' },
 ]);
 
