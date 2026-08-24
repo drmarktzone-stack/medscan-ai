@@ -61,6 +61,8 @@ const BADGE_MAP = {
   game: { id: "first_game", icon: "🎮", name: { he: "משחק ראשון", en: "First game", ar: "لعبة أولى" } },
   study: { id: "first_study", icon: "📖", name: { he: "לימוד ראשון", en: "First study", ar: "دراسة أولى" } },
   body: { id: "first_body", icon: "❤️", name: { he: "גוף האדם", en: "Human body", ar: "جسم الإنسان" } },
+  design: { id: "first_design", icon: "💌", name: { he: "מעצב/ת ראשון", en: "First designer", ar: "مصمم أول" } },
+  lab: { id: "first_lab", icon: "🧪", name: { he: "מדען/ית מעבדה", en: "Lab scientist", ar: "عالم مختبر" } },
   quiz: { id: "first_quiz", icon: "✅", name: { he: "מבחן סיכום", en: "Summary quiz", ar: "اختبار مراجعة" } },
 };
 
@@ -75,6 +77,10 @@ function unlockAchievement(type) {
 
 export function unlockQuizAchievement() {
   unlockAchievement("quiz");
+}
+
+export function unlockLabAchievement() {
+  unlockAchievement("lab");
 }
 
 export { BADGE_MAP };

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import {
-  BookOpen, Palette, Gamepad2, Images, Home, Coins, Shield, Brain, Flame,
+  BookOpen, Palette, Gamepad2, Images, Home, Coins, Shield, Brain, Flame, FlaskConical,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -16,6 +16,7 @@ const NAV = [
   { to: R.kids, icon: Home, end: true, label: { he: "בית", en: "Home", ar: "الرئيسية" } },
   { to: R.kidsChat, icon: Brain, end: false, label: { he: "שאל AI", en: "Ask AI", ar: "اسأل AI" }, highlight: true },
   { to: R.kidsDaily, icon: Flame, end: false, label: { he: "יומי", en: "Daily", ar: "يومي" } },
+  { to: R.kidsLabs, icon: FlaskConical, end: false, label: { he: "מעבדות", en: "Labs", ar: "مختبرات" } },
   { to: R.kidsStudy, icon: BookOpen, end: false, label: { he: "לימוד", en: "Study", ar: "دراسة" } },
   { to: R.kidsBody, icon: HeartIcon, end: false, label: { he: "גוף", en: "Body", ar: "جسم" } },
   { to: R.kidsCreate, icon: Palette, end: false, label: { he: "יצירה", en: "Create", ar: "إبداع" } },
@@ -23,7 +24,7 @@ const NAV = [
   { to: R.kidsGallery, icon: Images, end: false, label: { he: "גלריה", en: "Gallery", ar: "معرض" } },
 ];
 
-const MOBILE = [R.kids, R.kidsChat, R.kidsDaily, R.kidsGame, R.kidsStudy, R.kidsCreate];
+const MOBILE = [R.kids, R.kidsChat, R.kidsDaily, R.kidsLabs, R.kidsStudy, R.kidsCreate];
 
 function HeartIcon(props) {
   return <span className="text-base leading-none" {...props}>❤️</span>;

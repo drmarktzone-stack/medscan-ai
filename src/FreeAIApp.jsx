@@ -26,6 +26,7 @@ import KidsBodyPage from "@/freeai/kids/pages/KidsBodyPage";
 import KidsChatPage from "@/freeai/kids/pages/KidsChatPage";
 import KidsDailyPage from "@/freeai/kids/pages/KidsDailyPage";
 import KidsParentPage from "@/freeai/kids/pages/KidsParentPage";
+import KidsLabsPage from "@/freeai/kids/pages/KidsLabsPage";
 
 /** Standalone FreeAI Hub + Kids — no MedScan, no auth, no clinic. */
 export default function FreeAIApp() {
@@ -56,6 +57,8 @@ export default function FreeAIApp() {
             <Route path={R.kidsCreate} element={<KidsCreatePage />} />
             <Route path={R.kidsGame} element={<KidsGamePage />} />
             <Route path={R.kidsGallery} element={<KidsGalleryPage />} />
+            <Route path={`${R.kidsLabs}/:categoryId`} element={<KidsLabsPage />} />
+            <Route path={R.kidsLabs} element={<KidsLabsPage />} />
 
             {/* Legacy /freeai/* → new paths (old bookmarks) */}
             <Route path="/freeai" element={<Navigate to={R.hub} replace />} />
@@ -73,6 +76,7 @@ export default function FreeAIApp() {
             <Route path="/freeai/kids/create" element={<Navigate to={R.kidsCreate} replace />} />
             <Route path="/freeai/kids/game" element={<Navigate to={R.kidsGame} replace />} />
             <Route path="/freeai/kids/gallery" element={<Navigate to={R.kidsGallery} replace />} />
+            <Route path="/freeai/kids/labs" element={<Navigate to={R.kidsLabs} replace />} />
             <Route path="/freeai/kids/chat" element={<Navigate to={R.kidsChat} replace />} />
             <Route path="/freeai/kids/daily" element={<Navigate to={R.kidsDaily} replace />} />
             <Route path="/freeai/kids/parent" element={<Navigate to={R.kidsParent} replace />} />

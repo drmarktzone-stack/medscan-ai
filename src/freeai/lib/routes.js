@@ -19,6 +19,7 @@ export const R = {
   kidsCreate: "/kids/create",
   kidsGame: "/kids/game",
   kidsGallery: "/kids/gallery",
+  kidsLabs: "/kids/labs",
 };
 
 export function freeaiPublicOrigin(env = import.meta.env) {

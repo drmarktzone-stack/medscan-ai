@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  BookOpen, Palette, Gamepad2, Images, Sparkles, Star, Heart, Brain, Flame,
+  BookOpen, Palette, Gamepad2, Images, Sparkles, Star, Heart, Brain, Flame, FlaskConical,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
@@ -26,6 +26,7 @@ const COPY = {
   createDesc: { he: "סיפורים, דמויות וציורים", en: "Stories, characters & art", ar: "قصص ورسوم" },
   gameDesc: { he: "10 משחקים AI!", en: "10 AI games!", ar: "10 ألعاب!" },
   bodyDesc: { he: "גוף, איברים ובריאות", en: "Body & health", ar: "جسم وصحة" },
+  labsDesc: { he: "מעבדות — כימיה, פיזיקה, מטבח, עיצוב!", en: "Labs — chem, physics, kitchen, design!", ar: "مختبرات!" },
   galleryDesc: { he: "כל מה שיצרת", en: "Your creations", ar: "إبداعاتك" },
   chatDesc: { he: "שאל/י הכל — תשובה אמיתית!", en: "Ask anything — real answers!", ar: "اسأل أي شيء!" },
   dailyDesc: { he: "5 דקות לימוד + רצף 🔥", en: "5-min lesson + streak 🔥", ar: "درس 5 دقائق 🔥" },
@@ -35,6 +36,7 @@ const COPY = {
 
 const CARDS = [
   { to: R.kidsChat, icon: Brain, color: "from-violet-600 to-indigo-500", key: "chatDesc", featured: true },
+  { to: R.kidsLabs, icon: FlaskConical, color: "from-emerald-500 to-teal-400", key: "labsDesc", featured: true },
   { to: R.kidsDaily, icon: Flame, color: "from-orange-500 to-red-500", key: "dailyDesc" },
   { to: R.kidsStudy, icon: BookOpen, color: "from-blue-500 to-cyan-400", key: "studyDesc" },
   { to: R.kidsBody, icon: Heart, color: "from-red-400 to-rose-500", key: "bodyDesc" },
