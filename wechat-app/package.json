@@ -1,0 +1,33 @@
+{
+  "name": "weichat",
+  "private": true,
+  "version": "0.1.0",
+  "description": "WeiChat — messaging super-app (standalone). Goal: surpass WhatsApp & Telegram.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:sync": "node scripts/wechat-sync-relay.mjs & vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node src/wechat.test.mjs",
+    "relay": "node scripts/wechat-sync-relay.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "clsx": "^2.1.1",
+    "jsqr": "^1.4.0",
+    "lucide-react": "^0.475.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-qr-code": "^2.0.18",
+    "react-router-dom": "^6.26.0",
+    "tailwind-merge": "^3.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.1.0"
+  }
+}

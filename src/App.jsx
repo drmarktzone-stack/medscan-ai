@@ -1,5 +1,4 @@
 import { Toaster } from "@/components/ui/toaster"
-import React, { lazy, Suspense } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
@@ -68,8 +67,6 @@ import FreeAICheckoutPage from '@/freeai/pages/FreeAICheckoutPage';
 import FreeAIMarketingPage from '@/freeai/pages/FreeAIMarketingPage';
 import CreditPassportPage from '@/freeai/pages/CreditPassportPage';
 
-const WeChatApp = lazy(() => import('@/wechat/pages/WeChatApp.jsx'));
-
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
 
@@ -97,17 +94,6 @@ const AuthenticatedApp = () => {
       <Route path="/freeai/passport" element={<CreditPassportPage />} />
       <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
       <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />
-
-      {/* WeChat MVP — messaging super-app demo (public, no auth) */}
-      <Route path="/wechat/*" element={
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-[#ededed]">
-            <div className="w-8 h-8 border-4 border-[#07c160]/30 border-t-[#07c160] rounded-full animate-spin" />
-          </div>
-        }>
-          <WeChatApp />
-        </Suspense>
-      } />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

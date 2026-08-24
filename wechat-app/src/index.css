@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Heebo', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #ededed;
+}
+
+* {
+  box-sizing: border-box;
+}
