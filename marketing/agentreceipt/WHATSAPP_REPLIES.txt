@@ -1,0 +1,40 @@
+AgentReceipt — תשובות WhatsApp (העתק מהיר)
+Bit: 052-888-5800 | Team: ₪149
+Live: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
+
+========== קיבלתי צילום Bit ==========
+קיבלתי את אישור ה-Bit ✅
+תודה!
+
+מפעיל לך AgentReceipt Team עכשיו.
+
+תיעוד:
+https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
+
+CLI:
+npm run agentreceipt:verify -- --task my-task --agent cursor-cloud
+
+========== חסר מייל ==========
+קיבלתי את ה-Bit ✅
+רק חסר לי המייל לחשבון Team — שלח/י בבקשה.
+
+========== Onboarding ==========
+Team הופעל ✅
+
+1. https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
+2. verify אחרי כל סוכן
+3. gate לפני handoff לסוכן הבא
+
+========== בלי תשלום ==========
+היי! לשדרוג Team:
+1. https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/checkout
+2. Bit ₪149 ל-052-888-5800
+3. צילום מסך כאן
+
+חינם: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
+
+========== שתף לקבוצה ==========
+AgentReceipt — כשסוכן AI אומר "סיימתי", יש סוף סוף הוכחה.
+
+חינם: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
+Team ₪149: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/checkout
