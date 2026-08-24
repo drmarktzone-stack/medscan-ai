@@ -1,5 +1,6 @@
 import { createContext, createElement, useContext, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { createSeedState, ME_ID } from './seedData.js';
+import { ONBOARDING_KEY } from './onboarding.js';
 import { uid } from './format.js';
 import { directChatId } from './chatId.js';
 import {
@@ -14,7 +15,25 @@ import {
 
 const STORAGE_KEY = 'weichat_v1';
 
+export { STORAGE_KEY };
+
 const defaultSyncMeta = { mode: 'local', error: null, lastSync: null };
+
+export function isOnboardingComplete() {
+  try {
+    if (localStorage.getItem(ONBOARDING_KEY) === '1') return true;
+    return Boolean(localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return false;
+  }
+}
+
+/** Apply onboarding choice and persist. */
+export function initWeChatStore(initialState) {
+  state = { ...initialState, syncMeta: { ...defaultSyncMeta } };
+  saveState(state);
+  emit();
+}
 
 function loadState() {
   try {

@@ -1,46 +1,68 @@
 # WeiChat 微聊
 
-**יישום messaging עצמאי** — לא חלק מ-MedScan.  
-מטרה: super-app ברמת WeChat, עם יעד לעבור את WhatsApp ו-Telegram בפיצ'רים וחוויית משתמש.
+**יישום messaging עצמאי** — מודל **אפס עלות** עובד.  
+מטרה: super-app ברמת WeChat, עם יעד לעבור את WhatsApp ו-Telegram.
 
-## הפעלה
+## הפעלה מהירה (חינם)
 
 ```bash
 cd wechat-app
 npm install
 
-# טרמינל 1 — relay לסנכרון בין טאבים (אופציונלי, מומלץ לפיתוח)
+# טרמינל 1 — relay (סנכרון בין מכשירים/טאבים)
 npm run relay
 
 # טרמינל 2
 npm run dev
 ```
 
-פתח: **http://localhost:5180**
+פתח: **http://localhost:5180** → בחר WeiChat ID → Badge **Live · relay**
+
+📖 מדריך מלא: [`docs/ZERO_COST.md`](docs/ZERO_COST.md)
+
+## מודל אפס עלות
+
+| רכיב | פתרון | עלות |
+|------|--------|------|
+| Frontend | GitHub Pages / CF Pages + PWA | $0 |
+| Sync | Node relay / Cloudflare Worker | $0 |
+| Storage | localStorage + relay JSON/KV | $0 |
+| אופציונלי | Supabase free tier | $0 |
 
 ## פיצ'רים
 
 | מודול | תיאור |
 |--------|--------|
-| צ'אטים | הודעות 1:1 וקבוצתיות, sync |
-| אנשי קשר | חיפוש, QR, הוספת חברים |
-| Moments | פיד חברתי, לייקים, תגובות |
+| Onboarding | בחירת WeiChat ID או דמו |
+| צ'אטים | הודעות 1:1, sync realtime |
+| אנשי קשר | QR, סריקה, הוספת חברים |
+| Moments | פיד, לייקים, תגובות |
 | Mini Programs | מחשבון, פתקיות, כלים |
 | Pay (דמו) | ארנק + חבילה אדומה |
-| Sync | Supabase Realtime **או** relay מקומי |
+| PWA | התקנה על מובייל, offline |
 
-## סנכרון
+## Relay
 
-### Relay מקומי (פיתוח)
+### מקומי
 ```bash
 npm run relay   # http://127.0.0.1:8765
 ```
-Badge: **Live · relay** — עובד גם בין Incognito לרגיל.
 
-### Supabase (production)
-1. הרץ `supabase_schema.sql` ב-SQL Editor
-2. צור `.env.local`:
+### ענן (חינם)
 ```bash
+# Node על Render/Railway — node scripts/wechat-sync-relay.mjs
+# או Cloudflare Worker:
+cd worker && npx wrangler deploy
+```
+
+Build עם relay:
+```bash
+VITE_RELAY_URL=https://your-relay.example.com npm run build
+```
+
+### Supabase (אופציונלי)
+```bash
+# .env.local
 VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
@@ -56,21 +78,18 @@ npm run build
 
 ```
 wechat-app/
-├── src/
-│   ├── components/   UI
-│   ├── pages/        מסכים
-│   ├── lib/          store, sync, merge
-│   └── miniapps/     Mini Programs
-├── scripts/          sync relay
+├── src/           UI + store + sync
+├── public/        PWA manifest + icon
+├── scripts/       Node relay (persistence)
+├── worker/        Cloudflare Worker relay
+├── docs/          ZERO_COST.md
 └── supabase_schema.sql
 ```
 
-## Roadmap (WhatsApp / Telegram+)
+## Roadmap
 
 - [ ] E2E encryption
 - [ ] Voice/video calls
-- [ ] Channels (视频号)
+- [ ] Channels
 - [ ] Bots & API
-- [ ] Desktop + native mobile
-- [ ] Groups 500+ members
-- [ ] File transfer & cloud drive
+- [ ] Native mobile

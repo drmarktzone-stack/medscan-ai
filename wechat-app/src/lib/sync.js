@@ -1,10 +1,8 @@
 /**
- * WeChat sync — Supabase Realtime when configured, BroadcastChannel mock otherwise.
+ * WeiChat sync — Supabase (optional) or zero-cost relay (default).
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { getSupabaseConfig, isSupabaseConfigured } from '@/lib/supabase/client.js';
-import { loadStoredSession } from '@/lib/auth/supabaseAuth.js';
+import { isSupabaseConfigured } from '@/lib/supabase/client.js';
 import { directChatId } from './chatId.js';
 import {
   mergeRemoteMessages,
@@ -12,19 +10,35 @@ import {
   mergeRemoteProfiles,
 } from './merge.js';
 import {
-  isMockSyncAvailable,
-  startMockSync,
-  mockPushMessage,
-  mockPushMoment,
-  mockUpsertProfile,
-} from './mockSync.js';
+  isRelaySyncAvailable,
+  startRelaySync,
+  relayPushMessage,
+  relayPushMoment,
+  relayUpsertProfile,
+  relayFetchProfile,
+  relayUpdateMoment,
+} from './relaySync.js';
 
 let client = null;
 let channel = null;
-let usingMock = false;
+let sbModule = null;
 
-function getClient() {
+async function loadSupabase() {
+  if (sbModule) return sbModule;
+  const [{ createClient }, { getSupabaseConfig }, { loadStoredSession }] = await Promise.all([
+    import('@supabase/supabase-js'),
+    import('@/lib/supabase/client.js'),
+    import('@/lib/auth/supabaseAuth.js'),
+  ]);
+  sbModule = { createClient, getSupabaseConfig, loadStoredSession };
+  return sbModule;
+}
+
+async function getClient() {
   if (client) return client;
+  if (!isSupabaseConfigured()) return null;
+
+  const { createClient, getSupabaseConfig, loadStoredSession } = await loadSupabase();
   const cfg = getSupabaseConfig();
   if (!cfg) return null;
 
@@ -51,7 +65,7 @@ function getClient() {
 
 export function getSyncBackend() {
   if (isSupabaseConfigured()) return 'supabase';
-  if (isMockSyncAvailable()) return 'mock';
+  if (isRelaySyncAvailable()) return 'relay';
   return 'local';
 }
 
@@ -74,12 +88,15 @@ function profilePayload(profile) {
 export async function upsertProfile(profile) {
   if (!profile?.wechatId) return { ok: false, reason: 'no_profile' };
   if (!isSupabaseConfigured()) {
-    return isMockSyncAvailable() ? mockUpsertProfile(profile) : { ok: false, reason: 'no_client' };
+    return isRelaySyncAvailable()
+      ? relayUpsertProfile(profile)
+      : { ok: false, reason: 'no_client' };
   }
 
-  const sb = getClient();
+  const sb = await getClient();
   if (!sb) return { ok: false, reason: 'no_client' };
 
+  const { loadStoredSession } = await loadSupabase();
   const session = loadStoredSession();
   const row = {
     ...profilePayload(profile),
@@ -95,7 +112,11 @@ export async function upsertProfile(profile) {
 }
 
 export async function fetchProfileByWechatId(wechatId) {
-  const sb = getClient();
+  if (!isSupabaseConfigured()) {
+    return relayFetchProfile(wechatId);
+  }
+
+  const sb = await getClient();
   if (!sb) return { ok: false, reason: 'no_client' };
 
   const { data, error } = await sb
@@ -109,7 +130,7 @@ export async function fetchProfileByWechatId(wechatId) {
 }
 
 export async function fetchAllProfiles() {
-  const sb = getClient();
+  const sb = await getClient();
   if (!sb) return { ok: false, reason: 'no_client', data: [] };
 
   const { data, error } = await sb
@@ -123,7 +144,7 @@ export async function fetchAllProfiles() {
 }
 
 export async function fetchMessagesForUser(wechatId) {
-  const sb = getClient();
+  const sb = await getClient();
   if (!sb) return { ok: false, reason: 'no_client', data: [] };
 
   const me = wechatId?.toLowerCase();
@@ -144,7 +165,7 @@ export async function fetchMessagesForUser(wechatId) {
 }
 
 export async function fetchMoments() {
-  const sb = getClient();
+  const sb = await getClient();
   if (!sb) return { ok: false, reason: 'no_client', data: [] };
 
   const { data, error } = await sb
@@ -159,12 +180,12 @@ export async function fetchMoments() {
 
 export async function pushMessage({ id, chatId, senderWechatId, content, type = 'text' }) {
   if (!isSupabaseConfigured()) {
-    return isMockSyncAvailable()
-      ? mockPushMessage({ id, chatId, senderWechatId, content, type })
+    return isRelaySyncAvailable()
+      ? relayPushMessage({ id, chatId, senderWechatId, content, type })
       : { ok: false, reason: 'no_client' };
   }
 
-  const sb = getClient();
+  const sb = await getClient();
   if (!sb) return { ok: false, reason: 'no_client' };
 
   const { error } = await sb.from('wechat_messages').insert({
@@ -185,12 +206,12 @@ export async function pushMessage({ id, chatId, senderWechatId, content, type = 
 
 export async function pushMoment(moment, authorWechatId) {
   if (!isSupabaseConfigured()) {
-    return isMockSyncAvailable()
-      ? mockPushMoment(moment, authorWechatId)
+    return isRelaySyncAvailable()
+      ? relayPushMoment(moment, authorWechatId)
       : { ok: false, reason: 'no_client' };
   }
 
-  const sb = getClient();
+  const sb = await getClient();
   if (!sb) return { ok: false, reason: 'no_client' };
 
   const { error } = await sb.from('wechat_moments').upsert({
@@ -208,7 +229,13 @@ export async function pushMoment(moment, authorWechatId) {
 }
 
 export async function updateMomentRemote(moment, authorWechatId) {
-  const sb = getClient();
+  if (!isSupabaseConfigured()) {
+    return isRelaySyncAvailable()
+      ? relayUpdateMoment(moment, authorWechatId)
+      : { ok: false, reason: 'no_client' };
+  }
+
+  const sb = await getClient();
   if (!sb) return { ok: false, reason: 'no_client' };
 
   const { error } = await sb
@@ -221,19 +248,16 @@ export async function updateMomentRemote(moment, authorWechatId) {
   return { ok: true };
 }
 
-/** Full initial pull + Realtime subscription (Supabase) or BroadcastChannel (mock). */
+/** Initial pull + realtime (Supabase) or relay SSE (zero-cost). */
 export async function startWeChatSync(profile, { onPatch, onStatus }) {
   if (!isSupabaseConfigured()) {
-    if (isMockSyncAvailable()) {
-      usingMock = true;
-      mockUpsertProfile(profile);
-      return startMockSync(profile, { onPatch, onStatus });
+    if (isRelaySyncAvailable()) {
+      return startRelaySync(profile, { onPatch, onStatus });
     }
-    onStatus?.({ mode: 'local', error: null });
+    onStatus?.({ mode: 'local', error: null, zeroCost: true });
     return () => {};
   }
 
-  usingMock = false;
   onStatus?.({ mode: 'syncing', error: null });
 
   const upsert = await upsertProfile(profile);
@@ -263,6 +287,7 @@ export async function startWeChatSync(profile, { onPatch, onStatus }) {
     mode: 'live',
     error: null,
     lastSync: Date.now(),
+    backend: 'supabase',
     tables: {
       profiles: profiles.length,
       messages: messages.length,
@@ -270,7 +295,7 @@ export async function startWeChatSync(profile, { onPatch, onStatus }) {
     },
   });
 
-  const sb = getClient();
+  const sb = await getClient();
   if (!sb) return () => {};
 
   if (channel) {
@@ -311,7 +336,7 @@ export async function startWeChatSync(profile, { onPatch, onStatus }) {
       if (status === 'CHANNEL_ERROR') {
         onStatus?.({ mode: 'offline', error: 'realtime_error' });
       } else if (status === 'SUBSCRIBED') {
-        onStatus?.({ mode: 'live', error: null, lastSync: Date.now() });
+        onStatus?.({ mode: 'live', error: null, lastSync: Date.now(), backend: 'supabase' });
       }
     });
 

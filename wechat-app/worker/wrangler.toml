@@ -1,0 +1,20 @@
+name = "weichat-relay"
+main = "relay-worker.js"
+compatibility_date = "2024-01-01"
+
+# Free tier: create KV + Durable Object, then uncomment bindings:
+#
+# [[kv_namespaces]]
+# binding = "WEICHAT_STORE"
+# id = "YOUR_KV_NAMESPACE_ID"
+#
+# [[durable_objects.bindings]]
+# name = "WEICHAT_HUB"
+# class_name = "RelayHub"
+#
+# [[migrations]]
+# tag = "v1"
+# new_classes = ["RelayHub"]
+
+[vars]
+# Set VITE_RELAY_URL in frontend build to this worker URL after deploy.
