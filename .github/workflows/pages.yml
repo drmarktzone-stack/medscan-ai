@@ -37,6 +37,7 @@ jobs:
           VITE_STRIPE_PAYMENT_LINK: ${{ secrets.STRIPE_PAYMENT_LINK }}
           VITE_FREEAI_BIT_PHONE: "0528885800"
           VITE_FREEAI_SUPPORT_WHATSAPP: "972528885800"
+          VITE_FREEAI_DEMO_PRO: "true"
           VITE_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           OWNER="${{ github.repository_owner }}"

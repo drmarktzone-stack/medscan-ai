@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { Sparkles, LayoutDashboard, Route, Settings, Mail, ArrowRight, Crown, Megaphone } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { captureReferral } from "@/freeai/lib/marketingTracker.js";
+import { bootstrapFullAccess, getAccessLabel, hasFullAccess } from "@/freeai/lib/demoMode.js";
 
 const NAV = [
   { to: "/freeai/create", labelHe: "יצירה", labelEn: "Create", icon: Sparkles, end: false },
@@ -18,7 +19,10 @@ export default function FreeAILayout({ children }) {
   const locale = lang === "en" ? "en" : "he";
   const Arrow = dir === "rtl" ? ArrowRight : ArrowRight;
 
-  useEffect(() => { captureReferral(); }, []);
+  useEffect(() => {
+    captureReferral();
+    bootstrapFullAccess();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 text-white" dir={dir}>
@@ -50,6 +54,13 @@ export default function FreeAILayout({ children }) {
               </NavLink>
             ))}
           </nav>
+
+          {hasFullAccess() && (
+            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500/30 to-orange-500/30 border border-amber-400/40 text-amber-200">
+              <Crown className="w-3 h-3" />
+              {getAccessLabel(locale)}
+            </span>
+          )}
 
           <Link
             to="/"

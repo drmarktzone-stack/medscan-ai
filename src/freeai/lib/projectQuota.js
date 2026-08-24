@@ -1,12 +1,23 @@
 /**
- * Project quota — 2 free full projects per user.
+ * Project quota — 2 free full projects per user (Pro = unlimited).
  */
+
+import { isPro } from "./subscription.js";
 
 const QUOTA_KEY = "freeai_project_quota_v1";
 const MAX_FREE_PROJECTS = 2;
+const PRO_MAX = 999;
+
+function hasFullAccess() {
+  if (isPro()) return true;
+  return typeof import.meta !== "undefined" && import.meta.env?.VITE_FREEAI_DEMO_PRO === "true";
+}
 
 export function getQuotaState() {
   if (typeof window === "undefined") return { used: 0, max: MAX_FREE_PROJECTS, remaining: MAX_FREE_PROJECTS };
+  if (hasFullAccess()) {
+    return { used: 0, max: PRO_MAX, remaining: PRO_MAX, unlimited: true };
+  }
   try {
     const raw = JSON.parse(localStorage.getItem(QUOTA_KEY) || "{}");
     const used = raw.used || 0;
@@ -17,6 +28,9 @@ export function getQuotaState() {
 }
 
 export function canStartFullProject() {
+  if (hasFullAccess()) {
+    return { ok: true, remaining: PRO_MAX, unlimited: true };
+  }
   const q = getQuotaState();
   if (q.remaining <= 0) {
     return {
@@ -29,6 +43,7 @@ export function canStartFullProject() {
 }
 
 export function consumeProjectQuota() {
+  if (hasFullAccess()) return getQuotaState();
   const q = getQuotaState();
   const next = { used: q.used + 1, resetAt: new Date().toISOString() };
   if (typeof window !== "undefined") {
