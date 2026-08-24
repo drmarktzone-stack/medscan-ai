@@ -13,6 +13,7 @@ import { getQuotaState } from "@/freeai/lib/projectQuota";
 import { useI18n } from "@/lib/i18n";
 import CreditHarvesterWizard, { CreditScoreBadge } from "@/freeai/components/CreditHarvesterWizard";
 import { getPrimaryEmail } from "@/freeai/lib/creditPassport";
+import { R } from "@/freeai/lib/routes.js";
 import {
   Sparkles, Zap, Moon, Star, Upload, Palette, Bell, Gift,
   Code2, Image, MessageCircle,
@@ -282,13 +283,13 @@ export default function FreeAIStudio() {
 
           {/* Links */}
           <div className="flex flex-wrap gap-2">
-            <Link to="/freeai" className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1">
+            <Link to={R.hub} className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1">
               <Image className="w-3 h-3" /> Hub
             </Link>
-            <Link to="/freeai/planner" className="text-xs text-violet-400 hover:text-violet-300">
+            <Link to={R.planner} className="text-xs text-violet-400 hover:text-violet-300">
               {locale === "he" ? "מתכנן" : "Planner"}
             </Link>
-            <Link to="/freeai/providers" className="text-xs text-violet-400 hover:text-violet-300">
+            <Link to={R.providers} className="text-xs text-violet-400 hover:text-violet-300">
               {locale === "he" ? "ספקים" : "Providers"}
             </Link>
           </div>

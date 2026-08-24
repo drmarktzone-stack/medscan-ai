@@ -43,8 +43,25 @@ export function bootstrapFullAccess() {
     const groqFromEnv =
       typeof import.meta !== "undefined" ? import.meta.env?.VITE_GROQ_API_KEY : null;
     if (groqFromEnv) {
-      const keys = loadApiKeys();
-      if (!keys.groq) saveApiKey("groq", groqFromEnv);
+      saveApiKey("groq", groqFromEnv);
+    }
+
+    const pollFromEnv =
+      typeof import.meta !== "undefined" ? import.meta.env?.VITE_POLLINATIONS_API_KEY : null;
+    if (pollFromEnv) {
+      saveApiKey("pollinations_text", pollFromEnv);
+    }
+
+    const geminiFromEnv =
+      typeof import.meta !== "undefined" ? import.meta.env?.VITE_GOOGLE_AI_API_KEY : null;
+    if (geminiFromEnv) {
+      saveApiKey("google_ai_studio", geminiFromEnv);
+    }
+
+    const deepseekFromEnv =
+      typeof import.meta !== "undefined" ? import.meta.env?.VITE_DEEPSEEK_API_KEY : null;
+    if (deepseekFromEnv) {
+      saveApiKey("deepseek", deepseekFromEnv);
     }
 
     if (demo) {
@@ -70,8 +87,9 @@ function boostAllCredits() {
 }
 
 export function getAccessLabel(locale = "he") {
+  const lang = locale === "en" || locale === "ar" ? locale : "he";
   if (hasFullAccess()) {
-    return locale === "he" ? "גרסה מלאה · Pro" : "Full · Pro";
+    return lang === "he" ? "גרסה מלאה · Pro" : lang === "ar" ? "كامل · Pro" : "Full · Pro";
   }
-  return locale === "he" ? "חינם" : "Free";
+  return lang === "he" ? "חינם" : lang === "ar" ? "مجاني" : "Free";
 }

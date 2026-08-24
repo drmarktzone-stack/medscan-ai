@@ -1,11 +1,12 @@
 /**
  * FreeAI Chat Engine — real LLM responses with free provider fallback chain.
  *
- * Order: Groq → Pollinations → Base44 → Puter.js → smart local assistant
+ * Order: Groq → Gemini → DeepSeek → Pollinations → Base44 → Puter.js → smart local assistant
  */
 
 import { loadApiKeys } from "./creditStore.js";
 import { tryBase44Core } from "../../lib/medscan/llmAdapter.js";
+import { R } from "./routes.js";
 
 const SYSTEM_PROMPT = `You are FreeAI Hub — a helpful AI assistant inside an app that aggregates 30+ free AI tools (images, code, video, design, deploy).
 
@@ -40,7 +41,14 @@ function getApiKey(providerId, envVar) {
  * @param {object[]} [input.attachments]
  */
 export async function chatWithAI(input) {
-  const { prompt, history = [], attachments = [] } = input;
+  const {
+    prompt,
+    history = [],
+    attachments = [],
+    systemPrompt = SYSTEM_PROMPT,
+    allowLocalFallback = true,
+    maxHistory = 12,
+  } = input;
   const trimmed = (prompt || "").trim();
   if (!trimmed && attachments.length === 0) {
     return { ok: false, reason: "empty_input" };
@@ -50,16 +58,18 @@ export async function chatWithAI(input) {
   const userContent = attachmentNote ? `${trimmed}\n\n${attachmentNote}` : trimmed;
 
   const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt },
     ...history
       .filter((m) => m.role === "user" || m.role === "assistant")
-      .slice(-12)
+      .slice(-maxHistory)
       .map((m) => ({ role: m.role, content: String(m.content || "").slice(0, 4000) })),
     { role: "user", content: userContent.slice(0, 8000) },
   ];
 
   const providers = [
     () => chatGroq(messages),
+    () => chatGemini(messages),
+    () => chatDeepSeek(messages),
     () => chatPollinations(messages),
     () => chatBase44(messages),
     () => chatPuter(messages),
@@ -72,6 +82,15 @@ export async function chatWithAI(input) {
     } catch {
       /* try next provider */
     }
+  }
+
+  if (!allowLocalFallback) {
+    return {
+      ok: false,
+      reason: "no_provider",
+      needsApiKey: true,
+      text: "",
+    };
   }
 
   return smartLocalChat(trimmed, history, attachments);
@@ -114,6 +133,70 @@ async function chatGroq(messages) {
   const text = data.choices?.[0]?.message?.content?.trim();
   if (!text) return { ok: false, reason: "groq_empty" };
   return { ok: true, text, provider: "groq", model: envKey("VITE_GROQ_MODEL") || "groq/compound-mini" };
+}
+
+async function chatGemini(messages) {
+  const key = getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY");
+  if (!key) return { ok: false, reason: "no_gemini_key" };
+
+  const model = envKey("VITE_GEMINI_MODEL") || "gemini-3.6-flash";
+  const system = messages.find((m) => m.role === "system")?.content || "";
+  const contents = messages
+    .filter((m) => m.role === "user" || m.role === "assistant")
+    .map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
+      contents,
+      generationConfig: { maxOutputTokens: 2048, temperature: 0.7 },
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    return { ok: false, reason: "gemini_error", detail: err.slice(0, 200) };
+  }
+
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text).join("").trim();
+  if (!text) return { ok: false, reason: "gemini_empty" };
+  return { ok: true, text, provider: "google_ai_studio", model };
+}
+
+async function chatDeepSeek(messages) {
+  const key = getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY");
+  if (!key) return { ok: false, reason: "no_deepseek_key" };
+
+  const res = await fetch("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: envKey("VITE_DEEPSEEK_MODEL") || "deepseek-chat",
+      messages,
+      max_tokens: 2048,
+      temperature: 0.7,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    return { ok: false, reason: "deepseek_error", detail: err.slice(0, 200) };
+  }
+
+  const data = await res.json();
+  const text = data.choices?.[0]?.message?.content?.trim();
+  if (!text) return { ok: false, reason: "deepseek_empty" };
+  return { ok: true, text, provider: "deepseek", model: envKey("VITE_DEEPSEEK_MODEL") || "deepseek-chat" };
 }
 
 async function chatPollinations(messages) {
@@ -235,8 +318,8 @@ function smartLocalChat(prompt, history, attachments) {
 
   if (/מחיר|pricing|pro|כמה עולה|₪20/i.test(prompt)) {
     const text = he
-      ? "💰 **מחירים:**\n• חינם — 2 פרויקטים/חודש, תמונות בסיסיות\n• Pro — ₪20/חודש, הכל ללא הגבלה\n\nתשלום ב-Bit → /freeai/checkout"
-      : "Free: 2 projects/mo. Pro: ₪20/mo — unlimited. Pay via Bit at /freeai/checkout";
+      ? `💰 **מחירים:**\n• חינם — 2 פרויקטים/חודש, תמונות בסיסיות\n• Pro — ₪20/חודש, הכל ללא הגבלה\n\nתשלום ב-Bit → ${R.checkout}`
+      : `Free: 2 projects/mo. Pro: ₪20/mo — unlimited. Pay via Bit at ${R.checkout}`;
     return { ok: true, text, provider: "freeai-local" };
   }
 
@@ -256,8 +339,8 @@ function smartLocalChat(prompt, history, attachments) {
 
   if (/עזר|help|מה אתה|what can|יודע לעשות/i.test(prompt)) {
     const text = he
-      ? "אני יכול לעזור ב:\n✅ כתיבה ושיווק\n✅ רעיונות לפרויקטים\n✅ הסברים ותכנון\n✅ קוד קצר\n\n**ליצירה אמיתית** — השתמש במצבים: 🖼️ תמונה · 💻 קוד · 🚀 פרויקט\n\n⚠️ לצ'אט חכם מלא — הוסף מפתח Groq חינמי ב-/freeai/providers (Groq → console.groq.com)"
-      : "I help with writing, ideas, planning, and short code. Use 🖼️/💻/🚀 modes to create. Add free Groq API key at /freeai/providers for full AI chat.";
+      ? `אני יכול לעזור ב:\n✅ כתיבה ושיווק\n✅ רעיונות לפרויקטים\n✅ הסברים ותכנון\n✅ קוד קצר\n\n**ליצירה אמיתית** — השתמש במצבים: 🖼️ תמונה · 💻 קוד · 🚀 פרויקט\n\n⚠️ לצ'אט חכם מלא — הוסף מפתח Groq חינמי ב-${R.providers} (Groq → console.groq.com)`
+      : `I help with writing, ideas, planning, and short code. Use 🖼️/💻/🚀 modes to create. Add free Groq API key at ${R.providers} for full AI chat.`;
     return { ok: true, text, provider: "freeai-local", needsApiKey: true };
   }
 
@@ -268,8 +351,8 @@ function smartLocalChat(prompt, history, attachments) {
     : "";
 
   const text = he
-    ? `${contextHint}קיבלתי: "${prompt.slice(0, 200)}"\n\n⚠️ **צ'אט AI מלא דורש מפתח חינמי** (2 דקות):\n1. היכנס ל-[console.groq.com](https://console.groq.com) → API Keys\n2. העתק מפתח\n3. /freeai/providers → Groq → הדבק\n\nאו השתמש במצבים:\n• 🖼️ **תמונה** — יצירה מיידית (Pollinations, חינם)\n• 💻 **קוד** — אתר מוכן\n• 🚀 **פרויקט** — pipeline מלא`
-    : `${contextHint}Got it: "${prompt.slice(0, 200)}"\n\nFor full AI chat, add a free Groq key at /freeai/providers.\nOr use 🖼️ Image / 💻 Code / 🚀 Project modes for instant creation.`;
+    ? `${contextHint}קיבלתי: "${prompt.slice(0, 200)}"\n\n⚠️ **צ'אט AI מלא דורש מפתח חינמי** (2 דקות):\n1. היכנס ל-[console.groq.com](https://console.groq.com) → API Keys\n2. העתק מפתח\n3. ${R.providers} → Groq → הדבק\n\nאו השתמש במצבים:\n• 🖼️ **תמונה** — יצירה מיידית (Pollinations, חינם)\n• 💻 **קוד** — אתר מוכן\n• 🚀 **פרויקט** — pipeline מלא`
+    : `${contextHint}Got it: "${prompt.slice(0, 200)}"\n\nFor full AI chat, add a free Groq key at ${R.providers}.\nOr use 🖼️ Image / 💻 Code / 🚀 Project modes for instant creation.`;
 
   return {
     ok: true,
@@ -284,6 +367,8 @@ function smartLocalChat(prompt, history, attachments) {
 export function getChatProviderStatus() {
   return {
     groq: !!getApiKey("groq", "VITE_GROQ_API_KEY"),
+    gemini: !!getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY"),
+    deepseek: !!getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY"),
     pollinations: !!getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY"),
     base44: !!tryBase44Core("InvokeLLM"),
     puter: typeof window !== "undefined",

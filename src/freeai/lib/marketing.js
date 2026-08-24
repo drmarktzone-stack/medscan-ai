@@ -2,13 +2,15 @@
  * Marketing & share utilities for FreeAI Hub outreach.
  */
 
-const DEFAULT_PUBLIC_ORIGIN = "https://drmarktzone-stack.github.io/medscan-ai";
+import { R } from "./routes.js";
+
+const DEFAULT_PUBLIC_ORIGIN = "https://drmarktzone-stack.github.io/freeai-kids";
 
 function basePath() {
   if (typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) {
     return import.meta.env.BASE_URL.replace(/\/$/, "");
   }
-  return "/medscan-ai";
+  return "/";
 }
 
 export function getPublicOrigin() {
@@ -21,11 +23,12 @@ export function getPublicOrigin() {
   return DEFAULT_PUBLIC_ORIGIN;
 }
 
-export const PRODUCT_URL = `${getPublicOrigin()}/freeai`;
-export const CREATE_URL = `${PRODUCT_URL}/create`;
-export const PRICING_URL = `${PRODUCT_URL}/pricing`;
-export const CHECKOUT_URL = `${PRODUCT_URL}/checkout`;
-export const MARKETING_URL = `${PRODUCT_URL}/marketing`;
+export const PRODUCT_URL = `${getPublicOrigin()}${R.hub}`;
+export const CREATE_URL = `${getPublicOrigin()}${R.create}`;
+export const KIDS_URL = `${getPublicOrigin()}${R.kids}`;
+export const PRICING_URL = `${getPublicOrigin()}${R.pricing}`;
+export const CHECKOUT_URL = `${getPublicOrigin()}${R.checkout}`;
+export const MARKETING_URL = `${getPublicOrigin()}${R.marketing}`;
 
 export function shareMessage(locale = "he") {
   if (locale === "he") {
