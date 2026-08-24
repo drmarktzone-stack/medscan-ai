@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Loader2, ExternalLink, Download, Play } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
@@ -7,6 +7,7 @@ import { pickL } from "../lib/locale.js";
 import { GAME_LIBRARY } from "../lib/gameLibrary.js";
 import { generateKidsGame } from "../lib/kidsEngine.js";
 import { loadKidsProfile, saveCreation } from "../lib/kidsStore.js";
+import { useSymbolKeyboardBridge } from "../context/SymbolKeyboardBridge.jsx";
 
 const COPY = {
   title: { he: "בונה משחקים", en: "Game Builder", ar: "صانع الألعاب" },
@@ -32,6 +33,18 @@ export default function KidsGamePage() {
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [playing, setPlaying] = useState(false);
+
+  useSymbolKeyboardBridge(useMemo(() => ({
+    lang,
+    value: theme,
+    onChange: setTheme,
+    onSymbol: (p) => {
+      if (p.action === "gameType") {
+        const map = { quiz: "quiz", snake: "snake", memory: "memory", runner: "runner", catch: "catch", colors: "colors", math: "math", puzzle: "puzzle", bubble: "bubble", adventure: "adventure" };
+        if (map[p.id]) setGameType(map[p.id]);
+      }
+    },
+  }), [lang, theme]));
 
   const build = async () => {
     if (!theme.trim()) return;

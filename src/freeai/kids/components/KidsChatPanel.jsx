@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Send, Loader2, Sparkles, Trash2 } from "lucide-react";
 import { kidsChatWithAI } from "../lib/kidsChatEngine.js";
 import { detectBuildIntent, runChatBuild } from "../lib/kidsChatActions.js";
@@ -9,6 +10,7 @@ import SpeakingAvatar from "./SpeakingAvatar.jsx";
 import KidsBuildStepsPanel from "./KidsBuildStepsPanel.jsx";
 import KidsApiStatus from "./KidsApiStatus.jsx";
 import { speakText, stopSpeaking } from "../lib/tts.js";
+import { useSymbolKeyboardBridge } from "../context/SymbolKeyboardBridge.jsx";
 
 const UI = {
   placeholder: {
@@ -38,6 +40,7 @@ function saveChat(messages) {
 }
 
 export default function KidsChatPanel({ lang = "he", autoSpeak = true }) {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState(() => loadChat());
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -57,7 +60,9 @@ export default function KidsChatPanel({ lang = "he", autoSpeak = true }) {
     const trimmed = (text || input).trim();
     if (!trimmed || loading) return;
 
-    const buildType = detectBuildIntent(trimmed);
+    const intent = detectBuildIntent(trimmed);
+    const buildType = intent?.type === "build" ? intent.buildType : null;
+    const navigateTo = intent?.type === "navigate" ? intent.path : null;
 
     const userMsg = { role: "user", content: trimmed, id: `u-${Date.now()}` };
     const next = [...messages, userMsg];
@@ -66,13 +71,17 @@ export default function KidsChatPanel({ lang = "he", autoSpeak = true }) {
     setLoading(true);
     stopSpeaking();
 
+    if (navigateTo) {
+      navigate(navigateTo);
+    }
+
     const history = next.slice(-20).map((m) => ({ role: m.role, content: m.content }));
 
     const chatPromise = kidsChatWithAI({ prompt: trimmed, history, lang });
     const buildPromise = buildType
       ? (async () => {
           setBuilding(true);
-          return runChatBuild(buildType, trimmed, lang, onBuildUpdate);
+          return runChatBuild(intent?.gameType ? { buildType, gameType: intent.gameType } : buildType, trimmed, lang, onBuildUpdate);
         })()
       : Promise.resolve(null);
 
@@ -101,6 +110,14 @@ export default function KidsChatPanel({ lang = "he", autoSpeak = true }) {
       speakText(assistantMsg.content, { lang, onEnd: () => setSpeaking(false) });
     }
   }, [input, loading, messages, lang, autoSpeak, onBuildUpdate]);
+
+  useSymbolKeyboardBridge(useMemo(() => ({
+    lang,
+    value: input,
+    onChange: setInput,
+    autoSubmitSymbols: true,
+    onSubmit: (text) => send(text),
+  }), [lang, input, send]));
 
   const { listening, start, stop, supported: voiceOk } = useKidsVoice({
     lang,

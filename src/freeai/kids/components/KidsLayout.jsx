@@ -11,6 +11,9 @@ import { R } from "@/freeai/lib/routes.js";
 import { loadStreak } from "../lib/streak.js";
 import { logActivity } from "../lib/activityLog.js";
 import KidsMagicBackground from "./KidsMagicBackground.jsx";
+import KidsSymbolKeyboard from "./KidsSymbolKeyboard.jsx";
+import { SymbolKeyboardBridgeProvider, useSymbolKeyboardState } from "../context/SymbolKeyboardBridge.jsx";
+import { keyboardsForPath } from "../data/keyboardCatalog.js";
 
 const NAV = [
   { to: R.kids, icon: Home, end: true, label: { he: "בית", en: "Home", ar: "الرئيسية" } },
@@ -30,21 +33,9 @@ function HeartIcon(props) {
   return <span className="text-base leading-none" {...props}>❤️</span>;
 }
 
-export default function KidsLayout({ children }) {
-  const { lang, dir } = useI18n();
-  const location = useLocation();
-  const streak = loadStreak();
-
-  useEffect(() => {
-    bootstrapFullAccess();
-  }, []);
-
-  useEffect(() => {
-    const seg = location.pathname.split("/").pop() || "kids";
-    logActivity(`page_${seg}`);
-  }, [location.pathname]);
-
-  const mobileNav = NAV.filter((n) => MOBILE.includes(n.to));
+function KidsLayoutInner({ children, lang, dir, streak, location, mobileNav }) {
+  const kb = useSymbolKeyboardState();
+  const routeKb = keyboardsForPath(location.pathname, lang);
 
   return (
     <div
@@ -103,7 +94,7 @@ export default function KidsLayout({ children }) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 pb-28 relative z-10">{children}</main>
+      <main className="max-w-4xl mx-auto px-4 py-6 pb-52 md:pb-44 relative z-10">{children}</main>
 
       <nav className="fixed bottom-3 inset-x-0 z-30 px-2 md:hidden">
         <div className="max-w-lg mx-auto grid grid-cols-6 gap-0.5 p-1.5 rounded-2xl bg-white/25 backdrop-blur-xl border border-white/30 shadow-xl">
@@ -124,6 +115,42 @@ export default function KidsLayout({ children }) {
           ))}
         </div>
       </nav>
+
+      {routeKb && (
+        <KidsSymbolKeyboard
+          lang={kb?.lang || lang}
+          value={kb?.value || ""}
+          onChange={kb?.onChange}
+          onSymbol={kb?.onSymbol}
+          onSubmit={kb?.onSubmit}
+          autoSubmitSymbols={kb?.autoSubmitSymbols}
+        />
+      )}
     </div>
+  );
+}
+
+export default function KidsLayout({ children }) {
+  const { lang, dir } = useI18n();
+  const location = useLocation();
+  const streak = loadStreak();
+
+  useEffect(() => {
+    bootstrapFullAccess();
+  }, []);
+
+  useEffect(() => {
+    const seg = location.pathname.split("/").pop() || "kids";
+    logActivity(`page_${seg}`);
+  }, [location.pathname]);
+
+  const mobileNav = NAV.filter((n) => MOBILE.includes(n.to));
+
+  return (
+    <SymbolKeyboardBridgeProvider>
+      <KidsLayoutInner lang={lang} dir={dir} streak={streak} location={location} mobileNav={mobileNav}>
+        {children}
+      </KidsLayoutInner>
+    </SymbolKeyboardBridgeProvider>
   );
 }

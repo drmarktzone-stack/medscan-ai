@@ -27,14 +27,37 @@ function tr(he, en, ar) {
 
 export function detectBuildIntent(prompt) {
   const p = (prompt || "").toLowerCase();
-  if (/משחק|game|לשחק|\bplay\b/.test(p)) return "game";
-  if (/לוגו|logo|סמל|brand/.test(p)) return "logo";
-  if (/פאזל|puzzle|אהידה|jigsaw/.test(p)) return "puzzle";
-  if (/סיפור|story|אגדה|fairy/.test(p)) return "story";
-  if (/דמות|character|גיבור|hero|avatar/.test(p)) return "character";
-  if (/ציור|צייר|draw|picture|illustration|paint/.test(p)) return "drawing";
-  if (/צורה|shape|geometry|גיאומטר/.test(p)) return "drawing";
+  if (/פתח|open|go to|עבור/.test(p)) {
+    if (/כימיה|chemistry/.test(p)) return { type: "navigate", path: "/kids/labs/chemistry" };
+    if (/מטבח|kitchen/.test(p)) return { type: "navigate", path: "/kids/labs/kitchen" };
+    if (/מעבד|lab/.test(p)) return { type: "navigate", path: "/kids/labs" };
+    if (/משחק|game/.test(p)) return { type: "navigate", path: "/kids/game" };
+    if (/יציר|create|studio/.test(p)) return { type: "navigate", path: "/kids/create" };
+    if (/לימוד|study/.test(p)) return { type: "navigate", path: "/kids/study" };
+    if (/גוף|body/.test(p)) return { type: "navigate", path: "/kids/body" };
+    if (/יומי|daily/.test(p)) return { type: "navigate", path: "/kids/daily" };
+  }
+  if (/משחק|game|לשחק|\bplay\b/.test(p)) return { type: "build", buildType: "game", gameType: detectGameType(p) };
+  if (/לוגו|logo|סמל|brand/.test(p)) return { type: "build", buildType: "logo" };
+  if (/פאזל|puzzle|אהידה|jigsaw/.test(p)) return { type: "build", buildType: "puzzle" };
+  if (/סיפור|story|אגדה|fairy/.test(p)) return { type: "build", buildType: "story" };
+  if (/דמות|character|גיבור|hero|avatar/.test(p)) return { type: "build", buildType: "character" };
+  if (/ציור|צייר|draw|picture|illustration|paint/.test(p)) return { type: "build", buildType: "drawing" };
+  if (/צורה|shape|geometry|גיאומטר/.test(p)) return { type: "build", buildType: "drawing" };
   return null;
+}
+
+function detectGameType(p) {
+  if (/נחש|snake/.test(p)) return "snake";
+  if (/זיכרון|memory/.test(p)) return "memory";
+  if (/ריצ|runner/.test(p)) return "runner";
+  if (/תפוס|catch/.test(p)) return "catch";
+  if (/צבע|color/.test(p)) return "colors";
+  if (/חשב|math|כפל|plus/.test(p)) return "math";
+  if (/בוע|bubble/.test(p)) return "bubble";
+  if (/הרפתק|adventure/.test(p)) return "adventure";
+  if (/פאזל|puzzle/.test(p)) return "puzzle";
+  return "quiz";
 }
 
 function extractTheme(prompt) {
@@ -50,10 +73,14 @@ function delay(ms) {
 
 /**
  * Run build pipeline; calls onUpdate(steps, result) after each step.
+ * @param {string|{ buildType: string; gameType?: string }} typeOrIntent
  */
-export async function runChatBuild(type, prompt, lang, onUpdate) {
-  startBuildSession(type, prompt);
-  let steps = defaultStepsForType(type, lang);
+export async function runChatBuild(typeOrIntent, prompt, lang, onUpdate) {
+  const buildType = typeof typeOrIntent === "object" ? typeOrIntent.buildType : typeOrIntent;
+  const gameTypeOverride = typeof typeOrIntent === "object" ? typeOrIntent.gameType : null;
+
+  startBuildSession(buildType, prompt);
+  let steps = defaultStepsForType(buildType, lang);
   onUpdate(steps, null);
 
   await delay(400);
@@ -70,13 +97,14 @@ export async function runChatBuild(type, prompt, lang, onUpdate) {
   let result = null;
 
   try {
-    switch (type) {
+    switch (buildType) {
       case "game": {
-        const res = await generateKidsGame({ gameType: "quiz", theme, grade, lang });
+        const gameType = gameTypeOverride || detectGameType(prompt.toLowerCase());
+        const res = await generateKidsGame({ gameType: gameType || "quiz", theme, grade, lang });
         const blob = new Blob([res.html], { type: "text/html" });
         const url = URL.createObjectURL(blob);
         result = { type: "game", theme, previewUrl: url, html: res.html };
-        saveCreation({ type: "game", title: theme, data: { html: res.html, gameType: "quiz" } });
+        saveCreation({ type: "game", title: theme, data: { html: res.html, gameType: gameType || "quiz" } });
         break;
       }
       case "logo": {

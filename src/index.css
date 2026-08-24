@@ -362,6 +362,10 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
+.kids-word-flash {
+  animation: kids-fade-in 0.3s ease-out, kids-pulse-soft 1.2s ease-in-out 0.3s;
+}
+
 .kids-sim-btn {
   padding: 0.5rem 1rem;
   border-radius: 0.75rem;
