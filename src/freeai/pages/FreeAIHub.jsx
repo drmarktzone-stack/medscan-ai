@@ -62,15 +62,25 @@ export default function FreeAIHub() {
             <Sparkles className="w-5 h-5" />
             {locale === "he" ? "✨ התחל ליצור" : "✨ Start creating"}
           </Link>
-          <Link to={R.kids}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-orange-500 font-semibold hover:opacity-90 flex items-center gap-2"
+          <Link to={R.planner}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 font-semibold hover:opacity-90 flex items-center gap-2"
           >
-            {lang === "he" ? "🌟 FreeAI Kids" : lang === "ar" ? "🌟 FreeAI Kids" : "🌟 FreeAI Kids"}
+            {locale === "he" ? "📋 תכנן פרויקט" : "📋 Plan project"}
           </Link>
-          <Link to={R.passport}
+          <Link to={R.providers}
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 font-semibold hover:opacity-90 flex items-center gap-2"
           >
+            {locale === "he" ? "💰 חלוקת קרדיטים" : "💰 Credit split"}
+          </Link>
+          <Link to={R.passport}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 font-semibold hover:opacity-90 flex items-center gap-2"
+          >
             {locale === "he" ? "🧠 Credit Passport" : "🧠 Credit Passport"}
+          </Link>
+          <Link to={R.kids}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 font-semibold hover:opacity-90 flex items-center gap-2"
+          >
+            🌟 Kids
           </Link>
         </div>
       </section>

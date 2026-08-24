@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { BookOpen, Palette, Gamepad2, Images, Home } from "lucide-react";
+import { BookOpen, Palette, Gamepad2, Images, Home, Coins } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { bootstrapFullAccess } from "@/freeai/lib/demoMode.js";
@@ -61,6 +61,13 @@ export default function KidsLayout({ children }) {
           </nav>
 
           <div className="flex items-center gap-2 mr-auto sm:mr-0">
+            <Link
+              to={R.hub}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/20 hover:bg-white/30 text-white"
+            >
+              <Coins className="w-3.5 h-3.5" />
+              {pickL({ he: "FreeAI Hub", en: "FreeAI Hub", ar: "FreeAI Hub" }, lang)}
+            </Link>
             <LanguageSwitcher />
           </div>
         </div>
