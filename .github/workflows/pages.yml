@@ -38,7 +38,7 @@ jobs:
           VITE_FREEAI_BIT_PHONE: "0528885800"
           VITE_FREEAI_SUPPORT_WHATSAPP: "972528885800"
           VITE_FREEAI_DEMO_PRO: "true"
-          VITE_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          VITE_GROQ_API_KEY: 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
         run: |
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
