@@ -67,6 +67,8 @@ jobs:
           npm run build:freeai
           mkdir -p dist/freeai
           cp -r dist-freeai/. dist/freeai/
+      - name: SPA 404 fallback (MedScan + FreeAI deep links)
+        run: node scripts/pages-combined-404.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
