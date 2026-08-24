@@ -41,7 +41,14 @@ function getApiKey(providerId, envVar) {
  * @param {object[]} [input.attachments]
  */
 export async function chatWithAI(input) {
-  const { prompt, history = [], attachments = [] } = input;
+  const {
+    prompt,
+    history = [],
+    attachments = [],
+    systemPrompt = SYSTEM_PROMPT,
+    allowLocalFallback = true,
+    maxHistory = 12,
+  } = input;
   const trimmed = (prompt || "").trim();
   if (!trimmed && attachments.length === 0) {
     return { ok: false, reason: "empty_input" };
@@ -51,10 +58,10 @@ export async function chatWithAI(input) {
   const userContent = attachmentNote ? `${trimmed}\n\n${attachmentNote}` : trimmed;
 
   const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt },
     ...history
       .filter((m) => m.role === "user" || m.role === "assistant")
-      .slice(-12)
+      .slice(-maxHistory)
       .map((m) => ({ role: m.role, content: String(m.content || "").slice(0, 4000) })),
     { role: "user", content: userContent.slice(0, 8000) },
   ];
@@ -73,6 +80,15 @@ export async function chatWithAI(input) {
     } catch {
       /* try next provider */
     }
+  }
+
+  if (!allowLocalFallback) {
+    return {
+      ok: false,
+      reason: "no_provider",
+      needsApiKey: true,
+      text: "",
+    };
   }
 
   return smartLocalChat(trimmed, history, attachments);

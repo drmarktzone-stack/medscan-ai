@@ -5,6 +5,7 @@ import KidsLayout from "../components/KidsLayout.jsx";
 import VoiceMic, { VoiceInputRow } from "../components/VoiceMic.jsx";
 import FlashcardDeck from "../components/FlashcardDeck.jsx";
 import SummaryQuiz from "../components/SummaryQuiz.jsx";
+import BossBattleQuiz from "../components/BossBattleQuiz.jsx";
 import { pickL } from "../lib/locale.js";
 import { SUBJECTS, GRADES, getTopicsForGrade, findSubject } from "../data/curriculum.js";
 import { loadKidsProfile, saveCreation } from "../lib/kidsStore.js";
@@ -20,7 +21,8 @@ const COPY = {
   flashcards: { he: "פלאשקארדס", en: "Flashcards", ar: "بطاقات" },
   summaryQuiz: { he: "שאלות סיכום לפרק", en: "Chapter summary quiz", ar: "اختبار مراجعة" },
   loading: { he: "מכין תוכן לימודי...", en: "Preparing study content...", ar: "جاري التحضير..." },
-  makeQuiz: { he: "בנה מבחן סיכום", en: "Build summary quiz", ar: "أنشئ اختبار مراجعة" },
+  examMode: { he: "הכנה למבחן 📝", en: "Exam prep 📝", ar: "تحضير للامتحان 📝" },
+  bossMode: { he: "מבחן בוס ⚔️", en: "Boss quiz ⚔️", ar: "اختبار زعيم ⚔️" },
 };
 
 export default function KidsStudyPage() {
@@ -34,6 +36,8 @@ export default function KidsStudyPage() {
   const [cards, setCards] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [tab, setTab] = useState("flashcards");
+  const [bossMode, setBossMode] = useState(false);
+  const [examExtra, setExamExtra] = useState("");
 
   const subject = findSubject(subjectId);
   const topics = getTopicsForGrade(subjectId, grade);
@@ -67,12 +71,15 @@ export default function KidsStudyPage() {
   const loadQuiz = async () => {
     setLoading(true);
     const subName = subject ? pickL(subject.name, lang) : subjectId;
+    const topicFull = examExtra.trim()
+      ? `${topicText} — ${examExtra.trim()}`
+      : topicText;
     const res = await generateSummaryQuiz({
       subject: subName,
       grade,
-      topic: topicText,
+      topic: topicFull,
       lang,
-      count: 6,
+      count: examExtra.trim() ? 10 : 6,
     });
     setQuiz(res.quiz);
     setTab("quiz");
@@ -133,6 +140,12 @@ export default function KidsStudyPage() {
             placeholder={pickL(COPY.customTopic, lang)}
             lang={lang}
           />
+          <VoiceInputRow
+            value={examExtra}
+            onChange={setExamExtra}
+            placeholder={pickL(COPY.examMode, lang)}
+            lang={lang}
+          />
           <div className="flex justify-center pb-1">
             <VoiceMic onText={(t) => setTopic(topic ? `${topic} ${t}` : t)} />
           </div>
@@ -166,7 +179,21 @@ export default function KidsStudyPage() {
             </div>
 
             {tab === "flashcards" && <FlashcardDeck cards={cards} lang={lang} />}
-            {tab === "quiz" && quiz && <SummaryQuiz quiz={quiz} lang={lang} />}
+            {tab === "quiz" && quiz && (
+              <>
+                <div className="flex gap-2 mb-2">
+                  <button type="button" onClick={() => setBossMode(false)}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold ${!bossMode ? "bg-white text-purple-700" : "bg-white/20"}`}>
+                    {pickL(COPY.summaryQuiz, lang)}
+                  </button>
+                  <button type="button" onClick={() => setBossMode(true)}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold ${bossMode ? "bg-white text-purple-700" : "bg-white/20"}`}>
+                    {pickL(COPY.bossMode, lang)}
+                  </button>
+                </div>
+                {bossMode ? <BossBattleQuiz quiz={quiz} lang={lang} /> : <SummaryQuiz quiz={quiz} lang={lang} />}
+              </>
+            )}
             {tab === "quiz" && !quiz && loading && (
               <p className="text-center py-4">{pickL(COPY.loading, lang)}</p>
             )}

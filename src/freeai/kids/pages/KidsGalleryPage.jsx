@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
 import { pickL } from "../lib/locale.js";
 import { R } from "@/freeai/lib/routes.js";
 import { loadGallery, loadAchievements, BADGE_MAP } from "../lib/kidsStore.js";
+import { Share2, X, Play } from "lucide-react";
 
 const COPY = {
   title: { he: "היצירות שלי", en: "My Creations", ar: "إبداعاتي" },
   empty: { he: "עדיין לא יצרת — בוא נתחיל!", en: "Nothing yet — let's create!", ar: "لا شيء بعد — لنبدأ!" },
   goCreate: { he: "ליצירה", en: "Create", ar: "إبداع" },
   goStudy: { he: "ללימוד", en: "Study", ar: "دراسة" },
+  open: { he: "פתח", en: "Open", ar: "افتح" },
+  share: { he: "שתף", en: "Share", ar: "شارك" },
 };
 
 const TYPE_ICON = { story: "📚", character: "🦸", drawing: "🎨", game: "🎮", study: "📖", body: "❤️" };
@@ -19,11 +22,50 @@ export default function KidsGalleryPage() {
   const { lang } = useI18n();
   const gallery = loadGallery();
   const achievements = loadAchievements();
+  const [view, setView] = useState(null);
+
+  const shareItem = (item) => {
+    const text = encodeURIComponent(`${item.title} — FreeAI Kids`);
+    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <KidsLayout>
       <div className="space-y-5">
         <h1 className="text-2xl font-black">{pickL(COPY.title, lang)}</h1>
+
+        {view && (
+          <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setView(null)}>
+            <div className="bg-white rounded-3xl max-w-lg w-full max-h-[85vh] overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="font-black text-purple-900 truncate">{view.title}</h3>
+                <button type="button" onClick={() => setView(null)} className="p-2 rounded-full bg-gray-100">
+                  <X className="w-5 h-5 text-gray-700" />
+                </button>
+              </div>
+              <div className="p-4 overflow-y-auto max-h-[70vh]">
+                {view.type === "game" && view.data?.html && (
+                  <iframe title={view.title} srcDoc={view.data.html} sandbox="allow-scripts" className="w-full h-80 rounded-xl border" />
+                )}
+                {view.type === "story" && (
+                  <p className="text-gray-800 whitespace-pre-wrap text-sm leading-relaxed">{view.data?.story || view.preview}</p>
+                )}
+                {view.type === "drawing" && view.preview && (
+                  <img src={view.preview} alt="" className="w-full rounded-xl" />
+                )}
+                {view.type === "character" && view.preview && (
+                  <div className="space-y-2">
+                    <img src={view.preview} alt="" className="w-full rounded-xl" />
+                    <p className="text-sm text-gray-600">{view.data?.description}</p>
+                  </div>
+                )}
+                {!["game", "story", "drawing", "character"].includes(view.type) && (
+                  <p className="text-sm text-gray-700">{view.preview || JSON.stringify(view.data)?.slice(0, 500)}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {gallery.length === 0 ? (
           <div className="text-center py-12 space-y-4">
@@ -47,12 +89,22 @@ export default function KidsGalleryPage() {
                 {item.preview && item.type === "drawing" && (
                   <img src={item.preview} alt="" className="mt-2 rounded-xl w-full h-24 object-cover" />
                 )}
-                {item.preview && item.type !== "drawing" && (
+                {item.preview && !["drawing", "character"].includes(item.type) && (
                   <p className="text-xs opacity-80 mt-1 line-clamp-2">{item.preview}</p>
                 )}
                 <p className="text-[10px] opacity-60 mt-2">
-                  {new Date(item.createdAt).toLocaleDateString(lang === "he" ? "he-IL" : lang === "ar" ? "ar" : "en")}
+                  {new Date(item.createdAt).toLocaleDateString(lang === "he" ? "he-IL" : "en")}
                 </p>
+                <div className="flex gap-2 mt-3">
+                  <button type="button" onClick={() => setView(item)}
+                    className="flex-1 py-2 rounded-xl bg-white text-purple-700 text-xs font-bold flex items-center justify-center gap-1">
+                    <Play className="w-3 h-3" /> {pickL(COPY.open, lang)}
+                  </button>
+                  <button type="button" onClick={() => shareItem(item)}
+                    className="px-3 py-2 rounded-xl bg-green-500/40 font-bold">
+                    <Share2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

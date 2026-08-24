@@ -16,6 +16,7 @@ import { formatSavings } from "../lib/savingsCalculator.js";
 import { PROFESSION_TEMPLATES } from "../data/templates.js";
 import ShareBanner from "../components/ShareBanner";
 import { R } from "../lib/routes.js";
+import { useKidsVoice } from "@/freeai/kids/hooks/useKidsVoice.js";
 
 const MODE_ICONS = {
   chat: MessageSquare, image: Image, code: Code2, video: Video,
@@ -37,6 +38,13 @@ export default function AIWorkspace({ locale = "he" }) {
   const fileRef = useRef(null);
   const messagesEndRef = useRef(null);
   const score = calculateCreditScore();
+
+  const { listening, start: startVoice, stop: stopVoice, supported: voiceSupported } = useKidsVoice({
+    lang: locale === "en" ? "en" : "he",
+    onResult: (text) => {
+      setPrompt((p) => (p ? `${p} ${text}` : text));
+    },
+  });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -310,8 +318,13 @@ export default function AIWorkspace({ locale = "he" }) {
                 </button>
                 <button
                   type="button"
-                  className="p-2 rounded-xl hover:bg-white/10 text-white/50 hover:text-white/80 transition-all"
-                  title={locale === "he" ? "הקלטה קולית (בקרוב)" : "Voice (coming soon)"}
+                  onClick={() => (listening ? stopVoice() : startVoice())}
+                  className={`p-2 rounded-xl transition-all ${
+                    listening
+                      ? "bg-red-500/30 text-red-300 animate-pulse"
+                      : "hover:bg-white/10 text-white/50 hover:text-white/80"
+                  }`}
+                  title={locale === "he" ? "הקלטה קולית" : "Voice input"}
                 >
                   <Mic className="w-4 h-4" />
                 </button>

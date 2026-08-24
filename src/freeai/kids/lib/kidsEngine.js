@@ -3,6 +3,7 @@
  */
 
 import { chatWithAI } from "../../lib/chatEngine.js";
+import { kidsChatWithAI } from "./kidsChatEngine.js";
 import { generatePollinationsBatch } from "../../lib/generators/pollinations.js";
 import { pickL, resolveKidsLang } from "./locale.js";
 import { buildGameFromLibrary } from "./gameLibrary.js";
@@ -43,6 +44,21 @@ function parseJsonBlock(text) {
   return null;
 }
 
+async function aiJsonWithRetry(prompt, lang) {
+  const result = await chatWithAI({ prompt, history: [] });
+  let parsed = parseJsonBlock(result.text);
+  if (parsed) return { parsed, provider: result.provider };
+
+  const retry = await kidsChatWithAI({
+    prompt: `${prompt}\n\nCRITICAL: Reply ONLY with valid JSON. No markdown.`,
+    history: [],
+    lang,
+  });
+  parsed = parseJsonBlock(retry.text);
+  if (parsed) return { parsed, provider: retry.provider };
+  return null;
+}
+
 /**
  * @param {object} input
  * @param {string} input.subject
@@ -67,8 +83,8 @@ Age: ${pickL(age, lang)}
 Return ONLY valid JSON array:
 [{"front":"question or term","back":"answer or definition","hint":"optional short hint"}]`;
 
-  const result = await chatWithAI({ prompt, history: [] });
-  const cards = parseJsonBlock(result.text);
+  const jsonResult = await aiJsonWithRetry(prompt, lang);
+  const cards = jsonResult?.parsed;
 
   if (Array.isArray(cards) && cards.length) {
     return {
@@ -79,8 +95,26 @@ Return ONLY valid JSON array:
         back: c.back || c.a || "",
         hint: c.hint || "",
       })),
-      provider: result.provider,
+      provider: jsonResult.provider,
     };
+  }
+
+  const explain = await kidsChatWithAI({
+    prompt: `Create ${count} educational flashcards about ${input.topic} for grade ${input.grade}. Format each as "Q: ... A: ..." one per line.`,
+    lang,
+    history: [],
+  });
+  if (explain.text && !explain.needsRetry) {
+    const lines = explain.text.split("\n").filter((l) => l.trim());
+    const parsedCards = lines.slice(0, count).map((line, i) => ({
+      id: `fc-ai-${i}`,
+      front: line.replace(/^Q:\s*/i, "").split(/A:/i)[0]?.trim() || line,
+      back: line.split(/A:/i)[1]?.trim() || "",
+      hint: "",
+    }));
+    if (parsedCards.some((c) => c.back)) {
+      return { ok: true, cards: parsedCards, provider: explain.provider };
+    }
   }
 
   return fallbackFlashcards(input, count);
@@ -98,11 +132,11 @@ Subject: ${input.subject} | Grade: ${input.grade} | Topic: ${input.topic}
 Return ONLY valid JSON:
 {"title":"chapter title","questions":[{"q":"question","choices":["A","B","C","D"],"correct":0,"explanation":"why"}]}`;
 
-  const result = await chatWithAI({ prompt, history: [] });
-  const data = parseJsonBlock(result.text);
+  const jsonResult = await aiJsonWithRetry(prompt, lang);
+  const data = jsonResult?.parsed;
 
   if (data?.questions?.length) {
-    return { ok: true, quiz: data, provider: result.provider };
+    return { ok: true, quiz: data, provider: jsonResult.provider };
   }
 
   return fallbackQuiz(input, count);

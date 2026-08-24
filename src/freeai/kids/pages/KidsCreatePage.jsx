@@ -41,7 +41,7 @@ export default function KidsCreatePage() {
       if (mode === "story") {
         const res = await generateKidsStory({ ...story, lang });
         setResult({ type: "story", text: res.story });
-        saveCreation({ type: "story", title: story.hero || "Story", preview: res.story?.slice(0, 80), data: res });
+        saveCreation({ type: "story", title: story.hero || "Story", preview: res.story?.slice(0, 80), data: { story: res.story } });
       } else if (mode === "character") {
         const res = await generateKidsCharacter({ ...character, lang });
         setResult({ type: "character", ...res });
