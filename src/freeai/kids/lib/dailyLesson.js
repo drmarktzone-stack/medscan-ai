@@ -45,6 +45,8 @@ export async function runDailyLesson({ grade, lang }) {
     ok: true,
     plan,
     intro: intro.text,
+    heroImage: intro.heroImage,
+    heroMedia: intro.heroMedia,
     cards: flash.cards,
     quiz: quiz.quiz,
     providers: [intro.provider, flash.provider, quiz.provider],

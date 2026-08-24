@@ -4,9 +4,10 @@
 
 import { chatWithAI } from "../../lib/chatEngine.js";
 import { kidsChatWithAI } from "./kidsChatEngine.js";
-import { generatePollinationsBatch } from "../../lib/generators/pollinations.js";
 import { pickL, resolveKidsLang } from "./locale.js";
 import { buildGameFromLibrary } from "./gameLibrary.js";
+import { enrichCardsWithImages, subjectHero, storySceneIllustration, topicIllustration } from "./illustrations.js";
+import { generateKidsMedia, generateKidsMediaBatch } from "./kidsMediaRouter.js";
 
 const KIDS_SYSTEM = {
   he: `אתה מורה AI ידידותי לילדים. עברית בלבד. תוכן בטוח, חיובי, ללא אלימות או תוכן מבוגרים.
@@ -89,12 +90,15 @@ Return ONLY valid JSON array:
   if (Array.isArray(cards) && cards.length) {
     return {
       ok: true,
-      cards: cards.slice(0, count).map((c, i) => ({
-        id: `fc-${Date.now()}-${i}`,
-        front: c.front || c.q || "",
-        back: c.back || c.a || "",
-        hint: c.hint || "",
-      })),
+      cards: enrichCardsWithImages(
+        cards.slice(0, count).map((c, i) => ({
+          id: `fc-${Date.now()}-${i}`,
+          front: c.front || c.q || "",
+          back: c.back || c.a || "",
+          hint: c.hint || "",
+        })),
+        input.subject
+      ),
       provider: jsonResult.provider,
     };
   }
@@ -113,7 +117,7 @@ Return ONLY valid JSON array:
       hint: "",
     }));
     if (parsedCards.some((c) => c.back)) {
-      return { ok: true, cards: parsedCards, provider: explain.provider };
+      return { ok: true, cards: enrichCardsWithImages(parsedCards, input.subject), provider: explain.provider };
     }
   }
 
@@ -151,7 +155,18 @@ Subject: ${input.subject} | Grade: ${input.grade} | Topic: ${input.topic}
 Encourage the student. Mention they will get flashcards and a summary quiz.`;
 
   const result = await chatWithAI({ prompt, history: [] });
-  return { ok: true, text: result.text || "", provider: result.provider };
+  const heroMedia = await generateKidsMedia({
+    type: "image",
+    prompt: `${input.subject} ${input.topic}, kids learning hero banner`,
+    count: 1,
+  });
+  return {
+    ok: true,
+    text: result.text || "",
+    provider: result.provider,
+    heroImage: topicIllustration(input.topic, input.subject),
+    heroMedia,
+  };
 }
 
 /** Story builder */
@@ -166,7 +181,21 @@ Hero: ${hero} | Place: ${place} | Problem: ${problem} | Ending style: ${ending |
 Make it inspiring. Child should feel they created it with AI help.`;
 
   const result = await chatWithAI({ prompt, history: [] });
-  return { ok: true, story: result.text || "", provider: result.provider };
+  const story = result.text || "";
+  const chunks = story.split(/\n\n+/).filter(Boolean).slice(0, 4);
+  const sceneMediaList = await generateKidsMediaBatch(
+    chunks.map((chunk, i) => ({
+      type: "animation",
+      prompt: `story scene: ${chunk.slice(0, 100)}`,
+      count: 1,
+    }))
+  );
+  const scenes = chunks.map((chunk, i) => ({
+    text: chunk,
+    imageUrl: storySceneIllustration(chunk, i),
+    media: sceneMediaList[i],
+  }));
+  return { ok: true, story, scenes, provider: result.provider };
 }
 
 /** Character + drawing */
@@ -179,18 +208,19 @@ export async function generateKidsCharacter(input) {
 Describe a kid-friendly character in 2 sentences:
 Name: ${name} | Traits: ${traits} | Style: ${style}`;
 
-  const descResult = await chatWithAI({ prompt: descPrompt, history: [] });
-  const description = descResult.text || `${name}, ${traits}, ${style}, cartoon, colorful, kid-friendly`;
+  const result = await chatWithAI({ prompt: descPrompt, history: [] });
+  const description = result.text || `${name}, ${traits}, ${style}, cartoon, colorful, kid-friendly`;
 
   const imagePrompt = `cute kid-friendly character illustration, ${name}, ${traits}, ${style}, cartoon style, colorful, safe for children, no text`;
-  const images = generatePollinationsBatch(imagePrompt, 2);
+  const media = await generateKidsMedia({ type: "image", prompt: imagePrompt, count: 3 });
 
   return {
     ok: true,
     name,
     description,
-    images: images.images,
-    provider: descResult.provider,
+    images: media.instant.images,
+    media,
+    provider: result.provider,
   };
 }
 
@@ -198,10 +228,11 @@ Name: ${name} | Traits: ${traits} | Style: ${style}`;
 export async function generateKidsDrawing(input) {
   const { template, detail, lang } = input;
   const imagePrompt = `kid-friendly illustration, ${template}, ${detail}, colorful, cute, safe for children, high quality, no text watermark`;
-  const images = generatePollinationsBatch(imagePrompt, 2);
+  const media = await generateKidsMedia({ type: "image", prompt: imagePrompt, count: 4 });
   return {
     ok: true,
-    images: images.images,
+    images: media.instant.images,
+    media,
     prompt: imagePrompt,
     label: template,
   };
@@ -248,13 +279,14 @@ ${lang === "he" ? "עברית בלבד" : lang === "ar" ? "العربية فقط
 
   const textResult = await chatWithAI({ prompt, history: [] });
   const imagePrompt = `${item.prompt}, ${name}, educational poster for children ages 6-12, soft pastel, no text, no watermark`;
-  const images = generatePollinationsBatch(imagePrompt, 2);
+  const media = await generateKidsMedia({ type: "animation", prompt: imagePrompt, count: 2 });
 
   return {
     ok: true,
     name,
     explanation: textResult.text || baseFact,
-    images: images.images,
+    images: media.instant.images,
+    media,
     provider: textResult.provider,
   };
 }

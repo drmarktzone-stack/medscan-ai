@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Loader2, BookHeart, User, Image } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
+import KidsMediaReveal from "../components/KidsMediaReveal.jsx";
 import VoiceMic from "../components/VoiceMic.jsx";
 import { pickL } from "../lib/locale.js";
 import { STORY_STEPS, DRAW_TEMPLATES } from "../lib/gameGenerator.js";
@@ -40,8 +41,8 @@ export default function KidsCreatePage() {
     try {
       if (mode === "story") {
         const res = await generateKidsStory({ ...story, lang });
-        setResult({ type: "story", text: res.story });
-        saveCreation({ type: "story", title: story.hero || "Story", preview: res.story?.slice(0, 80), data: { story: res.story } });
+        setResult({ type: "story", text: res.story, scenes: res.scenes });
+        saveCreation({ type: "story", title: story.hero || "Story", preview: res.story?.slice(0, 80), data: { story: res.story, scenes: res.scenes } });
       } else if (mode === "character") {
         const res = await generateKidsCharacter({ ...character, lang });
         setResult({ type: "character", ...res });
@@ -166,28 +167,34 @@ export default function KidsCreatePage() {
         </div>
 
         {result?.type === "story" && (
-          <div className="bg-white/90 text-purple-900 rounded-3xl p-5 whitespace-pre-wrap leading-relaxed shadow-xl">
-            {result.text}
+          <div className="space-y-5">
+            {(result.scenes || []).map((scene, i) => (
+              <div key={i} className="kids-glass-card p-4 space-y-3 kids-fade-in">
+                {scene.media ? (
+                  <KidsMediaReveal media={scene.media} lang={lang} single />
+                ) : scene.imageUrl ? (
+                  <KidsMediaReveal media={{ instant: { images: [{ id: `s-${i}`, url: scene.imageUrl }] } }} lang={lang} single />
+                ) : null}
+                <p className="text-purple-900 bg-white/90 rounded-2xl p-4 leading-relaxed whitespace-pre-wrap">{scene.text}</p>
+              </div>
+            ))}
+            {!result.scenes?.length && (
+              <div className="bg-white/90 text-purple-900 rounded-3xl p-5 whitespace-pre-wrap leading-relaxed shadow-xl">
+                {result.text}
+              </div>
+            )}
           </div>
         )}
 
         {result?.type === "character" && (
           <div className="space-y-3">
-            <p className="bg-white/20 rounded-2xl p-4">{result.description}</p>
-            <div className="grid grid-cols-2 gap-3">
-              {(result.images || []).map((img) => (
-                <img key={img.id} src={img.url} alt={result.name} className="rounded-2xl shadow-lg w-full aspect-square object-cover" />
-              ))}
-            </div>
+            <p className="bg-white/20 rounded-2xl p-4 kids-glass-card">{result.description}</p>
+            <KidsMediaReveal media={result.media} lang={lang} showProviderLinks />
           </div>
         )}
 
         {result?.type === "drawing" && (
-          <div className="grid grid-cols-2 gap-3">
-            {(result.images || []).map((img) => (
-              <img key={img.id} src={img.url} alt="" className="rounded-2xl shadow-lg w-full aspect-square object-cover" />
-            ))}
-          </div>
+          <KidsMediaReveal media={result.media} lang={lang} showProviderLinks />
         )}
       </div>
     </KidsLayout>

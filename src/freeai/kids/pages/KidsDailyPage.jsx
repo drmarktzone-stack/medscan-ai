@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
 import KidsMagicBackground from "../components/KidsMagicBackground.jsx";
+import KidsImage from "../components/KidsImage.jsx";
+import KidsMediaReveal from "../components/KidsMediaReveal.jsx";
 import FlashcardDeck from "../components/FlashcardDeck.jsx";
 import BossBattleQuiz from "../components/BossBattleQuiz.jsx";
 import SpeakingAvatar from "../components/SpeakingAvatar.jsx";
@@ -78,7 +80,12 @@ export default function KidsDailyPage() {
         )}
 
         {lesson && step === "intro" && (
-          <div className="space-y-4 bg-white/20 rounded-3xl p-5">
+          <div className="space-y-4 bg-white/20 rounded-3xl p-5 kids-glass-card">
+            {lesson.heroMedia ? (
+              <KidsMediaReveal media={lesson.heroMedia} lang={lang} single />
+            ) : lesson.heroImage ? (
+              <KidsImage src={lesson.heroImage} alt={lesson.plan.topic} aspect="video" />
+            ) : null}
             <SpeakingAvatar text={lesson.intro} lang={lang} />
             <p className="font-bold text-lg">{lesson.plan.subject} — {lesson.plan.topic}</p>
             <p className="text-sm leading-relaxed whitespace-pre-wrap">{lesson.intro}</p>

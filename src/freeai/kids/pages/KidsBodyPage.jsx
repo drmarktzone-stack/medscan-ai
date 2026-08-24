@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { Loader2, Heart, Layers } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
+import KidsImage from "../components/KidsImage.jsx";
+import KidsMediaReveal from "../components/KidsMediaReveal.jsx";
+import SimulationHub from "../components/SimulationHub.jsx";
 import VoiceMic, { VoiceInputRow } from "../components/VoiceMic.jsx";
 import FlashcardDeck from "../components/FlashcardDeck.jsx";
 import { pickL } from "../lib/locale.js";
 import { BODY_CATEGORIES } from "../data/anatomyData.js";
+import { bodyItemThumb } from "../lib/illustrations.js";
 import { loadKidsProfile, saveCreation } from "../lib/kidsStore.js";
 import { generateBodyLesson, generateBodyFlashcards } from "../lib/kidsEngine.js";
 
@@ -151,18 +155,24 @@ export default function KidsBodyPage() {
                 key={item.id}
                 type="button"
                 onClick={() => exploreItem(item)}
-                className={`p-4 rounded-2xl text-right transition-all border-2 ${
+                className={`p-3 rounded-2xl text-right transition-all border-2 overflow-hidden ${
                   selected?.id === item.id
                     ? "bg-white text-purple-800 border-white scale-105 shadow-xl"
                     : "bg-white/20 border-white/30 hover:bg-white/30"
                 }`}
               >
-                <div className="text-3xl mb-1">{item.icon}</div>
+                <KidsImage src={bodyItemThumb(item)} alt={pickL(item.name, lang)} aspect="square" className="mb-2" />
+                <div className="text-2xl mb-1">{item.icon}</div>
                 <div className="font-black text-sm">{pickL(item.name, lang)}</div>
               </button>
             ))}
           </div>
         )}
+
+        <SimulationHub subjectId="body" lang={lang} onBodySelect={(partId) => {
+          const item = category?.items.find((i) => i.id === partId);
+          if (item) exploreItem(item);
+        }} />
 
         {loading && (
           <div className="flex items-center justify-center gap-2 py-8">
@@ -172,20 +182,19 @@ export default function KidsBodyPage() {
         )}
 
         {tab === "explore" && lesson && !loading && (
-          <div className="bg-white/95 text-purple-900 rounded-3xl p-5 space-y-4 shadow-xl">
+          <div className="bg-white/95 text-purple-900 rounded-3xl p-5 space-y-4 shadow-xl kids-glass-card">
             <h2 className="text-xl font-black flex items-center gap-2">
               {selected?.icon} {lesson.name}
             </h2>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {(lesson.images || []).map((img) => (
-                <img
-                  key={img.id}
-                  src={img.url}
-                  alt={lesson.name}
-                  className="rounded-2xl w-full aspect-square object-cover border-4 border-purple-200"
-                />
-              ))}
-            </div>
+            {lesson.media ? (
+              <KidsMediaReveal media={lesson.media} lang={lang} showProviderLinks />
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-3">
+                {(lesson.images || []).map((img) => (
+                  <KidsImage key={img.id} src={img.url} alt={lesson.name} aspect="square" />
+                ))}
+              </div>
+            )}
             <p className="leading-relaxed whitespace-pre-wrap text-base">{lesson.explanation}</p>
           </div>
         )}

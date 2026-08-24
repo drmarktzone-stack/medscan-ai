@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Loader2, BookOpen, Layers, ClipboardList } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
+import KidsImage from "../components/KidsImage.jsx";
+import KidsMediaReveal from "../components/KidsMediaReveal.jsx";
+import SimulationHub from "../components/SimulationHub.jsx";
 import VoiceMic, { VoiceInputRow } from "../components/VoiceMic.jsx";
 import FlashcardDeck from "../components/FlashcardDeck.jsx";
 import SummaryQuiz from "../components/SummaryQuiz.jsx";
@@ -33,6 +36,8 @@ export default function KidsStudyPage() {
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
   const [intro, setIntro] = useState("");
+  const [heroMedia, setHeroMedia] = useState(null);
+  const [heroImage, setHeroImage] = useState("");
   const [cards, setCards] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [tab, setTab] = useState("flashcards");
@@ -49,6 +54,8 @@ export default function KidsStudyPage() {
     setCards([]);
     setQuiz(null);
     setIntro("");
+    setHeroMedia(null);
+    setHeroImage("");
 
     const subName = subject ? pickL(subject.name, lang) : subjectId;
     const input = { subject: subName, grade, topic: topicText, lang };
@@ -59,6 +66,8 @@ export default function KidsStudyPage() {
     ]);
 
     setIntro(introRes.text || "");
+    setHeroMedia(introRes.heroMedia || null);
+    setHeroImage(introRes.heroImage || "");
     setCards(fcRes.cards || []);
     saveCreation({
       type: "study",
@@ -157,8 +166,19 @@ export default function KidsStudyPage() {
           </button>
         </div>
 
+        {heroMedia && (
+          <KidsMediaReveal media={heroMedia} lang={lang} single className="kids-pulse-soft" />
+        )}
+        {!heroMedia && heroImage && (
+          <KidsImage src={heroImage} alt={topicText} aspect="video" className="border-4 border-white/30 shadow-xl" />
+        )}
+
         {intro && (
-          <div className="bg-white/15 rounded-2xl p-4 text-sm leading-relaxed whitespace-pre-wrap">{intro}</div>
+          <div className="bg-white/15 rounded-2xl p-4 text-sm leading-relaxed whitespace-pre-wrap kids-glass-card">{intro}</div>
+        )}
+
+        {cards.length > 0 && (
+          <SimulationHub subjectId={subjectId} lang={lang} />
         )}
 
         {cards.length > 0 && (
