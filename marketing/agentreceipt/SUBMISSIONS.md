@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-24  
+Updated: 2026-08-24 ~18:15 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt  
 **Demand watch:** timer every 6h (`agentreceipt-demand-watch`)
 
@@ -16,16 +16,23 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 | caramaschiHG/awesome-ai-agents-2026#522 | OPEN | 0 | none yet |
 | Jenqyang/Awesome-AI-Agents#448 | OPEN | 0 | none yet |
 | spencerpauly/awesome-cursor-skills#52 | OPEN | 0 | none yet |
-| kleneway/awesome-cursor-mpc-server#24 | OPEN | ? | new |
-| ARUNAGIRINATHAN-K/awesome-ai-agents-2026#225 | OPEN | ? | new |
-| machinae/awesome-claws#42 | OPEN | ? | new |
-| hesreallyhim/awesome-claude-code#2622 | OPEN | ? | new |
-| hammadhaqqani/awesome-devops-ai#53 | OPEN | ? | new |
-| VoltAgent/awesome-claude-code-subagents#318 | OPEN | ? | new |
-| aiagenttools.dev | submitted | awaiting review | none yet |
+| kleneway/awesome-cursor-mpc-server#24 | OPEN | 0 | none yet |
+| ARUNAGIRINATHAN-K/awesome-ai-agents-2026#225 | OPEN | 0 | none yet |
+| machinae/awesome-claws#42 | OPEN | 0 | none yet |
+| hesreallyhim/awesome-claude-code#2622 | OPEN | 0 | none yet |
+| hammadhaqqani/awesome-devops-ai#53 | OPEN | 0 | none yet |
+| VoltAgent/awesome-claude-code-subagents#318 | OPEN | 0 | none yet |
+| rohitg00/awesome-claude-code-toolkit#747 | OPEN | 0 | none yet |
+| ccplugins/awesome-claude-code-plugins#388 | OPEN | 0 | none yet |
+| paulboguta/awesome-dev-tool-directories#3 | OPEN | 0 | none yet |
+| Zijian-Ni/awesome-ai-agents-2026#90 | OPEN | 0 | new (round 2) |
+| DirectorySurf/awesome-ai-agents-directories#50 | OPEN | 0 | new (round 2) |
+| alternbits/awesome-ai-agents#75 | OPEN | 0 | new (round 2) |
+| rohitg00/awesome-ai-apps#61 | OPEN | 0 | new (round 2) |
+| aiagenttools.dev | submitted (not live) | search = 0 hits | awaiting review |
 | Checkout / WhatsApp Bit | — | — | **you must check WhatsApp** |
 
-**Verdict (2026-08-24):** אין תשובות ממנהלי awesome-lists עדיין. אין רשימה חיה מאושרת. ביקוש = 0 ידוע עד כה.
+**Verdict (2026-08-24 demand-watch #2):** Still **0 maintainer replies**. AgentReceipt **not** found live on aiagenttools / thenextai / toolsland. Public demand signal = none yet.
 
 ---
 
@@ -34,7 +41,8 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 ### Directories
 | Channel | Status |
 |---------|--------|
-| aiagenttools.dev | Submitted (API id `mt69bcc6lvpq9`) |
+| aiagenttools.dev | Submitted API ids `mt69bcc6lvpq9`, `mt7jlrt7yfb9j`, `mt7kjl3od4e2l` (not live in search yet) |
+| toolspantry / ai-bazaar / thenextai / toolsland | Form automation failed / paid toggle — not completed this round |
 
 ### Awesome / GitHub listing issues
 | Repo | Issue |
@@ -51,6 +59,13 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 | hesreallyhim/awesome-claude-code | [#2622](https://github.com/hesreallyhim/awesome-claude-code/issues/2622) |
 | hammadhaqqani/awesome-devops-ai | [#53](https://github.com/hammadhaqqani/awesome-devops-ai/issues/53) |
 | VoltAgent/awesome-claude-code-subagents | [#318](https://github.com/VoltAgent/awesome-claude-code-subagents/issues/318) |
+| rohitg00/awesome-claude-code-toolkit | [#747](https://github.com/rohitg00/awesome-claude-code-toolkit/issues/747) |
+| ccplugins/awesome-claude-code-plugins | [#388](https://github.com/ccplugins/awesome-claude-code-plugins/issues/388) |
+| paulboguta/awesome-dev-tool-directories | [#3](https://github.com/paulboguta/awesome-dev-tool-directories/issues/3) |
+| Zijian-Ni/awesome-ai-agents-2026 | [#90](https://github.com/Zijian-Ni/awesome-ai-agents-2026/issues/90) |
+| DirectorySurf/awesome-ai-agents-directories | [#50](https://github.com/DirectorySurf/awesome-ai-agents-directories/issues/50) |
+| alternbits/awesome-ai-agents | [#75](https://github.com/alternbits/awesome-ai-agents/issues/75) |
+| rohitg00/awesome-ai-apps | [#61](https://github.com/rohitg00/awesome-ai-apps/issues/61) |
 
 ---
 
@@ -58,10 +73,10 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 
 | Channel | Reason |
 |---------|--------|
-| thenextai.com | Form automation broken (free toggle flips to $199) |
-| toolsland.ai | Complex form / unreliable UI |
-| openalt / productcool | Login wall |
-| aidirectori.es | Analyze button dead |
+| thenextai.com | Free toggle flips to $199 Featured |
+| toolsland.ai / toolspantry / ai-bazaar | Browser form automation unreliable |
+| dang.ai | Login / pricing wall |
+| TAAFT / Futurepedia / topai | 403 or paid |
 | HN / Reddit / DEV.to | Need your Secrets |
 | Facebook / WhatsApp | Intentionally not primary |
 
