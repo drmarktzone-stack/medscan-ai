@@ -10,8 +10,14 @@
  */
 export function buildPollinationsUrl(prompt, opts = {}) {
   const { width = 1024, height = 1024, seed, model = "flux" } = opts;
-  const encoded = encodeURIComponent(prompt);
-  const params = new URLSearchParams({ width: String(width), height: String(height), model });
+  const short = String(prompt || "cute illustration").slice(0, 180);
+  const encoded = encodeURIComponent(short);
+  const params = new URLSearchParams({
+    width: String(width),
+    height: String(height),
+    model,
+    nologo: "true",
+  });
   if (seed != null) params.set("seed", String(seed));
   return `https://image.pollinations.ai/prompt/${encoded}?${params.toString()}`;
 }

@@ -6,7 +6,12 @@ import { generateFree } from "./router.js";
 import { runFullPipeline, runUrgentMode } from "./pipelineEngine.js";
 import { buildProjectPlan, parseProjectDescription } from "./planner.js";
 import { generateCodeScaffold } from "./generators/codeGenerator.js";
-import { generatePollinationsBatch } from "./generators/pollinations.js";
+import { generatePollinationsBatch, validatePrompt } from "./generators/pollinations.js";
+import { withImageFallback } from "./visualFallback.js";
+
+function mapImages(images, prompt) {
+  return (images || []).map((img) => withImageFallback(img, prompt));
+}
 import { optimizePromptForProvider } from "./smartPrompt.js";
 import { applyBrandToPrompt, loadBrandKit } from "./brandKit.js";
 import { calculateCreditScore } from "./creditScore.js";
@@ -86,10 +91,10 @@ async function handleImage(prompt) {
   if (res.ok && res.images) {
     const savings = calcTasksSavings([{ type: "image", count: res.images.length }]);
     addSavings(savings);
-    return { ok: true, type: "image", provider: res.provider || "pollinations", images: res.images, text: `נוצרו ${res.images.length} תמונות בחינם`, textEn: `Generated ${res.images.length} images for free`, savings };
+    return { ok: true, type: "image", provider: res.provider || "pollinations", images: mapImages(res.images, prompt), text: `נוצרו ${res.images.length} תמונות בחינם`, textEn: `Generated ${res.images.length} images for free`, savings };
   }
   const batch = generatePollinationsBatch(prompt, 2);
-  return { ok: true, type: "image", provider: "pollinations", images: batch.images, text: `נוצרו ${batch.images.length} תמונות`, textEn: `Generated ${batch.images.length} images` };
+  return { ok: true, type: "image", provider: "pollinations", images: mapImages(batch.images, prompt), text: `נוצרו ${batch.images.length} תמונות`, textEn: `Generated ${batch.images.length} images` };
 }
 
 async function handleCode(prompt, attachments) {
@@ -112,7 +117,7 @@ async function handleVideo(prompt, imageAttachment) {
 
 async function handleDesign(prompt) {
   const batch = generatePollinationsBatch(`design: ${prompt}`, 2);
-  return { ok: true, type: "design", images: batch.images, provider: "pollinations", text: "עיצובים מוכנים", textEn: "Designs ready" };
+  return { ok: true, type: "design", images: mapImages(batch.images, prompt), provider: "pollinations", text: "עיצובים מוכנים", textEn: "Designs ready" };
 }
 
 async function handleProject(prompt, urgent) {
@@ -140,7 +145,7 @@ async function handleChat(prompt, attachments, score, history = []) {
   if (/תמונ|image|ציור|photo|draw/i.test(prompt) && !/איך|how|מה זה|explain/i.test(prompt)) {
     const optimized = optimizePromptForProvider(prompt, "pollinations", "image");
     const batch = generatePollinationsBatch(optimized, 1);
-    return { ok: true, type: "chat", text: "הנה תמונה — עבור למצב 🖼️ לעוד:", textEn: "Here's an image — switch to 🖼️ for more:", images: batch.images, suggestMode: "image", provider: "pollinations" };
+    return { ok: true, type: "chat", text: "הנה תמונה — עבור למצב 🖼️ לעוד:", textEn: "Here's an image — switch to 🖼️ for more:", images: mapImages(batch.images, optimized), suggestMode: "image", provider: "pollinations" };
   }
 
   const chatResult = await chatWithAI({

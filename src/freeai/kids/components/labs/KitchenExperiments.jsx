@@ -71,38 +71,70 @@ export function MeasureExp({ lang, onComplete }) {
 
 export function FoodGroupsExp({ lang, onComplete }) {
   const foods = [
-    { id: "apple", emoji: "🍎", group: "fruit" },
-    { id: "carrot", emoji: "🥕", group: "veg" },
-    { id: "bread", emoji: "🍞", group: "grain" },
-    { id: "milk", emoji: "🥛", group: "dairy" },
-    { id: "chicken", emoji: "🍗", group: "protein" },
+    { id: "apple", emoji: "🍎", group: "fruit", label: { he: "תפוח", en: "Apple", ar: "!" } },
+    { id: "carrot", emoji: "🥕", group: "veg", label: { he: "גזר", en: "Carrot", ar: "!" } },
+    { id: "bread", emoji: "🍞", group: "grain", label: { he: "לחם", en: "Bread", ar: "!" } },
+    { id: "milk", emoji: "🥛", group: "dairy", label: { he: "חלב", en: "Milk", ar: "!" } },
+    { id: "chicken", emoji: "🍗", group: "protein", label: { he: "עוף", en: "Chicken", ar: "!" } },
   ];
-  const [sorted, setSorted] = useState({});
   const groups = {
-    fruit: { he: "פירות", en: "Fruits", ar: "فواكه" },
-    veg: { he: "ירקות", en: "Veggies", ar: "خضار" },
-    grain: { he: "דגנים", en: "Grains", ar: "حبوب" },
-    dairy: { he: "חלב", en: "Dairy", ar: "ألبان" },
-    protein: { he: "חלבון", en: "Protein", ar: "بروtein" },
+    fruit: { he: "🍎 פירות", en: "🍎 Fruits", ar: "!" },
+    veg: { he: "🥕 ירקות", en: "🥕 Veggies", ar: "!" },
+    grain: { he: "🍞 דגנים", en: "🍞 Grains", ar: "!" },
+    dairy: { he: "🥛 חלב", en: "🥛 Dairy", ar: "!" },
+    protein: { he: "🍗 חלבון", en: "🍗 Protein", ar: "!" },
   };
 
-  const assign = (foodId, group) => setSorted({ ...sorted, [foodId]: group });
+  const [selectedFood, setSelectedFood] = useState(foods[0].id);
+  const [sorted, setSorted] = useState({});
+  const [feedback, setFeedback] = useState("");
+
+  const food = foods.find((f) => f.id === selectedFood);
+  const assign = (group) => {
+    if (!food) return;
+    const correct = group === food.group;
+    setSorted({ ...sorted, [food.id]: group });
+    setFeedback(correct
+      ? pickL({ he: "✅ נכון!", en: "✅ Correct!", ar: "!" }, lang)
+      : pickL({ he: "❌ נסה שוב", en: "❌ Try again", ar: "!" }, lang));
+    if (correct) {
+      const next = foods.find((f) => !sorted[f.id] && f.id !== food.id);
+      if (next) setTimeout(() => setSelectedFood(next.id), 400);
+    }
+  };
+
   const allSorted = foods.every((f) => sorted[f.id] === f.group);
 
   return (
-    <div className="kids-lab-panel space-y-3">
+    <div className="kids-lab-panel space-y-4">
       <p className="font-bold text-center">{pickL({ he: "מיין לארוחה מאוזנת!", en: "Sort for balanced meal!", ar: "!" }, lang)}</p>
-      {foods.map((f) => (
-        <div key={f.id} className="flex items-center gap-2 flex-wrap">
-          <span className="text-2xl w-10">{f.emoji}</span>
-          {Object.entries(groups).map(([g, label]) => (
-            <button key={g} type="button" onClick={() => assign(f.id, g)}
-              className={`kids-sim-btn text-xs ${sorted[f.id] === g ? (sorted[f.id] === f.group ? "bg-green-500/50" : "bg-red-500/30") : ""}`}>
-              {pickL(label, lang)}
-            </button>
-          ))}
-        </div>
-      ))}
+
+      <div className="text-center">
+        <p className="text-sm opacity-80 mb-2">{pickL({ he: "לאיזו קבוצה שייך:", en: "Which group:", ar: "?" }, lang)}</p>
+        <p className="text-5xl kids-float">{food?.emoji}</p>
+        <p className="font-black text-lg">{food ? pickL(food.label, lang) : ""}</p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {Object.entries(groups).map(([g, label]) => (
+          <button key={g} type="button" onClick={() => assign(g)}
+            className={`kids-sim-btn py-3 font-black text-sm ${sorted[food?.id] === g ? (sorted[food?.id] === food?.group ? "bg-green-500/50" : "bg-red-500/40") : ""}`}>
+            {pickL(label, lang)}
+          </button>
+        ))}
+      </div>
+
+      {feedback && <p className="text-center font-bold">{feedback}</p>}
+
+      <div className="flex gap-2 justify-center flex-wrap">
+        {foods.map((f) => (
+          <button key={f.id} type="button" onClick={() => setSelectedFood(f.id)}
+            className={`text-2xl p-2 rounded-xl ${selectedFood === f.id ? "ring-2 ring-white bg-white/30" : "opacity-70"} ${sorted[f.id] === f.group ? "bg-green-500/30" : ""}`}>
+            {f.emoji}
+          </button>
+        ))}
+      </div>
+
       {allSorted && (
         <button type="button" onClick={() => onComplete?.(15)} className="kids-sim-btn w-full py-3 font-black">🥗 {pickL({ he: "תזונה חכמה!", en: "Smart nutrition!", ar: "!" }, lang)}</button>
       )}

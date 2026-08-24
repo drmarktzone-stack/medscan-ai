@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Key, CheckCircle2, AlertTriangle, ExternalLink } from "lucide-react";
 import { pickL } from "../lib/locale.js";
 import { getChatProviderStatus } from "../../lib/chatEngine.js";
+import { hasFullAccess } from "../../lib/demoMode.js";
 import { loadApiKeys, saveApiKey } from "../../lib/creditStore.js";
 import { R } from "../../lib/routes.js";
 
@@ -50,9 +51,18 @@ export default function KidsApiStatus({ lang = "he", compact = false }) {
     status.groq ||
     status.gemini ||
     status.deepseek ||
+    status.puter ||
     keys.groq ||
     keys.google_ai_studio ||
     keys.deepseek;
+
+  if (hasFullAccess() && !chatOk && compact) {
+    return (
+      <div className="flex items-center gap-2 text-xs font-bold text-blue-200 bg-blue-500/20 px-3 py-1.5 rounded-full">
+        <CheckCircle2 className="w-3.5 h-3.5" /> Pro
+      </div>
+    );
+  }
 
   const saveGroq = () => {
     if (!draft.trim()) return;

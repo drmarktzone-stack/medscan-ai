@@ -42,10 +42,11 @@ export function RhythmExp({ lang, onComplete }) {
 export function SoundWaveExp({ lang, onComplete }) {
   const [amp, setAmp] = useState(0);
   const [taps, setTaps] = useState(0);
+  const displayTaps = Math.min(taps, 5);
 
   const ping = () => {
     setAmp(Date.now());
-    setTaps((t) => t + 1);
+    setTaps((t) => Math.min(t + 1, 5));
   };
 
   return (
@@ -57,9 +58,10 @@ export function SoundWaveExp({ lang, onComplete }) {
             style={{ height: amp ? 8 + Math.abs(Math.sin(i * 0.8 + amp * 0.01)) * 40 : 8 }} />
         ))}
       </div>
-      <button type="button" onClick={ping} className="kids-sim-btn w-28 h-28 rounded-full text-5xl kids-glow">🔊</button>
-      <p className="font-bold">{taps}/5</p>
-      {taps >= 5 && (
+      <button type="button" onClick={ping} disabled={taps >= 5}
+        className="kids-sim-btn w-28 h-28 rounded-full text-5xl kids-glow disabled:opacity-50">🔊</button>
+      <p className="font-bold">{displayTaps}/5</p>
+      {displayTaps >= 5 && (
         <button type="button" onClick={() => onComplete?.(15)} className="kids-sim-btn w-full py-3 font-black">〰️ {pickL({ he: "מדען קול!", en: "Sound scientist!", ar: "!" }, lang)}</button>
       )}
     </div>

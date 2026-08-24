@@ -3,6 +3,7 @@ import { Route, CheckCircle2, AlertTriangle, ExternalLink, Play, Loader2 } from 
 import { parseProjectDescription, buildProjectPlan } from "../lib/planner.js";
 import { useCredits } from "../lib/creditStore.js";
 import { generatePollinationsBatch } from "../lib/generators/pollinations.js";
+import { withImageFallback } from "../lib/visualFallback.js";
 
 export default function ProjectPlanner({ locale = "he" }) {
   const [description, setDescription] = useState("");
@@ -29,7 +30,7 @@ export default function ProjectPlanner({ locale = "he" }) {
     try {
       useCredits(stepData.providerId, stepData.units);
       const batch = generatePollinationsBatch(stepData.prompt, stepData.units);
-      setStepResults((prev) => ({ ...prev, [stepData.step]: batch.images }));
+      setStepResults((prev) => ({ ...prev, [stepData.step]: batch.images.map((img) => withImageFallback(img, stepData.prompt)) }));
       markDone(stepData.step);
     } finally {
       setGeneratingStep(null);
@@ -119,7 +120,9 @@ export default function ProjectPlanner({ locale = "he" }) {
                       {results?.length > 0 && (
                         <div className="flex gap-2 mt-3 overflow-x-auto">
                           {results.map((img) => (
-                            <img key={img.id} src={img.url} alt="" className="w-16 h-16 rounded-lg object-cover" />
+                            <img key={img.id} src={img.fallbackUrl || img.url} alt="" referrerPolicy="no-referrer"
+                              onError={(e) => { e.currentTarget.src = img.fallbackUrl || img.url; }}
+                              className="w-16 h-16 rounded-lg object-cover" />
                           ))}
                         </div>
                       )}

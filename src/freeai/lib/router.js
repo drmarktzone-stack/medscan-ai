@@ -5,6 +5,7 @@
 import { providersForCapability } from "../data/providers.js";
 import { loadCreditState, useCredits, loadApiKeys } from "./creditStore.js";
 import { generatePollinationsBatch, validatePrompt } from "./generators/pollinations.js";
+import { withImageFallback } from "./visualFallback.js";
 
 /**
  * Find best provider for immediate in-app generation.
@@ -55,7 +56,12 @@ export async function generateFree(request) {
       return { ok: false, reason: creditResult.reason, remaining: creditResult.remaining };
     }
     const batch = generatePollinationsBatch(prompt, count);
-    return { ...batch, creditsUsed: 0, remaining: creditResult.remaining };
+    return {
+      ...batch,
+      images: batch.images.map((img) => withImageFallback(img, prompt)),
+      creditsUsed: 0,
+      remaining: creditResult.remaining,
+    };
   }
 
   return { ok: false, reason: "provider_not_implemented", providerId: provider.id };

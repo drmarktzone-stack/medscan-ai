@@ -20,6 +20,18 @@ Rules:
 - Never claim you executed actions you didn't — you only chat here; creation happens in other modes.
 - Keep answers focused; use bullet lists when helpful.`;
 
+import { withTimeout } from "./withTimeout.js";
+
+async function fetchWithTimeout(url, options, ms = 18000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function envKey(name) {
   if (typeof import.meta !== "undefined" && import.meta.env?.[name]) {
     return import.meta.env[name];
@@ -110,7 +122,7 @@ async function chatGroq(messages) {
   const key = getApiKey("groq", "VITE_GROQ_API_KEY");
   if (!key) return { ok: false, reason: "no_groq_key" };
 
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const res = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${key}`,
@@ -149,7 +161,7 @@ async function chatGemini(messages) {
     }));
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -174,7 +186,7 @@ async function chatDeepSeek(messages) {
   const key = getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY");
   if (!key) return { ok: false, reason: "no_deepseek_key" };
 
-  const res = await fetch("https://api.deepseek.com/chat/completions", {
+  const res = await fetchWithTimeout("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${key}`,
@@ -203,7 +215,7 @@ async function chatPollinations(messages) {
   const key = getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY");
   if (!key) return { ok: false, reason: "no_pollinations_key" };
 
-  const res = await fetch("https://gen.pollinations.ai/v1/chat/completions", {
+  const res = await fetchWithTimeout("https://gen.pollinations.ai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${key}`,

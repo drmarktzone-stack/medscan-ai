@@ -16,6 +16,7 @@ import { formatSavings } from "../lib/savingsCalculator.js";
 import { PROFESSION_TEMPLATES } from "../data/templates.js";
 import ShareBanner from "../components/ShareBanner";
 import { R } from "../lib/routes.js";
+import { emojiPlaceholderDataUrl, emojiForTopic } from "../lib/visualFallback.js";
 import { useKidsVoice } from "@/freeai/kids/hooks/useKidsVoice.js";
 
 const MODE_ICONS = {
@@ -443,18 +444,7 @@ function MessageBubble({ message, locale }) {
           {result?.images?.length > 0 && (
             <div className="grid grid-cols-2 gap-2 mt-3">
               {result.images.map((img) => (
-                <div key={img.id} className="relative group rounded-xl overflow-hidden">
-                  <img src={img.url} alt="" className="w-full aspect-square object-cover" loading="lazy" />
-                  <a
-                    href={img.url}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Download className="w-3 h-3" />
-                  </a>
-                </div>
+                <HubResultImage key={img.id} img={img} />
               ))}
             </div>
           )}
@@ -545,6 +535,31 @@ function MessageBubble({ message, locale }) {
           👤
         </div>
       )}
+    </div>
+  );
+}
+
+function HubResultImage({ img }) {
+  const [src, setSrc] = useState(img.fallbackUrl || img.url);
+  return (
+    <div className="relative group rounded-xl overflow-hidden">
+      <img
+        src={src}
+        alt=""
+        referrerPolicy="no-referrer"
+        className="w-full aspect-square object-cover"
+        loading="lazy"
+        onError={() => setSrc(img.fallbackUrl || emojiPlaceholderDataUrl(img.prompt || "AI", emojiForTopic(img.prompt)))}
+      />
+      <a
+        href={img.url}
+        download
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <Download className="w-3 h-3" />
+      </a>
     </div>
   );
 }

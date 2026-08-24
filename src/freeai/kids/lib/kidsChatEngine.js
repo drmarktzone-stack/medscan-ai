@@ -8,6 +8,7 @@ import { loadKidsProfile } from "./kidsStore.js";
 import { ageGroupFromGrade } from "./kidsEngine.js";
 import { filterKidsInput, filterKidsOutput } from "./contentFilter.js";
 import { logActivity } from "./activityLog.js";
+import { loadApiKeys } from "../../lib/creditStore.js";
 
 const KIDS_CHAT_SYSTEM = {
   he: `אתה FreeAI Kids — מורה AI חכם שיודע הכל (מדעים, מתמatics, היסטוריה, גיאוגרפיה, שפות, טבע, חלל, יצירה, משחקים, גוף האדם).
@@ -59,11 +60,14 @@ export async function kidsChatWithAI(input) {
 
   const systemPrompt = `${pickL(KIDS_CHAT_SYSTEM, lang)}\n\n${buildContext(lang, profile)}`;
 
+  const keys = loadApiKeys();
+  const hasKey = !!(keys.groq || keys.google_ai_studio || keys.deepseek || keys.pollinations_text);
+
   const result = await chatWithAI({
     prompt: trimmed,
     history: input.history || [],
     systemPrompt,
-    allowLocalFallback: false,
+    allowLocalFallback: !hasKey,
     maxHistory: 20,
   });
 
