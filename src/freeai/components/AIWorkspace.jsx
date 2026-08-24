@@ -78,6 +78,7 @@ export default function AIWorkspace({ locale = "he" }) {
         mode,
         attachments: userMsg.attachments,
         urgent: false,
+        history: nextSession.messages.filter((m) => m.id !== userMsg.id),
       });
 
       const assistantMsg = {
@@ -234,10 +235,12 @@ export default function AIWorkspace({ locale = "he" }) {
             <MessageBubble key={msg.id} message={msg} locale={locale} />
           ))}
 
-          {loading && (
+              {loading && (
             <div className="flex items-center gap-3 text-white/50 text-sm">
               <Loader2 className="w-5 h-5 animate-spin text-violet-400" />
-              {locale === "he" ? "יוצר..." : "Generating..."}
+              {mode === "chat"
+                ? (locale === "he" ? "חושב..." : "Thinking...")
+                : (locale === "he" ? "יוצר..." : "Generating...")}
             </div>
           )}
           <div ref={messagesEndRef} />

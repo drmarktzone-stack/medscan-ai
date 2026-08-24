@@ -317,5 +317,13 @@ describe("Workspace engine", () => {
     const res = await processWorkspaceRequest({ prompt: "מה אתה יודע לעשות?", mode: "chat" });
     assert.equal(res.ok, true);
     assert.ok(res.text?.length > 10);
+    assert.ok(/freeai|FreeAI|Groq|מצב/i.test(res.text));
+  });
+
+  it("chat engine local fallback greets in Hebrew", async () => {
+    const { chatWithAI } = await import("./lib/chatEngine.js");
+    const res = await chatWithAI({ prompt: "שלום", history: [] });
+    assert.equal(res.ok, true);
+    assert.ok(res.text.includes("FreeAI"));
   });
 });

@@ -11,7 +11,7 @@ import { optimizePromptForProvider } from "./smartPrompt.js";
 import { applyBrandToPrompt, loadBrandKit } from "./brandKit.js";
 import { calculateCreditScore } from "./creditScore.js";
 import { addSavings, calcTasksSavings } from "./savingsCalculator.js";
-import { getPrimaryEmail } from "./creditPassport.js";
+import { chatWithAI } from "./chatEngine.js";
 
 /** @typedef {'chat'|'image'|'code'|'video'|'design'|'project'|'edit'} WorkspaceMode */
 
@@ -59,7 +59,7 @@ export function createSession(mode = "chat") {
 }
 
 export async function processWorkspaceRequest(input) {
-  const { prompt, mode, attachments = [], urgent = false } = input;
+  const { prompt, mode, attachments = [], urgent = false, history = [] } = input;
   const brand = loadBrandKit();
   const enrichedPrompt = applyBrandToPrompt(prompt, brand);
   const score = calculateCreditScore();
@@ -77,7 +77,7 @@ export async function processWorkspaceRequest(input) {
     case "design": return handleDesign(enrichedPrompt);
     case "project": return handleProject(enrichedPrompt, urgent);
     case "edit": return handleEdit(enrichedPrompt, imageAttachment);
-    default: return handleChat(enrichedPrompt, attachments, score);
+    default: return handleChat(enrichedPrompt, attachments, score, history);
   }
 }
 
@@ -136,18 +136,34 @@ async function handleEdit(prompt, imageAttachment) {
   };
 }
 
-async function handleChat(prompt, attachments, score) {
-  const hasEmail = !!getPrimaryEmail();
-  const optimized = optimizePromptForProvider(prompt, "pollinations", "image");
-
-  if (/תמונ|image|ציור|photo/i.test(prompt)) {
+async function handleChat(prompt, attachments, score, history = []) {
+  if (/תמונ|image|ציור|photo|draw/i.test(prompt) && !/איך|how|מה זה|explain/i.test(prompt)) {
+    const optimized = optimizePromptForProvider(prompt, "pollinations", "image");
     const batch = generatePollinationsBatch(optimized, 1);
-    return { ok: true, type: "chat", text: "הנה תמונה — עבור למצב 🖼️ לעוד:", textEn: "Here's an image — switch to 🖼️ for more:", images: batch.images, suggestMode: "image" };
+    return { ok: true, type: "chat", text: "הנה תמונה — עבור למצב 🖼️ לעוד:", textEn: "Here's an image — switch to 🖼️ for more:", images: batch.images, suggestMode: "image", provider: "pollinations" };
   }
 
-  const text = `אני FreeAI Hub — יוצר תמונות, קוד, עיצוב, וידאו ופרויקטים שלמים בחינם.\n\n📊 Credit Score: ${score.gradeHe}\n💰 קרדיטים: ${score.runway.totalCredits.toLocaleString()}\n🚀 פרויקטים: ${score.runway.fullProjectsEstimate}${!hasEmail ? "\n\n💡 הזן מייל ב-Passport לאיסוף קרדיטים" : ""}${attachments.length ? `\n\n📎 ${attachments.length} קבצים` : ""}`;
-  const textEn = `I'm FreeAI Hub — images, code, design, video, full projects for free.\n\nCredit Score: ${score.grade}\nCredits: ${score.runway.totalCredits.toLocaleString()}`;
-  return { ok: true, type: "chat", text, textEn };
+  const chatResult = await chatWithAI({
+    prompt,
+    history: history.map((m) => ({ role: m.role, content: m.content })),
+    attachments,
+  });
+
+  if (chatResult.ok) {
+    return {
+      ok: true,
+      type: "chat",
+      text: chatResult.text,
+      textEn: chatResult.textEn || chatResult.text,
+      provider: chatResult.provider,
+      model: chatResult.model,
+      suggestMode: chatResult.suggestMode,
+      needsApiKey: chatResult.needsApiKey,
+    };
+  }
+
+  const text = `לא הצלחתי לענות כרגע. נסה שוב או עבור למצב 🖼️/💻.\n\nCredit Score: ${score.gradeHe}`;
+  return { ok: true, type: "chat", text, textEn: "Could not respond — try again or switch mode.", provider: "freeai-local" };
 }
 
 function detectCodeType(prompt) {
