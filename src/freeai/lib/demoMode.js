@@ -52,6 +52,18 @@ export function bootstrapFullAccess() {
       saveApiKey("pollinations_text", pollFromEnv);
     }
 
+    const geminiFromEnv =
+      typeof import.meta !== "undefined" ? import.meta.env?.VITE_GOOGLE_AI_API_KEY : null;
+    if (geminiFromEnv) {
+      saveApiKey("google_ai_studio", geminiFromEnv);
+    }
+
+    const deepseekFromEnv =
+      typeof import.meta !== "undefined" ? import.meta.env?.VITE_DEEPSEEK_API_KEY : null;
+    if (deepseekFromEnv) {
+      saveApiKey("deepseek", deepseekFromEnv);
+    }
+
     if (demo) {
       boostAllCredits();
     }

@@ -9,9 +9,23 @@ const KEYS = [
   {
     id: "groq",
     env: "VITE_GROQ_API_KEY",
-    name: { he: "Groq (חובה לצ'אט AI)", en: "Groq (required for AI chat)", ar: "Groq" },
+    name: { he: "Groq (מומלץ לצ'אט AI)", en: "Groq (recommended for AI chat)", ar: "Groq" },
     url: "https://console.groq.com/keys",
     signup: "https://console.groq.com",
+  },
+  {
+    id: "google_ai_studio",
+    env: "VITE_GOOGLE_AI_API_KEY",
+    name: { he: "Google Gemini (גיבוי)", en: "Google Gemini (backup)", ar: "Gemini" },
+    url: "https://aistudio.google.com/app/apikey",
+    signup: "https://aistudio.google.com",
+  },
+  {
+    id: "deepseek",
+    env: "VITE_DEEPSEEK_API_KEY",
+    name: { he: "DeepSeek (גיבוי)", en: "DeepSeek (backup)", ar: "DeepSeek" },
+    url: "https://platform.deepseek.com/api_keys",
+    signup: "https://platform.deepseek.com",
   },
   {
     id: "pollinations_text",
@@ -32,7 +46,13 @@ export default function KidsApiStatus({ lang = "he", compact = false }) {
     setKeys(loadApiKeys());
   }, []);
 
-  const groqOk = status.groq || keys.groq;
+  const chatOk =
+    status.groq ||
+    status.gemini ||
+    status.deepseek ||
+    keys.groq ||
+    keys.google_ai_studio ||
+    keys.deepseek;
 
   const saveGroq = () => {
     if (!draft.trim()) return;
@@ -42,7 +62,7 @@ export default function KidsApiStatus({ lang = "he", compact = false }) {
     setDraft("");
   };
 
-  if (groqOk && compact) {
+  if (chatOk && compact) {
     return (
       <div className="flex items-center gap-2 text-xs font-bold text-green-200 bg-green-500/20 px-3 py-1.5 rounded-full">
         <CheckCircle2 className="w-3.5 h-3.5" /> AI {lang === "he" ? "מחובר" : "connected"}
@@ -50,7 +70,7 @@ export default function KidsApiStatus({ lang = "he", compact = false }) {
     );
   }
 
-  if (groqOk) return null;
+  if (chatOk) return null;
 
   return (
     <div className="kids-glass-card p-4 space-y-3 border-2 border-amber-400/40 bg-amber-500/10">
@@ -58,7 +78,11 @@ export default function KidsApiStatus({ lang = "he", compact = false }) {
         <AlertTriangle className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
         <div>
           <p className="font-black text-sm">
-            {pickL({ he: "צ'אט AI דורש מפתח Groq חינמי", en: "AI chat needs free Groq key", ar: "!" }, lang)}
+            {pickL({
+              he: "צ'אט AI דורש מפתח חינמי (Groq / Gemini / DeepSeek)",
+              en: "AI chat needs a free key (Groq / Gemini / DeepSeek)",
+              ar: "!",
+            }, lang)}
           </p>
           <p className="text-xs opacity-90 mt-1">
             {pickL({
@@ -93,8 +117,8 @@ export default function KidsApiStatus({ lang = "he", compact = false }) {
 
       <p className="text-[10px] opacity-70">
         {pickL({
-          he: `או הדבק ב-.env.local: VITE_GROQ_API_KEY=... · Hub → ${R.providers}`,
-          en: `Or .env.local: VITE_GROQ_API_KEY=... · Hub → ${R.providers}`,
+          he: `או הדבק ב-.env.local · Hub → ${R.providers}`,
+          en: `Or paste in .env.local · Hub → ${R.providers}`,
           ar: ".env.local",
         }, lang)}
       </p>

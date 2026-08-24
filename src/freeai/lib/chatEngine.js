@@ -1,7 +1,7 @@
 /**
  * FreeAI Chat Engine — real LLM responses with free provider fallback chain.
  *
- * Order: Groq → Pollinations → Base44 → Puter.js → smart local assistant
+ * Order: Groq → Gemini → DeepSeek → Pollinations → Base44 → Puter.js → smart local assistant
  */
 
 import { loadApiKeys } from "./creditStore.js";
@@ -68,6 +68,8 @@ export async function chatWithAI(input) {
 
   const providers = [
     () => chatGroq(messages),
+    () => chatGemini(messages),
+    () => chatDeepSeek(messages),
     () => chatPollinations(messages),
     () => chatBase44(messages),
     () => chatPuter(messages),
@@ -131,6 +133,70 @@ async function chatGroq(messages) {
   const text = data.choices?.[0]?.message?.content?.trim();
   if (!text) return { ok: false, reason: "groq_empty" };
   return { ok: true, text, provider: "groq", model: envKey("VITE_GROQ_MODEL") || "groq/compound-mini" };
+}
+
+async function chatGemini(messages) {
+  const key = getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY");
+  if (!key) return { ok: false, reason: "no_gemini_key" };
+
+  const model = envKey("VITE_GEMINI_MODEL") || "gemini-3.6-flash";
+  const system = messages.find((m) => m.role === "system")?.content || "";
+  const contents = messages
+    .filter((m) => m.role === "user" || m.role === "assistant")
+    .map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
+      contents,
+      generationConfig: { maxOutputTokens: 2048, temperature: 0.7 },
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    return { ok: false, reason: "gemini_error", detail: err.slice(0, 200) };
+  }
+
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text).join("").trim();
+  if (!text) return { ok: false, reason: "gemini_empty" };
+  return { ok: true, text, provider: "google_ai_studio", model };
+}
+
+async function chatDeepSeek(messages) {
+  const key = getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY");
+  if (!key) return { ok: false, reason: "no_deepseek_key" };
+
+  const res = await fetch("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: envKey("VITE_DEEPSEEK_MODEL") || "deepseek-chat",
+      messages,
+      max_tokens: 2048,
+      temperature: 0.7,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    return { ok: false, reason: "deepseek_error", detail: err.slice(0, 200) };
+  }
+
+  const data = await res.json();
+  const text = data.choices?.[0]?.message?.content?.trim();
+  if (!text) return { ok: false, reason: "deepseek_empty" };
+  return { ok: true, text, provider: "deepseek", model: envKey("VITE_DEEPSEEK_MODEL") || "deepseek-chat" };
 }
 
 async function chatPollinations(messages) {
@@ -301,6 +367,8 @@ function smartLocalChat(prompt, history, attachments) {
 export function getChatProviderStatus() {
   return {
     groq: !!getApiKey("groq", "VITE_GROQ_API_KEY"),
+    gemini: !!getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY"),
+    deepseek: !!getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY"),
     pollinations: !!getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY"),
     base44: !!tryBase44Core("InvokeLLM"),
     puter: typeof window !== "undefined",
