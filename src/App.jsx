@@ -66,6 +66,12 @@ import FreeAIPricingPage from '@/freeai/pages/FreeAIPricingPage';
 import FreeAICheckoutPage from '@/freeai/pages/FreeAICheckoutPage';
 import FreeAIMarketingPage from '@/freeai/pages/FreeAIMarketingPage';
 import CreditPassportPage from '@/freeai/pages/CreditPassportPage';
+import KidsHubPage from '@/freeai/kids/pages/KidsHubPage';
+import KidsStudyPage from '@/freeai/kids/pages/KidsStudyPage';
+import KidsCreatePage from '@/freeai/kids/pages/KidsCreatePage';
+import KidsGamePage from '@/freeai/kids/pages/KidsGamePage';
+import KidsGalleryPage from '@/freeai/kids/pages/KidsGalleryPage';
+import KidsBodyPage from '@/freeai/kids/pages/KidsBodyPage';
 import AgentReceiptLandingPage from '@/agentreceipt/pages/AgentReceiptLandingPage';
 import AgentReceiptPricingPage from '@/agentreceipt/pages/AgentReceiptPricingPage';
 import AgentReceiptDocsPage from '@/agentreceipt/pages/AgentReceiptDocsPage';
@@ -100,6 +106,14 @@ const AuthenticatedApp = () => {
       <Route path="/freeai/passport" element={<CreditPassportPage />} />
       <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
       <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />
+
+      {/* FreeAI Kids — educational AI for children (public) */}
+      <Route path="/freeai/kids" element={<KidsHubPage />} />
+      <Route path="/freeai/kids/study" element={<KidsStudyPage />} />
+      <Route path="/freeai/kids/body" element={<KidsBodyPage />} />
+      <Route path="/freeai/kids/create" element={<KidsCreatePage />} />
+      <Route path="/freeai/kids/game" element={<KidsGamePage />} />
+      <Route path="/freeai/kids/gallery" element={<KidsGalleryPage />} />
 
       {/* AgentReceipt — proof-of-done for AI agents (public) */}
       <Route path="/agentreceipt" element={<AgentReceiptLandingPage />} />

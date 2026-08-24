@@ -70,8 +70,9 @@ function boostAllCredits() {
 }
 
 export function getAccessLabel(locale = "he") {
+  const lang = locale === "en" || locale === "ar" ? locale : "he";
   if (hasFullAccess()) {
-    return locale === "he" ? "גרסה מלאה · Pro" : "Full · Pro";
+    return lang === "he" ? "גרסה מלאה · Pro" : lang === "ar" ? "كامل · Pro" : "Full · Pro";
   }
-  return locale === "he" ? "חינם" : "Free";
+  return lang === "he" ? "חינם" : lang === "ar" ? "مجاني" : "Free";
 }

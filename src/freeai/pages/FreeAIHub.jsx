@@ -64,6 +64,12 @@ export default function FreeAIHub() {
             {locale === "he" ? "✨ התחל ליצור" : "✨ Start creating"}
           </Link>
           <Link
+            to="/freeai/kids"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-orange-500 font-semibold hover:opacity-90 flex items-center gap-2"
+          >
+            {lang === "he" ? "🌟 FreeAI Kids" : lang === "ar" ? "🌟 FreeAI Kids" : "🌟 FreeAI Kids"}
+          </Link>
+          <Link
             to="/freeai/passport"
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 font-semibold hover:opacity-90 flex items-center gap-2"
           >

@@ -4,19 +4,21 @@ import { Sparkles, LayoutDashboard, Route, Settings, Mail, ArrowRight, Crown, Me
 import { useI18n } from "@/lib/i18n";
 import { captureReferral } from "@/freeai/lib/marketingTracker.js";
 import { bootstrapFullAccess, getAccessLabel, hasFullAccess } from "@/freeai/lib/demoMode.js";
+import { pickL } from "@/freeai/kids/lib/locale.js";
 
 const NAV = [
-  { to: "/freeai/create", labelHe: "יצירה", labelEn: "Create", icon: Sparkles, end: false },
-  { to: "/freeai/pricing", labelHe: "Pro ₪20", labelEn: "Pro ₪20", icon: Crown, end: false },
-  { to: "/freeai", labelHe: "בית", labelEn: "Home", icon: LayoutDashboard, end: true },
-  { to: "/freeai/passport", labelHe: "Passport", labelEn: "Passport", icon: Mail, end: false },
-  { to: "/freeai/studio", labelHe: "סטודיו", labelEn: "Studio", icon: Route, end: false },
-  { to: "/freeai/marketing", labelHe: "שיווק", labelEn: "Marketing", icon: Megaphone, end: false },
+  { to: "/freeai/kids", label: { he: "Kids 🌟", en: "Kids 🌟", ar: "أطفال 🌟" }, icon: Sparkles, end: false },
+  { to: "/freeai/create", label: { he: "יצירה", en: "Create", ar: "إبداع" }, icon: Sparkles, end: false },
+  { to: "/freeai/pricing", label: { he: "Pro ₪20", en: "Pro ₪20", ar: "Pro ₪20" }, icon: Crown, end: false },
+  { to: "/freeai", label: { he: "בית", en: "Home", ar: "الرئيسية" }, icon: LayoutDashboard, end: true },
+  { to: "/freeai/passport", label: { he: "Passport", en: "Passport", ar: "Passport" }, icon: Mail, end: false },
+  { to: "/freeai/studio", label: { he: "סטודיו", en: "Studio", ar: "استوديو" }, icon: Route, end: false },
+  { to: "/freeai/marketing", label: { he: "שיווק", en: "Marketing", ar: "تسويق" }, icon: Megaphone, end: false },
 ];
 
 export default function FreeAILayout({ children }) {
   const { lang, dir } = useI18n();
-  const locale = lang === "en" ? "en" : "he";
+  const locale = lang;
   const Arrow = dir === "rtl" ? ArrowRight : ArrowRight;
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function FreeAILayout({ children }) {
           </Link>
 
           <nav className="hidden sm:flex items-center gap-1 mr-auto">
-            {NAV.map(({ to, labelHe, labelEn, icon: Icon, end }) => (
+            {NAV.map(({ to, label, icon: Icon, end }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -50,7 +52,7 @@ export default function FreeAILayout({ children }) {
                 }
               >
                 <Icon className="w-4 h-4" />
-                {locale === "he" ? labelHe : labelEn}
+                {pickL(label, lang)}
               </NavLink>
             ))}
           </nav>
@@ -77,8 +79,8 @@ export default function FreeAILayout({ children }) {
       </main>
 
       <nav className="fixed bottom-4 inset-x-0 z-30 px-4 sm:hidden">
-        <div className="max-w-lg mx-auto grid grid-cols-6 gap-0.5 p-1 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
-          {NAV.map(({ to, labelHe, labelEn, icon: Icon, end }) => (
+        <div className="max-w-lg mx-auto grid grid-cols-4 gap-0.5 p-1 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
+          {NAV.slice(0, 4).map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -90,14 +92,14 @@ export default function FreeAILayout({ children }) {
               }
             >
               <Icon className="w-5 h-5" />
-              {locale === "he" ? labelHe : labelEn}
+              {pickL(label, lang).slice(0, 8)}
             </NavLink>
           ))}
         </div>
       </nav>
 
       <footer className="max-w-5xl mx-auto px-4 py-8 pb-24 text-center text-xs text-white/30">
-        FreeAI Hub — {locale === "he" ? "מנצל קרדיטים חינמיים מכל כלי ה-AI" : "Maximizes free credits across all AI tools"}
+        FreeAI Hub — {pickL({ he: "מנצל קרדיטים חינמיים מכל כלי ה-AI", en: "Maximizes free credits across all AI tools", ar: "يستغل credits مجانية من كل أدوات AI" }, lang)}
       </footer>
     </div>
   );
