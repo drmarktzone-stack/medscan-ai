@@ -1,18 +1,20 @@
 import React, { useState } from "react";
-import { Loader2, BookHeart, User, Image } from "lucide-react";
+import { Loader2, BookHeart, User, Image, Puzzle, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
 import KidsMediaReveal from "../components/KidsMediaReveal.jsx";
 import VoiceMic from "../components/VoiceMic.jsx";
 import { pickL } from "../lib/locale.js";
 import { STORY_STEPS, DRAW_TEMPLATES } from "../lib/gameGenerator.js";
-import { generateKidsStory, generateKidsCharacter, generateKidsDrawing } from "../lib/kidsEngine.js";
+import { generateKidsStory, generateKidsCharacter, generateKidsDrawing, generateKidsLogo, generateKidsPuzzle } from "../lib/kidsEngine.js";
 import { saveCreation } from "../lib/kidsStore.js";
 
 const MODES = [
   { id: "story", icon: BookHeart, label: { he: "סיפור", en: "Story", ar: "قصة" } },
   { id: "character", icon: User, label: { he: "דמות", en: "Character", ar: "شخصية" } },
   { id: "draw", icon: Image, label: { he: "ציור", en: "Drawing", ar: "رسم" } },
+  { id: "logo", icon: Sparkles, label: { he: "לוגו", en: "Logo", ar: "شعار" } },
+  { id: "puzzle", icon: Puzzle, label: { he: "פאזל", en: "Puzzle", ar: "أحجية" } },
 ];
 
 const COPY = {
@@ -34,6 +36,8 @@ export default function KidsCreatePage() {
   const [story, setStory] = useState({ hero: "", place: "", problem: "", ending: "" });
   const [character, setCharacter] = useState({ name: "", traits: "", style: "cartoon colorful" });
   const [draw, setDraw] = useState({ template: "hero", detail: "" });
+  const [logo, setLogo] = useState({ name: "", style: "colorful modern" });
+  const [puzzleTheme, setPuzzleTheme] = useState("");
 
   const create = async () => {
     setLoading(true);
@@ -46,12 +50,17 @@ export default function KidsCreatePage() {
       } else if (mode === "character") {
         const res = await generateKidsCharacter({ ...character, lang });
         setResult({ type: "character", ...res });
-        saveCreation({
-          type: "character",
-          title: character.name,
-          preview: res.description,
-          data: res,
-        });
+        saveCreation({ type: "character", title: character.name, preview: res.description, data: res });
+      } else if (mode === "logo") {
+        const res = await generateKidsLogo({ name: logo.name, style: logo.style, lang });
+        setResult({ type: "logo", ...res });
+        saveCreation({ type: "drawing", title: `Logo: ${logo.name}`, preview: res.images?.[0]?.url, data: res });
+      } else if (mode === "puzzle") {
+        const res = await generateKidsPuzzle({ theme: puzzleTheme, lang });
+        const blob = new Blob([res.html], { type: "text/html" });
+        const previewUrl = URL.createObjectURL(blob);
+        setResult({ type: "puzzle", previewUrl, html: res.html, theme: puzzleTheme });
+        saveCreation({ type: "game", title: `Puzzle: ${puzzleTheme}`, data: { html: res.html, gameType: "puzzle" } });
       } else {
         const tpl = DRAW_TEMPLATES.find((t) => t.id === draw.template);
         const res = await generateKidsDrawing({
@@ -112,11 +121,11 @@ export default function KidsCreatePage() {
             <>
               <div>
                 <label className="text-sm font-bold">{pickL(COPY.name, lang)}</label>
-              <div className="flex gap-2 mt-1">
-                <input value={character.name} onChange={(e) => setCharacter({ ...character, name: e.target.value })}
-                  className="flex-1 px-3 py-2 rounded-xl text-purple-900 font-semibold" />
-                <VoiceMic size="sm" onText={(t) => setCharacter({ ...character, name: t })} />
-              </div>
+                <div className="flex gap-2 mt-1">
+                  <input value={character.name} onChange={(e) => setCharacter({ ...character, name: e.target.value })}
+                    className="flex-1 px-3 py-2 rounded-xl text-purple-900 font-semibold" />
+                  <VoiceMic size="sm" onText={(t) => setCharacter({ ...character, name: t })} />
+                </div>
               </div>
               <div>
                 <label className="text-sm font-bold">{pickL(COPY.traits, lang)}</label>
@@ -128,6 +137,31 @@ export default function KidsCreatePage() {
                 <input value={character.style} onChange={(e) => setCharacter({ ...character, style: e.target.value })}
                   className="w-full mt-1 px-3 py-2 rounded-xl text-purple-900 font-semibold" />
               </div>
+            </>
+          )}
+
+          {mode === "logo" && (
+            <>
+              <div>
+                <label className="text-sm font-bold">{pickL({ he: "שם המותג/קבוצה", en: "Brand name", ar: "اسم" }, lang)}</label>
+                <input value={logo.name} onChange={(e) => setLogo({ ...logo, name: e.target.value })}
+                  className="w-full mt-1 px-3 py-2 rounded-xl text-purple-900 font-semibold" placeholder={pickL(COPY.name, lang)} />
+              </div>
+              <div>
+                <label className="text-sm font-bold">{pickL(COPY.style, lang)}</label>
+                <input value={logo.style} onChange={(e) => setLogo({ ...logo, style: e.target.value })}
+                  className="w-full mt-1 px-3 py-2 rounded-xl text-purple-900 font-semibold" />
+              </div>
+            </>
+          )}
+
+          {mode === "puzzle" && (
+            <>
+              <label className="text-sm font-bold">{pickL({ he: "נושא הפאזל", en: "Puzzle theme", ar: "موضوع" }, lang)}</label>
+              <input value={puzzleTheme} onChange={(e) => setPuzzleTheme(e.target.value)}
+                placeholder={lang === "he" ? "חיות, חלל, כדורגל..." : "Animals, space..."}
+                className="w-full mt-1 px-3 py-2 rounded-xl text-purple-900 font-semibold" />
+              <VoiceMic onText={(t) => setPuzzleTheme(puzzleTheme ? `${puzzleTheme} ${t}` : t)} />
             </>
           )}
 
@@ -189,12 +223,21 @@ export default function KidsCreatePage() {
         {result?.type === "character" && (
           <div className="space-y-3">
             <p className="bg-white/20 rounded-2xl p-4 kids-glass-card">{result.description}</p>
-            <KidsMediaReveal media={result.media} lang={lang} showProviderLinks />
           </div>
         )}
 
         {result?.type === "drawing" && (
           <KidsMediaReveal media={result.media} lang={lang} showProviderLinks />
+        )}
+
+        {(result?.type === "logo" || result?.type === "character") && result?.media && (
+          <KidsMediaReveal media={result.media} lang={lang} showProviderLinks />
+        )}
+
+        {result?.type === "puzzle" && result.previewUrl && (
+          <div className="rounded-2xl overflow-hidden border-4 border-green-300 shadow-2xl bg-white">
+            <iframe title="puzzle" src={result.previewUrl} className="w-full h-[420px] border-0" sandbox="allow-scripts" />
+          </div>
         )}
       </div>
     </KidsLayout>

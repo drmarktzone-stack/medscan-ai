@@ -263,6 +263,27 @@ Return ONLY JSON array: [{"q":"...","choices":["a","b","c","d"],"correct":0}]`;
   return { ok: true, html, questions, provider: "game-library" };
 }
 
+/** Logo design */
+export async function generateKidsLogo(input) {
+  const { name, style } = input;
+  const imagePrompt = `professional kid-friendly logo design, ${name}, ${style}, clean vector style, colorful, no text watermark, centered icon`;
+  const media = await generateKidsMedia({ type: "image", prompt: imagePrompt, count: 4 });
+  return {
+    ok: true,
+    name,
+    images: media.instant.images,
+    media,
+    provider: media.provider,
+  };
+}
+
+/** Sliding tile puzzle game */
+export async function generateKidsPuzzle(input) {
+  const lang = resolveKidsLang(input.lang);
+  const html = buildGameFromLibrary({ gameId: "puzzle", theme: input.theme || "Puzzle", lang });
+  return { ok: true, html, provider: "game-library" };
+}
+
 /** Body anatomy — cute illustration + kid-friendly explanation */
 export async function generateBodyLesson(input) {
   const lang = resolveKidsLang(input.lang);

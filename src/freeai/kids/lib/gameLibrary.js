@@ -134,6 +134,14 @@ export const GAME_LIBRARY = [
     desc: { he: "פוצץ בועות צבעוניות!", en: "Pop colorful bubbles!", ar: "فجّر الفقاعات!" },
     build: buildBubble,
   },
+  {
+    id: "puzzle",
+    icon: "🧩",
+    difficulty: "easy",
+    name: { he: "פאזל", en: "Puzzle", ar: "أحجية" },
+    desc: { he: "סדר את החלקים!", en: "Slide the tiles!", ar: "رتّب القطع!" },
+    build: buildSlidePuzzle,
+  },
 ];
 
 export function getGameTemplate(id) {
@@ -360,6 +368,32 @@ b.style.fontSize=(sz/3)+'px';b.textContent='+'+Math.floor(sz/10);
 b.onclick=()=>{s+=Math.floor(sz/10);document.getElementById('sc').textContent='${label("score", lang)}: '+s;b.remove();};
 area.appendChild(b);let y=0;const anim=setInterval(()=>{y+=2;b.style.bottom=y+'px';if(y>window.innerHeight){clearInterval(anim);b.remove();}},30);}
 setInterval(mk,600);`,
+  });
+}
+
+function buildSlidePuzzle({ theme, lang }) {
+  const title = esc(theme);
+  return shell({
+    title: theme,
+    lang,
+    css: `body{background:linear-gradient(135deg,#f472b6,#a855f7);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;color:#fff}
+h1{font-size:1.2rem;margin-bottom:.75rem;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:280px;width:100%}
+.tile{aspect-ratio:1;border-radius:1rem;font-size:2rem;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:pointer;border:3px solid rgba(255,255,255,.5);background:rgba(255,255,255,.2);transition:transform .15s}
+.tile.empty{background:rgba(0,0,0,.15);cursor:default;border-style:dashed}
+.tile:not(.empty):hover{transform:scale(1.05)}
+.win{text-align:center;font-size:1.3rem;font-weight:900;margin-top:1rem}`,
+    body: `<h1>🧩 ${title}</h1><div class="grid" id="grid"></div><p id="win" class="win" style="display:none">🏆 ${label("win", lang)}</p>`,
+    script: `const emojis=['🐱','🐶','🦊','🐼','🦁','🐸','🐵','🦄',''];let b=[0,1,2,3,4,5,6,7,8];
+function render(){const g=document.getElementById('grid');g.innerHTML='';
+b.forEach((v,i)=>{const t=document.createElement('div');t.className='tile'+(v===8?' empty':'');
+t.textContent=v===8?'':emojis[v];if(v!==8)t.onclick=()=>move(i);g.appendChild(t);});
+if(b.every((v,i)=>v===i))document.getElementById('win').style.display='block';}
+function move(i){const e=b.indexOf(8);const r=Math.floor(i/3),c=i%3,re=Math.floor(e/3),ce=e%3;
+if((r===re&&Math.abs(c-ce)===1)||(c===ce&&Math.abs(r-re)===1)){[b[i],b[e]]=[b[e],b[i]];render();}}
+for(let i=0;i<80;i++){const e=b.indexOf(8);const m=[];if(e%3>0)m.push(e-1);if(e%3<2)m.push(e+1);if(e>2)m.push(e-3);if(e<6)m.push(e+3);
+if(m.length)[b[e],b[m[Math.floor(Math.random()*m.length)]]]=[b[m[Math.floor(Math.random()*m.length)]],b[e]];}
+render();`,
   });
 }
 

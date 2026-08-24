@@ -43,8 +43,7 @@ export function bootstrapFullAccess() {
     const groqFromEnv =
       typeof import.meta !== "undefined" ? import.meta.env?.VITE_GROQ_API_KEY : null;
     if (groqFromEnv) {
-      const keys = loadApiKeys();
-      if (!keys.groq) saveApiKey("groq", groqFromEnv);
+      saveApiKey("groq", groqFromEnv);
     }
 
     if (demo) {
