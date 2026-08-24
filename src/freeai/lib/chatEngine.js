@@ -98,7 +98,7 @@ async function chatGroq(messages) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: envKey("VITE_GROQ_MODEL") || "groq/compound-mini",
       messages,
       max_tokens: 2048,
       temperature: 0.7,
@@ -113,7 +113,7 @@ async function chatGroq(messages) {
   const data = await res.json();
   const text = data.choices?.[0]?.message?.content?.trim();
   if (!text) return { ok: false, reason: "groq_empty" };
-  return { ok: true, text, provider: "groq", model: "llama-3.3-70b" };
+  return { ok: true, text, provider: "groq", model: envKey("VITE_GROQ_MODEL") || "groq/compound-mini" };
 }
 
 async function chatPollinations(messages) {
