@@ -46,6 +46,12 @@ export function bootstrapFullAccess() {
       saveApiKey("groq", groqFromEnv);
     }
 
+    const pollFromEnv =
+      typeof import.meta !== "undefined" ? import.meta.env?.VITE_POLLINATIONS_API_KEY : null;
+    if (pollFromEnv) {
+      saveApiKey("pollinations_text", pollFromEnv);
+    }
+
     if (demo) {
       boostAllCredits();
     }
