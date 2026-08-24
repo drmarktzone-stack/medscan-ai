@@ -57,6 +57,14 @@ import {
   ChronicPage, SyndromesPage, MetabolicPage, GeneticsPage, CsfPage,
   UltrasoundPage, EegPage, AudioPage, ReferralsPage,
 } from '@/pages/doctorped/tools';
+import BizBoostLanding from '@/bizboost/pages/BizBoostLanding';
+import LeadBotTool from '@/bizboost/pages/LeadBotTool';
+import ContentFlowTool from '@/bizboost/pages/ContentFlowTool';
+import ConvertScanTool from '@/bizboost/pages/ConvertScanTool';
+import BizBoostPricing from '@/bizboost/pages/BizBoostPricing';
+import ProspectsPage from '@/bizboost/pages/ProspectsPage';
+import OutreachCenter from '@/bizboost/pages/OutreachCenter';
+import BizBoostMarketingPage from '@/bizboost/pages/BizBoostMarketingPage';
 import FreeAIHub from '@/freeai/pages/FreeAIHub';
 import FreeAIPlannerPage from '@/freeai/pages/FreeAIPlannerPage';
 import FreeAIProvidersPage from '@/freeai/pages/FreeAIProvidersPage';
@@ -90,6 +98,16 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
+      {/* BizBoost AI — public marketing & tools (no auth) */}
+      <Route path="/bizboost" element={<BizBoostLanding />} />
+      <Route path="/bizboost/leadbot" element={<LeadBotTool />} />
+      <Route path="/bizboost/contentflow" element={<ContentFlowTool />} />
+      <Route path="/bizboost/convertscan" element={<ConvertScanTool />} />
+      <Route path="/bizboost/pricing" element={<BizBoostPricing />} />
+      <Route path="/bizboost/prospects" element={<ProspectsPage />} />
+      <Route path="/bizboost/outreach" element={<OutreachCenter />} />
+      <Route path="/bizboost/marketing" element={<BizBoostMarketingPage />} />
+
       {/* FreeAI Hub — creative AI with free credits (public, no auth) */}
       <Route path="/freeai" element={<FreeAIHub />} />
       <Route path="/freeai/create" element={<FreeAIWorkspacePage />} />
