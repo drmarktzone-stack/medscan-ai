@@ -104,14 +104,13 @@ export default function AgentReceiptMarketingPage() {
       </div>
 
       <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4 mb-8 text-sm space-y-2">
-        <p className="font-bold text-emerald-300">פורסם באתרי מפתחים (לא פייסבוק/וואטסאפ)</p>
+        <p className="font-bold text-emerald-300">פרסום באתרי מפתחים + מעקב ביקוש</p>
+        <p className="text-xs text-amber-200/90">נכון לעכשיו: אין תשובות ממנהלי awesome-lists (0 comments). מעקב אוטומטי כל 6 שעות.</p>
         <ul className="text-white/70 space-y-1 text-xs list-disc list-inside">
           <li>AI Agent Tools directory — submitted</li>
-          <li>awesome-ai-agents (e2b) — <a className="text-violet-300 underline" href="https://github.com/e2b-dev/awesome-ai-agents/issues/1434" target="_blank" rel="noreferrer">issue #1434</a></li>
-          <li>jim-schwoebel / slavakurilyak / caramaschiHG / Jenqyang — listing issues</li>
-          <li>awesome-cursor-skills — <a className="text-violet-300 underline" href="https://github.com/spencerpauly/awesome-cursor-skills/issues/52" target="_blank" rel="noreferrer">issue #52</a></li>
+          <li>12+ listing issues ב-awesome lists (e2b, Claude Code, Cursor, DevOps AI…)</li>
+          <li>לוג: marketing/agentreceipt/SUBMISSIONS.md</li>
         </ul>
-        <p className="text-xs text-white/45">פירוט: marketing/agentreceipt/SUBMISSIONS.md</p>
       </div>
 
       <div className="rounded-xl border border-violet-500/30 bg-violet-950/20 p-4 mb-8 text-sm space-y-1">
