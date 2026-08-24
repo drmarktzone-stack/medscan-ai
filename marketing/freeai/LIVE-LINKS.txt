@@ -1,22 +1,25 @@
-# FreeAI Hub — LIVE NOW (Aug 23, 2026)
+# FreeAI Hub — לינקים רשמיים
 
-## 🔴 LIVE URL (works right now)
-https://disturbed-beatles-nest-queen.trycloudflare.com/freeai/create
+> הלינק הזמני (trycloudflare) **לא עובד** — השתמש רק בלינקים כאן.
 
-| Page | URL |
-|------|-----|
-| Create (free) | https://disturbed-beatles-nest-queen.trycloudflare.com/freeai/create |
-| Pro ₪20 | https://disturbed-beatles-nest-queen.trycloudflare.com/freeai/pricing |
-| Bit checkout | https://disturbed-beatles-nest-queen.trycloudflare.com/freeai/checkout |
-| Marketing hub | https://disturbed-beatles-nest-queen.trycloudflare.com/freeai/marketing |
+## כתובת קבועה
 
-## WhatsApp — share to groups NOW
-https://wa.me/?text=%F0%9F%9A%80%20FreeAI%20Hub%20%E2%80%94%20%D7%9B%D7%9C%20%D7%9B%D7%9C%D7%99%20%D7%94-AI%20%D7%91%D7%97%D7%99%D7%A0%D7%9D!%20Pro%20%E2%82%AA20%2F%D7%97%D7%95%D7%93%D7%A9%0A%0Ahttps%3A%2F%2Fdisturbed-beatles-nest-queen.trycloudflare.com%2Ffreeai%2Fcreate
+| דף | URL |
+|----|-----|
+| **ניסיון חינם** | https://drmarktzone-stack.github.io/medscan-ai/freeai/create |
+| **Pro ₪20** | https://drmarktzone-stack.github.io/medscan-ai/freeai/pricing |
+| **תשלום Bit** | https://drmarktzone-stack.github.io/medscan-ai/freeai/checkout |
+| **מרכז שיווק** | https://drmarktzone-stack.github.io/medscan-ai/freeai/marketing |
+| **בית FreeAI** | https://drmarktzone-stack.github.io/medscan-ai/freeai |
+
+## WhatsApp — שיתוף לקבוצות
+
+https://wa.me/?text=%F0%9F%9A%80%20FreeAI%20Hub%20%E2%80%94%20%D7%9B%D7%9C%20%D7%9B%D7%9C%D7%99%20%D7%94-AI%20%D7%91%D7%97%D7%99%D7%A0%D7%9D!%20Pro%20%E2%82%AA20%2F%D7%97%D7%95%D7%93%D7%A9%0A%0Ahttps%3A%2F%2Fdrmarktzone-stack.github.io%2Fmedscan-ai%2Ffreeai%2Fcreate
 
 ## Twitter/X
-https://twitter.com/intent/tweet?text=FreeAI%20Hub%20%E2%80%94%2030%2B%20AI%20tools%2C%20Pro%20%24%205%2Fmo%20%F0%9F%9A%80%20https%3A%2F%2Fdisturbed-beatles-nest-queen.trycloudflare.com%2Ffreeai%2Fcreate
 
-## Permanent URL (after GitHub Pages enabled)
-https://drmarktzone-stack.github.io/medscan-ai/freeai/create
+https://twitter.com/intent/tweet?text=FreeAI%20Hub%20%E2%80%94%2030%2B%20AI%20tools%2C%20Pro%20%245%2Fmo%20%F0%9F%9A%80%20https%3A%2F%2Fdrmarktzone-stack.github.io%2Fmedscan-ai%2Ffreeai%2Fcreate
 
-GitHub → Settings → Pages → Source: GitHub Actions → re-run workflow
+## אם הלינק עדיין 404
+
+GitHub → **Settings → Pages → Source: GitHub Actions** → Run workflow על `main`.

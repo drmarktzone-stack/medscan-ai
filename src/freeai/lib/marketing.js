@@ -2,7 +2,7 @@
  * Marketing & share utilities for FreeAI Hub outreach.
  */
 
-const DEFAULT_PUBLIC_ORIGIN = "https://drmarktzone.github.io/medscan-ai";
+const DEFAULT_PUBLIC_ORIGIN = "https://drmarktzone-stack.github.io/medscan-ai";
 
 function basePath() {
   if (typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) {

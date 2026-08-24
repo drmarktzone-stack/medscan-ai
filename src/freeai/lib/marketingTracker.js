@@ -63,7 +63,7 @@ export function getProgress(stats, key) {
 
 /** Build tracked URL for a channel */
 export function trackedUrl(baseUrl, channel) {
-  const url = new URL(baseUrl, typeof window !== "undefined" ? window.location.origin : "https://drmarktzone.github.io");
+  const url = new URL(baseUrl, typeof window !== "undefined" ? window.location.origin : "https://drmarktzone-stack.github.io/medscan-ai");
   url.searchParams.set("utm_source", channel);
   url.searchParams.set("utm_medium", "outreach");
   url.searchParams.set("ref", channel);

@@ -2,9 +2,9 @@
 
 **מוצר:** FreeAI Hub  
 **מחיר Pro:** ₪20/חודש  
-**לינק:** `https://drmarktzone.github.io/medscan-ai/freeai/create`  
-**מחירון:** `https://drmarktzone.github.io/medscan-ai/freeai/pricing`  
-**שיווק:** `https://drmarktzone.github.io/medscan-ai/freeai/marketing`
+**לינק:** `https://drmarktzone-stack.github.io/medscan-ai/freeai/create`  
+**מחירון:** `https://drmarktzone-stack.github.io/medscan-ai/freeai/pricing`  
+**שיווק:** `https://drmarktzone-stack.github.io/medscan-ai/freeai/marketing`
 
 ---
 
@@ -28,7 +28,7 @@ FreeAI Hub — כל כלי ה-AI בממשק אחד:
 
 Pro: ₪20/חודש בלבד (חינם לנסות!)
 
-🔗 https://drmarktzone.github.io/medscan-ai/freeai/create
+🔗 https://drmarktzone-stack.github.io/medscan-ai/freeai/create
 
 #AI #עסקיםקטנים #יזמות #שיווקדיגיטלי
 ```
@@ -44,7 +44,7 @@ Pro: ₪20/חודש בלבד (חינם לנסות!)
 
 🖼️ תמונות · 💻 קוד · 🎨 עיצוב · 🎬 וידאו · 🚀 פרויקט שלם
 
-נסו חינם: https://drmarktzone.github.io/medscan-ai/freeai/create
+נסו חינם: https://drmarktzone-stack.github.io/medscan-ai/freeai/create
 ```
 
 ---
@@ -68,7 +68,7 @@ Pro: ₪20/חודש בלבד (חינם לנסות!)
 
 Pro: ₪20/חודש (2 פרויקטים חינם לנסות)
 
-נסו: https://drmarktzone.github.io/medscan-ai/freeai/create
+נסו: https://drmarktzone-stack.github.io/medscan-ai/freeai/create
 
 בברכה,
 ד"ר [שם]
@@ -92,7 +92,7 @@ FreeAI Hub Pro — ₪20/חודש, unlimited:
 
 ROI: לקוח משלם ₪500 לעיצוב → אתם יוצרים ב-₪20.
 
-דמו: https://drmarktzone.github.io/medscan-ai/freeai/create
+דמו: https://drmarktzone-stack.github.io/medscan-ai/freeai/create
 ```
 
 ---

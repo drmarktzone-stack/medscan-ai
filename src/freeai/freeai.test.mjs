@@ -268,7 +268,7 @@ describe("Subscription & marketing", () => {
     const msg = shareMessage("he");
     assert.ok(msg.includes("₪20"));
     assert.ok(msg.includes("FreeAI"));
-    assert.ok(getPublicOrigin().includes("drmarktzone.github.io"));
+    assert.ok(getPublicOrigin().includes("drmarktzone-stack.github.io"));
   });
 
   it("tracks marketing events", async () => {
