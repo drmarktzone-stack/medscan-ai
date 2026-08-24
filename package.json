@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:freeai": "vite --mode freeai --open /freeai.html",
     "build": "vite build",
     "build:standalone": "vite build --mode standalone && node scripts/spa-fallback.mjs",
+    "build:freeai": "vite build --mode freeai && node scripts/freeai-spa-fallback.mjs",
     "preview:standalone": "vite preview --mode standalone",
+    "preview:freeai": "vite preview --mode freeai",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",

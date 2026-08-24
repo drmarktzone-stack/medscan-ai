@@ -57,21 +57,6 @@ import {
   ChronicPage, SyndromesPage, MetabolicPage, GeneticsPage, CsfPage,
   UltrasoundPage, EegPage, AudioPage, ReferralsPage,
 } from '@/pages/doctorped/tools';
-import FreeAIHub from '@/freeai/pages/FreeAIHub';
-import FreeAIPlannerPage from '@/freeai/pages/FreeAIPlannerPage';
-import FreeAIProvidersPage from '@/freeai/pages/FreeAIProvidersPage';
-import FreeAIWorkspacePage from '@/freeai/pages/FreeAIWorkspacePage';
-import FreeAIStudio from '@/freeai/pages/FreeAIStudio';
-import FreeAIPricingPage from '@/freeai/pages/FreeAIPricingPage';
-import FreeAICheckoutPage from '@/freeai/pages/FreeAICheckoutPage';
-import FreeAIMarketingPage from '@/freeai/pages/FreeAIMarketingPage';
-import CreditPassportPage from '@/freeai/pages/CreditPassportPage';
-import KidsHubPage from '@/freeai/kids/pages/KidsHubPage';
-import KidsStudyPage from '@/freeai/kids/pages/KidsStudyPage';
-import KidsCreatePage from '@/freeai/kids/pages/KidsCreatePage';
-import KidsGamePage from '@/freeai/kids/pages/KidsGamePage';
-import KidsGalleryPage from '@/freeai/kids/pages/KidsGalleryPage';
-import KidsBodyPage from '@/freeai/kids/pages/KidsBodyPage';
 import AgentReceiptLandingPage from '@/agentreceipt/pages/AgentReceiptLandingPage';
 import AgentReceiptPricingPage from '@/agentreceipt/pages/AgentReceiptPricingPage';
 import AgentReceiptDocsPage from '@/agentreceipt/pages/AgentReceiptDocsPage';
@@ -96,25 +81,6 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
-      {/* FreeAI Hub — creative AI with free credits (public, no auth) */}
-      <Route path="/freeai" element={<FreeAIHub />} />
-      <Route path="/freeai/create" element={<FreeAIWorkspacePage />} />
-      <Route path="/freeai/studio" element={<FreeAIStudio />} />
-      <Route path="/freeai/pricing" element={<FreeAIPricingPage />} />
-      <Route path="/freeai/checkout" element={<FreeAICheckoutPage />} />
-      <Route path="/freeai/marketing" element={<FreeAIMarketingPage />} />
-      <Route path="/freeai/passport" element={<CreditPassportPage />} />
-      <Route path="/freeai/planner" element={<FreeAIPlannerPage />} />
-      <Route path="/freeai/providers" element={<FreeAIProvidersPage />} />
-
-      {/* FreeAI Kids — educational AI for children (public) */}
-      <Route path="/freeai/kids" element={<KidsHubPage />} />
-      <Route path="/freeai/kids/study" element={<KidsStudyPage />} />
-      <Route path="/freeai/kids/body" element={<KidsBodyPage />} />
-      <Route path="/freeai/kids/create" element={<KidsCreatePage />} />
-      <Route path="/freeai/kids/game" element={<KidsGamePage />} />
-      <Route path="/freeai/kids/gallery" element={<KidsGalleryPage />} />
-
       {/* AgentReceipt — proof-of-done for AI agents (public) */}
       <Route path="/agentreceipt" element={<AgentReceiptLandingPage />} />
       <Route path="/agentreceipt/pricing" element={<AgentReceiptPricingPage />} />

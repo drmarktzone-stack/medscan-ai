@@ -6,9 +6,9 @@ import GenerationPanel from "@/freeai/components/GenerationPanel";
 import { getCreditsDashboard } from "@/freeai/lib/planner.js";
 import { googleLabsProviders, CAPABILITY_META } from "@/freeai/data/providers.js";
 import { useI18n } from "@/lib/i18n";
+import { R } from "@/freeai/lib/routes.js";
 import {
-  Sparkles, Route, Settings, Zap, Gift, ExternalLink,
-  Image, Video, Palette,
+  Gift, Sparkles, Image, Video, Palette, Zap, ExternalLink,
 } from "lucide-react";
 
 export default function FreeAIHub() {
@@ -56,21 +56,18 @@ export default function FreeAIHub() {
         </p>
 
         <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            to="/freeai/create"
+          <Link to={R.create}
             className="px-8 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 font-bold text-lg hover:opacity-90 flex items-center gap-2 shadow-lg shadow-violet-500/25"
           >
             <Sparkles className="w-5 h-5" />
             {locale === "he" ? "✨ התחל ליצור" : "✨ Start creating"}
           </Link>
-          <Link
-            to="/freeai/kids"
+          <Link to={R.kids}
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-orange-500 font-semibold hover:opacity-90 flex items-center gap-2"
           >
             {lang === "he" ? "🌟 FreeAI Kids" : lang === "ar" ? "🌟 FreeAI Kids" : "🌟 FreeAI Kids"}
           </Link>
-          <Link
-            to="/freeai/passport"
+          <Link to={R.passport}
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 font-semibold hover:opacity-90 flex items-center gap-2"
           >
             {locale === "he" ? "🧠 Credit Passport" : "🧠 Credit Passport"}
@@ -141,7 +138,7 @@ export default function FreeAIHub() {
             <Sparkles className="w-5 h-5 text-violet-400" />
             {locale === "he" ? "ספקים מובילים" : "Top providers"}
           </h2>
-          <Link to="/freeai/providers" className="text-sm text-violet-400 hover:text-violet-300">
+          <Link to={R.providers} className="text-sm text-violet-400 hover:text-violet-300">
             {locale === "he" ? "הכל →" : "All →"}
           </Link>
         </div>

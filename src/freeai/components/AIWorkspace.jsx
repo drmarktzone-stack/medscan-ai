@@ -15,6 +15,7 @@ import { getPrimaryEmail } from "../lib/creditPassport.js";
 import { formatSavings } from "../lib/savingsCalculator.js";
 import { PROFESSION_TEMPLATES } from "../data/templates.js";
 import ShareBanner from "../components/ShareBanner";
+import { R } from "../lib/routes.js";
 
 const MODE_ICONS = {
   chat: MessageSquare, image: Image, code: Code2, video: Video,
@@ -187,7 +188,7 @@ export default function AIWorkspace({ locale = "he" }) {
               {score.gradeHe || score.grade} · {score.runway.totalCredits.toLocaleString()}
             </span>
             {!getPrimaryEmail() && (
-              <Link to="/freeai/passport" className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 hover:bg-amber-500/30">
+              <Link to={R.passport} className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 hover:bg-amber-500/30">
                 {locale === "he" ? "חבר Passport" : "Link Passport"}
               </Link>
             )}

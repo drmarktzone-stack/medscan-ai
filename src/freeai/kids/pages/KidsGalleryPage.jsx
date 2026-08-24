@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import KidsLayout from "../components/KidsLayout.jsx";
 import { pickL } from "../lib/locale.js";
+import { R } from "@/freeai/lib/routes.js";
 import { loadGallery, loadAchievements, BADGE_MAP } from "../lib/kidsStore.js";
 
 const COPY = {
@@ -29,10 +30,10 @@ export default function KidsGalleryPage() {
             <div className="text-5xl">🎨</div>
             <p className="text-lg font-bold">{pickL(COPY.empty, lang)}</p>
             <div className="flex gap-3 justify-center">
-              <Link to="/freeai/kids/create" className="px-5 py-2 rounded-xl bg-white text-purple-700 font-bold">
+              <Link to={R.kidsCreate} className="px-5 py-2 rounded-xl bg-white text-purple-700 font-bold">
                 {pickL(COPY.goCreate, lang)}
               </Link>
-              <Link to="/freeai/kids/study" className="px-5 py-2 rounded-xl bg-white/30 font-bold">
+              <Link to={R.kidsStudy} className="px-5 py-2 rounded-xl bg-white/30 font-bold">
                 {pickL(COPY.goStudy, lang)}
               </Link>
             </div>

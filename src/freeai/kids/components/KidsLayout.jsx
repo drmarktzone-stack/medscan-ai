@@ -1,19 +1,24 @@
 import React, { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Sparkles, BookOpen, Palette, Gamepad2, Images, Home, ArrowRight, Heart } from "lucide-react";
+import { BookOpen, Palette, Gamepad2, Images, Home } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { bootstrapFullAccess } from "@/freeai/lib/demoMode.js";
 import { pickL } from "../lib/locale.js";
+import { R } from "@/freeai/lib/routes.js";
 
 const NAV = [
-  { to: "/freeai/kids", icon: Home, end: true, label: { he: "בית", en: "Home", ar: "الرئيسية" } },
-  { to: "/freeai/kids/study", icon: BookOpen, end: false, label: { he: "לימוד", en: "Study", ar: "دراسة" } },
-  { to: "/freeai/kids/body", icon: Heart, end: false, label: { he: "גוף", en: "Body", ar: "جسم" } },
-  { to: "/freeai/kids/create", icon: Palette, end: false, label: { he: "יצירה", en: "Create", ar: "إبداع" } },
-  { to: "/freeai/kids/game", icon: Gamepad2, end: false, label: { he: "משחקים", en: "Games", ar: "ألعاب" } },
-  { to: "/freeai/kids/gallery", icon: Images, end: false, label: { he: "היצירות שלי", en: "My work", ar: "إبداعاتي" } },
+  { to: R.kids, icon: Home, end: true, label: { he: "בית", en: "Home", ar: "الرئيسية" } },
+  { to: R.kidsStudy, icon: BookOpen, end: false, label: { he: "לימוד", en: "Study", ar: "دراسة" } },
+  { to: R.kidsBody, icon: HeartIcon, end: false, label: { he: "גוף", en: "Body", ar: "جسم" } },
+  { to: R.kidsCreate, icon: Palette, end: false, label: { he: "יצירה", en: "Create", ar: "إبداع" } },
+  { to: R.kidsGame, icon: Gamepad2, end: false, label: { he: "משחקים", en: "Games", ar: "ألعاب" } },
+  { to: R.kidsGallery, icon: Images, end: false, label: { he: "היצירות שלי", en: "My work", ar: "إبداعاتي" } },
 ];
+
+function HeartIcon(props) {
+  return <span className="text-base leading-none" {...props}>❤️</span>;
+}
 
 export default function KidsLayout({ children }) {
   const { lang, dir } = useI18n();
@@ -27,7 +32,7 @@ export default function KidsLayout({ children }) {
     >
       <header className="sticky top-0 z-40 border-b border-white/20 bg-white/10 backdrop-blur-xl">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
-          <Link to="/freeai/kids" className="flex items-center gap-2 font-black text-lg shrink-0">
+          <Link to={R.kids} className="flex items-center gap-2 font-black text-lg shrink-0">
             <div className="w-10 h-10 rounded-2xl bg-white/30 flex items-center justify-center text-xl shadow-lg">
               🌟
             </div>
@@ -57,13 +62,6 @@ export default function KidsLayout({ children }) {
 
           <div className="flex items-center gap-2 mr-auto sm:mr-0">
             <LanguageSwitcher />
-            <Link
-              to="/freeai/create"
-              className="text-xs font-semibold flex items-center gap-1 px-2 py-1 rounded-lg bg-white/20 hover:bg-white/30"
-            >
-              FreeAI
-              <ArrowRight className="w-3 h-3" />
-            </Link>
           </div>
         </div>
       </header>

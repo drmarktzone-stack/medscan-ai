@@ -8,6 +8,8 @@ import {
   nativeShare, OUTREACH_TARGETS, CREATE_URL,
 } from "@/freeai/lib/marketing.js";
 import { useI18n } from "@/lib/i18n";
+import { absoluteAppPath } from "@/lib/clinic/standalone";
+import { R } from "@/freeai/lib/routes.js";
 import {
   Check, Sparkles, Zap, Crown, Share2, Mail, MessageCircle,
   ExternalLink, Copy, CheckCircle2,
@@ -29,7 +31,7 @@ export default function FreeAIPricingPage() {
       if (email) activatePro({ email, paymentRef: "external" });
     } else if (paymentReady) {
       const q = email ? `?email=${encodeURIComponent(email)}` : "";
-      window.location.href = `/freeai/checkout${q}`;
+      window.location.href = absoluteAppPath(`${R.checkout}${q}`);
     } else if (email) {
       joinWaitlist(email);
       setWaitlistDone(true);
@@ -67,7 +69,7 @@ export default function FreeAIPricingPage() {
             ))}
           </ul>
           <Link
-            to="/freeai/create"
+            to={R.create}
             className="block w-full py-3 rounded-xl border border-white/20 text-white text-center font-bold hover:bg-white/5"
           >
             {locale === "he" ? "התחל חינם" : "Start free"}
@@ -199,7 +201,7 @@ export default function FreeAIPricingPage() {
           ))}
         </div>
         <Link
-          to="/freeai/create"
+          to={R.create}
           className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold text-sm"
         >
           <Sparkles className="w-4 h-4" />

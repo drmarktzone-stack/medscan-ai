@@ -1,0 +1,57 @@
+name: Build FreeAI Kids (standalone)
+
+# Builds the FreeAI app separately from MedScan.
+# Deploy: create repo `freeai-kids`, enable GitHub Pages on gh-pages,
+# then push dist-freeai contents (or wire FREEAI_PAGES_TOKEN + peaceiris).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/freeai/**'
+      - 'src/FreeAIApp.jsx'
+      - 'src/freeai-main.jsx'
+      - 'freeai.html'
+      - 'scripts/freeai-spa-fallback.mjs'
+      - '.github/workflows/freeai-pages.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: freeai-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Build FreeAI standalone (no MedScan)
+        env:
+          VITE_STANDALONE: "true"
+          VITE_FREEAI_BIT_PHONE: "0528885800"
+          VITE_FREEAI_SUPPORT_WHATSAPP: "972528885800"
+          VITE_FREEAI_DEMO_PRO: "true"
+          VITE_GROQ_API_KEY: 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
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          FREEAI_REPO="${FREEAI_REPO:-freeai-kids}"
+          export VITE_BASE="/${FREEAI_REPO}/"
+          export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io/${FREEAI_REPO}"
+          echo "VITE_BASE=$VITE_BASE"
+          echo "VITE_FREEAI_PUBLIC_URL=$VITE_FREEAI_PUBLIC_URL"
+          npm run build:freeai
+      - name: Upload FreeAI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freeai-dist
+          path: dist-freeai
+          retention-days: 14

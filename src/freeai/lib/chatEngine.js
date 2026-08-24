@@ -6,6 +6,7 @@
 
 import { loadApiKeys } from "./creditStore.js";
 import { tryBase44Core } from "../../lib/medscan/llmAdapter.js";
+import { R } from "./routes.js";
 
 const SYSTEM_PROMPT = `You are FreeAI Hub — a helpful AI assistant inside an app that aggregates 30+ free AI tools (images, code, video, design, deploy).
 
@@ -235,8 +236,8 @@ function smartLocalChat(prompt, history, attachments) {
 
   if (/מחיר|pricing|pro|כמה עולה|₪20/i.test(prompt)) {
     const text = he
-      ? "💰 **מחירים:**\n• חינם — 2 פרויקטים/חודש, תמונות בסיסיות\n• Pro — ₪20/חודש, הכל ללא הגבלה\n\nתשלום ב-Bit → /freeai/checkout"
-      : "Free: 2 projects/mo. Pro: ₪20/mo — unlimited. Pay via Bit at /freeai/checkout";
+      ? `💰 **מחירים:**\n• חינם — 2 פרויקטים/חודש, תמונות בסיסיות\n• Pro — ₪20/חודש, הכל ללא הגבלה\n\nתשלום ב-Bit → ${R.checkout}`
+      : `Free: 2 projects/mo. Pro: ₪20/mo — unlimited. Pay via Bit at ${R.checkout}`;
     return { ok: true, text, provider: "freeai-local" };
   }
 
@@ -256,8 +257,8 @@ function smartLocalChat(prompt, history, attachments) {
 
   if (/עזר|help|מה אתה|what can|יודע לעשות/i.test(prompt)) {
     const text = he
-      ? "אני יכול לעזור ב:\n✅ כתיבה ושיווק\n✅ רעיונות לפרויקטים\n✅ הסברים ותכנון\n✅ קוד קצר\n\n**ליצירה אמיתית** — השתמש במצבים: 🖼️ תמונה · 💻 קוד · 🚀 פרויקט\n\n⚠️ לצ'אט חכם מלא — הוסף מפתח Groq חינמי ב-/freeai/providers (Groq → console.groq.com)"
-      : "I help with writing, ideas, planning, and short code. Use 🖼️/💻/🚀 modes to create. Add free Groq API key at /freeai/providers for full AI chat.";
+      ? `אני יכול לעזור ב:\n✅ כתיבה ושיווק\n✅ רעיונות לפרויקטים\n✅ הסברים ותכנון\n✅ קוד קצר\n\n**ליצירה אמיתית** — השתמש במצבים: 🖼️ תמונה · 💻 קוד · 🚀 פרויקט\n\n⚠️ לצ'אט חכם מלא — הוסף מפתח Groq חינמי ב-${R.providers} (Groq → console.groq.com)`
+      : `I help with writing, ideas, planning, and short code. Use 🖼️/💻/🚀 modes to create. Add free Groq API key at ${R.providers} for full AI chat.`;
     return { ok: true, text, provider: "freeai-local", needsApiKey: true };
   }
 
@@ -268,8 +269,8 @@ function smartLocalChat(prompt, history, attachments) {
     : "";
 
   const text = he
-    ? `${contextHint}קיבלתי: "${prompt.slice(0, 200)}"\n\n⚠️ **צ'אט AI מלא דורש מפתח חינמי** (2 דקות):\n1. היכנס ל-[console.groq.com](https://console.groq.com) → API Keys\n2. העתק מפתח\n3. /freeai/providers → Groq → הדבק\n\nאו השתמש במצבים:\n• 🖼️ **תמונה** — יצירה מיידית (Pollinations, חינם)\n• 💻 **קוד** — אתר מוכן\n• 🚀 **פרויקט** — pipeline מלא`
-    : `${contextHint}Got it: "${prompt.slice(0, 200)}"\n\nFor full AI chat, add a free Groq key at /freeai/providers.\nOr use 🖼️ Image / 💻 Code / 🚀 Project modes for instant creation.`;
+    ? `${contextHint}קיבלתי: "${prompt.slice(0, 200)}"\n\n⚠️ **צ'אט AI מלא דורש מפתח חינמי** (2 דקות):\n1. היכנס ל-[console.groq.com](https://console.groq.com) → API Keys\n2. העתק מפתח\n3. ${R.providers} → Groq → הדבק\n\nאו השתמש במצבים:\n• 🖼️ **תמונה** — יצירה מיידית (Pollinations, חינם)\n• 💻 **קוד** — אתר מוכן\n• 🚀 **פרויקט** — pipeline מלא`
+    : `${contextHint}Got it: "${prompt.slice(0, 200)}"\n\nFor full AI chat, add a free Groq key at ${R.providers}.\nOr use 🖼️ Image / 💻 Code / 🚀 Project modes for instant creation.`;
 
   return {
     ok: true,

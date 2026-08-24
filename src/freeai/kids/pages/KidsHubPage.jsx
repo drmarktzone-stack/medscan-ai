@@ -30,12 +30,14 @@ const COPY = {
   },
 };
 
+import { R } from "@/freeai/lib/routes.js";
+
 const CARDS = [
-  { to: "/freeai/kids/study", icon: BookOpen, color: "from-blue-500 to-cyan-400", key: "studyDesc" },
-  { to: "/freeai/kids/body", icon: Heart, color: "from-red-400 to-rose-500", key: "bodyDesc" },
-  { to: "/freeai/kids/create", icon: Palette, color: "from-pink-500 to-rose-400", key: "createDesc" },
-  { to: "/freeai/kids/game", icon: Gamepad2, color: "from-amber-500 to-orange-400", key: "gameDesc" },
-  { to: "/freeai/kids/gallery", icon: Images, color: "from-violet-500 to-purple-400", key: "galleryDesc" },
+  { to: R.kidsStudy, icon: BookOpen, color: "from-blue-500 to-cyan-400", key: "studyDesc" },
+  { to: R.kidsBody, icon: Heart, color: "from-red-400 to-rose-500", key: "bodyDesc" },
+  { to: R.kidsCreate, icon: Palette, color: "from-pink-500 to-rose-400", key: "createDesc" },
+  { to: R.kidsGame, icon: Gamepad2, color: "from-amber-500 to-orange-400", key: "gameDesc" },
+  { to: R.kidsGallery, icon: Images, color: "from-violet-500 to-purple-400", key: "galleryDesc" },
 ];
 
 export default function KidsHubPage() {

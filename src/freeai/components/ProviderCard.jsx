@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Sparkles, ExternalLink } from "lucide-react";
 import { CAPABILITY_META } from "../data/providers.js";
+import { R } from "../lib/routes.js";
 
 const QUALITY_COLORS = {
   high: "bg-emerald-500/20 text-emerald-300",
@@ -103,7 +104,7 @@ export function ProviderCardCompact({ provider, locale = "he" }) {
         <div className="text-xs text-white/50">{provider.remaining} {locale === "he" ? "קרדיטים" : "credits"}</div>
       </div>
       <Link
-        to={`/freeai/providers#${provider.id}`}
+        to={`${R.providers}#${provider.id}`}
         className="text-xs text-violet-400"
       >
         →
