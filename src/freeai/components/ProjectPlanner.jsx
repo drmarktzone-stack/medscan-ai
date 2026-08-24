@@ -4,6 +4,7 @@ import { parseProjectDescription, buildProjectPlan } from "../lib/planner.js";
 import { useCredits } from "../lib/creditStore.js";
 import { generatePollinationsBatch } from "../lib/generators/pollinations.js";
 import { withImageFallback } from "../lib/visualFallback.js";
+import ResultImage from "./ResultImage.jsx";
 
 export default function ProjectPlanner({ locale = "he" }) {
   const [description, setDescription] = useState("");
@@ -120,9 +121,13 @@ export default function ProjectPlanner({ locale = "he" }) {
                       {results?.length > 0 && (
                         <div className="flex gap-2 mt-3 overflow-x-auto">
                           {results.map((img) => (
-                            <img key={img.id} src={img.fallbackUrl || img.url} alt="" referrerPolicy="no-referrer"
-                              onError={(e) => { e.currentTarget.src = img.fallbackUrl || img.url; }}
-                              className="w-16 h-16 rounded-lg object-cover" />
+                            <ResultImage
+                              key={img.id}
+                              src={img.url}
+                              fallbackUrl={img.fallbackUrl}
+                              prompt={img.prompt}
+                              className="w-20 h-20 rounded-lg shrink-0"
+                            />
                           ))}
                         </div>
                       )}

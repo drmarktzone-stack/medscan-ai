@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { emojiPlaceholderDataUrl, emojiForTopic } from "../../lib/visualFallback.js";
+
+const LOAD_TIMEOUT_MS = 12000;
 
 export default function KidsImage({
   src,
@@ -8,21 +10,30 @@ export default function KidsImage({
   className = "",
   aspect = "video",
 }) {
-  const [loaded, setLoaded] = React.useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [displaySrc, setDisplaySrc] = useState(src);
+  const fallback = emojiPlaceholderDataUrl(alt || "Kids", emojiForTopic(alt));
 
   const aspectClass =
     aspect === "square" ? "aspect-square" : aspect === "portrait" ? "aspect-[3/4]" : "aspect-video";
 
-  const onError = () => {
-    setDisplaySrc(emojiPlaceholderDataUrl(alt || "Kids", emojiForTopic(alt)));
-    setLoaded(true);
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     setDisplaySrc(src);
     setLoaded(false);
-  }, [src]);
+    const timer = setTimeout(() => {
+      setDisplaySrc((current) => {
+        if (!loaded) return fallback;
+        return current;
+      });
+      setLoaded(true);
+    }, LOAD_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [src, fallback, loaded]);
+
+  const onError = () => {
+    setDisplaySrc(fallback);
+    setLoaded(true);
+  };
 
   return (
     <div className={`relative overflow-hidden rounded-2xl bg-white/10 kids-illustration-frame ${aspectClass} ${className}`}>

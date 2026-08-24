@@ -78,14 +78,23 @@ export async function chatWithAI(input) {
     { role: "user", content: userContent.slice(0, 8000) },
   ];
 
-  const providers = [
+  const hasApiKey =
+    !!getApiKey("groq", "VITE_GROQ_API_KEY") ||
+    !!getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY") ||
+    !!getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY") ||
+    !!getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY");
+
+  // GitHub Pages / browser-only: Puter.js works without keys — try it first when no keys saved
+  const apiProviders = [
     () => chatGroq(messages),
     () => chatGemini(messages),
     () => chatDeepSeek(messages),
     () => chatPollinations(messages),
     () => chatBase44(messages),
-    () => chatPuter(messages),
   ];
+  const providers = hasApiKey
+    ? [...apiProviders, () => chatPuter(messages)]
+    : [() => chatPuter(messages), ...apiProviders];
 
   for (const attempt of providers) {
     try {
@@ -289,16 +298,21 @@ function loadPuterScript() {
 async function chatPuter(messages) {
   if (typeof window === "undefined") return { ok: false, reason: "no_window" };
 
-  const puter = await loadPuterScript();
+  const puter = await withTimeout(loadPuterScript(), 12000, null);
+  if (!puter) return { ok: false, reason: "puter_timeout" };
+
   const puterMessages = messages.map((m) => ({
     role: m.role,
     content: m.content,
   }));
 
-  const response = await puter.ai.chat(puterMessages, {
-    model: "gpt-5-nano",
-    stream: false,
-  });
+  const response = await withTimeout(
+    puter.ai.chat(puterMessages, { model: "gpt-5-nano", stream: false }),
+    25000,
+    null,
+  );
+
+  if (!response) return { ok: false, reason: "puter_timeout" };
 
   const text = (
     typeof response === "string"
@@ -383,6 +397,12 @@ export function getChatProviderStatus() {
     deepseek: !!getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY"),
     pollinations: !!getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY"),
     base44: !!tryBase44Core("InvokeLLM"),
-    puter: typeof window !== "undefined",
+    puter: typeof window !== "undefined" && !!window.puter?.ai?.chat,
   };
+}
+
+/** Preload Puter.js so chat works on GitHub Pages without API keys */
+export function preloadPuter() {
+  if (typeof window === "undefined") return Promise.resolve(null);
+  return loadPuterScript().catch(() => null);
 }

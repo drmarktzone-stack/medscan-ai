@@ -1,5 +1,5 @@
 /**
- * Daily 5-minute lesson — subject rotation by weekday + grade.
+ * Daily 5-minute lesson — instant offline content + optional AI upgrade.
  */
 
 import { SUBJECTS, getTopicsForGrade } from "../data/curriculum.js";
@@ -20,12 +20,7 @@ export function getDailyPlan(grade, lang) {
   const topicObj = topics[0];
   const topic = topicObj ? pickL(topicObj, lang) : pickL({ he: "נושא כללי", en: "General topic", ar: "موضوع عام" }, lang);
 
-  return {
-    subjectId,
-    subject: pickL(subject.name, lang),
-    topic,
-    grade,
-  };
+  return { subjectId, subject: pickL(subject.name, lang), topic, grade };
 }
 
 function offlineDailyContent(plan, lang) {
@@ -40,6 +35,8 @@ function offlineDailyContent(plan, lang) {
     { id: "d1", front: plan.topic, back: pickL({ he: "נושא היום", en: "Today's topic", ar: "!" }, lang), hint: plan.subject },
     { id: "d2", front: "⭐", back: pickL({ he: "כל יום = XP + רצף!", en: "Daily = XP + streak!", ar: "!" }, lang), hint: "" },
     { id: "d3", front: emoji, back: plan.subject, hint: "" },
+    { id: "d4", front: plan.subject, back: pickL({ he: "מקצוע היום", en: "Today's subject", ar: "!" }, lang), hint: "" },
+    { id: "d5", front: "🔥", back: pickL({ he: "רצף ימים = כוח!", en: "Streak = power!", ar: "!" }, lang), hint: "" },
   ].map((c) => ({ ...c, imageUrl: topicIllustration(c.front, plan.subject) }));
 
   const quiz = {
@@ -60,45 +57,14 @@ function offlineDailyContent(plan, lang) {
     ],
   };
 
-  return { intro, cards, quiz, offline: true };
+  return { intro, cards, quiz };
 }
 
 export async function runDailyLesson({ grade, lang }) {
   const plan = getDailyPlan(grade, lang);
-  const base = {
-    subject: plan.subject,
-    grade,
-    topic: plan.topic,
-    lang,
-    count: 5,
-  };
-
-  const aiResult = await withTimeout(
-    Promise.all([
-      generateStudyIntro(base),
-      generateFlashcards({ ...base, count: 5 }),
-      generateSummaryQuiz({ ...base, count: 4 }),
-    ]),
-    22000,
-    null,
-  );
-
-  if (aiResult) {
-    const [intro, flash, quiz] = aiResult;
-    return {
-      ok: true,
-      plan,
-      intro: intro.text,
-      heroImage: intro.heroImage,
-      heroMedia: intro.heroMedia,
-      cards: flash.cards,
-      quiz: quiz.quiz,
-      providers: [intro.provider, flash.provider, quiz.provider],
-    };
-  }
-
   const offline = offlineDailyContent(plan, lang);
-  return {
+
+  const instant = {
     ok: true,
     plan,
     intro: offline.intro,
@@ -106,9 +72,38 @@ export async function runDailyLesson({ grade, lang }) {
     heroMedia: null,
     cards: offline.cards,
     quiz: offline.quiz,
-    providers: ["offline-fallback"],
+    providers: ["instant-offline"],
     offline: true,
   };
+
+  const base = { subject: plan.subject, grade, topic: plan.topic, lang, count: 5 };
+
+  const aiResult = await withTimeout(
+    Promise.all([
+      withTimeout(generateStudyIntro(base), 7000, null),
+      withTimeout(generateFlashcards({ ...base, count: 5 }), 7000, null),
+      withTimeout(generateSummaryQuiz({ ...base, count: 4 }), 7000, null),
+    ]),
+    10000,
+    null,
+  );
+
+  if (aiResult && aiResult.every(Boolean)) {
+    const [intro, flash, quiz] = aiResult;
+    return {
+      ok: true,
+      plan,
+      intro: intro.text || offline.intro,
+      heroImage: intro.heroImage || instant.heroImage,
+      heroMedia: intro.heroMedia,
+      cards: flash.cards?.length ? flash.cards : offline.cards,
+      quiz: quiz.quiz?.questions?.length ? quiz.quiz : offline.quiz,
+      providers: [intro.provider, flash.provider, quiz.provider],
+      offline: false,
+    };
+  }
+
+  return instant;
 }
 
 export function markDailyComplete() {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Loader2, Download, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 import { generateFree } from "../lib/router.js";
+import ResultImage from "./ResultImage.jsx";
 
 export default function GenerationPanel({ locale = "he" }) {
   const [prompt, setPrompt] = useState("");
@@ -108,23 +109,15 @@ export default function GenerationPanel({ locale = "he" }) {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {results.images.map((img) => (
-              <div key={img.id} className="relative group rounded-xl overflow-hidden bg-black/20 aspect-square">
-                <img
-                  src={img.url}
-                  alt={img.prompt}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <a
-                  href={img.url}
-                  download={`freeai-${img.id}.jpg`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Download className="w-4 h-4" />
-                </a>
-              </div>
+              <ResultImage
+                key={img.id}
+                src={img.url}
+                fallbackUrl={img.fallbackUrl}
+                prompt={img.prompt || prompt}
+                alt={img.prompt}
+                className="rounded-xl"
+                showDownload
+              />
             ))}
           </div>
         </div>

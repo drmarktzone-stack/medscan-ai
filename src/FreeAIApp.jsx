@@ -27,9 +27,13 @@ import KidsChatPage from "@/freeai/kids/pages/KidsChatPage";
 import KidsDailyPage from "@/freeai/kids/pages/KidsDailyPage";
 import KidsParentPage from "@/freeai/kids/pages/KidsParentPage";
 import KidsLabsPage from "@/freeai/kids/pages/KidsLabsPage";
+import { preloadPuter } from "@/freeai/lib/chatEngine.js";
 
 /** Standalone FreeAI Hub + Kids — no MedScan, no auth, no clinic. */
 export default function FreeAIApp() {
+  React.useEffect(() => {
+    preloadPuter();
+  }, []);
   return (
     <I18nProvider>
       <QueryClientProvider client={queryClientInstance}>

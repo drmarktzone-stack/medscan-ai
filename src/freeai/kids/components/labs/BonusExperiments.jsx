@@ -59,7 +59,7 @@ export function SoundWaveExp({ lang, onComplete }) {
         ))}
       </div>
       <button type="button" onClick={ping} disabled={taps >= 5}
-        className="kids-sim-btn w-28 h-28 rounded-full text-5xl kids-glow disabled:opacity-50">🔊</button>
+        className="kids-lab-action-btn kids-glow disabled:opacity-50">🔊</button>
       <p className="font-bold">{displayTaps}/5</p>
       {displayTaps >= 5 && (
         <button type="button" onClick={() => onComplete?.(15)} className="kids-sim-btn w-full py-3 font-black">〰️ {pickL({ he: "מדען קול!", en: "Sound scientist!", ar: "!" }, lang)}</button>

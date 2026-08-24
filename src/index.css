@@ -345,10 +345,11 @@
 }
 
 .kids-glass-card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-radius: 1.5rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 .kids-shimmer {
@@ -435,7 +436,29 @@
   50% { transform: translateY(-8px); }
 }
 
-.kids-lab-panel { min-height: 200px; }
+.kids-lab-panel {
+  min-height: 220px;
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.14);
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(10px);
+}
+.kids-lab-action-btn {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 9999px;
+  font-size: 3rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(255,255,255,0.35), rgba(236,72,153,0.5));
+  border: 3px solid rgba(255,255,255,0.5);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  transition: transform 0.15s;
+}
+.kids-lab-action-btn:active:not(:disabled) { transform: scale(0.95); }
 .kids-lab-beaker { box-shadow: inset 0 -20px 40px rgba(0,0,0,0.15); }
 .kids-lab-card { position: relative; overflow: hidden; }
 .kids-lab-card::after {

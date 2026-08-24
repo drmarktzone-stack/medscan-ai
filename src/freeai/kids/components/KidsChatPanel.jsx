@@ -159,10 +159,6 @@ export default function KidsChatPanel({ lang = "he", autoSpeak = true }) {
           </button>
         </div>
 
-        <div className="px-4 pt-3">
-          <KidsApiStatus lang={lang} compact />
-        </div>
-
         <div className="flex-1 overflow-y-auto p-4 space-y-3 kids-chat-scroll">
           {messages.length === 0 && (
             <div className="text-center py-6 opacity-90 space-y-2">

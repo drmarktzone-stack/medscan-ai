@@ -9,6 +9,7 @@ import { addSavings, formatSavings, calcProjectSavings } from "../lib/savingsCal
 import { applyBrandToPrompt, loadBrandKit } from "../lib/brandKit.js";
 import { generateAllProviderPrompts } from "../lib/smartPrompt.js";
 import { downloadCsv } from "../lib/csvImport.js";
+import ResultImage from "./ResultImage.jsx";
 
 const STAGE_META = {
   code: { icon: Code2, labelHe: "קוד", labelEn: "Code", color: "from-blue-500 to-cyan-500" },
@@ -216,9 +217,15 @@ export default function PipelineWorkspace({ locale = "he", template, urgent = fa
                 )}
 
                 {stage === "design" && result.images?.length > 0 && (
-                  <div className="flex gap-2 overflow-x-auto">
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                     {result.images.map((img) => (
-                      <img key={img.id} src={img.url} alt="" className="w-20 h-20 rounded-lg object-cover shrink-0" />
+                      <ResultImage
+                        key={img.id}
+                        src={img.url}
+                        fallbackUrl={img.fallbackUrl}
+                        prompt={img.prompt}
+                        className="rounded-lg"
+                      />
                     ))}
                   </div>
                 )}
