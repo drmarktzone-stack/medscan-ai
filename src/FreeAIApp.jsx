@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import { I18nProvider } from "@/freeai/lib/i18n.jsx";
@@ -6,29 +6,30 @@ import { routerBasename } from "@/lib/clinic/standalone";
 import FreeAINotFound from "@/freeai/pages/FreeAINotFound.jsx";
 import { R } from "@/freeai/lib/routes.js";
 import RouteFallback from "@/freeai/components/RouteFallback.jsx";
+import { lazyWithRetry } from "@/freeai/lib/lazyWithRetry.js";
 import ErrorBoundary from "@/freeai/components/ErrorBoundary.jsx";
 import { preloadPuter } from "@/freeai/lib/chatEngine.js";
 
-const FreeAIHub = lazy(() => import("@/freeai/pages/FreeAIHub"));
-const FreeAIPlannerPage = lazy(() => import("@/freeai/pages/FreeAIPlannerPage"));
-const FreeAIProvidersPage = lazy(() => import("@/freeai/pages/FreeAIProvidersPage"));
-const FreeAIWorkspacePage = lazy(() => import("@/freeai/pages/FreeAIWorkspacePage"));
-const FreeAIStudio = lazy(() => import("@/freeai/pages/FreeAIStudio"));
-const FreeAIPricingPage = lazy(() => import("@/freeai/pages/FreeAIPricingPage"));
-const FreeAICheckoutPage = lazy(() => import("@/freeai/pages/FreeAICheckoutPage"));
-const FreeAIMarketingPage = lazy(() => import("@/freeai/pages/FreeAIMarketingPage"));
-const CreditPassportPage = lazy(() => import("@/freeai/pages/CreditPassportPage"));
+const FreeAIHub = lazyWithRetry(() => import("@/freeai/pages/FreeAIHub"), "FreeAIHub");
+const FreeAIPlannerPage = lazyWithRetry(() => import("@/freeai/pages/FreeAIPlannerPage"), "FreeAIPlannerPage");
+const FreeAIProvidersPage = lazyWithRetry(() => import("@/freeai/pages/FreeAIProvidersPage"), "FreeAIProvidersPage");
+const FreeAIWorkspacePage = lazyWithRetry(() => import("@/freeai/pages/FreeAIWorkspacePage"), "FreeAIWorkspacePage");
+const FreeAIStudio = lazyWithRetry(() => import("@/freeai/pages/FreeAIStudio"), "FreeAIStudio");
+const FreeAIPricingPage = lazyWithRetry(() => import("@/freeai/pages/FreeAIPricingPage"), "FreeAIPricingPage");
+const FreeAICheckoutPage = lazyWithRetry(() => import("@/freeai/pages/FreeAICheckoutPage"), "FreeAICheckoutPage");
+const FreeAIMarketingPage = lazyWithRetry(() => import("@/freeai/pages/FreeAIMarketingPage"), "FreeAIMarketingPage");
+const CreditPassportPage = lazyWithRetry(() => import("@/freeai/pages/CreditPassportPage"), "CreditPassportPage");
 
-const KidsHubPage = lazy(() => import("@/freeai/kids/pages/KidsHubPage"));
-const KidsStudyPage = lazy(() => import("@/freeai/kids/pages/KidsStudyPage"));
-const KidsCreatePage = lazy(() => import("@/freeai/kids/pages/KidsCreatePage"));
-const KidsGamePage = lazy(() => import("@/freeai/kids/pages/KidsGamePage"));
-const KidsGalleryPage = lazy(() => import("@/freeai/kids/pages/KidsGalleryPage"));
-const KidsBodyPage = lazy(() => import("@/freeai/kids/pages/KidsBodyPage"));
-const KidsChatPage = lazy(() => import("@/freeai/kids/pages/KidsChatPage"));
-const KidsDailyPage = lazy(() => import("@/freeai/kids/pages/KidsDailyPage"));
-const KidsParentPage = lazy(() => import("@/freeai/kids/pages/KidsParentPage"));
-const KidsLabsPage = lazy(() => import("@/freeai/kids/pages/KidsLabsPage"));
+const KidsHubPage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsHubPage"), "KidsHubPage");
+const KidsStudyPage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsStudyPage"), "KidsStudyPage");
+const KidsCreatePage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsCreatePage"), "KidsCreatePage");
+const KidsGamePage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsGamePage"), "KidsGamePage");
+const KidsGalleryPage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsGalleryPage"), "KidsGalleryPage");
+const KidsBodyPage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsBodyPage"), "KidsBodyPage");
+const KidsChatPage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsChatPage"), "KidsChatPage");
+const KidsDailyPage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsDailyPage"), "KidsDailyPage");
+const KidsParentPage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsParentPage"), "KidsParentPage");
+const KidsLabsPage = lazyWithRetry(() => import("@/freeai/kids/pages/KidsLabsPage"), "KidsLabsPage");
 
 /** Standalone FreeAI Hub + Kids — no MedScan, no auth, no clinic. */
 export default function FreeAIApp() {
