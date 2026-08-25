@@ -32,5 +32,13 @@ export function withTimeout(promise, ms, fallback = null) {
  * @param {any} [fallback]
  */
 export function allSettledWithTimeout(tasks, ms, fallback = null) {
-  return Promise.all(tasks.map((task) => withTimeout(task(), ms, fallback)));
+  return Promise.all(tasks.map((task) => {
+    // A task that throws before returning a promise would otherwise escape the
+    // race and reject the whole batch synchronously.
+    try {
+      return withTimeout(task(), ms, fallback);
+    } catch {
+      return Promise.resolve(fallback);
+    }
+  }));
 }

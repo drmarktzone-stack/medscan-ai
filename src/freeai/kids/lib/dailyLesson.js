@@ -60,11 +60,16 @@ function offlineDailyContent(plan, lang) {
   return { intro, cards, quiz };
 }
 
-export async function runDailyLesson({ grade, lang }) {
+/**
+ * A complete lesson built entirely on-device.
+ *
+ * This is the value the screen can always fall back to, so it is produced
+ * before any network work starts and never depends on it.
+ */
+export function offlineDailyLesson(grade, lang) {
   const plan = getDailyPlan(grade, lang);
   const offline = offlineDailyContent(plan, lang);
-
-  const instant = {
+  return {
     ok: true,
     plan,
     intro: offline.intro,
@@ -75,6 +80,12 @@ export async function runDailyLesson({ grade, lang }) {
     providers: ["instant-offline"],
     offline: true,
   };
+}
+
+export async function runDailyLesson({ grade, lang }) {
+  const instant = offlineDailyLesson(grade, lang);
+  const { plan } = instant;
+  const offline = { intro: instant.intro, cards: instant.cards, quiz: instant.quiz };
 
   const base = { subject: plan.subject, grade, topic: plan.topic, lang, count: 5 };
 

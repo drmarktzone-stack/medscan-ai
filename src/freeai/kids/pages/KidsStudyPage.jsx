@@ -90,15 +90,20 @@ export default function KidsStudyPage() {
     const subName = subject ? pickL(subject.name, lang) : subjectId;
     const input = { subject: subName, grade, topic: topicText, lang };
 
-    // A provider that stalls or throws must not strand the screen on a spinner;
-    // whatever is missing falls back to locally generated study material.
-    const [introRes, fcRes] = await allSettledWithTimeout(
-      [
-        () => generateStudyIntro(input),
-        () => generateFlashcards({ ...input, count: 10 }),
-      ],
-      25000,
-    );
+    // A provider that stalls or throws must not strand the screen on a spinner.
+    let introRes = null;
+    let fcRes = null;
+    try {
+      [introRes, fcRes] = await allSettledWithTimeout(
+        [
+          () => generateStudyIntro(input),
+          () => generateFlashcards({ ...input, count: 10 }),
+        ],
+        25000,
+      );
+    } catch {
+      /* fall through to the local content below */
+    }
 
     const heroFallback = topicIllustration(topicText, subName);
     setIntro(introRes?.text || pickL(COPY.introFallback, lang));
@@ -128,20 +133,28 @@ export default function KidsStudyPage() {
     const topicFull = examExtra.trim()
       ? `${topicText} — ${examExtra.trim()}`
       : topicText;
-    const res = await withTimeout(
-      generateSummaryQuiz({
-        subject: subName,
-        grade,
-        topic: topicFull,
-        lang,
-        count: examExtra.trim() ? 10 : 6,
-      }),
-      12000,
-      null,
-    );
-    if (res?.quiz) {
+    let res = null;
+    try {
+      res = await withTimeout(
+        generateSummaryQuiz({
+          subject: subName,
+          grade,
+          topic: topicFull,
+          lang,
+          count: examExtra.trim() ? 10 : 6,
+        }),
+        12000,
+        null,
+      );
+    } catch {
+      /* handled by the notice below */
+    }
+
+    if (res?.quiz?.questions?.length) {
       setQuiz(res.quiz);
       setTab("quiz");
+    } else {
+      setNotice(pickL(COPY.noCards, lang));
     }
     setLoading(false);
   };

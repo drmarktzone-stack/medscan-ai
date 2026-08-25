@@ -7,7 +7,9 @@ import FlashcardDeck from "../components/FlashcardDeck.jsx";
 import BossBattleQuiz from "../components/BossBattleQuiz.jsx";
 import { pickL } from "../lib/locale.js";
 import { loadKidsProfile } from "../lib/kidsStore.js";
-import { runDailyLesson, markDailyComplete, loadStreak, isTodayComplete, getDailyPlan } from "../lib/dailyLesson.js";
+import {
+  runDailyLesson, markDailyComplete, loadStreak, isTodayComplete, getDailyPlan, offlineDailyLesson,
+} from "../lib/dailyLesson.js";
 import { logActivity } from "../lib/activityLog.js";
 import { topicIllustration } from "../lib/illustrations.js";
 import { Loader2, Flame, CheckCircle2, Sparkles } from "lucide-react";
@@ -34,13 +36,19 @@ export default function KidsDailyPage() {
 
   const start = async () => {
     setLoading(true);
+    const grade = profile.grade || "5";
+    // The lesson must always open, so the on-device version is the guaranteed
+    // result and anything the network adds is an upgrade on top of it.
+    let result = offlineDailyLesson(grade, lang);
     try {
-      const result = await runDailyLesson({ grade: profile.grade || "5", lang });
+      result = (await runDailyLesson({ grade, lang })) || result;
+    } catch {
+      /* keep the offline lesson */
+    } finally {
       setLesson(result);
       setStep("intro");
-      logActivity("daily_start", { subject: result.plan?.subject });
-    } finally {
       setLoading(false);
+      logActivity("daily_start", { subject: result.plan?.subject });
     }
   };
 
