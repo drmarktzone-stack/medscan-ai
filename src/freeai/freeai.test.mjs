@@ -361,3 +361,24 @@ describe("Kids content sanitising", () => {
     assert.equal(stripInstructionEcho(real), real);
   });
 });
+
+describe("Daily lesson without any AI provider", () => {
+  const FORBIDDEN = /Return ONLY|No markdown|Subject:|Grade:|Topic:|console\.groq|API Key|Sample answer|תשובה לדוגמה/i;
+
+  for (const lang of ["he", "en"]) {
+    it(`still returns a usable ${lang} lesson`, async () => {
+      const { runDailyLesson } = await import("./kids/lib/dailyLesson.js");
+      const lesson = await runDailyLesson({ grade: "5", lang });
+
+      assert.ok(lesson.intro.length > 10, "intro should not be empty");
+      assert.ok(lesson.cards.length > 0, "should offer flashcards");
+      assert.ok(lesson.quiz.questions.length > 0, "should offer quiz questions");
+
+      const everything = lesson.intro + JSON.stringify(lesson.cards) + JSON.stringify(lesson.quiz);
+      assert.ok(
+        !FORBIDDEN.test(everything),
+        `lesson leaked instruction or placeholder text: ${everything.slice(0, 200)}`,
+      );
+    });
+  }
+});

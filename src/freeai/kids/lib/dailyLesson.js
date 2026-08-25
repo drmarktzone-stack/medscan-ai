@@ -89,17 +89,20 @@ export async function runDailyLesson({ grade, lang }) {
     9000,
   );
 
-  const usedAi = Boolean(intro?.text || flash?.cards?.length || quiz?.quiz?.questions?.length);
-  if (!usedAi) return instant;
+  const aiIntro = intro?.text || "";
+  const aiCards = flash?.needsApiKey ? [] : (flash?.cards || []);
+  const aiQuiz = quiz?.needsApiKey ? null : quiz?.quiz;
+
+  if (!aiIntro && !aiCards.length && !aiQuiz?.questions?.length) return instant;
 
   return {
     ok: true,
     plan,
-    intro: intro?.text || offline.intro,
+    intro: aiIntro || offline.intro,
     heroImage: intro?.heroImage || instant.heroImage,
     heroMedia: intro?.heroMedia || null,
-    cards: flash?.cards?.length ? flash.cards : offline.cards,
-    quiz: quiz?.quiz?.questions?.length ? quiz.quiz : offline.quiz,
+    cards: aiCards.length ? aiCards : offline.cards,
+    quiz: aiQuiz?.questions?.length ? aiQuiz : offline.quiz,
     providers: [intro?.provider, flash?.provider, quiz?.provider].filter(Boolean),
     offline: false,
   };

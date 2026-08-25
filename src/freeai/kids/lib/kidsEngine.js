@@ -168,7 +168,7 @@ Return ONLY valid JSON array:
     }
   }
 
-  return fallbackFlashcards(input, count);
+  return fallbackFlashcards(input);
 }
 
 export async function generateSummaryQuiz(input) {
@@ -188,7 +188,7 @@ Return ONLY valid JSON:
     return { ok: true, quiz: data, provider: jsonResult.provider };
   }
 
-  return fallbackQuiz(input, count);
+  return fallbackQuiz(input);
 }
 
 export async function generateStudyIntro(input) {
@@ -385,35 +385,22 @@ Grade ${grade}. Return ONLY JSON array: [{"front":"name","back":"simple fact","h
   };
 }
 
-function fallbackFlashcards(input, count) {
-  const lang = resolveKidsLang(input.lang);
-  const topic = input.topic || "topic";
-  const cards = [];
-  for (let i = 0; i < count; i++) {
-    cards.push({
-      id: `fc-local-${i}`,
-      front: lang === "he" ? `${topic} — שאלה ${i + 1}` : lang === "ar" ? `${topic} — سؤال ${i + 1}` : `${topic} — Q${i + 1}`,
-      back: lang === "he" ? "תשובה לדוגמה — חבר/י מפתח AI לתוכן מלא" : lang === "ar" ? "إجابة تجريبية — أضف مفتاح AI" : "Sample answer — connect AI key for full content",
-      hint: "",
-    });
-  }
-  return { ok: true, cards, provider: "kids-local", needsApiKey: true };
+/**
+ * No provider answered.
+ *
+ * This used to return numbered cards whose answer read "Sample answer —
+ * connect AI key", which looked like a finished deck of nonsense. Returning an
+ * empty deck lets each screen say plainly that nothing was generated.
+ */
+function fallbackFlashcards(input) {
+  return { ok: true, cards: [], provider: "kids-local", needsApiKey: true };
 }
 
-function fallbackQuiz(input, count) {
-  const lang = resolveKidsLang(input.lang);
-  const questions = [];
-  for (let i = 0; i < count; i++) {
-    questions.push({
-      q: lang === "he" ? `שאלת סיכום ${i + 1} על ${input.topic}` : lang === "ar" ? `سؤال مراجعة ${i + 1}` : `Review Q${i + 1} on ${input.topic}`,
-      choices: lang === "he" ? ["א", "ב", "ג", "ד"] : lang === "ar" ? ["أ", "ب", "ج", "د"] : ["A", "B", "C", "D"],
-      correct: 0,
-      explanation: "",
-    });
-  }
+/** No provider answered — an empty quiz, not questions with arbitrary answers. */
+function fallbackQuiz(input) {
   return {
     ok: true,
-    quiz: { title: input.topic, questions },
+    quiz: { title: input.topic, questions: [] },
     provider: "kids-local",
     needsApiKey: true,
   };
