@@ -48,10 +48,48 @@ function parseJsonBlock(text) {
 /** Providers that answer from canned local text rather than a model. */
 const OFFLINE_PROVIDERS = new Set(["freeai-local", "kids-offline", "kids-filter"]);
 
+/**
+ * Fragments that only ever come from our own instructions. Small free models
+ * sometimes restate part of the brief instead of answering it, and that text
+ * was reaching children as if it were the lesson.
+ */
+const INSTRUCTION_MARKERS = [
+  /return only .*json/i,
+  /no markdown/i,
+  /valid json/i,
+  /^\s*(subject|grade|topic|age|hero|place|problem)\s*:/im,
+  /write a short (fun )?intro/i,
+  /console\.groq\.com/i,
+  /api keys?/i,
+  /system prompt/i,
+];
+
+/**
+ * Drop any line that restates the brief, and reject the answer outright if
+ * almost nothing survives.
+ * @param {string} text
+ */
+export function stripInstructionEcho(text) {
+  if (!text) return "";
+  const kept = String(text)
+    .split("\n")
+    .filter((line) => !INSTRUCTION_MARKERS.some((re) => re.test(line)))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return kept.length < 12 ? "" : kept;
+}
+
+/** Usable model output, or "" when the reply was canned or echoed the brief. */
+function cleanModelText(result) {
+  if (!result || OFFLINE_PROVIDERS.has(result.provider)) return "";
+  return stripInstructionEcho(result.text);
+}
+
 async function aiJsonWithRetry(prompt, lang) {
   // Content generation runs on page load, so it must never trigger a sign-in
   // window; it silently uses whatever provider is already available.
-  const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
+  const result = await chatWithAI({ prompt, history: [], systemPrompt: pickL(KIDS_SYSTEM, lang), allowInteractive: false });
   const parsed = parseJsonBlock(result.text);
   if (parsed) return { parsed, provider: result.provider };
 
@@ -83,9 +121,7 @@ export async function generateFlashcards(input) {
   const count = input.count || 8;
   const age = AGE_HINT[ageGroupFromGrade(input.grade)];
 
-  const prompt = `${pickL(KIDS_SYSTEM, lang)}
-
-Create ${count} flashcards for:
+  const prompt = `Create ${count} flashcards for:
 Subject: ${input.subject}
 Grade: ${input.grade}
 Topic: ${input.topic}
@@ -139,9 +175,7 @@ export async function generateSummaryQuiz(input) {
   const lang = resolveKidsLang(input.lang);
   const count = input.count || 5;
 
-  const prompt = `${pickL(KIDS_SYSTEM, lang)}
-
-Create ${count} summary review questions for chapter/topic:
+  const prompt = `Create ${count} summary review questions for chapter/topic:
 Subject: ${input.subject} | Grade: ${input.grade} | Topic: ${input.topic}
 
 Return ONLY valid JSON:
@@ -159,13 +193,11 @@ Return ONLY valid JSON:
 
 export async function generateStudyIntro(input) {
   const lang = resolveKidsLang(input.lang);
-  const prompt = `${pickL(KIDS_SYSTEM, lang)}
-
-Write a short fun intro (3-4 sentences) about learning:
+  const prompt = `Write a short fun intro (3-4 sentences) about learning:
 Subject: ${input.subject} | Grade: ${input.grade} | Topic: ${input.topic}
 Encourage the student. Mention they will get flashcards and a summary quiz.`;
 
-  const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
+  const result = await chatWithAI({ prompt, history: [], systemPrompt: pickL(KIDS_SYSTEM, lang), allowInteractive: false });
   const heroMedia = await generateKidsMedia({
     type: "image",
     prompt: `${input.subject} ${input.topic}, kids learning hero banner`,
@@ -175,7 +207,7 @@ Encourage the student. Mention they will get flashcards and a summary quiz.`;
     ok: true,
     // An offline provider answers with setup instructions, not a lesson intro;
     // callers substitute their own copy when this is empty.
-    text: OFFLINE_PROVIDERS.has(result.provider) ? "" : (result.text || ""),
+    text: cleanModelText(result),
     provider: result.provider,
     heroImage: topicIllustration(input.topic, input.subject),
     heroMedia,
@@ -187,14 +219,12 @@ export async function generateKidsStory(input) {
   const lang = resolveKidsLang(input.lang);
   const { hero, place, problem, ending } = input;
 
-  const prompt = `${pickL(KIDS_SYSTEM, lang)}
-
-Write a short story (6-8 paragraphs) for kids:
+  const prompt = `Write a short story (6-8 paragraphs) for kids:
 Hero: ${hero} | Place: ${place} | Problem: ${problem} | Ending style: ${ending || "happy"}
 Make it inspiring. Child should feel they created it with AI help.`;
 
-  const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
-  const story = OFFLINE_PROVIDERS.has(result.provider) ? "" : (result.text || "");
+  const result = await chatWithAI({ prompt, history: [], systemPrompt: pickL(KIDS_SYSTEM, lang), allowInteractive: false });
+  const story = cleanModelText(result);
   const chunks = story.split(/\n\n+/).filter(Boolean).slice(0, 4);
   const sceneMediaList = await generateKidsMediaBatch(
     chunks.map((chunk, i) => ({
@@ -216,13 +246,11 @@ export async function generateKidsCharacter(input) {
   const lang = resolveKidsLang(input.lang);
   const { name, traits, style } = input;
 
-  const descPrompt = `${pickL(KIDS_SYSTEM, lang)}
-
-Describe a kid-friendly character in 2 sentences:
+  const descPrompt = `Describe a kid-friendly character in 2 sentences:
 Name: ${name} | Traits: ${traits} | Style: ${style}`;
 
-  const result = await chatWithAI({ prompt: descPrompt, history: [], allowInteractive: false });
-  const description = (!OFFLINE_PROVIDERS.has(result.provider) && result.text)
+  const result = await chatWithAI({ prompt: descPrompt, history: [], systemPrompt: pickL(KIDS_SYSTEM, lang), allowInteractive: false });
+  const description = cleanModelText(result)
     || `${name}, ${traits}, ${style}, cartoon, colorful, kid-friendly`;
 
   const imagePrompt = `cute kid-friendly character illustration, ${name}, ${traits}, ${style}, cartoon style, colorful, safe for children, no text`;
@@ -260,10 +288,9 @@ export async function generateKidsGame(input) {
   const needsQuiz = ["quiz", "word"].includes(gameType);
   let questions = [];
   if (needsQuiz) {
-    const prompt = `${pickL(KIDS_SYSTEM, lang)}
-Suggest 8 fun quiz questions for kids game about: ${theme} (grade ${grade})
+    const prompt = `Suggest 8 fun quiz questions for kids game about: ${theme} (grade ${grade})
 Return ONLY JSON array: [{"q":"...","choices":["a","b","c","d"],"correct":0}]`;
-    const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
+    const result = await chatWithAI({ prompt, history: [], systemPrompt: pickL(KIDS_SYSTEM, lang), allowInteractive: false });
     questions = parseJsonBlock(result.text) || fallbackGameQuestions(theme, lang);
   }
 
@@ -305,21 +332,19 @@ export async function generateBodyLesson(input) {
   const name = pickL(item.name, lang);
   const baseFact = pickL(item.fact, lang);
 
-  const prompt = `${pickL(KIDS_SYSTEM, lang)}
-
-Explain to a grade ${grade} child about: ${name}
+  const prompt = `Explain to a grade ${grade} child about: ${name}
 Category: human body / health. Start with: ${baseFact}
 Add 3-4 more simple sentences. Positive, not scary. If illness — add one prevention tip.
 ${lang === "he" ? "עברית בלבד" : lang === "ar" ? "العربية فقط" : "English only"}`;
 
-  const textResult = await chatWithAI({ prompt, history: [], allowInteractive: false });
+  const textResult = await chatWithAI({ prompt, history: [], systemPrompt: pickL(KIDS_SYSTEM, lang), allowInteractive: false });
   const imagePrompt = `${item.prompt}, ${name}, educational poster for children ages 6-12, soft pastel, no text, no watermark`;
   const media = await generateKidsMedia({ type: "animation", prompt: imagePrompt, count: 2 });
 
   return {
     ok: true,
     name,
-    explanation: (!OFFLINE_PROVIDERS.has(textResult.provider) && textResult.text) || baseFact,
+    explanation: cleanModelText(textResult) || baseFact,
     images: media.instant.images,
     media,
     provider: textResult.provider,
@@ -331,11 +356,10 @@ export async function generateBodyFlashcards(input) {
   const lang = resolveKidsLang(input.lang);
   const { categoryName, items, grade } = input;
   const names = items.map((i) => pickL(i.name, lang)).join(", ");
-  const prompt = `${pickL(KIDS_SYSTEM, lang)}
-Create ${Math.min(items.length, 10)} flashcards about ${categoryName}: ${names}
+  const prompt = `Create ${Math.min(items.length, 10)} flashcards about ${categoryName}: ${names}
 Grade ${grade}. Return ONLY JSON array: [{"front":"name","back":"simple fact","hint":"emoji tip"}]`;
 
-  const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
+  const result = await chatWithAI({ prompt, history: [], systemPrompt: pickL(KIDS_SYSTEM, lang), allowInteractive: false });
   const cards = parseJsonBlock(result.text);
   if (Array.isArray(cards) && cards.length) {
     return {

@@ -326,4 +326,38 @@ describe("Workspace engine", () => {
     assert.equal(res.ok, true);
     assert.ok(res.text.includes("FreeAI"));
   });
+
+  it("local fallback never quotes the prompt back", async () => {
+    const { chatWithAI } = await import("./lib/chatEngine.js");
+    const secret = "אתה מורה AI ידידותי לילדים — Write a short fun intro";
+    const res = await chatWithAI({ prompt: secret, history: [] });
+    assert.equal(res.ok, true);
+    assert.ok(!res.text.includes("Write a short fun intro"), res.text);
+    assert.ok(!res.text.includes("מורה AI ידידותי"), res.text);
+  });
+});
+
+describe("Kids content sanitising", () => {
+  it("drops lines that restate the brief", async () => {
+    const { stripInstructionEcho } = await import("./kids/lib/kidsEngine.js");
+    const echoed = [
+      "Subject: מתמטיקה",
+      "Grade: 5",
+      "Return ONLY valid JSON array:",
+      "No markdown.",
+      "היום נלמד על שברים — זה הולך להיות כיף!",
+    ].join("\n");
+    assert.equal(stripInstructionEcho(echoed), "היום נלמד על שברים — זה הולך להיות כיף!");
+  });
+
+  it("rejects a reply that is nothing but the brief", async () => {
+    const { stripInstructionEcho } = await import("./kids/lib/kidsEngine.js");
+    assert.equal(stripInstructionEcho("Return ONLY valid JSON\nNo markdown."), "");
+  });
+
+  it("leaves genuine lesson text untouched", async () => {
+    const { stripInstructionEcho } = await import("./kids/lib/kidsEngine.js");
+    const real = "שלום! היום נלמד על Past Simple.\n\nנתחיל בפלאשקארדס ואז חידון.";
+    assert.equal(stripInstructionEcho(real), real);
+  });
 });
