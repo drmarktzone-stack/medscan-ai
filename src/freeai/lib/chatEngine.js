@@ -312,7 +312,7 @@ function loadPuterScript() {
 async function chatPuter(messages) {
   if (typeof window === "undefined") return { ok: false, reason: "no_window" };
 
-  const puter = await withTimeout(loadPuterScript(), 12000, null);
+  const puter = await withTimeout(loadPuterScript(), 6000, null);
   if (!puter) return { ok: false, reason: "puter_timeout" };
 
   const puterMessages = messages.map((m) => ({

@@ -45,18 +45,25 @@ function parseJsonBlock(text) {
   return null;
 }
 
+/** Providers that answer from canned local text rather than a model. */
+const OFFLINE_PROVIDERS = new Set(["freeai-local", "kids-offline", "kids-filter"]);
+
 async function aiJsonWithRetry(prompt, lang) {
   const result = await chatWithAI({ prompt, history: [] });
-  let parsed = parseJsonBlock(result.text);
+  const parsed = parseJsonBlock(result.text);
   if (parsed) return { parsed, provider: result.provider };
+
+  // A canned local reply will never become JSON on a second pass, and retrying
+  // just spends the caller's whole time budget before it can fall back.
+  if (OFFLINE_PROVIDERS.has(result.provider)) return null;
 
   const retry = await kidsChatWithAI({
     prompt: `${prompt}\n\nCRITICAL: Reply ONLY with valid JSON. No markdown.`,
     history: [],
     lang,
   });
-  parsed = parseJsonBlock(retry.text);
-  if (parsed) return { parsed, provider: retry.provider };
+  const retryParsed = parseJsonBlock(retry.text);
+  if (retryParsed) return { parsed: retryParsed, provider: retry.provider };
   return null;
 }
 
@@ -108,7 +115,7 @@ Return ONLY valid JSON array:
     lang,
     history: [],
   });
-  if (explain.text && !explain.needsRetry) {
+  if (explain.text && !explain.needsRetry && !OFFLINE_PROVIDERS.has(explain.provider)) {
     const lines = explain.text.split("\n").filter((l) => l.trim());
     const parsedCards = lines.slice(0, count).map((line, i) => ({
       id: `fc-ai-${i}`,

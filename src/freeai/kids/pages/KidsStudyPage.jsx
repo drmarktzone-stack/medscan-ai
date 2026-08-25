@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Loader2, BookOpen, Layers, ClipboardList } from "lucide-react";
+import { R } from "@/freeai/lib/routes.js";
 import { useI18n } from "../../lib/i18n.jsx";
 import KidsLayout from "../components/KidsLayout.jsx";
 import KidsImage from "../components/KidsImage.jsx";
@@ -56,6 +58,7 @@ export default function KidsStudyPage() {
   const [tab, setTab] = useState("flashcards");
   const [bossMode, setBossMode] = useState(false);
   const [examExtra, setExamExtra] = useState("");
+  const [notice, setNotice] = useState("");
 
   const subject = findSubject(subjectId);
   const topics = getTopicsForGrade(subjectId, grade);
@@ -80,7 +83,7 @@ export default function KidsStudyPage() {
         () => generateStudyIntro(input),
         () => generateFlashcards({ ...input, count: 10 }),
       ],
-      12000,
+      25000,
     );
 
     const heroFallback = topicIllustration(topicText, subName);
@@ -90,6 +93,11 @@ export default function KidsStudyPage() {
 
     const nextCards = fcRes?.cards?.length ? fcRes.cards : [];
     setCards(nextCards);
+
+    // Rather than filling the deck with placeholder answers, say plainly that
+    // no AI provider answered — the simulations below still work offline.
+    setNotice(nextCards.length ? "" : pickL(COPY.noCards, lang));
+
     if (nextCards.length) {
       saveCreation({
         type: "study",
@@ -211,7 +219,21 @@ export default function KidsStudyPage() {
           <div className="bg-white/15 rounded-2xl p-4 text-sm leading-relaxed whitespace-pre-wrap kids-glass-card">{intro}</div>
         )}
 
-        {cards.length > 0 && (
+        {notice && (
+          <div className="kids-glass-card p-4 space-y-3 border-amber-300/40 bg-amber-500/15">
+            <p className="font-bold text-sm">{notice}</p>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={startStudy} className="kids-sim-btn">
+                {lang === "he" ? "נסה שוב" : "Try again"}
+              </button>
+              <Link to={R.kidsChat} className="kids-sim-btn">
+                {lang === "he" ? "חבר AI" : "Connect AI"}
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {(cards.length > 0 || notice) && (
           <SimulationHub subjectId={subjectId} lang={lang} />
         )}
 
