@@ -173,7 +173,9 @@ Encourage the student. Mention they will get flashcards and a summary quiz.`;
   });
   return {
     ok: true,
-    text: result.text || "",
+    // An offline provider answers with setup instructions, not a lesson intro;
+    // callers substitute their own copy when this is empty.
+    text: OFFLINE_PROVIDERS.has(result.provider) ? "" : (result.text || ""),
     provider: result.provider,
     heroImage: topicIllustration(input.topic, input.subject),
     heroMedia,
@@ -192,7 +194,7 @@ Hero: ${hero} | Place: ${place} | Problem: ${problem} | Ending style: ${ending |
 Make it inspiring. Child should feel they created it with AI help.`;
 
   const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
-  const story = result.text || "";
+  const story = OFFLINE_PROVIDERS.has(result.provider) ? "" : (result.text || "");
   const chunks = story.split(/\n\n+/).filter(Boolean).slice(0, 4);
   const sceneMediaList = await generateKidsMediaBatch(
     chunks.map((chunk, i) => ({
@@ -220,7 +222,8 @@ Describe a kid-friendly character in 2 sentences:
 Name: ${name} | Traits: ${traits} | Style: ${style}`;
 
   const result = await chatWithAI({ prompt: descPrompt, history: [], allowInteractive: false });
-  const description = result.text || `${name}, ${traits}, ${style}, cartoon, colorful, kid-friendly`;
+  const description = (!OFFLINE_PROVIDERS.has(result.provider) && result.text)
+    || `${name}, ${traits}, ${style}, cartoon, colorful, kid-friendly`;
 
   const imagePrompt = `cute kid-friendly character illustration, ${name}, ${traits}, ${style}, cartoon style, colorful, safe for children, no text`;
   const media = await generateKidsMedia({ type: "image", prompt: imagePrompt, count: 3 });
@@ -316,7 +319,7 @@ ${lang === "he" ? "עברית בלבד" : lang === "ar" ? "العربية فقط
   return {
     ok: true,
     name,
-    explanation: textResult.text || baseFact,
+    explanation: (!OFFLINE_PROVIDERS.has(textResult.provider) && textResult.text) || baseFact,
     images: media.instant.images,
     media,
     provider: textResult.provider,

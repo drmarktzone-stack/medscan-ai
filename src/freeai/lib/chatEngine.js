@@ -393,15 +393,11 @@ function smartLocalChat(prompt, history, attachments) {
     return { ok: true, text, provider: "freeai-local", needsApiKey: true };
   }
 
-  // Context from history — echo understanding
-  const lastUser = history.filter((m) => m.role === "user").slice(-2);
-  const contextHint = lastUser.length > 1 && he
-    ? " (ממשיך מהשיחה הקודמת)\n\n"
-    : "";
-
+  // Never echo the prompt back: callers pass full system instructions here, and
+  // quoting them leaked the raw prompt into lesson and study screens.
   const text = he
-    ? `${contextHint}קיבלתי: "${prompt.slice(0, 200)}"\n\n⚠️ **צ'אט AI מלא דורש מפתח חינמי** (2 דקות):\n1. היכנס ל-[console.groq.com](https://console.groq.com) → API Keys\n2. העתק מפתח\n3. ${R.providers} → Groq → הדבק\n\nאו השתמש במצבים:\n• 🖼️ **תמונה** — יצירה מיידית (Pollinations, חינם)\n• 💻 **קוד** — אתר מוכן\n• 🚀 **פרויקט** — pipeline מלא`
-    : `${contextHint}Got it: "${prompt.slice(0, 200)}"\n\nFor full AI chat, add a free Groq key at ${R.providers}.\nOr use 🖼️ Image / 💻 Code / 🚀 Project modes for instant creation.`;
+    ? `⚠️ **צ'אט AI מלא דורש מפתח חינמי** (2 דקות):\n1. היכנס ל-[console.groq.com](https://console.groq.com) → API Keys\n2. העתק מפתח\n3. ${R.providers} → Groq → הדבק\n\nבינתיים אפשר להשתמש במצבים:\n• 🖼️ **תמונה** — יצירה מיידית (Pollinations, חינם)\n• 💻 **קוד** — אתר מוכן\n• 🚀 **פרויקט** — pipeline מלא`
+    : `Full AI chat needs a free key.\nAdd a Groq key at ${R.providers}.\nMeanwhile use 🖼️ Image / 💻 Code / 🚀 Project modes for instant creation.`;
 
   return {
     ok: true,
