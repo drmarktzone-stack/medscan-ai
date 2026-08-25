@@ -69,6 +69,8 @@ export async function kidsChatWithAI(input) {
     systemPrompt,
     allowLocalFallback: !hasKey,
     maxHistory: 20,
+    // The child pressed send, so a Puter sign-in window is a reasonable ask.
+    allowInteractive: input.allowInteractive !== false,
   });
 
   if (result.ok && result.text) {
@@ -77,16 +79,6 @@ export async function kidsChatWithAI(input) {
     return { ...result, text: safe };
   }
 
-  // Last resort: Puter-only retry (free in browser)
-  try {
-    const puterOnly = await chatWithAI({
-      prompt: trimmed,
-      history: input.history || [],
-      systemPrompt,
-      allowLocalFallback: false,
-    });
-    if (puterOnly.ok) return puterOnly;
-  } catch { /* ignore */ }
 
   const fallback = {
     he: "רגע קטן 🔄 לא הצלחתי להתחבר ל-AI. בדוק/י אינטרנט ונסה/י שוב. אפשר גם לשאול הורה לרענן את הדף.",

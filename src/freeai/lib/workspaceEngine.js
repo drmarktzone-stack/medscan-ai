@@ -152,6 +152,8 @@ async function handleChat(prompt, attachments, score, history = []) {
     prompt,
     history: history.map((m) => ({ role: m.role, content: m.content })),
     attachments,
+    // The user just pressed send, so a provider sign-in prompt is expected.
+    allowInteractive: true,
   });
 
   if (chatResult.ok) {

@@ -59,6 +59,7 @@ export async function chatWithAI(input) {
     systemPrompt = SYSTEM_PROMPT,
     allowLocalFallback = true,
     maxHistory = 12,
+    allowInteractive = false,
   } = input;
   const trimmed = (prompt || "").trim();
   if (!trimmed && attachments.length === 0) {
@@ -77,23 +78,21 @@ export async function chatWithAI(input) {
     { role: "user", content: userContent.slice(0, 8000) },
   ];
 
-  const hasApiKey =
-    !!getApiKey("groq", "VITE_GROQ_API_KEY") ||
-    !!getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY") ||
-    !!getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY") ||
-    !!getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY");
-
-  // GitHub Pages / browser-only: Puter.js works without keys — try it first when no keys saved
-  const apiProviders = [
+  const providers = [
     () => chatGroq(messages),
     () => chatGemini(messages),
     () => chatDeepSeek(messages),
     () => chatPollinations(messages),
     () => chatBase44(messages),
   ];
-  const providers = hasApiKey
-    ? [...apiProviders, () => chatPuter(messages)]
-    : [() => chatPuter(messages), ...apiProviders];
+
+  // Puter needs no API key but opens a sign-in window on first use. That is
+  // acceptable when a person just pressed send; it is not acceptable for
+  // background work like building a daily lesson, which would ambush a child
+  // with a login prompt they cannot complete.
+  if (allowInteractive || isPuterSignedIn()) {
+    providers.push(() => chatPuter(messages));
+  }
 
   for (const attempt of providers) {
     try {
@@ -307,6 +306,16 @@ function loadPuterScript() {
   });
 
   return puterLoadPromise;
+}
+
+/** True once Puter has an authenticated session, so no window will open. */
+export function isPuterSignedIn() {
+  if (typeof window === "undefined") return false;
+  try {
+    return Boolean(window.puter?.auth?.isSignedIn?.());
+  } catch {
+    return false;
+  }
 }
 
 async function chatPuter(messages) {

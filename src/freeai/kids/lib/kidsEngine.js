@@ -49,7 +49,9 @@ function parseJsonBlock(text) {
 const OFFLINE_PROVIDERS = new Set(["freeai-local", "kids-offline", "kids-filter"]);
 
 async function aiJsonWithRetry(prompt, lang) {
-  const result = await chatWithAI({ prompt, history: [] });
+  // Content generation runs on page load, so it must never trigger a sign-in
+  // window; it silently uses whatever provider is already available.
+  const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
   const parsed = parseJsonBlock(result.text);
   if (parsed) return { parsed, provider: result.provider };
 
@@ -61,6 +63,7 @@ async function aiJsonWithRetry(prompt, lang) {
     prompt: `${prompt}\n\nCRITICAL: Reply ONLY with valid JSON. No markdown.`,
     history: [],
     lang,
+    allowInteractive: false,
   });
   const retryParsed = parseJsonBlock(retry.text);
   if (retryParsed) return { parsed: retryParsed, provider: retry.provider };
@@ -114,6 +117,7 @@ Return ONLY valid JSON array:
     prompt: `Create ${count} educational flashcards about ${input.topic} for grade ${input.grade}. Format each as "Q: ... A: ..." one per line.`,
     lang,
     history: [],
+    allowInteractive: false,
   });
   if (explain.text && !explain.needsRetry && !OFFLINE_PROVIDERS.has(explain.provider)) {
     const lines = explain.text.split("\n").filter((l) => l.trim());
@@ -161,7 +165,7 @@ Write a short fun intro (3-4 sentences) about learning:
 Subject: ${input.subject} | Grade: ${input.grade} | Topic: ${input.topic}
 Encourage the student. Mention they will get flashcards and a summary quiz.`;
 
-  const result = await chatWithAI({ prompt, history: [] });
+  const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
   const heroMedia = await generateKidsMedia({
     type: "image",
     prompt: `${input.subject} ${input.topic}, kids learning hero banner`,
@@ -187,7 +191,7 @@ Write a short story (6-8 paragraphs) for kids:
 Hero: ${hero} | Place: ${place} | Problem: ${problem} | Ending style: ${ending || "happy"}
 Make it inspiring. Child should feel they created it with AI help.`;
 
-  const result = await chatWithAI({ prompt, history: [] });
+  const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
   const story = result.text || "";
   const chunks = story.split(/\n\n+/).filter(Boolean).slice(0, 4);
   const sceneMediaList = await generateKidsMediaBatch(
@@ -215,7 +219,7 @@ export async function generateKidsCharacter(input) {
 Describe a kid-friendly character in 2 sentences:
 Name: ${name} | Traits: ${traits} | Style: ${style}`;
 
-  const result = await chatWithAI({ prompt: descPrompt, history: [] });
+  const result = await chatWithAI({ prompt: descPrompt, history: [], allowInteractive: false });
   const description = result.text || `${name}, ${traits}, ${style}, cartoon, colorful, kid-friendly`;
 
   const imagePrompt = `cute kid-friendly character illustration, ${name}, ${traits}, ${style}, cartoon style, colorful, safe for children, no text`;
@@ -256,7 +260,7 @@ export async function generateKidsGame(input) {
     const prompt = `${pickL(KIDS_SYSTEM, lang)}
 Suggest 8 fun quiz questions for kids game about: ${theme} (grade ${grade})
 Return ONLY JSON array: [{"q":"...","choices":["a","b","c","d"],"correct":0}]`;
-    const result = await chatWithAI({ prompt, history: [] });
+    const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
     questions = parseJsonBlock(result.text) || fallbackGameQuestions(theme, lang);
   }
 
@@ -305,7 +309,7 @@ Category: human body / health. Start with: ${baseFact}
 Add 3-4 more simple sentences. Positive, not scary. If illness — add one prevention tip.
 ${lang === "he" ? "עברית בלבד" : lang === "ar" ? "العربية فقط" : "English only"}`;
 
-  const textResult = await chatWithAI({ prompt, history: [] });
+  const textResult = await chatWithAI({ prompt, history: [], allowInteractive: false });
   const imagePrompt = `${item.prompt}, ${name}, educational poster for children ages 6-12, soft pastel, no text, no watermark`;
   const media = await generateKidsMedia({ type: "animation", prompt: imagePrompt, count: 2 });
 
@@ -328,7 +332,7 @@ export async function generateBodyFlashcards(input) {
 Create ${Math.min(items.length, 10)} flashcards about ${categoryName}: ${names}
 Grade ${grade}. Return ONLY JSON array: [{"front":"name","back":"simple fact","hint":"emoji tip"}]`;
 
-  const result = await chatWithAI({ prompt, history: [] });
+  const result = await chatWithAI({ prompt, history: [], allowInteractive: false });
   const cards = parseJsonBlock(result.text);
   if (Array.isArray(cards) && cards.length) {
     return {
