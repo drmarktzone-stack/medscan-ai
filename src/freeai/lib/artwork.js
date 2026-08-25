@@ -60,7 +60,8 @@ const PALETTES = [
  */
 const MOTIFS = [
   { id: "math", glyph: "🔢", re: /math|מתמט|חשבון|מספר|number|geometry|גיאומטר|حساب/i },
-  { id: "science", glyph: "🔬", re: /science|מדע|ניסוי|lab|מעבדה|chem|כימ|physics|פיזיק|علوم/i },
+  { id: "physics", glyph: "⚛️", re: /physics|פיזיק|magnet|מגנט|כוח|force|energy|אנרגי|فيزياء/i },
+  { id: "science", glyph: "🔬", re: /science|מדע|ניסוי|lab|מעבדה|chem|כימ|علوم/i },
   { id: "space", glyph: "🪐", re: /space|חלל|כוכב|planet|כדור הארץ|galaxy|فضاء/i },
   { id: "nature", glyph: "🌳", re: /nature|טבע|צמח|plant|animal|חי|tree|עץ|طبيعة/i },
   { id: "language", glyph: "📚", re: /hebrew|עברית|english|אנגלית|language|שפה|letter|אות|read|קריא|لغة/i },

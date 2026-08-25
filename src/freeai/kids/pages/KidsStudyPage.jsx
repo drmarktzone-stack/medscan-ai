@@ -13,6 +13,9 @@ import { pickL } from "../lib/locale.js";
 import { SUBJECTS, GRADES, getTopicsForGrade, findSubject } from "../data/curriculum.js";
 import { loadKidsProfile, saveCreation } from "../lib/kidsStore.js";
 import { generateFlashcards, generateSummaryQuiz, generateStudyIntro } from "../lib/kidsEngine.js";
+import { topicIllustration } from "../lib/illustrations.js";
+import { withTimeout, allSettledWithTimeout } from "../../lib/withTimeout.js";
+import MotifIcon from "@/freeai/components/MotifIcon.jsx";
 
 const COPY = {
   title: { he: "לימוד חכם", en: "Smart Study", ar: "دراسة ذكية" },
@@ -26,6 +29,16 @@ const COPY = {
   loading: { he: "מכין תוכן לימודי...", en: "Preparing study content...", ar: "جاري التحضير..." },
   examMode: { he: "הכנה למבחן 📝", en: "Exam prep 📝", ar: "تحضير للامتحان 📝" },
   bossMode: { he: "מבחן בוס ⚔️", en: "Boss quiz ⚔️", ar: "اختبار زعيم ⚔️" },
+  introFallback: {
+    he: "בוא נתחיל ללמוד! הפכו כל כרטיס כדי לגלות את התשובה.",
+    en: "Let's start learning! Flip each card to reveal the answer.",
+    ar: "لنبدأ التعلّم! اقلب كل بطاقة لكشف الإجابة.",
+  },
+  noCards: {
+    he: "לא הצלחנו להכין כרטיסים כרגע. נסה נושא אחר או נסה שוב.",
+    en: "Couldn't prepare cards right now. Try another topic or retry.",
+    ar: "تعذّر تحضير البطاقات الآن. جرّب موضوعًا آخر.",
+  },
 };
 
 export default function KidsStudyPage() {
@@ -60,20 +73,30 @@ export default function KidsStudyPage() {
     const subName = subject ? pickL(subject.name, lang) : subjectId;
     const input = { subject: subName, grade, topic: topicText, lang };
 
-    const [introRes, fcRes] = await Promise.all([
-      generateStudyIntro(input),
-      generateFlashcards({ ...input, count: 10 }),
-    ]);
+    // A provider that stalls or throws must not strand the screen on a spinner;
+    // whatever is missing falls back to locally generated study material.
+    const [introRes, fcRes] = await allSettledWithTimeout(
+      [
+        () => generateStudyIntro(input),
+        () => generateFlashcards({ ...input, count: 10 }),
+      ],
+      12000,
+    );
 
-    setIntro(introRes.text || "");
-    setHeroMedia(introRes.heroMedia || null);
-    setHeroImage(introRes.heroImage || "");
-    setCards(fcRes.cards || []);
-    saveCreation({
-      type: "study",
-      title: `${subName}: ${topicText}`,
-      data: { cards: fcRes.cards, subjectId, grade, topic: topicText },
-    });
+    const heroFallback = topicIllustration(topicText, subName);
+    setIntro(introRes?.text || pickL(COPY.introFallback, lang));
+    setHeroMedia(introRes?.heroMedia || null);
+    setHeroImage(introRes?.heroImage || heroFallback);
+
+    const nextCards = fcRes?.cards?.length ? fcRes.cards : [];
+    setCards(nextCards);
+    if (nextCards.length) {
+      saveCreation({
+        type: "study",
+        title: `${subName}: ${topicText}`,
+        data: { cards: nextCards, subjectId, grade, topic: topicText },
+      });
+    }
     setLoading(false);
   };
 
@@ -83,15 +106,21 @@ export default function KidsStudyPage() {
     const topicFull = examExtra.trim()
       ? `${topicText} — ${examExtra.trim()}`
       : topicText;
-    const res = await generateSummaryQuiz({
-      subject: subName,
-      grade,
-      topic: topicFull,
-      lang,
-      count: examExtra.trim() ? 10 : 6,
-    });
-    setQuiz(res.quiz);
-    setTab("quiz");
+    const res = await withTimeout(
+      generateSummaryQuiz({
+        subject: subName,
+        grade,
+        topic: topicFull,
+        lang,
+        count: examExtra.trim() ? 10 : 6,
+      }),
+      12000,
+      null,
+    );
+    if (res?.quiz) {
+      setQuiz(res.quiz);
+      setTab("quiz");
+    }
     setLoading(false);
   };
 
@@ -111,11 +140,16 @@ export default function KidsStudyPage() {
                   key={s.id}
                   type="button"
                   onClick={() => { setSubjectId(s.id); setTopic(""); }}
-                  className={`p-3 rounded-xl text-sm font-bold transition-all ${
-                    subjectId === s.id ? "bg-white text-purple-700 scale-105" : "bg-white/15 hover:bg-white/25"
+                  className={`flex items-center gap-2 p-3 rounded-xl text-sm font-bold transition-all ${
+                    subjectId === s.id ? "bg-white text-purple-700 shadow-lg" : "bg-white/15 hover:bg-white/25"
                   }`}
                 >
-                  {s.icon} {pickL(s.name, lang)}
+                  <MotifIcon
+                    motif={s.motif}
+                    size="sm"
+                    accent={subjectId === s.id ? "#7c3aed" : "#ffffff"}
+                  />
+                  <span className="truncate">{pickL(s.name, lang)}</span>
                 </button>
               ))}
             </div>

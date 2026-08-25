@@ -6,7 +6,7 @@ import { SUBJECTS, getTopicsForGrade } from "../data/curriculum.js";
 import { generateFlashcards, generateSummaryQuiz, generateStudyIntro } from "./kidsEngine.js";
 import { completeDailyActivity, loadStreak, isTodayComplete } from "./streak.js";
 import { pickL } from "./locale.js";
-import { withTimeout } from "../../lib/withTimeout.js";
+import { allSettledWithTimeout } from "../../lib/withTimeout.js";
 import { topicIllustration } from "./illustrations.js";
 import { emojiForTopic } from "../../lib/visualFallback.js";
 
@@ -78,32 +78,31 @@ export async function runDailyLesson({ grade, lang }) {
 
   const base = { subject: plan.subject, grade, topic: plan.topic, lang, count: 5 };
 
-  const aiResult = await withTimeout(
-    Promise.all([
-      withTimeout(generateStudyIntro(base), 7000, null),
-      withTimeout(generateFlashcards({ ...base, count: 5 }), 7000, null),
-      withTimeout(generateSummaryQuiz({ ...base, count: 4 }), 7000, null),
-    ]),
-    10000,
-    null,
+  // Each request stands on its own: whatever comes back in time upgrades the
+  // offline pack, and anything slow or failing simply keeps the offline part.
+  const [intro, flash, quiz] = await allSettledWithTimeout(
+    [
+      () => generateStudyIntro(base),
+      () => generateFlashcards({ ...base, count: 5 }),
+      () => generateSummaryQuiz({ ...base, count: 4 }),
+    ],
+    9000,
   );
 
-  if (aiResult && aiResult.every(Boolean)) {
-    const [intro, flash, quiz] = aiResult;
-    return {
-      ok: true,
-      plan,
-      intro: intro.text || offline.intro,
-      heroImage: intro.heroImage || instant.heroImage,
-      heroMedia: intro.heroMedia,
-      cards: flash.cards?.length ? flash.cards : offline.cards,
-      quiz: quiz.quiz?.questions?.length ? quiz.quiz : offline.quiz,
-      providers: [intro.provider, flash.provider, quiz.provider],
-      offline: false,
-    };
-  }
+  const usedAi = Boolean(intro?.text || flash?.cards?.length || quiz?.quiz?.questions?.length);
+  if (!usedAi) return instant;
 
-  return instant;
+  return {
+    ok: true,
+    plan,
+    intro: intro?.text || offline.intro,
+    heroImage: intro?.heroImage || instant.heroImage,
+    heroMedia: intro?.heroMedia || null,
+    cards: flash?.cards?.length ? flash.cards : offline.cards,
+    quiz: quiz?.quiz?.questions?.length ? quiz.quiz : offline.quiz,
+    providers: [intro?.provider, flash?.provider, quiz?.provider].filter(Boolean),
+    offline: false,
+  };
 }
 
 export function markDailyComplete() {

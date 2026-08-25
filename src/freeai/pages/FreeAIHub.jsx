@@ -7,9 +7,8 @@ import { getCreditsDashboard } from "@/freeai/lib/planner.js";
 import { googleLabsProviders, CAPABILITY_META } from "@/freeai/data/providers.js";
 import { useI18n } from "../lib/i18n.jsx";
 import { R } from "@/freeai/lib/routes.js";
-import {
-  Gift, Sparkles, Image, Video, Palette, Zap, ExternalLink,
-} from "lucide-react";
+import MotifIcon from "@/freeai/components/MotifIcon.jsx";
+import { Gift, Sparkles, Zap, ExternalLink } from "lucide-react";
 
 export default function FreeAIHub() {
   const { lang } = useI18n();
@@ -89,21 +88,23 @@ export default function FreeAIHub() {
         <ShareBanner locale={locale} />
       </section>
 
-      <section className="grid grid-cols-3 gap-4 mb-10">
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {[
-          { cap: "image", icon: Image, color: "from-blue-500 to-cyan-500" },
-          { cap: "video", icon: Video, color: "from-purple-500 to-pink-500" },
-          { cap: "design", icon: Palette, color: "from-orange-500 to-red-500" },
-        ].map(({ cap, icon: Icon, color }) => (
-          <div key={cap} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
-            <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-2`}>
-              <Icon className="w-5 h-5 text-white" />
+          { cap: "image", motif: "art", color: "from-blue-500 to-cyan-500" },
+          { cap: "video", motif: "game", color: "from-purple-500 to-pink-500" },
+          { cap: "design", motif: "logo", color: "from-orange-500 to-red-500" },
+        ].map(({ cap, motif, color }) => (
+          <div key={cap} className="fa-surface p-4 flex items-center gap-4 sm:flex-col sm:text-center">
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center shrink-0`}>
+              <MotifIcon motif={motif} size="md" accent="#ffffff" />
             </div>
-            <div className="text-2xl font-black text-white">
-              {(dashboard.byCapability[cap] || 0).toLocaleString()}
-            </div>
-            <div className="text-xs text-white/50">
-              {locale === "he" ? CAPABILITY_META[cap]?.labelHe : CAPABILITY_META[cap]?.labelEn}
+            <div>
+              <div className="text-2xl font-black text-white leading-none">
+                {(dashboard.byCapability[cap] || 0).toLocaleString()}
+              </div>
+              <div className="text-xs text-white/50 mt-1">
+                {locale === "he" ? CAPABILITY_META[cap]?.labelHe : CAPABILITY_META[cap]?.labelEn}
+              </div>
             </div>
           </div>
         ))}

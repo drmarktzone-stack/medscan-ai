@@ -6,6 +6,7 @@ export const LAB_CATEGORIES = [
   {
     id: "chemistry",
     icon: "🧪",
+    motif: "science",
     color: "from-emerald-500 to-teal-400",
     name: { he: "מעבדת כימיה", en: "Chemistry Lab", ar: "مختبر كيمياء" },
     tagline: {
@@ -30,6 +31,7 @@ export const LAB_CATEGORIES = [
   {
     id: "physics",
     icon: "⚡",
+    motif: "physics",
     color: "from-blue-600 to-indigo-500",
     name: { he: "מעבדת פיזיקה", en: "Physics Lab", ar: "مختبر فيزياء" },
     tagline: {
@@ -54,6 +56,7 @@ export const LAB_CATEGORIES = [
   {
     id: "kitchen",
     icon: "👨‍🍳",
+    motif: "food",
     color: "from-orange-500 to-amber-400",
     name: { he: "מטבח מדעי", en: "Kitchen Lab", ar: "مطبخ علمي" },
     tagline: {
@@ -78,6 +81,7 @@ export const LAB_CATEGORIES = [
   {
     id: "design",
     icon: "💌",
+    motif: "art",
     color: "from-pink-500 to-fuchsia-500",
     name: { he: "סטודיו עיצוב", en: "Design Studio", ar: "استوديو تصميم" },
     tagline: {
@@ -102,6 +106,7 @@ export const LAB_CATEGORIES = [
   {
     id: "music",
     icon: "🎵",
+    motif: "spark",
     color: "from-violet-500 to-purple-600",
     name: { he: "מעבדת מוזיקה", en: "Music Lab", ar: "مختبر موسيقى" },
     tagline: { he: "קצב, גלים וצלילים!", en: "Beat, waves & sounds!", ar: "إيقاع وأمواج!" },
@@ -117,6 +122,7 @@ export const LAB_CATEGORIES = [
   {
     id: "nature",
     icon: "🌿",
+    motif: "nature",
     color: "from-green-500 to-lime-500",
     name: { he: "מעבדת טבע", en: "Nature Lab", ar: "مختبر طبيعة" },
     tagline: { he: "מזג אוויר, צמחים וחיות!", en: "Weather, plants & animals!", ar: "طقس ونباتات!" },

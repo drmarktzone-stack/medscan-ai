@@ -10,6 +10,7 @@ import { LAB_CATEGORIES, getLabCategory } from "../data/labsCatalog.js";
 import { completeExperiment, loadLabProgress, getLabLevel, isExperimentDone } from "../lib/labProgress.js";
 import { saveCreation, unlockLabAchievement } from "../lib/kidsStore.js";
 import { R } from "@/freeai/lib/routes.js";
+import MotifIcon from "@/freeai/components/MotifIcon.jsx";
 import { logActivity } from "../lib/activityLog.js";
 
 const COPY = {
@@ -77,12 +78,16 @@ export default function KidsLabsPage() {
               <Link
                 key={cat.id}
                 to={`${R.kidsLabs}/${cat.id}`}
-                className={`block p-5 rounded-3xl bg-gradient-to-br ${cat.color} border-2 border-white/30 shadow-xl hover:scale-[1.03] transition-all kids-lab-card`}
+                className={`flex gap-4 items-start p-5 rounded-3xl bg-gradient-to-br ${cat.color} border-2 border-white/30 shadow-xl hover:scale-[1.02] transition-transform kids-lab-card`}
               >
-                <span className="text-4xl">{cat.icon}</span>
-                <p className="font-black text-xl mt-2">{pickL(cat.name, lang)}</p>
-                <p className="text-sm opacity-90 mt-1">{pickL(cat.tagline, lang)}</p>
-                <p className="text-xs font-bold mt-3 opacity-80">{cat.experiments.length} {pickL(COPY.experiments, lang)} ✨</p>
+                <MotifIcon motif={cat.motif} topic={cat.id} size="lg" accent="#ffffff" className="drop-shadow" />
+                <div className="min-w-0">
+                  <p className="font-black text-xl leading-tight">{pickL(cat.name, lang)}</p>
+                  <p className="text-sm opacity-90 mt-1">{pickL(cat.tagline, lang)}</p>
+                  <p className="text-xs font-bold mt-3 opacity-80">
+                    {cat.experiments.length} {pickL(COPY.experiments, lang)}
+                  </p>
+                </div>
               </Link>
             ))}
           </div>
@@ -114,8 +119,8 @@ export default function KidsLabsPage() {
         </button>
 
         <div className={`rounded-3xl p-5 bg-gradient-to-br ${category.color} border-2 border-white/30 shadow-xl`}>
-          <div className="flex items-center gap-3">
-            <span className="text-4xl">{category.icon}</span>
+          <div className="flex items-center gap-4">
+            <MotifIcon motif={category.motif} topic={category.id} size="lg" accent="#ffffff" />
             <div>
               <h1 className="text-2xl font-black">{pickL(category.name, lang)}</h1>
               <p className="text-sm opacity-90">{pickL(category.tagline, lang)}</p>

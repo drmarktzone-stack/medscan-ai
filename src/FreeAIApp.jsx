@@ -45,6 +45,9 @@ export default function FreeAIApp() {
           <Suspense fallback={<RouteFallback />}>
             <Routes>
               <Route path="/" element={<Navigate to={R.hub} replace />} />
+              {/* Landing straight on the built entry file should not 404. */}
+              <Route path="/freeai.html" element={<Navigate to={R.hub} replace />} />
+              <Route path="/index.html" element={<Navigate to={R.hub} replace />} />
 
               <Route path={R.hub} element={<FreeAIHub />} />
               <Route path={R.create} element={<FreeAIWorkspacePage />} />

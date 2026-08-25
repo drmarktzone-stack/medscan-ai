@@ -21,6 +21,7 @@ export const SUBJECTS = [
   {
     id: "math",
     icon: "🔢",
+    motif: "math",
     color: "from-blue-500 to-cyan-500",
     name: { he: "מתמטיקה", en: "Math", ar: "رياضيات" },
     topicsByGrade: {
@@ -41,6 +42,7 @@ export const SUBJECTS = [
   {
     id: "hebrew",
     icon: "📖",
+    motif: "language",
     color: "from-amber-500 to-orange-500",
     name: { he: "עברית", en: "Hebrew", ar: "عبري" },
     topicsByGrade: {
@@ -55,6 +57,7 @@ export const SUBJECTS = [
   {
     id: "english",
     icon: "🇬🇧",
+    motif: "language",
     color: "from-emerald-500 to-teal-500",
     name: { he: "אנגלית", en: "English", ar: "إنجليزي" },
     topicsByGrade: {
@@ -69,6 +72,7 @@ export const SUBJECTS = [
   {
     id: "science",
     icon: "🔬",
+    motif: "science",
     color: "from-violet-500 to-purple-500",
     name: { he: "מדעים", en: "Science", ar: "علوم" },
     topicsByGrade: {
@@ -83,6 +87,7 @@ export const SUBJECTS = [
   {
     id: "history",
     icon: "🏛️",
+    motif: "history",
     color: "from-stone-500 to-amber-700",
     name: { he: "היסטוריה", en: "History", ar: "تاريخ" },
     topicsByGrade: {
@@ -96,6 +101,7 @@ export const SUBJECTS = [
   {
     id: "geography",
     icon: "🌍",
+    motif: "geography",
     color: "from-sky-500 to-blue-600",
     name: { he: "גאוגרפיה", en: "Geography", ar: "جغرافيا" },
     topicsByGrade: {
@@ -108,6 +114,7 @@ export const SUBJECTS = [
   {
     id: "civics",
     icon: "⚖️",
+    motif: "history",
     color: "from-rose-500 to-pink-600",
     name: { he: "אזrחות", en: "Civics", ar: "تربية مدنية" },
     topicsByGrade: {
@@ -119,6 +126,7 @@ export const SUBJECTS = [
   {
     id: "computers",
     icon: "💻",
+    motif: "computers",
     color: "from-indigo-500 to-violet-600",
     name: { he: "מחשבים", en: "Computers", ar: "حاسوب" },
     topicsByGrade: {
@@ -132,6 +140,7 @@ export const SUBJECTS = [
   {
     id: "art",
     icon: "🎨",
+    motif: "art",
     color: "from-fuchsia-500 to-pink-500",
     name: { he: "אמנות", en: "Art", ar: "فن" },
     topicsByGrade: {
@@ -143,6 +152,7 @@ export const SUBJECTS = [
   {
     id: "music",
     icon: "🎵",
+    motif: "music",
     color: "from-yellow-500 to-amber-500",
     name: { he: "מוזיקה", en: "Music", ar: "موسيقى" },
     topicsByGrade: {

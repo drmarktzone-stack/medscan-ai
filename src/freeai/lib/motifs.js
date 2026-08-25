@@ -43,6 +43,18 @@ export const MOTIF_ART = {
     `,
   },
 
+  physics: {
+    render: (accent) => `
+      ${shadow()}
+      <ellipse cx="50" cy="48" rx="42" ry="16" fill="none" stroke="${WHITE}" stroke-width="5" opacity="0.9"/>
+      <ellipse cx="50" cy="48" rx="42" ry="16" fill="none" stroke="${WHITE}" stroke-width="5" opacity="0.9" transform="rotate(60 50 48)"/>
+      <ellipse cx="50" cy="48" rx="42" ry="16" fill="none" stroke="${WHITE}" stroke-width="5" opacity="0.9" transform="rotate(-60 50 48)"/>
+      <circle cx="50" cy="48" r="11" fill="${accent}"/>
+      <circle cx="88" cy="42" r="5" fill="${accent}"/>
+      <circle cx="24" cy="72" r="4.5" fill="${accent}" opacity="0.8"/>
+    `,
+  },
+
   space: {
     render: (accent) => `
       ${shadow()}

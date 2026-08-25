@@ -27,7 +27,7 @@ const NAV = [
   { to: R.kidsGallery, icon: Images, end: false, label: { he: "גלריה", en: "Gallery", ar: "معرض" } },
 ];
 
-const MOBILE = [R.kids, R.kidsChat, R.kidsDaily, R.kidsLabs, R.kidsStudy, R.kidsCreate];
+const MOBILE = [R.kids, R.kidsChat, R.kidsDaily, R.kidsLabs, R.kidsStudy];
 
 function HeartIcon(props) {
   return <span className="text-base leading-none" {...props}>❤️</span>;
@@ -96,21 +96,21 @@ function KidsLayoutInner({ children, lang, dir, streak, location, mobileNav }) {
 
       <main className="max-w-4xl mx-auto px-4 py-6 pb-52 md:pb-44 relative z-10">{children}</main>
 
-      <nav className="fixed bottom-3 inset-x-0 z-30 px-2 md:hidden">
-        <div className="max-w-lg mx-auto grid grid-cols-6 gap-0.5 p-1.5 rounded-2xl bg-white/25 backdrop-blur-xl border border-white/30 shadow-xl">
+      <nav className="fixed bottom-3 inset-x-0 z-30 px-3 md:hidden safe-bottom">
+        <div className="max-w-lg mx-auto grid grid-cols-5 gap-1 p-1.5 rounded-2xl bg-purple-950/70 backdrop-blur-xl border border-white/25 shadow-2xl">
           {mobileNav.map(({ to, icon: Icon, end, label }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-0.5 py-2 rounded-xl text-[8px] font-bold ${
-                  isActive ? "bg-white text-purple-700 scale-105" : "text-white"
+                `flex flex-col items-center justify-center gap-1 min-h-[52px] px-1 rounded-xl text-[10px] font-bold leading-none transition-colors ${
+                  isActive ? "bg-white text-purple-700" : "text-white/85 hover:text-white"
                 }`
               }
             >
               <Icon className="w-5 h-5" />
-              {pickL(label, lang).slice(0, 6)}
+              <span className="truncate max-w-full">{pickL(label, lang)}</span>
             </NavLink>
           ))}
         </div>

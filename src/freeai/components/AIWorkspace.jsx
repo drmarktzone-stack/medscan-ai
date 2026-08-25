@@ -299,8 +299,10 @@ export default function AIWorkspace({ locale = "he" }) {
               rows={1}
             />
 
-            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-              <div className="flex items-center gap-1">
+            {/* Sits over the textarea's reserved bottom padding, so it must not
+                swallow clicks aimed at the text field itself. */}
+            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+              <div className="flex items-center gap-1 pointer-events-auto">
                 <input
                   ref={fileRef}
                   type="file"
@@ -335,7 +337,8 @@ export default function AIWorkspace({ locale = "he" }) {
                 type="button"
                 onClick={submit}
                 disabled={loading || (!prompt.trim() && attachments.length === 0)}
-                className="p-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white disabled:opacity-30 hover:opacity-90 transition-all shadow-lg shadow-violet-500/20"
+                aria-label={locale === "he" ? "שלח" : "Send"}
+                className="pointer-events-auto p-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white disabled:opacity-30 hover:opacity-90 transition-all shadow-lg shadow-violet-500/20"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               </button>

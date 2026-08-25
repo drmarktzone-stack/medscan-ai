@@ -89,21 +89,21 @@ export default function FreeAILayout({ children }) {
 
       <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
 
-      <nav className="fixed bottom-4 inset-x-0 z-30 px-4 lg:hidden">
-        <div className="max-w-lg mx-auto grid grid-cols-4 gap-0.5 p-1 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
+      <nav className="fixed bottom-4 inset-x-0 z-30 px-4 lg:hidden safe-bottom">
+        <div className="max-w-lg mx-auto grid grid-cols-4 gap-1 p-1.5 rounded-2xl bg-slate-950/85 backdrop-blur-xl border border-white/12 shadow-2xl">
           {mobileItems.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-0.5 py-2 rounded-xl text-[10px] font-semibold transition-all ${
-                  isActive ? "bg-violet-600 text-white" : "text-white/60"
+                `flex flex-col items-center justify-center gap-1 min-h-[52px] rounded-xl text-[10px] font-semibold leading-none transition-colors ${
+                  isActive ? "bg-violet-600 text-white" : "text-white/65 hover:text-white"
                 }`
               }
             >
               <Icon className="w-5 h-5" />
-              {pickL(label, lang).slice(0, 8)}
+              <span className="truncate max-w-full px-1">{pickL(label, lang)}</span>
             </NavLink>
           ))}
         </div>

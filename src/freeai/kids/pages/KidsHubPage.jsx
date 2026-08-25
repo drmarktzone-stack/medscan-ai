@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  BookOpen, Palette, Gamepad2, Images, Sparkles, Star, Heart, Brain, Flame, FlaskConical,
-} from "lucide-react";
+import { Star, Flame } from "lucide-react";
+import MotifIcon from "@/freeai/components/MotifIcon.jsx";
 import { useI18n } from "../../lib/i18n.jsx";
 import KidsLayout from "../components/KidsLayout.jsx";
 import { pickL } from "../lib/locale.js";
@@ -35,14 +34,13 @@ const COPY = {
 };
 
 const CARDS = [
-  { to: R.kidsChat, icon: Brain, color: "from-violet-600 to-indigo-500", key: "chatDesc", featured: true },
-  { to: R.kidsLabs, icon: FlaskConical, color: "from-emerald-500 to-teal-400", key: "labsDesc", featured: true },
-  { to: R.kidsDaily, icon: Flame, color: "from-orange-500 to-red-500", key: "dailyDesc" },
-  { to: R.kidsStudy, icon: BookOpen, color: "from-blue-500 to-cyan-400", key: "studyDesc" },
-  { to: R.kidsBody, icon: Heart, color: "from-red-400 to-rose-500", key: "bodyDesc" },
-  { to: R.kidsCreate, icon: Palette, color: "from-pink-500 to-rose-400", key: "createDesc" },
-  { to: R.kidsGame, icon: Gamepad2, color: "from-amber-500 to-orange-400", key: "gameDesc" },
-  { to: R.kidsGallery, icon: Images, color: "from-violet-500 to-purple-400", key: "galleryDesc" },
+  { to: R.kidsChat, motif: "computers", title: { he: "שאל AI", en: "Ask AI", ar: "اسأل AI" }, color: "from-violet-600 to-indigo-500", key: "chatDesc", featured: true },
+  { to: R.kidsLabs, motif: "science", title: { he: "מעבדות", en: "Labs", ar: "مختبرات" }, color: "from-emerald-500 to-teal-400", key: "labsDesc", featured: true },
+  { to: R.kidsStudy, motif: "language", title: { he: "לימוד", en: "Study", ar: "دراسة" }, color: "from-blue-500 to-cyan-400", key: "studyDesc" },
+  { to: R.kidsBody, motif: "body", title: { he: "גוף האדם", en: "Body", ar: "الجسم" }, color: "from-red-400 to-rose-500", key: "bodyDesc" },
+  { to: R.kidsCreate, motif: "art", title: { he: "יצירה", en: "Create", ar: "إبداع" }, color: "from-pink-500 to-rose-400", key: "createDesc" },
+  { to: R.kidsGame, motif: "game", title: { he: "משחקים", en: "Games", ar: "ألعاب" }, color: "from-amber-500 to-orange-400", key: "gameDesc" },
+  { to: R.kidsGallery, motif: "logo", title: { he: "גלריה", en: "Gallery", ar: "معرض" }, color: "from-violet-500 to-purple-400", key: "galleryDesc" },
 ];
 
 export default function KidsHubPage() {
@@ -69,7 +67,7 @@ export default function KidsHubPage() {
     <KidsLayout>
       <div className="space-y-6">
         <div className="text-center space-y-2 kids-fade-in">
-          <div className="text-5xl kids-float">🌟</div>
+          <MotifIcon motif="spark" size="xl" accent="#fde047" className="mx-auto kids-float drop-shadow-lg" />
           <h1 className="text-3xl sm:text-4xl font-black drop-shadow-lg">{pickL(COPY.title, lang)}</h1>
           <p className="text-lg opacity-95 max-w-md mx-auto font-semibold">{pickL(COPY.subtitle, lang)}</p>
           {(streak.count || 0) > 0 && (
@@ -131,17 +129,19 @@ export default function KidsHubPage() {
         </Link>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {CARDS.map(({ to, icon: Icon, color, key, featured }) => (
+          {CARDS.map(({ to, motif, title, color, key, featured }) => (
             <Link
               key={to}
               to={to}
-              className={`group block p-5 rounded-3xl bg-gradient-to-br ${color} shadow-xl border-2 border-white/30 hover:scale-[1.03] transition-all ${
-                featured ? "ring-2 ring-yellow-300 ring-offset-2 ring-offset-transparent sm:col-span-2 lg:col-span-1" : ""
+              className={`group flex flex-col gap-3 p-5 rounded-3xl bg-gradient-to-br ${color} shadow-xl border-2 border-white/30 hover:scale-[1.02] transition-transform ${
+                featured ? "ring-2 ring-yellow-300 ring-offset-2 ring-offset-transparent" : ""
               }`}
             >
-              <Icon className="w-10 h-10 mb-3 opacity-95" />
-              <p className="font-black text-lg leading-snug">{pickL(COPY[key], lang)}</p>
-              <Sparkles className="w-5 h-5 mt-2 opacity-70 group-hover:opacity-100" />
+              <MotifIcon motif={motif} size="lg" accent="#ffffff" className="drop-shadow-lg group-hover:scale-105 transition-transform" />
+              <div>
+                <p className="font-black text-lg leading-tight">{pickL(title, lang)}</p>
+                <p className="text-sm opacity-90 mt-0.5 leading-snug">{pickL(COPY[key], lang)}</p>
+              </div>
             </Link>
           ))}
         </div>
