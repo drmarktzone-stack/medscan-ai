@@ -147,13 +147,17 @@ export default function KidsHubPage() {
         </div>
 
         {profile.name && (
-          <div className="bg-white/15 rounded-3xl p-4 space-y-2">
+          <div className="kids-glass-card p-4 space-y-3">
             <h2 className="font-black text-sm">{pickL(COPY.pathTitle, lang)}</h2>
             <div className="flex flex-wrap gap-2">
               {weeklyPath.map((w) => (
-                <Link key={w.id} to={`${R.kidsStudy}?subject=${w.id}`}
-                  className="px-3 py-2 rounded-xl bg-white/20 text-sm font-bold hover:bg-white/30">
-                  {w.icon} {w.label}
+                <Link
+                  key={w.id}
+                  to={`${R.kidsStudy}?subject=${w.id}`}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/20 text-sm font-bold hover:bg-white/35 transition-colors"
+                >
+                  <MotifIcon motif={w.motif} topic={w.id} size="sm" accent="#ffffff" className="w-5 h-5" />
+                  {w.label}
                 </Link>
               ))}
             </div>

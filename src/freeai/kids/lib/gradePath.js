@@ -30,6 +30,7 @@ export function getWeeklyPath(grade, lang) {
       id,
       label: sub ? pickL(sub.name, lang) : id,
       icon: sub?.icon || "📚",
+      motif: sub?.motif || "language",
       done: false,
     };
   });

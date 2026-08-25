@@ -48,10 +48,19 @@ export default function KidsStudyPage() {
   const [searchParams] = useSearchParams();
   const profile = loadKidsProfile();
   // The Kids hub links here with ?subject=… from the weekly path.
-  const [subjectId, setSubjectId] = useState(() => {
-    const requested = searchParams.get("subject");
-    return requested && findSubject(requested) ? requested : "math";
-  });
+  const requestedSubject = searchParams.get("subject");
+  const [subjectId, setSubjectId] = useState(() =>
+    requestedSubject && findSubject(requestedSubject) ? requestedSubject : "math",
+  );
+
+  // Picking a different chip while already on this page only changes the query
+  // string, so the initial state above would keep the previous subject.
+  React.useEffect(() => {
+    if (requestedSubject && findSubject(requestedSubject)) {
+      setSubjectId(requestedSubject);
+      setTopic("");
+    }
+  }, [requestedSubject]);
   const [grade, setGrade] = useState(profile.grade || "5");
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
