@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Route, CheckCircle2, AlertTriangle, ExternalLink, Play, Loader2 } from "lucide-react";
 import { parseProjectDescription, buildProjectPlan } from "../lib/planner.js";
 import { useCredits } from "../lib/creditStore.js";
@@ -7,18 +8,40 @@ import { withImageFallback } from "../lib/visualFallback.js";
 import ResultImage from "./ResultImage.jsx";
 
 export default function ProjectPlanner({ locale = "he" }) {
+  const [searchParams] = useSearchParams();
   const [description, setDescription] = useState("");
   const [plan, setPlan] = useState(null);
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [generatingStep, setGeneratingStep] = useState(null);
   const [stepResults, setStepResults] = useState({});
 
-  const analyze = () => {
-    const tasks = parseProjectDescription(description);
-    const result = buildProjectPlan(tasks, locale);
-    setPlan(result);
+  const applyPlan = useCallback((tasks) => {
+    setPlan(buildProjectPlan(tasks, locale));
     setCompletedSteps(new Set());
     setStepResults({});
+  }, [locale]);
+
+  // Studio hands off a parsed CSV catalog through the URL so the planner can
+  // turn it straight into a credit allocation.
+  useEffect(() => {
+    const raw = searchParams.get("tasks");
+    if (!raw) return;
+    try {
+      const tasks = JSON.parse(raw);
+      if (!Array.isArray(tasks) || tasks.length === 0) return;
+      setDescription(
+        locale === "he"
+          ? `קטלוג מיובא — ${tasks.length} פריטים`
+          : `Imported catalog — ${tasks.length} items`,
+      );
+      applyPlan(tasks);
+    } catch {
+      /* malformed hand-off: fall back to manual entry */
+    }
+  }, [searchParams, applyPlan, locale]);
+
+  const analyze = () => {
+    applyPlan(parseProjectDescription(description));
   };
 
   const markDone = (step) => {

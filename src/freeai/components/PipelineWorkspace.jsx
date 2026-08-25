@@ -42,11 +42,7 @@ export default function PipelineWorkspace({ locale = "he", template, urgent = fa
     };
 
     try {
-      for (const stage of STAGES) {
-        setCurrentStage(stage);
-        await new Promise((r) => setTimeout(r, 600));
-      }
-
+      setCurrentStage(STAGES[0]);
       const result = urgent
         ? await runUrgentMode(input)
         : await runFullPipeline(input);

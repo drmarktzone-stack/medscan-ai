@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Loader2, BookOpen, Layers, ClipboardList } from "lucide-react";
 import { R } from "@/freeai/lib/routes.js";
 import { useI18n } from "../../lib/i18n.jsx";
@@ -45,8 +45,13 @@ const COPY = {
 
 export default function KidsStudyPage() {
   const { lang } = useI18n();
+  const [searchParams] = useSearchParams();
   const profile = loadKidsProfile();
-  const [subjectId, setSubjectId] = useState("math");
+  // The Kids hub links here with ?subject=… from the weekly path.
+  const [subjectId, setSubjectId] = useState(() => {
+    const requested = searchParams.get("subject");
+    return requested && findSubject(requested) ? requested : "math";
+  });
   const [grade, setGrade] = useState(profile.grade || "5");
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);

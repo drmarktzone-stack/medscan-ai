@@ -187,9 +187,18 @@ export function getCreditsDashboard() {
     if (creditState[p.id]?.enabled === false) continue;
     const rem = creditState[p.id]?.remaining ?? 0;
     grandTotal += rem;
+
+    // A provider's credits are a single shared pool. Adding the full balance to
+    // every capability it supports inflated the per-capability totals, so split
+    // the balance across them instead.
+    const share = p.capabilities.length ? rem / p.capabilities.length : 0;
     for (const cap of p.capabilities) {
-      byCapability[cap] = (byCapability[cap] || 0) + rem;
+      byCapability[cap] = (byCapability[cap] || 0) + share;
     }
+  }
+
+  for (const cap of Object.keys(byCapability)) {
+    byCapability[cap] = Math.round(byCapability[cap]);
   }
 
   const providers = ALL_PROVIDERS.map((p) => ({
