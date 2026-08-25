@@ -1,70 +1,85 @@
 /**
- * Central illustration URLs — Pollinations (free, always works in browser).
+ * Illustrations for Kids screens.
+ *
+ * Decorative and educational artwork is generated locally (see `artwork.js`) so
+ * it paints instantly and never depends on a third-party CDN staying up. Remote
+ * AI image generation is reserved for content the child explicitly asks for,
+ * which lives in `kidsMediaRouter.js`.
  */
 
-import { buildPollinationsUrl } from "../../lib/generators/pollinations.js";
+import { sceneDataUrl } from "../../lib/artwork.js";
 
-const STYLE = "cute kawaii cartoon, colorful, kids educational book illustration, soft pastel, no text, no watermark, safe for children";
-
-function hashStr(s) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
-
+/** Hero/banner artwork for a lesson or topic. */
 export function topicIllustration(topic, subject = "", opts = {}) {
-  const prompt = `${STYLE}, ${subject} ${topic}, friendly characters learning`;
-  const seed = opts.seed ?? hashStr(`${subject}-${topic}`);
-  return buildPollinationsUrl(prompt, { width: opts.width || 768, height: opts.height || 512, seed });
-}
-
-export function cardIllustration(front, subject = "") {
-  const prompt = `${STYLE}, visual for: ${front}, subject ${subject}`;
-  return buildPollinationsUrl(prompt, { width: 512, height: 512, seed: hashStr(front) });
-}
-
-export function subjectHero(subjectId, lang = "he") {
-  const heroes = {
-    math: "numbers and geometric shapes playground, abacus, colorful",
-    hebrew: "hebrew letters aleph bet floating magically, books",
-    english: "english alphabet letters ABC with friendly animals",
-    science: "microscope, planets, atoms, rainbow, laboratory fun",
-    history: "ancient pyramids, castle, timeline, explorer kids",
-    geography: "world globe, maps, mountains, oceans, flags",
-    civics: "community helpers, city hall, voting, friendship",
-    computers: "friendly robot, laptop, coding blocks, pixels",
-    art: "paint palette, brushes, rainbow splashes, creativity",
-    music: "musical notes, piano, drums, dancing notes",
-  };
-  const prompt = `${STYLE}, ${heroes[subjectId] || "kids learning adventure"}`;
-  return buildPollinationsUrl(prompt, { width: 900, height: 400, seed: hashStr(subjectId) });
-}
-
-export function bodyItemThumb(item) {
-  return buildPollinationsUrl(`${item.prompt}, square thumbnail`, {
-    width: 256,
-    height: 256,
-    seed: hashStr(item.id),
+  return sceneDataUrl({
+    topic,
+    subject,
+    width: opts.width || 768,
+    height: opts.height || 480,
+    variant: opts.seed || 0,
   });
 }
 
+/** Square artwork for a flashcard face. */
+export function cardIllustration(front, subject = "") {
+  return sceneDataUrl({ topic: front, subject, width: 512, height: 512 });
+}
+
+const SUBJECT_HINTS = {
+  math: "math numbers geometry",
+  hebrew: "hebrew language letters",
+  english: "english language letters",
+  science: "science lab experiment",
+  history: "history ancient",
+  geography: "geography map globe",
+  civics: "history community",
+  computers: "computers code robot",
+  art: "art paint drawing",
+  music: "music notes sound",
+};
+
+/** Wide banner for a subject landing screen. */
+export function subjectHero(subjectId) {
+  return sceneDataUrl({
+    topic: SUBJECT_HINTS[subjectId] || "learning",
+    subject: subjectId,
+    width: 960,
+    height: 400,
+  });
+}
+
+/** Square thumbnail for a body/anatomy item. */
+export function bodyItemThumb(item) {
+  return sceneDataUrl({
+    topic: `body ${item?.id || ""}`,
+    subject: "body",
+    width: 320,
+    height: 320,
+  });
+}
+
+/** Illustration for one scene of a generated story. */
 export function storySceneIllustration(sceneText, index = 0) {
-  const prompt = `${STYLE}, story scene: ${sceneText.slice(0, 120)}`;
-  return buildPollinationsUrl(prompt, { width: 768, height: 512, seed: hashStr(sceneText) + index });
+  return sceneDataUrl({
+    topic: `story ${String(sceneText).slice(0, 60)}`,
+    subject: "story",
+    width: 768,
+    height: 480,
+    variant: index,
+  });
 }
 
+/** Mascot shown on the chat screen. */
 export function chatMascotIllustration() {
-  return buildPollinationsUrl(
-    `${STYLE}, friendly robot teacher mascot waving, purple and pink gradient background`,
-    { width: 512, height: 512, seed: 42 }
-  );
+  return sceneDataUrl({ topic: "computers robot", subject: "computers", width: 512, height: 512 });
 }
 
+/** Banner for the daily lesson card. */
 export function dailyLessonBanner(subject, topic) {
-  return topicIllustration(topic, subject, { width: 900, height: 360 });
+  return topicIllustration(topic, subject, { width: 960, height: 400 });
 }
 
-/** Attach imageUrl to flashcards */
+/** Attach artwork to any flashcards that don't already have an image. */
 export function enrichCardsWithImages(cards, subject = "") {
   return (cards || []).map((c) => ({
     ...c,

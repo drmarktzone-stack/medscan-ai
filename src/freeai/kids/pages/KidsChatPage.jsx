@@ -4,7 +4,7 @@ import KidsLayout from "../components/KidsLayout.jsx";
 import KidsMagicBackground from "../components/KidsMagicBackground.jsx";
 import KidsChatPanel from "../components/KidsChatPanel.jsx";
 import { pickL } from "../lib/locale.js";
-import { emojiPlaceholderDataUrl } from "../../lib/visualFallback.js";
+import { chatMascotIllustration } from "../lib/illustrations.js";
 import { logActivity } from "../lib/activityLog.js";
 
 const COPY = {
@@ -27,7 +27,7 @@ export default function KidsChatPage() {
         <div className="text-center space-y-3">
           <div className="w-28 h-28 mx-auto rounded-3xl border-4 border-white/40 kids-float kids-glow overflow-hidden shadow-2xl">
             <img
-              src={emojiPlaceholderDataUrl("FreeAI Kids", "🤖")}
+              src={chatMascotIllustration()}
               alt="FreeAI mascot"
               className="w-full h-full object-cover"
             />
