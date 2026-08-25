@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Loader2, BookHeart, User, Image, Puzzle, Sparkles } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../../lib/i18n.jsx";
 import KidsLayout from "../components/KidsLayout.jsx";
 import KidsMediaReveal from "../components/KidsMediaReveal.jsx";
 import VoiceMic from "../components/VoiceMic.jsx";

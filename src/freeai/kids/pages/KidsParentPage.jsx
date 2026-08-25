@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../../lib/i18n.jsx";
 import KidsLayout from "../components/KidsLayout.jsx";
 import { pickL } from "../lib/locale.js";
 import {

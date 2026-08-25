@@ -29,9 +29,26 @@ export default defineConfig(({ mode }) => {
       allowedHosts: true,
     },
     build: {
-      rollupOptions: { input },
+      rollupOptions: {
+        input,
+        output: freeai
+          ? {
+              manualChunks(id) {
+                if (!id.includes('node_modules')) return undefined;
+                // Base44 SDK + its HTTP stack are only reachable through the
+                // lazily imported MedScan adapter; keep them out of the shell.
+                if (id.includes('@base44') || id.includes('axios')) return 'base44';
+                if (id.includes('react-router')) return 'router';
+                if (id.includes('/react/') || id.includes('react-dom')) return 'react';
+                if (id.includes('lucide-react')) return 'icons';
+                return 'vendor';
+              },
+            }
+          : undefined,
+      },
       outDir: freeai ? 'dist-freeai' : 'dist',
       emptyOutDir: true,
+      chunkSizeWarningLimit: 600,
     },
     plugins: [
       base44({

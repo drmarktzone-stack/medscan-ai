@@ -5,7 +5,7 @@ import { loadPassport, getAllEmails, generateEmailAliases, addAltEmail } from "@
 import { buildHarvestPlan, getHarvestProgress, OAUTH_CLUSTERS } from "@/freeai/lib/creditHarvester";
 import { calculateCreditScore, canCompleteProject } from "@/freeai/lib/creditScore";
 import { getProvider, ALL_PROVIDERS } from "@/freeai/data/providers";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 import {
   Mail, Shield, Zap, Calendar, RefreshCw, ChevronDown, ChevronUp,
   Globe, Code2, Palette, Rocket, Star, Lightbulb,

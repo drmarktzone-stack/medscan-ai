@@ -7,7 +7,7 @@ import {
   whatsAppShareUrl, twitterShareUrl, linkedInShareUrl, emailShareUrl,
   nativeShare, OUTREACH_TARGETS, CREATE_URL,
 } from "@/freeai/lib/marketing.js";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 import { absoluteAppPath } from "@/lib/clinic/standalone";
 import { R } from "@/freeai/lib/routes.js";
 import {

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   BookOpen, Palette, Gamepad2, Images, Sparkles, Star, Heart, Brain, Flame, FlaskConical,
 } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../../lib/i18n.jsx";
 import KidsLayout from "../components/KidsLayout.jsx";
 import { pickL } from "../lib/locale.js";
 import { loadKidsProfile, saveKidsProfile, loadAchievements, loadGallery } from "../lib/kidsStore.js";

@@ -5,7 +5,6 @@
  */
 
 import { loadApiKeys } from "./creditStore.js";
-import { tryBase44Core } from "../../lib/medscan/llmAdapter.js";
 import { R } from "./routes.js";
 
 const SYSTEM_PROMPT = `You are FreeAI Hub — a helpful AI assistant inside an app that aggregates 30+ free AI tools (images, code, video, design, deploy).
@@ -245,8 +244,23 @@ async function chatPollinations(messages) {
   return { ok: true, text, provider: "pollinations_text", model: "openai-fast" };
 }
 
+/**
+ * Base44 is only reachable when the app runs inside a Base44 host. Loading its
+ * adapter statically would pull the whole MedScan SDK into the standalone
+ * bundle, so it is imported on demand and only when a host is detected.
+ */
+async function loadBase44Invoke() {
+  if (typeof window === "undefined" || !window.base44) return null;
+  try {
+    const mod = await import("../../lib/medscan/llmAdapter.js");
+    return mod.tryBase44Core?.("InvokeLLM") ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function chatBase44(messages) {
-  const invoke = tryBase44Core("InvokeLLM");
+  const invoke = await loadBase44Invoke();
   if (!invoke) return { ok: false, reason: "no_base44" };
 
   const conversation = messages
@@ -396,7 +410,7 @@ export function getChatProviderStatus() {
     gemini: !!getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY"),
     deepseek: !!getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY"),
     pollinations: !!getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY"),
-    base44: !!tryBase44Core("InvokeLLM"),
+    base44: typeof window !== "undefined" && !!window.base44,
     puter: typeof window !== "undefined" && !!window.puter?.ai?.chat,
   };
 }

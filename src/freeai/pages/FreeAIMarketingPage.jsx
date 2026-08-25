@@ -9,7 +9,7 @@ import {
 import { trackedUrl, loadStats, trackEvent, getProgress, KPI_TARGETS } from "@/freeai/lib/marketingTracker.js";
 import { buildPaymentConfirmWhatsApp } from "@/freeai/lib/paymentConfig.js";
 import { R } from "@/freeai/lib/routes.js";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 import {
   Megaphone, Copy, CheckCircle2, MessageCircle, Mail, Share2,
   ExternalLink, Target, TrendingUp, Zap, Crown, Send,

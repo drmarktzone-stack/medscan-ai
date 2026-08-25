@@ -4,8 +4,8 @@ import {
   Sparkles, LayoutDashboard, Route, Mail, Crown, Megaphone,
   Coins, CalendarRange, Palette,
 } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useI18n } from "../lib/i18n.jsx";
+import LanguageSwitcher from "./LanguageSwitcher.jsx";
 import { captureReferral } from "@/freeai/lib/marketingTracker.js";
 import { bootstrapFullAccess, getAccessLabel, hasFullAccess } from "@/freeai/lib/demoMode.js";
 import { pickL } from "@/freeai/kids/lib/locale.js";

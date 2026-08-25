@@ -10,7 +10,7 @@ import { addToQueue, getNextResetLabel, loadQueue } from "@/freeai/lib/nightQueu
 import { topPrompts, addCommunityPrompt } from "@/freeai/lib/communityPrompts";
 import { parseCsv, csvToTasks, csvTemplate } from "@/freeai/lib/csvImport";
 import { getQuotaState } from "@/freeai/lib/projectQuota";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 import CreditHarvesterWizard, { CreditScoreBadge } from "@/freeai/components/CreditHarvesterWizard";
 import { getPrimaryEmail } from "@/freeai/lib/creditPassport";
 import { R } from "@/freeai/lib/routes.js";

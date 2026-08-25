@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../../lib/i18n.jsx";
 import KidsLayout from "../components/KidsLayout.jsx";
 import KidsMagicBackground from "../components/KidsMagicBackground.jsx";
 import KidsImage from "../components/KidsImage.jsx";

@@ -1,6 +1,6 @@
 import React from "react";
 import { Mic, MicOff, Volume2 } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../../lib/i18n.jsx";
 import { useKidsVoice } from "../hooks/useKidsVoice.js";
 import { pickL } from "../lib/locale.js";
 

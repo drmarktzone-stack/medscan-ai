@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Loader2, ExternalLink, Download, Play } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../../lib/i18n.jsx";
 import KidsLayout from "../components/KidsLayout.jsx";
 import VoiceMic, { VoiceInputRow } from "../components/VoiceMic.jsx";
 import { pickL } from "../lib/locale.js";

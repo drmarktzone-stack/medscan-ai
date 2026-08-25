@@ -3,8 +3,8 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   BookOpen, Palette, Gamepad2, Images, Home, Coins, Shield, Brain, Flame, FlaskConical,
 } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useI18n } from "../../lib/i18n.jsx";
+import LanguageSwitcher from "../../components/LanguageSwitcher.jsx";
 import { bootstrapFullAccess } from "@/freeai/lib/demoMode.js";
 import { pickL } from "../lib/locale.js";
 import { R } from "@/freeai/lib/routes.js";
@@ -89,7 +89,7 @@ function KidsLayoutInner({ children, lang, dir, streak, location, mobileNav }) {
             <Link to={R.hub} className="hidden sm:inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold bg-white/20 hover:bg-white/30">
               <Coins className="w-3.5 h-3.5" /> Hub
             </Link>
-            <LanguageSwitcher />
+            <LanguageSwitcher tone="kids" />
           </div>
         </div>
       </header>

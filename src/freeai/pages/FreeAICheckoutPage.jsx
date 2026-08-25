@@ -8,7 +8,7 @@ import {
 } from "@/freeai/lib/paymentConfig.js";
 import { activatePro } from "@/freeai/lib/subscription.js";
 import { R } from "@/freeai/lib/routes.js";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 import {
   CreditCard, CheckCircle2, Crown, ArrowRight,
   MessageCircle, ExternalLink,

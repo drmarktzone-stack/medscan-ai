@@ -5,7 +5,7 @@ import FreeAILayout from "@/freeai/components/FreeAILayout";
 import GenerationPanel from "@/freeai/components/GenerationPanel";
 import { getCreditsDashboard } from "@/freeai/lib/planner.js";
 import { googleLabsProviders, CAPABILITY_META } from "@/freeai/data/providers.js";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 import { R } from "@/freeai/lib/routes.js";
 import {
   Gift, Sparkles, Image, Video, Palette, Zap, ExternalLink,
