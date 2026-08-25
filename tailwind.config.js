@@ -1,7 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
-    content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+    content: process.env.TAILWIND_SCOPE === 'freeai'
+      ? ["./freeai.html", "./src/FreeAIApp.jsx", "./src/freeai-main.jsx", "./src/freeai/**/*.{ts,tsx,js,jsx}", "./src/components/ScrollToTop.jsx", "./src/lib/PageNotFound.jsx"]
+      : ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
   		borderRadius: {

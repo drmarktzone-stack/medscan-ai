@@ -1,22 +1,47 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Route, CheckCircle2, AlertTriangle, ExternalLink, Play, Loader2 } from "lucide-react";
 import { parseProjectDescription, buildProjectPlan } from "../lib/planner.js";
 import { useCredits } from "../lib/creditStore.js";
 import { generatePollinationsBatch } from "../lib/generators/pollinations.js";
+import { withImageFallback } from "../lib/visualFallback.js";
+import ResultImage from "./ResultImage.jsx";
 
 export default function ProjectPlanner({ locale = "he" }) {
+  const [searchParams] = useSearchParams();
   const [description, setDescription] = useState("");
   const [plan, setPlan] = useState(null);
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [generatingStep, setGeneratingStep] = useState(null);
   const [stepResults, setStepResults] = useState({});
 
-  const analyze = () => {
-    const tasks = parseProjectDescription(description);
-    const result = buildProjectPlan(tasks, locale);
-    setPlan(result);
+  const applyPlan = useCallback((tasks) => {
+    setPlan(buildProjectPlan(tasks, locale));
     setCompletedSteps(new Set());
     setStepResults({});
+  }, [locale]);
+
+  // Studio hands off a parsed CSV catalog through the URL so the planner can
+  // turn it straight into a credit allocation.
+  useEffect(() => {
+    const raw = searchParams.get("tasks");
+    if (!raw) return;
+    try {
+      const tasks = JSON.parse(raw);
+      if (!Array.isArray(tasks) || tasks.length === 0) return;
+      setDescription(
+        locale === "he"
+          ? `קטלוג מיובא — ${tasks.length} פריטים`
+          : `Imported catalog — ${tasks.length} items`,
+      );
+      applyPlan(tasks);
+    } catch {
+      /* malformed hand-off: fall back to manual entry */
+    }
+  }, [searchParams, applyPlan, locale]);
+
+  const analyze = () => {
+    applyPlan(parseProjectDescription(description));
   };
 
   const markDone = (step) => {
@@ -29,7 +54,7 @@ export default function ProjectPlanner({ locale = "he" }) {
     try {
       useCredits(stepData.providerId, stepData.units);
       const batch = generatePollinationsBatch(stepData.prompt, stepData.units);
-      setStepResults((prev) => ({ ...prev, [stepData.step]: batch.images }));
+      setStepResults((prev) => ({ ...prev, [stepData.step]: batch.images.map((img) => withImageFallback(img, stepData.prompt)) }));
       markDone(stepData.step);
     } finally {
       setGeneratingStep(null);
@@ -119,7 +144,13 @@ export default function ProjectPlanner({ locale = "he" }) {
                       {results?.length > 0 && (
                         <div className="flex gap-2 mt-3 overflow-x-auto">
                           {results.map((img) => (
-                            <img key={img.id} src={img.url} alt="" className="w-16 h-16 rounded-lg object-cover" />
+                            <ResultImage
+                              key={img.id}
+                              src={img.url}
+                              fallbackUrl={img.fallbackUrl}
+                              prompt={img.prompt}
+                              className="w-20 h-20 rounded-lg shrink-0"
+                            />
                           ))}
                         </div>
                       )}

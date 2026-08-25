@@ -8,6 +8,7 @@ import { loadCreditState, useCredits, saveProject } from "./creditStore.js";
 import { isProviderClaimed } from "./creditPassport.js";
 import { generateCodeScaffold } from "./generators/codeGenerator.js";
 import { generatePollinationsBatch } from "./generators/pollinations.js";
+import { withImageFallback } from "./visualFallback.js";
 import { buildProjectPlan } from "./planner.js";
 import { optimizePromptForProvider } from "./smartPrompt.js";
 import { calcProjectSavings } from "./savingsCalculator.js";
@@ -166,7 +167,7 @@ async function runDesignStage(provider, spec, state) {
   for (const step of plan.steps) {
     if (step.canGenerateHere && step.prompt) {
       const batch = generatePollinationsBatch(step.prompt, step.units);
-      images.push(...batch.images);
+      images.push(...batch.images.map((img) => withImageFallback(img, step.prompt)));
       unitsUsed += step.units;
     }
   }

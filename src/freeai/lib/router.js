@@ -5,6 +5,7 @@
 import { providersForCapability } from "../data/providers.js";
 import { loadCreditState, useCredits, loadApiKeys } from "./creditStore.js";
 import { generatePollinationsBatch, validatePrompt } from "./generators/pollinations.js";
+import { withImageFallback } from "./visualFallback.js";
 
 /**
  * Find best provider for immediate in-app generation.
@@ -30,6 +31,17 @@ export function findInAppProvider(taskType) {
  * Generate content using the best available free in-app provider.
  * @param {{ type: string; prompt: string; count?: number }} request
  */
+/**
+ * Types that Pollinations can render as still images. Video has no free in-app
+ * provider, so it is routed to the planner instead of failing silently.
+ */
+const IMAGE_LIKE = new Set(["image", "design", "edit"]);
+
+const DESIGN_PROMPT_PREFIX = {
+  design: "graphic design, poster layout, clean typography, ",
+  edit: "clean product shot, plain background, ",
+};
+
 export async function generateFree(request) {
   const { type = "image", prompt, count = 1 } = request;
 
@@ -38,24 +50,42 @@ export async function generateFree(request) {
     return { ok: false, reason: validation.reason };
   }
 
-  const provider = findInAppProvider(type);
+  if (!IMAGE_LIKE.has(type)) {
+    return {
+      ok: false,
+      reason: "needs_browser_provider",
+      suggestion: "planner",
+      messageHe: "וידאו לא נוצר בתוך האפליקציה — פתח את המתכנן לקבלת תוכנית עם כלים חינמיים",
+      messageEn: "Video isn't generated in-app — open the planner for a free-tool plan",
+    };
+  }
+
+  const provider = findInAppProvider("image");
   if (!provider) {
     return {
       ok: false,
       reason: "no_in_app_provider",
-      suggestion: "browser",
-      messageHe: "אין ספק API חינמי זמין — השתמש בתוכנית הפרויקט לפתיחת כלים בדפדפן",
-      messageEn: "No free in-app API available — use the project plan to open browser tools",
+      suggestion: "planner",
+      messageHe: "אין ספק API חינמי זמין — השתמש במתכנן הפרויקט לפתיחת כלים בדפדפן",
+      messageEn: "No free in-app API available — use the project planner to open browser tools",
     };
   }
+
+  const effectivePrompt = `${DESIGN_PROMPT_PREFIX[type] || ""}${prompt}`;
 
   if (provider.id === "pollinations") {
     const creditResult = useCredits("pollinations", count);
     if (!creditResult.ok) {
       return { ok: false, reason: creditResult.reason, remaining: creditResult.remaining };
     }
-    const batch = generatePollinationsBatch(prompt, count);
-    return { ...batch, creditsUsed: 0, remaining: creditResult.remaining };
+    const batch = generatePollinationsBatch(effectivePrompt, count);
+    return {
+      ...batch,
+      type,
+      images: batch.images.map((img) => withImageFallback(img, prompt)),
+      creditsUsed: 0,
+      remaining: creditResult.remaining,
+    };
   }
 
   return { ok: false, reason: "provider_not_implemented", providerId: provider.id };

@@ -1,21 +1,21 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import FreeAILayout from "@/freeai/components/FreeAILayout";
-import PipelineWorkspace, { ComparePromptsPanel } from "@/freeai/components/PipelineWorkspace";
+import PipelineWorkspace from "@/freeai/components/PipelineWorkspace";
 import { PROFESSION_TEMPLATES } from "@/freeai/data/templates";
 import { getTotalSavings, formatSavings } from "@/freeai/lib/savingsCalculator";
 import { getNotifications } from "@/freeai/lib/creditRadar";
 import { loadBrandKit, saveBrandKit } from "@/freeai/lib/brandKit";
-import { addToQueue, getNextResetLabel, loadQueue } from "@/freeai/lib/nightQueue";
 import { topPrompts, addCommunityPrompt } from "@/freeai/lib/communityPrompts";
 import { parseCsv, csvToTasks, csvTemplate } from "@/freeai/lib/csvImport";
 import { getQuotaState } from "@/freeai/lib/projectQuota";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 import CreditHarvesterWizard, { CreditScoreBadge } from "@/freeai/components/CreditHarvesterWizard";
 import { getPrimaryEmail } from "@/freeai/lib/creditPassport";
+import { R } from "@/freeai/lib/routes.js";
 import {
-  Sparkles, Zap, Moon, Star, Upload, Palette, Bell, Gift,
-  Code2, Image, MessageCircle,
+  Sparkles, Zap, Star, Upload, Palette, Bell, Gift,
+  Code2, Image,
 } from "lucide-react";
 
 export default function FreeAIStudio() {
@@ -33,7 +33,6 @@ export default function FreeAIStudio() {
   const notifications = useMemo(() => getNotifications(locale), [locale]);
   const quota = getQuotaState();
   const community = topPrompts(null, 5);
-  const queue = loadQueue();
 
   const hasEmail = !!getPrimaryEmail();
 
@@ -184,7 +183,7 @@ export default function FreeAIStudio() {
             />
           </section>
 
-          {/* CSV Import */}
+          {/* CSV Import → feeds the planner */}
           <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <h3 className="font-bold text-white mb-3 flex items-center gap-2">
               <Upload className="w-4 h-4 text-sky-400" />
@@ -207,32 +206,17 @@ export default function FreeAIStudio() {
               {locale === "he" ? "נתח CSV" : "Parse CSV"}
             </button>
             {csvResult && (
-              <p className="text-xs text-emerald-400 mt-2">
-                {csvResult.length} {locale === "he" ? "מוצרים מוכנים ליצירה" : "products ready"}
-              </p>
-            )}
-          </section>
-
-          {/* Night Queue */}
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-              <Moon className="w-4 h-4 text-indigo-400" />
-              {locale === "he" ? "תור לילה" : "Night queue"}
-            </h3>
-            <p className="text-xs text-white/50 mb-2">
-              {locale === "he"
-                ? `יצירות מתוזמנות ל-${getNextResetLabel(locale)}`
-                : `Scheduled for ${getNextResetLabel(locale)}`}
-            </p>
-            <button
-              type="button"
-              onClick={() => addToQueue({ type: "image", prompt: "pending generation", count: 5 })}
-              className="px-4 py-1.5 rounded-lg bg-indigo-600 text-white text-sm"
-            >
-              {locale === "he" ? "הוסף לתור" : "Add to queue"}
-            </button>
-            {queue.length > 0 && (
-              <p className="text-xs text-white/40 mt-2">{queue.length} {locale === "he" ? "בתור" : "in queue"}</p>
+              <div className="mt-3 space-y-2">
+                <p className="text-xs text-emerald-400">
+                  {csvResult.length} {locale === "he" ? "מוצרים זוהו" : "products detected"}
+                </p>
+                <Link
+                  to={`${R.planner}?tasks=${encodeURIComponent(JSON.stringify(csvResult.slice(0, 40)))}`}
+                  className="inline-flex items-center gap-1 px-4 py-1.5 rounded-lg bg-sky-600 text-white text-sm font-semibold hover:bg-sky-500"
+                >
+                  {locale === "he" ? "בנה תוכנית מהקטלוג →" : "Build a plan from catalog →"}
+                </Link>
+              </div>
             )}
           </section>
 
@@ -267,28 +251,16 @@ export default function FreeAIStudio() {
             </div>
           </section>
 
-          {/* WhatsApp bot placeholder */}
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <h3 className="font-bold text-white mb-2 flex items-center gap-2">
-              <MessageCircle className="w-4 h-4 text-green-400" />
-              WhatsApp Bot
-            </h3>
-            <p className="text-xs text-white/50">
-              {locale === "he"
-                ? "בקרוב: שלח הודעה ב-WhatsApp וקבל תמונות + תוכנית פרויקט"
-                : "Coming soon: send a WhatsApp message, get images + project plan"}
-            </p>
-          </section>
 
           {/* Links */}
           <div className="flex flex-wrap gap-2">
-            <Link to="/freeai" className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1">
+            <Link to={R.hub} className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1">
               <Image className="w-3 h-3" /> Hub
             </Link>
-            <Link to="/freeai/planner" className="text-xs text-violet-400 hover:text-violet-300">
+            <Link to={R.planner} className="text-xs text-violet-400 hover:text-violet-300">
               {locale === "he" ? "מתכנן" : "Planner"}
             </Link>
-            <Link to="/freeai/providers" className="text-xs text-violet-400 hover:text-violet-300">
+            <Link to={R.providers} className="text-xs text-violet-400 hover:text-violet-300">
               {locale === "he" ? "ספקים" : "Providers"}
             </Link>
           </div>

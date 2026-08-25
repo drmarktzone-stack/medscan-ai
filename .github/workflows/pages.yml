@@ -25,7 +25,7 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
-      - name: Build static app without Base44 credits
+      - name: Build MedScan static app (no FreeAI)
         env:
           VITE_STANDALONE: "true"
           VITE_LOCAL_CLINIC: "true"
@@ -35,22 +35,40 @@ jobs:
           VITE_VISION_PAYWALL: ${{ vars.VISION_PAYWALL || 'true' }}
           VITE_VISION_SUBSCRIPTION_DAYS: ${{ vars.VISION_SUBSCRIPTION_DAYS || '30' }}
           VITE_STRIPE_PAYMENT_LINK: ${{ secrets.STRIPE_PAYMENT_LINK }}
-          VITE_FREEAI_BIT_PHONE: "0528885800"
-          VITE_FREEAI_SUPPORT_WHATSAPP: "972528885800"
-          VITE_FREEAI_DEMO_PRO: "true"
-          VITE_GROQ_API_KEY: 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
         run: |
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
           if [ "$REPO" = "${OWNER}.github.io" ]; then
             export VITE_BASE="/"
-            export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io"
           else
             export VITE_BASE="/${REPO}/"
-            export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io/${REPO}"
           fi
           echo "VITE_BASE=$VITE_BASE"
           npm run build:standalone
+      - name: Build FreeAI Kids (subfolder /freeai/)
+        env:
+          VITE_FREEAI_BIT_PHONE: "0528885800"
+          VITE_FREEAI_SUPPORT_WHATSAPP: "972528885800"
+          VITE_FREEAI_DEMO_PRO: "true"
+          VITE_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          VITE_GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          VITE_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          if [ "$REPO" = "${OWNER}.github.io" ]; then
+            export VITE_BASE="/freeai/"
+            export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io/freeai"
+          else
+            export VITE_BASE="/${REPO}/freeai/"
+            export VITE_FREEAI_PUBLIC_URL="https://${OWNER}.github.io/${REPO}/freeai"
+          fi
+          echo "VITE_BASE=$VITE_BASE"
+          npm run build:freeai
+          mkdir -p dist/freeai
+          cp -r dist-freeai/. dist/freeai/
+      - name: SPA 404 fallback (MedScan + FreeAI deep links)
+        run: node scripts/pages-combined-404.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

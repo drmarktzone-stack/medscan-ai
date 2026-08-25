@@ -1,11 +1,11 @@
 /**
  * FreeAI Chat Engine — real LLM responses with free provider fallback chain.
  *
- * Order: Groq → Pollinations → Base44 → Puter.js → smart local assistant
+ * Order: Groq → Gemini → DeepSeek → Pollinations → Base44 → Puter.js → smart local assistant
  */
 
 import { loadApiKeys } from "./creditStore.js";
-import { tryBase44Core } from "../../lib/medscan/llmAdapter.js";
+import { R } from "./routes.js";
 
 const SYSTEM_PROMPT = `You are FreeAI Hub — a helpful AI assistant inside an app that aggregates 30+ free AI tools (images, code, video, design, deploy).
 
@@ -18,6 +18,18 @@ Rules:
 - Pro subscription is ₪20/month; free tier includes 2 projects/month.
 - Never claim you executed actions you didn't — you only chat here; creation happens in other modes.
 - Keep answers focused; use bullet lists when helpful.`;
+
+import { withTimeout } from "./withTimeout.js";
+
+async function fetchWithTimeout(url, options, ms = 18000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 function envKey(name) {
   if (typeof import.meta !== "undefined" && import.meta.env?.[name]) {
@@ -40,7 +52,15 @@ function getApiKey(providerId, envVar) {
  * @param {object[]} [input.attachments]
  */
 export async function chatWithAI(input) {
-  const { prompt, history = [], attachments = [] } = input;
+  const {
+    prompt,
+    history = [],
+    attachments = [],
+    systemPrompt = SYSTEM_PROMPT,
+    allowLocalFallback = true,
+    maxHistory = 12,
+    allowInteractive = false,
+  } = input;
   const trimmed = (prompt || "").trim();
   if (!trimmed && attachments.length === 0) {
     return { ok: false, reason: "empty_input" };
@@ -50,20 +70,29 @@ export async function chatWithAI(input) {
   const userContent = attachmentNote ? `${trimmed}\n\n${attachmentNote}` : trimmed;
 
   const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt },
     ...history
       .filter((m) => m.role === "user" || m.role === "assistant")
-      .slice(-12)
+      .slice(-maxHistory)
       .map((m) => ({ role: m.role, content: String(m.content || "").slice(0, 4000) })),
     { role: "user", content: userContent.slice(0, 8000) },
   ];
 
   const providers = [
     () => chatGroq(messages),
+    () => chatGemini(messages),
+    () => chatDeepSeek(messages),
     () => chatPollinations(messages),
     () => chatBase44(messages),
-    () => chatPuter(messages),
   ];
+
+  // Puter needs no API key but opens a sign-in window on first use. That is
+  // acceptable when a person just pressed send; it is not acceptable for
+  // background work like building a daily lesson, which would ambush a child
+  // with a login prompt they cannot complete.
+  if (allowInteractive || isPuterSignedIn()) {
+    providers.push(() => chatPuter(messages));
+  }
 
   for (const attempt of providers) {
     try {
@@ -72,6 +101,15 @@ export async function chatWithAI(input) {
     } catch {
       /* try next provider */
     }
+  }
+
+  if (!allowLocalFallback) {
+    return {
+      ok: false,
+      reason: "no_provider",
+      needsApiKey: true,
+      text: "",
+    };
   }
 
   return smartLocalChat(trimmed, history, attachments);
@@ -91,7 +129,7 @@ async function chatGroq(messages) {
   const key = getApiKey("groq", "VITE_GROQ_API_KEY");
   if (!key) return { ok: false, reason: "no_groq_key" };
 
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const res = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${key}`,
@@ -116,11 +154,75 @@ async function chatGroq(messages) {
   return { ok: true, text, provider: "groq", model: envKey("VITE_GROQ_MODEL") || "groq/compound-mini" };
 }
 
+async function chatGemini(messages) {
+  const key = getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY");
+  if (!key) return { ok: false, reason: "no_gemini_key" };
+
+  const model = envKey("VITE_GEMINI_MODEL") || "gemini-3.6-flash";
+  const system = messages.find((m) => m.role === "system")?.content || "";
+  const contents = messages
+    .filter((m) => m.role === "user" || m.role === "assistant")
+    .map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+  const res = await fetchWithTimeout(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
+      contents,
+      generationConfig: { maxOutputTokens: 2048, temperature: 0.7 },
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    return { ok: false, reason: "gemini_error", detail: err.slice(0, 200) };
+  }
+
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text).join("").trim();
+  if (!text) return { ok: false, reason: "gemini_empty" };
+  return { ok: true, text, provider: "google_ai_studio", model };
+}
+
+async function chatDeepSeek(messages) {
+  const key = getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY");
+  if (!key) return { ok: false, reason: "no_deepseek_key" };
+
+  const res = await fetchWithTimeout("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: envKey("VITE_DEEPSEEK_MODEL") || "deepseek-chat",
+      messages,
+      max_tokens: 2048,
+      temperature: 0.7,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    return { ok: false, reason: "deepseek_error", detail: err.slice(0, 200) };
+  }
+
+  const data = await res.json();
+  const text = data.choices?.[0]?.message?.content?.trim();
+  if (!text) return { ok: false, reason: "deepseek_empty" };
+  return { ok: true, text, provider: "deepseek", model: envKey("VITE_DEEPSEEK_MODEL") || "deepseek-chat" };
+}
+
 async function chatPollinations(messages) {
   const key = getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY");
   if (!key) return { ok: false, reason: "no_pollinations_key" };
 
-  const res = await fetch("https://gen.pollinations.ai/v1/chat/completions", {
+  const res = await fetchWithTimeout("https://gen.pollinations.ai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${key}`,
@@ -141,8 +243,23 @@ async function chatPollinations(messages) {
   return { ok: true, text, provider: "pollinations_text", model: "openai-fast" };
 }
 
+/**
+ * Base44 is only reachable when the app runs inside a Base44 host. Loading its
+ * adapter statically would pull the whole MedScan SDK into the standalone
+ * bundle, so it is imported on demand and only when a host is detected.
+ */
+async function loadBase44Invoke() {
+  if (typeof window === "undefined" || !window.base44) return null;
+  try {
+    const mod = await import("../../lib/medscan/llmAdapter.js");
+    return mod.tryBase44Core?.("InvokeLLM") ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function chatBase44(messages) {
-  const invoke = tryBase44Core("InvokeLLM");
+  const invoke = await loadBase44Invoke();
   if (!invoke) return { ok: false, reason: "no_base44" };
 
   const conversation = messages
@@ -191,19 +308,34 @@ function loadPuterScript() {
   return puterLoadPromise;
 }
 
+/** True once Puter has an authenticated session, so no window will open. */
+export function isPuterSignedIn() {
+  if (typeof window === "undefined") return false;
+  try {
+    return Boolean(window.puter?.auth?.isSignedIn?.());
+  } catch {
+    return false;
+  }
+}
+
 async function chatPuter(messages) {
   if (typeof window === "undefined") return { ok: false, reason: "no_window" };
 
-  const puter = await loadPuterScript();
+  const puter = await withTimeout(loadPuterScript(), 6000, null);
+  if (!puter) return { ok: false, reason: "puter_timeout" };
+
   const puterMessages = messages.map((m) => ({
     role: m.role,
     content: m.content,
   }));
 
-  const response = await puter.ai.chat(puterMessages, {
-    model: "gpt-5-nano",
-    stream: false,
-  });
+  const response = await withTimeout(
+    puter.ai.chat(puterMessages, { model: "gpt-5-nano", stream: false }),
+    25000,
+    null,
+  );
+
+  if (!response) return { ok: false, reason: "puter_timeout" };
 
   const text = (
     typeof response === "string"
@@ -235,8 +367,8 @@ function smartLocalChat(prompt, history, attachments) {
 
   if (/מחיר|pricing|pro|כמה עולה|₪20/i.test(prompt)) {
     const text = he
-      ? "💰 **מחירים:**\n• חינם — 2 פרויקטים/חודש, תמונות בסיסיות\n• Pro — ₪20/חודש, הכל ללא הגבלה\n\nתשלום ב-Bit → /freeai/checkout"
-      : "Free: 2 projects/mo. Pro: ₪20/mo — unlimited. Pay via Bit at /freeai/checkout";
+      ? `💰 **מחירים:**\n• חינם — 2 פרויקטים/חודש, תמונות בסיסיות\n• Pro — ₪20/חודש, הכל ללא הגבלה\n\nתשלום ב-Bit → ${R.checkout}`
+      : `Free: 2 projects/mo. Pro: ₪20/mo — unlimited. Pay via Bit at ${R.checkout}`;
     return { ok: true, text, provider: "freeai-local" };
   }
 
@@ -256,20 +388,16 @@ function smartLocalChat(prompt, history, attachments) {
 
   if (/עזר|help|מה אתה|what can|יודע לעשות/i.test(prompt)) {
     const text = he
-      ? "אני יכול לעזור ב:\n✅ כתיבה ושיווק\n✅ רעיונות לפרויקטים\n✅ הסברים ותכנון\n✅ קוד קצר\n\n**ליצירה אמיתית** — השתמש במצבים: 🖼️ תמונה · 💻 קוד · 🚀 פרויקט\n\n⚠️ לצ'אט חכם מלא — הוסף מפתח Groq חינמי ב-/freeai/providers (Groq → console.groq.com)"
-      : "I help with writing, ideas, planning, and short code. Use 🖼️/💻/🚀 modes to create. Add free Groq API key at /freeai/providers for full AI chat.";
+      ? `אני יכול לעזור ב:\n✅ כתיבה ושיווק\n✅ רעיונות לפרויקטים\n✅ הסברים ותכנון\n✅ קוד קצר\n\n**ליצירה אמיתית** — השתמש במצבים: 🖼️ תמונה · 💻 קוד · 🚀 פרויקט\n\n⚠️ לצ'אט חכם מלא — הוסף מפתח Groq חינמי ב-${R.providers} (Groq → console.groq.com)`
+      : `I help with writing, ideas, planning, and short code. Use 🖼️/💻/🚀 modes to create. Add free Groq API key at ${R.providers} for full AI chat.`;
     return { ok: true, text, provider: "freeai-local", needsApiKey: true };
   }
 
-  // Context from history — echo understanding
-  const lastUser = history.filter((m) => m.role === "user").slice(-2);
-  const contextHint = lastUser.length > 1 && he
-    ? " (ממשיך מהשיחה הקודמת)\n\n"
-    : "";
-
+  // Never echo the prompt back: callers pass full system instructions here, and
+  // quoting them leaked the raw prompt into lesson and study screens.
   const text = he
-    ? `${contextHint}קיבלתי: "${prompt.slice(0, 200)}"\n\n⚠️ **צ'אט AI מלא דורש מפתח חינמי** (2 דקות):\n1. היכנס ל-[console.groq.com](https://console.groq.com) → API Keys\n2. העתק מפתח\n3. /freeai/providers → Groq → הדבק\n\nאו השתמש במצבים:\n• 🖼️ **תמונה** — יצירה מיידית (Pollinations, חינם)\n• 💻 **קוד** — אתר מוכן\n• 🚀 **פרויקט** — pipeline מלא`
-    : `${contextHint}Got it: "${prompt.slice(0, 200)}"\n\nFor full AI chat, add a free Groq key at /freeai/providers.\nOr use 🖼️ Image / 💻 Code / 🚀 Project modes for instant creation.`;
+    ? `⚠️ **צ'אט AI מלא דורש מפתח חינמי** (2 דקות):\n1. היכנס ל-[console.groq.com](https://console.groq.com) → API Keys\n2. העתק מפתח\n3. ${R.providers} → Groq → הדבק\n\nבינתיים אפשר להשתמש במצבים:\n• 🖼️ **תמונה** — יצירה מיידית (Pollinations, חינם)\n• 💻 **קוד** — אתר מוכן\n• 🚀 **פרויקט** — pipeline מלא`
+    : `Full AI chat needs a free key.\nAdd a Groq key at ${R.providers}.\nMeanwhile use 🖼️ Image / 💻 Code / 🚀 Project modes for instant creation.`;
 
   return {
     ok: true,
@@ -284,8 +412,16 @@ function smartLocalChat(prompt, history, attachments) {
 export function getChatProviderStatus() {
   return {
     groq: !!getApiKey("groq", "VITE_GROQ_API_KEY"),
+    gemini: !!getApiKey("google_ai_studio", "VITE_GOOGLE_AI_API_KEY"),
+    deepseek: !!getApiKey("deepseek", "VITE_DEEPSEEK_API_KEY"),
     pollinations: !!getApiKey("pollinations_text", "VITE_POLLINATIONS_API_KEY"),
-    base44: !!tryBase44Core("InvokeLLM"),
-    puter: typeof window !== "undefined",
+    base44: typeof window !== "undefined" && !!window.base44,
+    puter: typeof window !== "undefined" && !!window.puter?.ai?.chat,
   };
+}
+
+/** Preload Puter.js so chat works on GitHub Pages without API keys */
+export function preloadPuter() {
+  if (typeof window === "undefined") return Promise.resolve(null);
+  return loadPuterScript().catch(() => null);
 }

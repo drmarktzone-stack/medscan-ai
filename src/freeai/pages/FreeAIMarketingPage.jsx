@@ -8,7 +8,8 @@ import {
 } from "@/freeai/lib/marketing.js";
 import { trackedUrl, loadStats, trackEvent, getProgress, KPI_TARGETS } from "@/freeai/lib/marketingTracker.js";
 import { buildPaymentConfirmWhatsApp } from "@/freeai/lib/paymentConfig.js";
-import { useI18n } from "@/lib/i18n";
+import { R } from "@/freeai/lib/routes.js";
+import { useI18n } from "../lib/i18n.jsx";
 import {
   Megaphone, Copy, CheckCircle2, MessageCircle, Mail, Share2,
   ExternalLink, Target, TrendingUp, Zap, Crown, Send,
@@ -91,7 +92,7 @@ export default function FreeAIMarketingPage() {
   const [stats, setStats] = useState(loadStats);
   const origin = getPublicOrigin();
 
-  const trackedCreate = useMemo(() => trackedUrl(`${origin}/freeai/create`, "marketing_page"), [origin]);
+  const trackedCreate = useMemo(() => trackedUrl(CREATE_URL, "marketing_page"), [origin]);
 
   useEffect(() => {
     trackEvent("visit", { page: "marketing" });
@@ -119,7 +120,7 @@ export default function FreeAIMarketingPage() {
         <h1 className="text-3xl font-black text-white mb-2">
           {locale === "he" ? "תשלח. תשתף. תמכור ₪20." : "Share. Sell. ₪20."}
         </h1>
-        <p className="text-white/50 text-sm" dir="ltr">{origin}/freeai</p>
+        <p className="text-white/50 text-sm" dir="ltr">{origin}</p>
       </section>
 
       {/* KPIs */}
@@ -163,7 +164,7 @@ export default function FreeAIMarketingPage() {
             className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/10 text-white font-bold text-sm hover:bg-white/15">
             <Mail className="w-4 h-4" /> Email
           </a>
-          <Link to="/freeai/pricing" onClick={() => trackEvent("pro_interest")}
+          <Link to={R.pricing} onClick={() => trackEvent("pro_interest")}
             className="flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold text-sm">
             <Crown className="w-4 h-4" /> Pro ₪20 — {locale === "he" ? "דף מחירון" : "Pricing"}
           </Link>

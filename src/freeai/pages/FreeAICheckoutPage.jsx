@@ -7,7 +7,8 @@ import {
   PAYMENT_METHODS, getBitOpenUrl, formatBitPhone,
 } from "@/freeai/lib/paymentConfig.js";
 import { activatePro } from "@/freeai/lib/subscription.js";
-import { useI18n } from "@/lib/i18n";
+import { R } from "@/freeai/lib/routes.js";
+import { useI18n } from "../lib/i18n.jsx";
 import {
   CreditCard, CheckCircle2, Crown, ArrowRight,
   MessageCircle, ExternalLink,
@@ -102,7 +103,7 @@ export default function FreeAICheckoutPage() {
             <p className="text-emerald-400/80 text-sm mb-4">
               {locale === "he" ? "יש לך גישה מלאה לכל היכולות" : "You have full access"}
             </p>
-            <Link to="/freeai/create" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-bold">
+            <Link to={R.create} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-bold">
               {locale === "he" ? "התחל ליצור" : "Start creating"} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -216,7 +217,7 @@ export default function FreeAICheckoutPage() {
                 </details>
 
                 <p className="text-center text-xs text-white/30 mt-4">
-                  <Link to="/freeai/create" className="text-violet-400 hover:text-violet-300">
+                  <Link to={R.create} className="text-violet-400 hover:text-violet-300">
                     {locale === "he" ? "← המשך בחינם" : "← Continue free"}
                   </Link>
                 </p>

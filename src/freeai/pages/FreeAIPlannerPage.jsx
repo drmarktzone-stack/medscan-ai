@@ -1,7 +1,7 @@
 import React from "react";
 import FreeAILayout from "@/freeai/components/FreeAILayout";
 import ProjectPlanner from "@/freeai/components/ProjectPlanner";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 
 export default function FreeAIPlannerPage() {
   const { lang } = useI18n();

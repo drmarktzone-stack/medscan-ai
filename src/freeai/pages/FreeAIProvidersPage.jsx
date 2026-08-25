@@ -6,7 +6,7 @@ import {
   loadCreditState, setCredits, toggleProvider, resetProviderCredits,
   loadApiKeys, saveApiKey,
 } from "@/freeai/lib/creditStore.js";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../lib/i18n.jsx";
 import { Search, Key, RefreshCw } from "lucide-react";
 
 export default function FreeAIProvidersPage() {

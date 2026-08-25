@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { Loader2, Download, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Loader2, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 import { generateFree } from "../lib/router.js";
+import { R } from "../lib/routes.js";
+import ResultImage from "./ResultImage.jsx";
+import MotifIcon from "./MotifIcon.jsx";
 
 export default function GenerationPanel({ locale = "he" }) {
   const [prompt, setPrompt] = useState("");
@@ -11,9 +15,9 @@ export default function GenerationPanel({ locale = "he" }) {
   const [error, setError] = useState(null);
 
   const types = [
-    { id: "image", labelHe: "תמונה", labelEn: "Image", icon: "🖼️" },
-    { id: "video", labelHe: "וידאו", labelEn: "Video", icon: "🎬" },
-    { id: "design", labelHe: "עיצוב", labelEn: "Design", icon: "🎨" },
+    { id: "image", labelHe: "תמונה", labelEn: "Image", motif: "art" },
+    { id: "design", labelHe: "עיצוב", labelEn: "Design", motif: "logo" },
+    { id: "video", labelHe: "וידאו", labelEn: "Video", motif: "game" },
   ];
 
   const run = async () => {
@@ -23,7 +27,10 @@ export default function GenerationPanel({ locale = "he" }) {
     try {
       const res = await generateFree({ type, prompt, count: Number(count) });
       if (!res.ok) {
-        setError(res.messageHe && locale === "he" ? res.messageHe : (res.messageEn || res.reason));
+        setError({
+          text: locale === "he" ? res.messageHe || res.reason : res.messageEn || res.reason,
+          suggestion: res.suggestion,
+        });
         return;
       }
       setResults(res);
@@ -47,13 +54,14 @@ export default function GenerationPanel({ locale = "he" }) {
             key={t.id}
             type="button"
             onClick={() => setType(t.id)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               type === t.id
                 ? "bg-violet-600 text-white"
                 : "bg-white/10 text-white/70 hover:bg-white/15"
             }`}
           >
-            {t.icon} {locale === "he" ? t.labelHe : t.labelEn}
+            <MotifIcon motif={t.motif} size="sm" accent="#ffffff" className="w-4 h-4" />
+            {locale === "he" ? t.labelHe : t.labelEn}
           </button>
         ))}
       </div>
@@ -92,9 +100,16 @@ export default function GenerationPanel({ locale = "he" }) {
       </div>
 
       {error && (
-        <div className="mt-4 flex items-start gap-2 text-amber-400 text-sm bg-amber-500/10 rounded-xl p-3">
+        <div className="mt-4 flex items-start gap-2 text-amber-300 text-sm bg-amber-500/10 border border-amber-400/25 rounded-xl p-3">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>{error}</span>
+          <div className="space-y-2">
+            <p>{error.text}</p>
+            {error.suggestion === "planner" && (
+              <Link to={R.planner} className="inline-flex items-center gap-1 font-bold underline">
+                {locale === "he" ? "פתח את המתכנן" : "Open the planner"}
+              </Link>
+            )}
+          </div>
         </div>
       )}
 
@@ -108,23 +123,15 @@ export default function GenerationPanel({ locale = "he" }) {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {results.images.map((img) => (
-              <div key={img.id} className="relative group rounded-xl overflow-hidden bg-black/20 aspect-square">
-                <img
-                  src={img.url}
-                  alt={img.prompt}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <a
-                  href={img.url}
-                  download={`freeai-${img.id}.jpg`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Download className="w-4 h-4" />
-                </a>
-              </div>
+              <ResultImage
+                key={img.id}
+                src={img.url}
+                fallbackUrl={img.fallbackUrl}
+                prompt={img.prompt || prompt}
+                alt={img.prompt}
+                className="rounded-xl"
+                showDownload
+              />
             ))}
           </div>
         </div>

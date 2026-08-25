@@ -15,6 +15,9 @@ import { getPrimaryEmail } from "../lib/creditPassport.js";
 import { formatSavings } from "../lib/savingsCalculator.js";
 import { PROFESSION_TEMPLATES } from "../data/templates.js";
 import ShareBanner from "../components/ShareBanner";
+import { R } from "../lib/routes.js";
+import ResultImage from "./ResultImage.jsx";
+import { useKidsVoice } from "@/freeai/kids/hooks/useKidsVoice.js";
 
 const MODE_ICONS = {
   chat: MessageSquare, image: Image, code: Code2, video: Video,
@@ -36,6 +39,13 @@ export default function AIWorkspace({ locale = "he" }) {
   const fileRef = useRef(null);
   const messagesEndRef = useRef(null);
   const score = calculateCreditScore();
+
+  const { listening, start: startVoice, stop: stopVoice, supported: voiceSupported } = useKidsVoice({
+    lang: locale === "en" ? "en" : "he",
+    onResult: (text) => {
+      setPrompt((p) => (p ? `${p} ${text}` : text));
+    },
+  });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -187,7 +197,7 @@ export default function AIWorkspace({ locale = "he" }) {
               {score.gradeHe || score.grade} · {score.runway.totalCredits.toLocaleString()}
             </span>
             {!getPrimaryEmail() && (
-              <Link to="/freeai/passport" className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 hover:bg-amber-500/30">
+              <Link to={R.passport} className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 hover:bg-amber-500/30">
                 {locale === "he" ? "חבר Passport" : "Link Passport"}
               </Link>
             )}
@@ -289,8 +299,10 @@ export default function AIWorkspace({ locale = "he" }) {
               rows={1}
             />
 
-            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-              <div className="flex items-center gap-1">
+            {/* Sits over the textarea's reserved bottom padding, so it must not
+                swallow clicks aimed at the text field itself. */}
+            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+              <div className="flex items-center gap-1 pointer-events-auto">
                 <input
                   ref={fileRef}
                   type="file"
@@ -309,8 +321,13 @@ export default function AIWorkspace({ locale = "he" }) {
                 </button>
                 <button
                   type="button"
-                  className="p-2 rounded-xl hover:bg-white/10 text-white/50 hover:text-white/80 transition-all"
-                  title={locale === "he" ? "הקלטה קולית (בקרוב)" : "Voice (coming soon)"}
+                  onClick={() => (listening ? stopVoice() : startVoice())}
+                  className={`p-2 rounded-xl transition-all ${
+                    listening
+                      ? "bg-red-500/30 text-red-300 animate-pulse"
+                      : "hover:bg-white/10 text-white/50 hover:text-white/80"
+                  }`}
+                  title={locale === "he" ? "הקלטה קולית" : "Voice input"}
                 >
                   <Mic className="w-4 h-4" />
                 </button>
@@ -320,7 +337,8 @@ export default function AIWorkspace({ locale = "he" }) {
                 type="button"
                 onClick={submit}
                 disabled={loading || (!prompt.trim() && attachments.length === 0)}
-                className="p-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white disabled:opacity-30 hover:opacity-90 transition-all shadow-lg shadow-violet-500/20"
+                aria-label={locale === "he" ? "שלח" : "Send"}
+                className="pointer-events-auto p-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white disabled:opacity-30 hover:opacity-90 transition-all shadow-lg shadow-violet-500/20"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               </button>
@@ -429,18 +447,14 @@ function MessageBubble({ message, locale }) {
           {result?.images?.length > 0 && (
             <div className="grid grid-cols-2 gap-2 mt-3">
               {result.images.map((img) => (
-                <div key={img.id} className="relative group rounded-xl overflow-hidden">
-                  <img src={img.url} alt="" className="w-full aspect-square object-cover" loading="lazy" />
-                  <a
-                    href={img.url}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Download className="w-3 h-3" />
-                  </a>
-                </div>
+                <ResultImage
+                  key={img.id}
+                  src={img.url}
+                  fallbackUrl={img.fallbackUrl}
+                  prompt={img.prompt}
+                  className="rounded-xl"
+                  showDownload
+                />
               ))}
             </div>
           )}

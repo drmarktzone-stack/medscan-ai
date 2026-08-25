@@ -317,7 +317,7 @@ describe("Workspace engine", () => {
     const res = await processWorkspaceRequest({ prompt: "מה אתה יודע לעשות?", mode: "chat" });
     assert.equal(res.ok, true);
     assert.ok(res.text?.length > 10);
-    assert.ok(/freeai|FreeAI|Groq|מצב/i.test(res.text));
+    assert.ok(/FreeAI|Groq|providers|מצב|checkout/i.test(res.text));
   });
 
   it("chat engine local fallback greets in Hebrew", async () => {
@@ -326,4 +326,69 @@ describe("Workspace engine", () => {
     assert.equal(res.ok, true);
     assert.ok(res.text.includes("FreeAI"));
   });
+
+  it("local fallback never quotes the prompt back", async () => {
+    const { chatWithAI } = await import("./lib/chatEngine.js");
+    const secret = "אתה מורה AI ידידותי לילדים — Write a short fun intro";
+    const res = await chatWithAI({ prompt: secret, history: [] });
+    assert.equal(res.ok, true);
+    assert.ok(!res.text.includes("Write a short fun intro"), res.text);
+    assert.ok(!res.text.includes("מורה AI ידידותי"), res.text);
+  });
+});
+
+describe("Kids content sanitising", () => {
+  it("drops lines that restate the brief", async () => {
+    const { stripInstructionEcho } = await import("./kids/lib/kidsEngine.js");
+    const echoed = [
+      "Subject: מתמטיקה",
+      "Grade: 5",
+      "Return ONLY valid JSON array:",
+      "No markdown.",
+      "היום נלמד על שברים — זה הולך להיות כיף!",
+    ].join("\n");
+    assert.equal(stripInstructionEcho(echoed), "היום נלמד על שברים — זה הולך להיות כיף!");
+  });
+
+  it("rejects a reply that is nothing but the brief", async () => {
+    const { stripInstructionEcho } = await import("./kids/lib/kidsEngine.js");
+    assert.equal(stripInstructionEcho("Return ONLY valid JSON\nNo markdown."), "");
+  });
+
+  it("leaves genuine lesson text untouched", async () => {
+    const { stripInstructionEcho } = await import("./kids/lib/kidsEngine.js");
+    const real = "שלום! היום נלמד על Past Simple.\n\nנתחיל בפלאשקארדס ואז חידון.";
+    assert.equal(stripInstructionEcho(real), real);
+  });
+});
+
+describe("Markdown in generated copy", () => {
+  it("daily lesson intro no longer shows raw asterisks", async () => {
+    const { runDailyLesson } = await import("./kids/lib/dailyLesson.js");
+    const lesson = await runDailyLesson({ grade: "5", lang: "he" });
+    // The copy deliberately contains **bold**; RichText renders it, so the
+    // markers must survive here for the component to convert.
+    assert.ok(lesson.intro.includes("**"), "intro should carry bold markers for RichText");
+  });
+});
+
+describe("Daily lesson without any AI provider", () => {
+  const FORBIDDEN = /Return ONLY|No markdown|Subject:|Grade:|Topic:|console\.groq|API Key|Sample answer|תשובה לדוגמה/i;
+
+  for (const lang of ["he", "en"]) {
+    it(`still returns a usable ${lang} lesson`, async () => {
+      const { runDailyLesson } = await import("./kids/lib/dailyLesson.js");
+      const lesson = await runDailyLesson({ grade: "5", lang });
+
+      assert.ok(lesson.intro.length > 10, "intro should not be empty");
+      assert.ok(lesson.cards.length > 0, "should offer flashcards");
+      assert.ok(lesson.quiz.questions.length > 0, "should offer quiz questions");
+
+      const everything = lesson.intro + JSON.stringify(lesson.cards) + JSON.stringify(lesson.quiz);
+      assert.ok(
+        !FORBIDDEN.test(everything),
+        `lesson leaked instruction or placeholder text: ${everything.slice(0, 200)}`,
+      );
+    });
+  }
 });

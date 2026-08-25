@@ -5,11 +5,11 @@ import FreeAILayout from "@/freeai/components/FreeAILayout";
 import GenerationPanel from "@/freeai/components/GenerationPanel";
 import { getCreditsDashboard } from "@/freeai/lib/planner.js";
 import { googleLabsProviders, CAPABILITY_META } from "@/freeai/data/providers.js";
-import { useI18n } from "@/lib/i18n";
-import {
-  Sparkles, Route, Settings, Zap, Gift, ExternalLink,
-  Image, Video, Palette,
-} from "lucide-react";
+import { useI18n } from "../lib/i18n.jsx";
+import { R } from "@/freeai/lib/routes.js";
+import MotifIcon from "@/freeai/components/MotifIcon.jsx";
+import AISetupPanel from "@/freeai/components/AISetupPanel.jsx";
+import { Gift, Sparkles, Zap, ExternalLink } from "lucide-react";
 
 export default function FreeAIHub() {
   const { lang } = useI18n();
@@ -56,18 +56,31 @@ export default function FreeAIHub() {
         </p>
 
         <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            to="/freeai/create"
+          <Link to={R.create}
             className="px-8 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 font-bold text-lg hover:opacity-90 flex items-center gap-2 shadow-lg shadow-violet-500/25"
           >
             <Sparkles className="w-5 h-5" />
             {locale === "he" ? "✨ התחל ליצור" : "✨ Start creating"}
           </Link>
-          <Link
-            to="/freeai/passport"
+          <Link to={R.planner}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 font-semibold hover:opacity-90 flex items-center gap-2"
+          >
+            {locale === "he" ? "📋 תכנן פרויקט" : "📋 Plan project"}
+          </Link>
+          <Link to={R.providers}
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 font-semibold hover:opacity-90 flex items-center gap-2"
           >
+            {locale === "he" ? "💰 חלוקת קרדיטים" : "💰 Credit split"}
+          </Link>
+          <Link to={R.passport}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 font-semibold hover:opacity-90 flex items-center gap-2"
+          >
             {locale === "he" ? "🧠 Credit Passport" : "🧠 Credit Passport"}
+          </Link>
+          <Link to={R.kids}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 font-semibold hover:opacity-90 flex items-center gap-2"
+          >
+            🌟 Kids
           </Link>
         </div>
       </section>
@@ -76,21 +89,23 @@ export default function FreeAIHub() {
         <ShareBanner locale={locale} />
       </section>
 
-      <section className="grid grid-cols-3 gap-4 mb-10">
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {[
-          { cap: "image", icon: Image, color: "from-blue-500 to-cyan-500" },
-          { cap: "video", icon: Video, color: "from-purple-500 to-pink-500" },
-          { cap: "design", icon: Palette, color: "from-orange-500 to-red-500" },
-        ].map(({ cap, icon: Icon, color }) => (
-          <div key={cap} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
-            <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-2`}>
-              <Icon className="w-5 h-5 text-white" />
+          { cap: "image", motif: "art", color: "from-blue-500 to-cyan-500" },
+          { cap: "video", motif: "game", color: "from-purple-500 to-pink-500" },
+          { cap: "design", motif: "logo", color: "from-orange-500 to-red-500" },
+        ].map(({ cap, motif, color }) => (
+          <div key={cap} className="fa-surface p-4 flex items-center gap-4 sm:flex-col sm:text-center">
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center shrink-0`}>
+              <MotifIcon motif={motif} size="md" accent="#ffffff" />
             </div>
-            <div className="text-2xl font-black text-white">
-              {(dashboard.byCapability[cap] || 0).toLocaleString()}
-            </div>
-            <div className="text-xs text-white/50">
-              {locale === "he" ? CAPABILITY_META[cap]?.labelHe : CAPABILITY_META[cap]?.labelEn}
+            <div>
+              <div className="text-2xl font-black text-white leading-none">
+                {(dashboard.byCapability[cap] || 0).toLocaleString()}
+              </div>
+              <div className="text-xs text-white/50 mt-1">
+                {locale === "he" ? CAPABILITY_META[cap]?.labelHe : CAPABILITY_META[cap]?.labelEn}
+              </div>
             </div>
           </div>
         ))}
@@ -126,6 +141,10 @@ export default function FreeAIHub() {
       </section>
 
       <section className="mb-10">
+        <AISetupPanel lang={lang} />
+      </section>
+
+      <section className="mb-10">
         <GenerationPanel locale={locale} />
       </section>
 
@@ -135,7 +154,7 @@ export default function FreeAIHub() {
             <Sparkles className="w-5 h-5 text-violet-400" />
             {locale === "he" ? "ספקים מובילים" : "Top providers"}
           </h2>
-          <Link to="/freeai/providers" className="text-sm text-violet-400 hover:text-violet-300">
+          <Link to={R.providers} className="text-sm text-violet-400 hover:text-violet-300">
             {locale === "he" ? "הכל →" : "All →"}
           </Link>
         </div>
