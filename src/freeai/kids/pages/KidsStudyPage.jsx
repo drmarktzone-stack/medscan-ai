@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Loader2, BookOpen, Layers, ClipboardList } from "lucide-react";
-import { R } from "@/freeai/lib/routes.js";
 import { useI18n } from "../../lib/i18n.jsx";
 import KidsLayout from "../components/KidsLayout.jsx";
 import KidsImage from "../components/KidsImage.jsx";
@@ -248,16 +247,14 @@ export default function KidsStudyPage() {
         )}
 
         {notice && (
-          <div className="kids-glass-card p-4 space-y-3 border-amber-300/40 bg-amber-500/15">
-            <p className="font-bold text-sm">{notice}</p>
-            <div className="flex flex-wrap gap-2">
+          <div className="space-y-3">
+            <div className="kids-glass-card p-4 space-y-3 border-amber-300/40 bg-amber-500/15">
+              <p className="font-bold text-sm">{notice}</p>
               <button type="button" onClick={startStudy} className="kids-sim-btn">
                 {lang === "he" ? "נסה שוב" : "Try again"}
               </button>
-              <Link to={R.kidsChat} className="kids-sim-btn">
-                {lang === "he" ? "חבר AI" : "Connect AI"}
-              </Link>
             </div>
+            <KidsApiStatus lang={lang} />
           </div>
         )}
 

@@ -8,6 +8,7 @@ import { googleLabsProviders, CAPABILITY_META } from "@/freeai/data/providers.js
 import { useI18n } from "../lib/i18n.jsx";
 import { R } from "@/freeai/lib/routes.js";
 import MotifIcon from "@/freeai/components/MotifIcon.jsx";
+import AISetupPanel from "@/freeai/components/AISetupPanel.jsx";
 import { Gift, Sparkles, Zap, ExternalLink } from "lucide-react";
 
 export default function FreeAIHub() {
@@ -137,6 +138,10 @@ export default function FreeAIHub() {
             </a>
           ))}
         </div>
+      </section>
+
+      <section className="mb-10">
+        <AISetupPanel lang={lang} />
       </section>
 
       <section className="mb-10">
