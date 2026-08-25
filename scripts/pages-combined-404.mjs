@@ -1,40 +1,24 @@
 /**
- * GitHub Pages SPA fallback for MedScan + FreeAI subfolder.
- * Root 404.html fetches the correct index.html while keeping the deep-link URL.
+ * GitHub Pages SPA fallback for MedScan + the FreeAI subfolder.
+ *
+ * Writes the root `404.html` that Pages serves for every unknown path, and
+ * injects the matching URL-restore snippet into both app entry points.
  */
-import { writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { redirectScript, injectRestoreScript, wrapHtml } from "./pages-spa-redirect.mjs";
 
 const dist = resolve(process.cwd(), "dist");
 const repo = process.env.GITHUB_PAGES_REPO || "medscan-ai";
-const base = `/${repo}`;
+const base = repo ? `/${repo}` : "";
 
-const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Loading…</title>
-  <script>
-    (async function () {
-      var path = location.pathname;
-      var base = ${JSON.stringify(base)};
-      var indexUrl = path.indexOf(base + "/freeai") === 0
-        ? base + "/freeai/index.html"
-        : base + "/index.html";
-      try {
-        var res = await fetch(indexUrl);
-        var html = await res.text();
-        document.open();
-        document.write(html);
-        document.close();
-      } catch (e) {
-        location.replace(indexUrl);
-      }
-    })();
-  </script>
-</head>
-<body></body>
-</html>`;
+writeFileSync(resolve(dist, "404.html"), wrapHtml(redirectScript(base, ["freeai"])));
 
-writeFileSync(resolve(dist, "404.html"), html);
-console.log("pages-combined-404: wrote dist/404.html for", base);
+for (const entry of ["index.html", "freeai/index.html"]) {
+  const file = resolve(dist, entry);
+  if (!existsSync(file)) continue;
+  writeFileSync(file, injectRestoreScript(readFileSync(file, "utf8")));
+  console.log("pages-combined-404: restore script injected into", entry);
+}
+
+console.log("pages-combined-404: wrote dist/404.html for", base || "/");
