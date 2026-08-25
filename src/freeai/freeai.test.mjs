@@ -362,6 +362,16 @@ describe("Kids content sanitising", () => {
   });
 });
 
+describe("Markdown in generated copy", () => {
+  it("daily lesson intro no longer shows raw asterisks", async () => {
+    const { runDailyLesson } = await import("./kids/lib/dailyLesson.js");
+    const lesson = await runDailyLesson({ grade: "5", lang: "he" });
+    // The copy deliberately contains **bold**; RichText renders it, so the
+    // markers must survive here for the component to convert.
+    assert.ok(lesson.intro.includes("**"), "intro should carry bold markers for RichText");
+  });
+});
+
 describe("Daily lesson without any AI provider", () => {
   const FORBIDDEN = /Return ONLY|No markdown|Subject:|Grade:|Topic:|console\.groq|API Key|Sample answer|תשובה לדוגמה/i;
 

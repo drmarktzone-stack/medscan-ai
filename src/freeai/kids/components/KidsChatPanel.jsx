@@ -9,6 +9,7 @@ import { useKidsVoice } from "../hooks/useKidsVoice.js";
 import SpeakingAvatar from "./SpeakingAvatar.jsx";
 import KidsBuildStepsPanel from "./KidsBuildStepsPanel.jsx";
 import KidsApiStatus from "./KidsApiStatus.jsx";
+import RichText from "@/freeai/components/RichText.jsx";
 import { speakText, stopSpeaking } from "../lib/tts.js";
 import { useSymbolKeyboardBridge } from "../context/SymbolKeyboardBridge.jsx";
 
@@ -178,7 +179,7 @@ export default function KidsChatPanel({ lang = "he", autoSpeak = true }) {
                 {m.buildType && m.role === "assistant" && (
                   <span className="block text-xs font-black text-yellow-300 mb-1">🛠️ {m.buildType}</span>
                 )}
-                {m.content}
+                <RichText text={m.content} />
               </div>
             </div>
           ))}

@@ -12,6 +12,7 @@ import {
 } from "../lib/dailyLesson.js";
 import { logActivity } from "../lib/activityLog.js";
 import { topicIllustration } from "../lib/illustrations.js";
+import RichText from "@/freeai/components/RichText.jsx";
 import { Loader2, Flame, CheckCircle2, Sparkles } from "lucide-react";
 
 const COPY = {
@@ -116,7 +117,7 @@ export default function KidsDailyPage() {
               <Sparkles className="w-4 h-4" />
               {lesson.plan.subject} — {lesson.plan.topic}
             </div>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{lesson.intro}</p>
+            <RichText text={lesson.intro} className="text-sm leading-relaxed" />
             <button type="button" onClick={() => setStep("cards")}
               className="w-full py-3 rounded-2xl bg-gradient-to-r from-white to-yellow-100 text-purple-700 font-black shadow-lg">
               {lang === "he" ? "לפלאשקארדס →" : "Flashcards →"}

@@ -12,6 +12,7 @@ import { BODY_CATEGORIES } from "../data/anatomyData.js";
 import { bodyItemThumb } from "../lib/illustrations.js";
 import { loadKidsProfile, saveCreation } from "../lib/kidsStore.js";
 import { generateBodyLesson, generateBodyFlashcards } from "../lib/kidsEngine.js";
+import RichText from "@/freeai/components/RichText.jsx";
 
 const COPY = {
   title: { he: "גוף האדם", en: "Human Body", ar: "جسم الإنسان" },
@@ -195,7 +196,7 @@ export default function KidsBodyPage() {
                 ))}
               </div>
             )}
-            <p className="leading-relaxed whitespace-pre-wrap text-base">{lesson.explanation}</p>
+            <RichText text={lesson.explanation} className="leading-relaxed text-base" />
           </div>
         )}
 

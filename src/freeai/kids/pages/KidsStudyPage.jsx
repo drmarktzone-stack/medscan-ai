@@ -18,6 +18,7 @@ import { generateFlashcards, generateSummaryQuiz, generateStudyIntro } from "../
 import { topicIllustration } from "../lib/illustrations.js";
 import { withTimeout, allSettledWithTimeout } from "../../lib/withTimeout.js";
 import MotifIcon from "@/freeai/components/MotifIcon.jsx";
+import RichText from "@/freeai/components/RichText.jsx";
 
 const COPY = {
   title: { he: "לימוד חכם", en: "Smart Study", ar: "دراسة ذكية" },
@@ -243,7 +244,7 @@ export default function KidsStudyPage() {
         )}
 
         {intro && (
-          <div className="bg-white/15 rounded-2xl p-4 text-sm leading-relaxed whitespace-pre-wrap kids-glass-card">{intro}</div>
+          <RichText text={intro} className="bg-white/15 rounded-2xl p-4 text-sm leading-relaxed kids-glass-card" />
         )}
 
         {notice && (
