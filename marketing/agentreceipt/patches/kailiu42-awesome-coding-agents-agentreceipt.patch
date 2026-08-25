@@ -1,0 +1,5 @@
+*** Add under "## CLI Agent Helpers" table in README.md:
+
+| 👀 | [AgentReceipt](https://github.com/drmarktzone-stack/medscan-ai) | verification, receipts, handoff-gates | Proof-of-done gate for coding agents: run verification (e.g. npm run build), write a JSON receipt, and block the next agent if checks fail |
+
+Issue: https://github.com/kailiu42/awesome-coding-agents/issues/32
