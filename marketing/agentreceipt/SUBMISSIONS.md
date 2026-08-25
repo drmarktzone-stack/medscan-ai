@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-24 ~18:15 UTC  
+Updated: 2026-08-25 ~00:05 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt  
 **Demand watch:** timer every 6h (`agentreceipt-demand-watch`)
 
@@ -25,14 +25,17 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 | rohitg00/awesome-claude-code-toolkit#747 | OPEN | 0 | none yet |
 | ccplugins/awesome-claude-code-plugins#388 | OPEN | 0 | none yet |
 | paulboguta/awesome-dev-tool-directories#3 | OPEN | 0 | none yet |
-| Zijian-Ni/awesome-ai-agents-2026#90 | OPEN | 0 | new (round 2) |
-| DirectorySurf/awesome-ai-agents-directories#50 | OPEN | 0 | new (round 2) |
-| alternbits/awesome-ai-agents#75 | OPEN | 0 | new (round 2) |
-| rohitg00/awesome-ai-apps#61 | OPEN | 0 | new (round 2) |
+| Zijian-Ni/awesome-ai-agents-2026#90 | OPEN | 0 | none yet |
+| DirectorySurf/awesome-ai-agents-directories#50 | OPEN | 0 | none yet |
+| alternbits/awesome-ai-agents#75 | OPEN | 0 | none yet |
+| rohitg00/awesome-ai-apps#61 | OPEN | 0 | none yet |
+| kailiu42/awesome-coding-agents#32 | OPEN | 0 | new (round 3) |
+| ChatTeach/Awesome-AI-Agents#30 | OPEN | 0 | new (round 3) |
+| smithakolan/awesome-ai-agents#5 | OPEN | 0 | new (round 3) |
 | aiagenttools.dev | submitted (not live) | search = 0 hits | awaiting review |
 | Checkout / WhatsApp Bit | — | — | **you must check WhatsApp** |
 
-**Verdict (2026-08-24 demand-watch #2):** Still **0 maintainer replies**. AgentReceipt **not** found live on aiagenttools / thenextai / toolsland. Public demand signal = none yet.
+**Verdict (2026-08-25 demand-watch #3):** Still **0 maintainer replies**. AgentReceipt **not** found live on aiagenttools / thenextai / toolsland. Public demand signal = none yet.
 
 ---
 
@@ -41,8 +44,8 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 ### Directories
 | Channel | Status |
 |---------|--------|
-| aiagenttools.dev | Submitted API ids `mt69bcc6lvpq9`, `mt7jlrt7yfb9j`, `mt7kjl3od4e2l` (not live in search yet) |
-| toolspantry / ai-bazaar / thenextai / toolsland | Form automation failed / paid toggle — not completed this round |
+| aiagenttools.dev | Submitted API ids `mt69bcc6lvpq9`, `mt7jlrt7yfb9j`, `mt7kjl3od4e2l`, `mt7wfkk70z6qm` (not live in search yet) |
+| toolspantry / ai-bazaar / thenextai / toolsland / saashub / getai | Form/API blocked or unreliable |
 
 ### Awesome / GitHub listing issues
 | Repo | Issue |
@@ -66,6 +69,9 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 | DirectorySurf/awesome-ai-agents-directories | [#50](https://github.com/DirectorySurf/awesome-ai-agents-directories/issues/50) |
 | alternbits/awesome-ai-agents | [#75](https://github.com/alternbits/awesome-ai-agents/issues/75) |
 | rohitg00/awesome-ai-apps | [#61](https://github.com/rohitg00/awesome-ai-apps/issues/61) |
+| kailiu42/awesome-coding-agents | [#32](https://github.com/kailiu42/awesome-coding-agents/issues/32) |
+| ChatTeach/Awesome-AI-Agents | [#30](https://github.com/ChatTeach/Awesome-AI-Agents/issues/30) |
+| smithakolan/awesome-ai-agents | [#5](https://github.com/smithakolan/awesome-ai-agents/issues/5) |
 
 ---
 
@@ -74,9 +80,8 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 | Channel | Reason |
 |---------|--------|
 | thenextai.com | Free toggle flips to $199 Featured |
-| toolsland.ai / toolspantry / ai-bazaar | Browser form automation unreliable |
-| dang.ai | Login / pricing wall |
-| TAAFT / Futurepedia / topai | 403 or paid |
+| toolsland / toolspantry / ai-bazaar | Browser form automation unreliable |
+| saashub / getai / topai / TAAFT | 403/404/login |
 | HN / Reddit / DEV.to | Need your Secrets |
 | Facebook / WhatsApp | Intentionally not primary |
 
