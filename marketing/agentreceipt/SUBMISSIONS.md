@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-26 ~06:05 UTC  
+Updated: 2026-08-26 ~07:25 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt  
 **Demand watch:** timer every 6h (`agentreceipt-demand-watch`)
 
@@ -10,55 +10,47 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
 
 | Item | Status |
 |------|--------|
-| Live `/agentreceipt` | **HTTP 404** (unchanged) |
-| PR [#19](https://github.com/drmarktzone-stack/medscan-ai/pull/19) | OPEN, mergeable, CI green — **not merged** |
-| Zijian-Ni#90 | CLOSED — rejected for 404 |
-| kailiu42#32 | CLOSED — invited PR; not listed |
-| Other issues | OPEN, 0 comments |
+| Live `/agentreceipt` | **HTTP 200** (fixed — PR #19 merged + Pages deployed) |
+| Zijian-Ni#90 | CLOSED — rejected for old 404; **ready to reply** (draft below) |
+| kailiu42#32 | CLOSED — invited PR; **Dr must open PR** (token cannot fork) |
+| Other issues | mostly OPEN, 0 comments |
 | aiagenttools search | 0 hits |
 
-**Verdict (demand-watch #8):** Still blocked on merging #19. Opening more listing issues while the URL 404s has diminishing returns.
+**Verdict:** URL blocker cleared. Next: reply Zijian-Ni + open kailiu42 PR from Dr’s GitHub.
 
 ---
 
-## 🚨 DR — merge #19
+## ✅ Done this session
 
-1. Merge https://github.com/drmarktzone-stack/medscan-ai/pull/19  
-2. Wait for Pages deploy  
-3. `curl -o /dev/null -w "%{http_code}\n" https://drmarktzone-stack.github.io/medscan-ai/agentreceipt` → **200**  
-4. Paste Zijian-Ni draft (below) + open kailiu42 PR
+1. Merged PR #19 → Pages deploy success  
+2. Verified `…/agentreceipt` → **200**  
+3. Follow-up: materialize nested routes (`/docs`, `/pricing`, …) for HTTP 200
 
-### Zijian-Ni#90 draft (after 200)
+---
+
+## Draft for Zijian-Ni#90 (paste now)
 
 ```text
 Thanks for the clear quality-gate feedback — appreciated.
 
-1. Live URL: /agentreceipt was incorrectly served as HTTP 404 via Pages' SPA fallback. We now materialize dist/agentreceipt/index.html so the canonical URL returns HTTP 200:
+1. Live URL: /agentreceipt was incorrectly served as HTTP 404 via Pages' SPA fallback. Fixed — canonical URL now returns HTTP 200:
    https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
    Docs: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
 
-2. Maturity: agreed we are early. Happy to wait for clearer traction, or reconsider once the URL is verified green.
+2. Maturity: agreed we are early. Happy to wait for clearer traction, or reconsider once you've verified the URL is green.
    Repo: https://github.com/drmarktzone-stack/medscan-ai
 ```
 
-### kailiu42 row
+## kailiu42 catalog row (open PR from your account)
 
 ```md
 | 👀 | [AgentReceipt](https://github.com/drmarktzone-stack/medscan-ai) | verification, receipts, handoff-gates | Proof-of-done gate for coding agents: run verification (e.g. npm run build), write a JSON receipt, and block the next agent if checks fail |
 ```
 
----
-
-## Round 8 submissions
-
-| Channel | Status |
-|---------|--------|
-| aiagenttools.dev | `mt9oqwvu6yazv` |
-| 0xWelt/Awesome-Vibe-Coding | [#262](https://github.com/0xWelt/Awesome-Vibe-Coding/issues/262) |
-| awesome-vibe-coding/awesome-vibe-coding | [#140](https://github.com/awesome-vibe-coding/awesome-vibe-coding/issues/140) |
+Under `## CLI Agent Helpers` in https://github.com/kailiu42/awesome-coding-agents
 
 ---
 
 ## Watching
 
-Every 6h. Priority remains: **merge #19 → URL 200 → reply Zijian-Ni + kailiu42 PR**.
+Every 6h. With URL green, prioritize replies + kailiu42 PR completion.
