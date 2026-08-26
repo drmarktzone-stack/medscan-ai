@@ -45,10 +45,12 @@ function roundTrip(path, repoBase, prefixes) {
 
 test("deep links survive the 404 round trip", async (t) => {
   const cases = [
-    ["/medscan-ai/freeai/kids", "/medscan-ai", ["freeai"]],
-    ["/medscan-ai/freeai/kids/labs", "/medscan-ai", ["freeai"]],
-    ["/medscan-ai/freeai/kids/study?subject=math", "/medscan-ai", ["freeai"]],
-    ["/medscan-ai/clinic/tools", "/medscan-ai", ["freeai"]],
+    ["/medscan-ai/freeai/kids", "/medscan-ai", ["freeai", "agentreceipt"]],
+    ["/medscan-ai/freeai/kids/labs", "/medscan-ai", ["freeai", "agentreceipt"]],
+    ["/medscan-ai/freeai/kids/study?subject=math", "/medscan-ai", ["freeai", "agentreceipt"]],
+    ["/medscan-ai/agentreceipt/docs", "/medscan-ai", ["freeai", "agentreceipt"]],
+    ["/medscan-ai/agentreceipt/checkout", "/medscan-ai", ["freeai", "agentreceipt"]],
+    ["/medscan-ai/clinic/tools", "/medscan-ai", ["freeai", "agentreceipt"]],
     ["/freeai/kids/labs", "/freeai", []],
   ];
 
@@ -60,8 +62,13 @@ test("deep links survive the 404 round trip", async (t) => {
 });
 
 test("the redirect keeps the sub-app root so its assets resolve", () => {
-  const url = redirect("/medscan-ai/freeai/kids", "", "", "/medscan-ai", ["freeai"]);
+  const url = redirect("/medscan-ai/freeai/kids", "", "", "/medscan-ai", ["freeai", "agentreceipt"]);
   assert.ok(url.startsWith("https://example.github.io/medscan-ai/freeai/?/"), url);
+});
+
+test("AgentReceipt deep links keep the agentreceipt root", () => {
+  const url = redirect("/medscan-ai/agentreceipt/docs", "", "", "/medscan-ai", ["freeai", "agentreceipt"]);
+  assert.ok(url.startsWith("https://example.github.io/medscan-ai/agentreceipt/?/"), url);
 });
 
 test("restore script is injected once", () => {
