@@ -27,11 +27,15 @@ const rootHtml = injectRestoreScript(readFileSync(rootIndex, "utf8"));
 writeFileSync(rootIndex, rootHtml);
 console.log("pages-combined-404: restore script injected into index.html");
 
-// Materialize AgentReceipt landing so /agentreceipt is HTTP 200 (not 404.html).
-const agentReceiptIndex = resolve(dist, "agentreceipt/index.html");
-mkdirSync(dirname(agentReceiptIndex), { recursive: true });
-writeFileSync(agentReceiptIndex, rootHtml);
-console.log("pages-combined-404: wrote dist/agentreceipt/index.html");
+// Materialize AgentReceipt routes so listing URLs are HTTP 200 (not 404.html).
+const agentReceiptRoutes = ["", "docs", "pricing", "checkout", "console", "marketing"];
+for (const route of agentReceiptRoutes) {
+  const rel = route ? `agentreceipt/${route}/index.html` : "agentreceipt/index.html";
+  const file = resolve(dist, rel);
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, rootHtml);
+  console.log("pages-combined-404: wrote dist/" + rel);
+}
 
 for (const entry of ["freeai/index.html"]) {
   const file = resolve(dist, entry);
