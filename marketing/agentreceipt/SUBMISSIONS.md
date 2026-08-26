@@ -1,8 +1,9 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-26 ~12:05 UTC  
+Updated: 2026-08-26 ~18:05 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt (**HTTP 200**)  
-**Demand watch:** timer every 6h (`agentreceipt-demand-watch`)
+MIT core: `src/lib/agentreceipt/LICENSE` (on main)  
+**Demand watch:** timer every 6h
 
 ---
 
@@ -10,65 +11,49 @@ Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt (**HTTP 200
 
 | Item | Status |
 |------|--------|
-| Live `/agentreceipt` + `/docs` | **HTTP 200** |
-| Zijian-Ni#90 | CLOSED (404) — **reply draft ready; agent cannot comment** |
-| kailiu42#32 | CLOSED — invited PR; **still not in README** |
-| Jenqyang#448 | CLOSED — no OSS license + not a dedicated repo |
-| Other issues | OPEN, 0 comments |
-| aiagenttools | resubmitted `mta1m00gasbi8`; search still 0 |
+| Live URL `/agentreceipt` + `/docs` | **200** |
+| Zijian-Ni#90 | CLOSED — **Dr must paste fix reply** |
+| kailiu42#32 | CLOSED — invited PR; **not listed yet** |
+| Jenqyang#448 | CLOSED — wants dedicated licensed repo |
+| ~25 other issues | OPEN, 0 comments |
+| aiagenttools | submitted; search still 0 |
+
+**Verdict (round 10):** Product URL is healthy. Bottleneck is **human follow-ups** (Zijian-Ni reply, kailiu42 PR, optional dedicated repo), not more automated issues.
 
 ---
 
-## 🔔 DR actions (agent cannot do these)
+## 🔔 DR — still needed
 
-### 1. Paste on Zijian-Ni#90
+1. **Zijian-Ni#90** — paste:
 ```text
-Thanks for the clear quality-gate feedback — appreciated.
+Thanks for the clear quality-gate feedback.
 
-1. Live URL fixed — now HTTP 200:
-   https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
-   Docs: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
+Live URL fixed — now HTTP 200:
+https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
+Docs: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
 
-2. Maturity: agreed we are early. Happy to reconsider once you've verified the URL.
-   Repo: https://github.com/drmarktzone-stack/medscan-ai
+Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/medscan-ai
 ```
 
-### 2. Open PR on kailiu42/awesome-coding-agents
-Under `## CLI Agent Helpers`:
+2. **kailiu42 PR** — under CLI Agent Helpers:
 ```md
 | 👀 | [AgentReceipt](https://github.com/drmarktzone-stack/medscan-ai) | verification, receipts, handoff-gates | Proof-of-done gate for coding agents: run verification (e.g. npm run build), write a JSON receipt, and block the next agent if checks fail |
 ```
 
-### 3. Jenqyang#448 — they want a dedicated licensed repo
-They closed because: (a) no standard OSS license, (b) MedScan monorepo isn’t a standalone AgentReceipt artefact.
-
-**This round we added** MIT for the AgentReceipt module (`src/lib/agentreceipt/LICENSE`).
-
-**Still needed for their bar:** create a public repo e.g. `drmarktzone-stack/agentreceipt` with MIT + README + CLI. Agent token cannot create repos (403).
-
-Draft reply after MIT lands on main:
-```text
-Thanks for the curation notes.
-
-1. AgentReceipt core is now MIT-licensed in-tree: src/lib/agentreceipt/LICENSE
-   Docs: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
-2. Agreed a dedicated repo is cleaner — spinning that up next; will resubmit with the canonical URL when ready.
-
-Understood on the Free OSS claim — we will not claim full-repo OSS until the dedicated artefact exists.
-```
+3. **Jenqyang** — create public `agentreceipt` repo (MIT) if you want that list; module MIT alone may not be enough.
 
 ---
 
-## Round 9 submissions
+## Round 10
 
 | Channel | Status |
 |---------|--------|
-| aiagenttools.dev | `mta1m00gasbi8` |
-| acvnace/awesome-vibe-coding-resources | [#72](https://github.com/acvnace/awesome-vibe-coding-resources/issues/72) |
-| Serennity007/awesome-ai-coding | [#1](https://github.com/Serennity007/awesome-ai-coding/issues/1) |
+| aiagenttools.dev | `mtaeh4yad5gv0` |
+| KingLeoJr/awesome-vibe-coding-prompt-templates | [#4](https://github.com/KingLeoJr/awesome-vibe-coding-prompt-templates/issues/4) |
+| hgko1207/awesome-ai-coding-kr | [#2](https://github.com/hgko1207/awesome-ai-coding-kr/issues/2) |
 
 ---
 
 ## Watching
 
-URL blocker cleared. Next bottlenecks are **human replies/PRs** + optional **dedicated AgentReceipt repo**.
+Every 6h. Prefer quality follow-ups over issue spam while Dr actions pend.
