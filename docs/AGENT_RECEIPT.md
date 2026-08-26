@@ -49,3 +49,8 @@ See `src/lib/agentreceipt/schema.js`. Required fields:
 ## Sell
 
 Team plan waitlist is stored in browser localStorage (console) or `.agentreceipt/ledger.json` (CLI export via future sync). No Stripe yet — contact via pricing page mailto.
+
+## License
+
+AgentReceipt core (CLI + `src/lib/agentreceipt/` + product UI under `src/agentreceipt/`) is **MIT** — see `src/lib/agentreceipt/LICENSE`.  
+The rest of the MedScan app is not covered by that license.
