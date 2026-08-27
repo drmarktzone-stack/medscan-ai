@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-27 ~00:05 UTC  
+Updated: 2026-08-27 ~06:05 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt (**HTTP 200**)  
 MIT core: `src/lib/agentreceipt/LICENSE` (on main)  
 **Demand watch:** timer every 6h
@@ -15,10 +15,10 @@ MIT core: `src/lib/agentreceipt/LICENSE` (on main)
 | Zijian-Ni#90 | CLOSED — **Dr must paste fix reply** |
 | kailiu42#32 | CLOSED — invited PR; **not listed yet** |
 | Jenqyang#448 | CLOSED — wants dedicated licensed repo |
-| ~27 other issues | OPEN, 0 comments |
+| ~29 other issues | OPEN, 0 comments |
 | aiagenttools | submitted; search still 0 |
 
-**Verdict (round 11):** No change. URL healthy. Zero new maintainer replies. **Dr follow-ups remain the only high-leverage actions.**
+**Verdict (round 12):** No change. URL healthy. Zero new maintainer replies. **Dr follow-ups remain the only high-leverage actions.**
 
 ---
 
@@ -44,16 +44,16 @@ Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/me
 
 ---
 
-## Round 11
+## Round 12
 
 | Channel | Status |
 |---------|--------|
-| aiagenttools.dev | `mtarbvyap1vng` |
-| tatn/awesome-ai-coding-cli | [#5](https://github.com/tatn/awesome-ai-coding-cli/issues/5) |
-| wdzhwsh4067/awesome-coding-agents | [#12](https://github.com/wdzhwsh4067/awesome-coding-agents/issues/12) |
+| aiagenttools.dev | `mtb47cn27ao6v` |
+| Caldalis/awesome-coding-agents | [#4](https://github.com/Caldalis/awesome-coding-agents/issues/4) |
+| closedloop-technologies/awesome-coding-agents | [#9](https://github.com/closedloop-technologies/awesome-coding-agents/issues/9) |
 
 ---
 
 ## Watching
 
-Every 6h. Pausing heavy issue spam until Dr completes Zijian-Ni + kailiu42.
+Every 6h. Prefer quality over spam while Dr actions pend.
