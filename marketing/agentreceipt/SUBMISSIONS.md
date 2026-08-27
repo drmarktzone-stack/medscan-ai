@@ -50,7 +50,8 @@ Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/me
 |---------|--------|
 | aiagenttools.dev | `mtbtx99tijggt` |
 | eruens/awesome-agent-tools | [#4](https://github.com/eruens/awesome-agent-tools/issues/4) |
-| AbdNour627/awesome-openclaw-configs | (pending) |
+| danielrosehill/Awesome-AI-Coding-Tools | [#14](https://github.com/danielrosehill/Awesome-AI-Coding-Tools/issues/14) |
+| dalisoft/awesome-ai-coding | [#87](https://github.com/dalisoft/awesome-ai-coding/issues/87) |
 
 ---
 
