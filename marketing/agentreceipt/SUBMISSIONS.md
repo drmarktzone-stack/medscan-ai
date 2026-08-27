@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-26 ~18:05 UTC  
+Updated: 2026-08-27 ~00:05 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt (**HTTP 200**)  
 MIT core: `src/lib/agentreceipt/LICENSE` (on main)  
 **Demand watch:** timer every 6h
@@ -15,10 +15,10 @@ MIT core: `src/lib/agentreceipt/LICENSE` (on main)
 | Zijian-Ni#90 | CLOSED — **Dr must paste fix reply** |
 | kailiu42#32 | CLOSED — invited PR; **not listed yet** |
 | Jenqyang#448 | CLOSED — wants dedicated licensed repo |
-| ~25 other issues | OPEN, 0 comments |
+| ~27 other issues | OPEN, 0 comments |
 | aiagenttools | submitted; search still 0 |
 
-**Verdict (round 10):** Product URL is healthy. Bottleneck is **human follow-ups** (Zijian-Ni reply, kailiu42 PR, optional dedicated repo), not more automated issues.
+**Verdict (round 11):** No change. URL healthy. Zero new maintainer replies. **Dr follow-ups remain the only high-leverage actions.**
 
 ---
 
@@ -40,20 +40,20 @@ Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/me
 | 👀 | [AgentReceipt](https://github.com/drmarktzone-stack/medscan-ai) | verification, receipts, handoff-gates | Proof-of-done gate for coding agents: run verification (e.g. npm run build), write a JSON receipt, and block the next agent if checks fail |
 ```
 
-3. **Jenqyang** — create public `agentreceipt` repo (MIT) if you want that list; module MIT alone may not be enough.
+3. **Jenqyang** — create public `agentreceipt` repo (MIT) if you want that list.
 
 ---
 
-## Round 10
+## Round 11
 
 | Channel | Status |
 |---------|--------|
-| aiagenttools.dev | `mtaeh4yad5gv0` |
-| KingLeoJr/awesome-vibe-coding-prompt-templates | [#4](https://github.com/KingLeoJr/awesome-vibe-coding-prompt-templates/issues/4) |
-| hgko1207/awesome-ai-coding-kr | [#2](https://github.com/hgko1207/awesome-ai-coding-kr/issues/2) |
+| aiagenttools.dev | `mtarbvyap1vng` |
+| tatn/awesome-ai-coding-cli | [#5](https://github.com/tatn/awesome-ai-coding-cli/issues/5) |
+| wdzhwsh4067/awesome-coding-agents | [#12](https://github.com/wdzhwsh4067/awesome-coding-agents/issues/12) |
 
 ---
 
 ## Watching
 
-Every 6h. Prefer quality follow-ups over issue spam while Dr actions pend.
+Every 6h. Pausing heavy issue spam until Dr completes Zijian-Ni + kailiu42.
