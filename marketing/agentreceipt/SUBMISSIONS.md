@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-28 ~06:05 UTC  
+Updated: 2026-08-28 ~12:05 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt (**HTTP 200**)  
 MIT core: `src/lib/agentreceipt/LICENSE` (on main)  
 **Demand watch:** timer every 6h
@@ -16,10 +16,11 @@ MIT core: `src/lib/agentreceipt/LICENSE` (on main)
 | kailiu42#32 | CLOSED — invited PR; **not listed yet** |
 | kailiu42#37, #38 | OPEN — agent follow-ups; **0 replies** |
 | Jenqyang#448 | CLOSED — wants dedicated licensed repo |
-| ~36 other issues | OPEN, 0 comments |
+| ~38 other issues | OPEN, 0 comments |
 | aiagenttools | submitted; search still 0 |
+| tiennm99/awesome-ai-agents#12 | repo deleted / 404 |
 
-**Verdict (round 16):** No change. **Dr PR to kailiu42 is still the highest-leverage action.**
+**Verdict (round 17):** No maintainer replies since round 16. URLs still **200**. **Dr PR to kailiu42 remains highest leverage.** Opened 2 targeted coding-agent list issues (quome, closedloop).
 
 ---
 
@@ -44,6 +45,16 @@ Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/me
 3. **Jenqyang** — dedicated `agentreceipt` public repo (MIT) if you want that list.
 
 ---
+
+## Round 17
+
+| Channel | Status |
+|---------|--------|
+| Live URL check | `/agentreceipt` + `/docs` → **200** (301→200) |
+| quome-cloud/awesome-coding-agents | [#15](https://github.com/quome-cloud/awesome-coding-agents/issues/15) new |
+| closedloop-technologies/awesome-coding-agents | [#10](https://github.com/closedloop-technologies/awesome-coding-agents/issues/10) new |
+| aiagenttools.dev | `mtcwilsxf7cdu` (re-submit) |
+| kailiu42 README grep | **NOT listed** |
 
 ## Round 16
 
