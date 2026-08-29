@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-29 ~06:20 UTC  
+Updated: 2026-08-29 ~12:10 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt (**HTTP 200**)  
 MIT core: `src/lib/agentreceipt/LICENSE` (on main)  
 **Demand watch:** timer every 6h
@@ -18,9 +18,9 @@ MIT core: `src/lib/agentreceipt/LICENSE` (on main)
 | kailiu42#38 | **CLOSED** — owner: "**Please stop spamming.**" |
 | Jenqyang#448 | CLOSED — wants dedicated licensed repo |
 | ~42 other issues | OPEN, 0 comments |
-| aiagenttools | submitted; search still 0 (latest id `mtdmipysdt2xj`) |
+| aiagenttools | submitted; search still 0 (latest id `mtec5mr389cqh`) |
 
-**Verdict (round 20):** **First kailiu42 follow-up since #32** — maintainer closed #37/#38 and asked for PR only; flagged agent issue spam. URLs **200**. **Stop opening kailiu42 issues. Dr must open the PR now.** No new listing issues this round (quality over spam).
+**Verdict (round 21):** No change since round 20. kailiu42 PR still not opened; README still unlisted. URLs **200**. **No new GitHub issues** (maintainer asked to stop spamming). aiagenttools re-submit only.
 
 ---
 
@@ -56,6 +56,16 @@ Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/me
 3. **Jenqyang** — dedicated `agentreceipt` public repo (MIT) if you want that list.
 
 ---
+
+## Round 21
+
+| Channel | Status |
+|---------|--------|
+| Live URL check | `/agentreceipt` + `/docs` → **200** |
+| kailiu42 README grep | **NOT listed** |
+| kailiu42 PR search | **none** |
+| New GitHub issues | **none** (spam pause) |
+| aiagenttools.dev | `mtec5mr389cqh` (re-submit) |
 
 ## Round 20
 
