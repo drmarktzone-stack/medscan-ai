@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-28 ~18:05 UTC  
+Updated: 2026-08-29 ~00:10 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt (**HTTP 200**)  
 MIT core: `src/lib/agentreceipt/LICENSE` (on main)  
 **Demand watch:** timer every 6h
@@ -16,11 +16,11 @@ MIT core: `src/lib/agentreceipt/LICENSE` (on main)
 | kailiu42#32 | CLOSED — invited PR; **not listed yet** |
 | kailiu42#37, #38 | OPEN — agent follow-ups; **0 replies** |
 | Jenqyang#448 | CLOSED — wants dedicated licensed repo |
-| ~40 other issues | OPEN, 0 comments |
-| aiagenttools | submitted; search still 0 (latest id `mtd9c9ktblwho`) |
-| tiennm99/awesome-ai-agents#12 | repo deleted / 404 |
+| ~42 other issues | OPEN, 0 comments |
+| aiagenttools | submitted; search still 0 (latest id `mtdmipysdt2xj`) |
+| tiennm99/awesome-ai-agents#12 | repo deleted / 404 (separate: tiennm99/awesome-coding-agents#13 opened) |
 
-**Verdict (round 18):** No new maintainer replies. URLs **200**. kailiu42 README still missing AgentReceipt. **Dr PR + Zijian-Ni reply remain the only high-leverage moves.** Opened 2 more coding-agent list issues (Caldalis, wdzhwsh4067).
+**Verdict (round 19):** No new maintainer replies. URLs **200**. kailiu42 still unlisted. **Dr PR + Zijian-Ni reply unchanged as top priority.** Opened 2 more coding-agent list issues (tiennm99, IngredientPreppers).
 
 ---
 
@@ -45,6 +45,16 @@ Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/me
 3. **Jenqyang** — dedicated `agentreceipt` public repo (MIT) if you want that list.
 
 ---
+
+## Round 19
+
+| Channel | Status |
+|---------|--------|
+| Live URL check | `/agentreceipt` + `/docs` → **200** |
+| kailiu42 README grep | **NOT listed** |
+| tiennm99/awesome-coding-agents | [#13](https://github.com/tiennm99/awesome-coding-agents/issues/13) new |
+| IngredientPreppers/Awesome-coding-agents | [#1](https://github.com/IngredientPreppers/Awesome-coding-agents/issues/1) new |
+| aiagenttools.dev | `mtdmipysdt2xj` (re-submit) |
 
 ## Round 18
 
