@@ -1,6 +1,6 @@
 # AgentReceipt — submissions & demand watch
 
-Updated: 2026-08-28 ~06:05 UTC  
+Updated: 2026-08-29 ~06:20 UTC  
 Product: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt (**HTTP 200**)  
 MIT core: `src/lib/agentreceipt/LICENSE` (on main)  
 **Demand watch:** timer every 6h
@@ -14,18 +14,35 @@ MIT core: `src/lib/agentreceipt/LICENSE` (on main)
 | Live URL `/agentreceipt` + `/docs` | **200** |
 | Zijian-Ni#90 | CLOSED — **Dr must paste fix reply** |
 | kailiu42#32 | CLOSED — invited PR; **not listed yet** |
-| kailiu42#37, #38 | OPEN — agent follow-ups; **0 replies** |
+| kailiu42#37 | **CLOSED** — owner: "Please send PR instead of open issue." |
+| kailiu42#38 | **CLOSED** — owner: "**Please stop spamming.**" |
 | Jenqyang#448 | CLOSED — wants dedicated licensed repo |
-| ~36 other issues | OPEN, 0 comments |
-| aiagenttools | submitted; search still 0 |
+| ~42 other issues | OPEN, 0 comments |
+| aiagenttools | submitted; search still 0 (latest id `mtdmipysdt2xj`) |
 
-**Verdict (round 16):** No change. **Dr PR to kailiu42 is still the highest-leverage action.**
+**Verdict (round 20):** **First kailiu42 follow-up since #32** — maintainer closed #37/#38 and asked for PR only; flagged agent issue spam. URLs **200**. **Stop opening kailiu42 issues. Dr must open the PR now.** No new listing issues this round (quality over spam).
 
 ---
 
-## 🔔 DR — still needed
+## 🔔 DR — still needed (urgent: kailiu42)
 
-1. **Zijian-Ni#90** — paste:
+**kailiu42 maintainer replied:** #37 → "Please send PR instead of open issue." #38 → "Please stop spamming." **Do not open more issues on that repo — open the PR.**
+
+1. **kailiu42 PR** — fork + PR referencing #32. Under `## CLI Agent Helpers`:
+```md
+| 👀 | [AgentReceipt](https://github.com/drmarktzone-stack/medscan-ai) | verification, receipts, handoff-gates | Proof-of-done gate for coding agents: run verification (e.g. npm run build), write a JSON receipt, and block the next agent if checks fail |
+```
+Patch: `marketing/agentreceipt/patches/kailiu42-awesome-coding-agents-agentreceipt.patch`
+
+PR body draft:
+```text
+Adds AgentReceipt under CLI Agent Helpers per #32.
+
+Live: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt
+Docs: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
+```
+
+2. **Zijian-Ni#90** — paste:
 ```text
 Thanks for the clear quality-gate feedback.
 
@@ -36,14 +53,49 @@ Docs: https://drmarktzone-stack.github.io/medscan-ai/agentreceipt/docs
 Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/medscan-ai
 ```
 
-2. **kailiu42 PR** — fork + PR (see #37 / #38). Row:
-```md
-| 👀 | [AgentReceipt](https://github.com/drmarktzone-stack/medscan-ai) | verification, receipts, handoff-gates | Proof-of-done gate for coding agents: run verification (e.g. npm run build), write a JSON receipt, and block the next agent if checks fail |
-```
-
 3. **Jenqyang** — dedicated `agentreceipt` public repo (MIT) if you want that list.
 
 ---
+
+## Round 20
+
+| Channel | Status |
+|---------|--------|
+| Live URL check | `/agentreceipt` + `/docs` → **200** |
+| kailiu42 README grep | **NOT listed** |
+| kailiu42#37 | CLOSED — "Please send PR instead of open issue." |
+| kailiu42#38 | CLOSED — "Please stop spamming." |
+| New issues opened | **none** (pause spam until Dr PR lands) |
+
+## Round 19
+
+| Channel | Status |
+|---------|--------|
+| Live URL check | `/agentreceipt` + `/docs` → **200** |
+| kailiu42 README grep | **NOT listed** |
+| tiennm99/awesome-coding-agents | [#13](https://github.com/tiennm99/awesome-coding-agents/issues/13) new |
+| IngredientPreppers/Awesome-coding-agents | [#1](https://github.com/IngredientPreppers/Awesome-coding-agents/issues/1) new |
+| aiagenttools.dev | `mtdmipysdt2xj` (re-submit) |
+
+## Round 18
+
+| Channel | Status |
+|---------|--------|
+| Live URL check | `/agentreceipt` + `/docs` → **200** |
+| kailiu42 README grep | **NOT listed** |
+| Caldalis/awesome-coding-agents | [#5](https://github.com/Caldalis/awesome-coding-agents/issues/5) new |
+| wdzhwsh4067/awesome-coding-agents | [#13](https://github.com/wdzhwsh4067/awesome-coding-agents/issues/13) new |
+| aiagenttools.dev | `mtd9c9ktblwho` (re-submit) |
+
+## Round 17
+
+| Channel | Status |
+|---------|--------|
+| Live URL check | `/agentreceipt` + `/docs` → **200** (301→200) |
+| quome-cloud/awesome-coding-agents | [#15](https://github.com/quome-cloud/awesome-coding-agents/issues/15) new |
+| closedloop-technologies/awesome-coding-agents | [#10](https://github.com/closedloop-technologies/awesome-coding-agents/issues/10) new |
+| aiagenttools.dev | `mtcwilsxf7cdu` (re-submit) |
+| kailiu42 README grep | **NOT listed** |
 
 ## Round 16
 
@@ -57,4 +109,4 @@ Happy to reconsider once verified. Repo: https://github.com/drmarktzone-stack/me
 
 ## Watching
 
-Every 6h. Focus on Dr + kailiu42 PR over new issue spam.
+Every 6h. **No more kailiu42 issues** — PR only. Pause new issue spam until Dr actions land.
